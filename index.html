@@ -6703,9 +6703,10 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     closeTimer = setTimeout(finish, 160);
   }
   modal.addEventListener('close', function () {
+    if (modal.open) return; // the 'close' event arrives a moment later — ignore it if another calculator has opened since
     document.body.classList.remove('modal-open');
     current = null;
-    planRefresh(); // values may have changed — update the plan panel
+    planRefresh(); // values may have changed — refresh the projects table
     if (opener && opener.focus) opener.focus();
   });
   modal.addEventListener('cancel', function (e) { e.preventDefault(); closeModal(); });
@@ -6961,7 +6962,10 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     dvel: function (r) { pjSet('dvel', 'q', r.supply); },
     fsup: function (r) { pjSet('fsup', 'q', r.supply); pjSet('fsup', 'esp', r.esp); },
     ffa: function (r) { pjSet('ffa', 'q', r.oaQ); },
-    btu: function (r) { pjSet('btu', 'area', roomArea(r)); pjSet('btu', 'h', r.h); pjSet('btu', 'n', r.people); }
+    btu: function (r) { pjSet('btu', 'area', roomArea(r)); pjSet('btu', 'h', r.h); pjSet('btu', 'n', r.people); },
+    tank: function (r) { pjSet('tank', 'n', r.people); },
+    septic: function (r) { pjSet('septic', 'n', r.people); },
+    roofdrain: function (r) { pjSet('roofdrain', 'a', roomArea(r)); }
   };
   // Calculator results → room.
   var PJ_TAKE = {
@@ -6974,7 +6978,21 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     duct: function (r, v, rows) { r.duct = rowVal(rows, 'Rectangular') + ' / ' + rowVal(rows, 'Standard round'); },
     eqf: function (r, v, rows) { r.duct = rowVal(rows, 'Rectangular') + ' / ' + rowVal(rows, 'Standard round'); },
     tpl: function (r, v, rows) { r.esp = inSI(rowVal(rows, 'Fan external static pressure'), 'pv'); },
-    fsup: function (r, v, rows) { r.motor = rowVal(rows, 'Motor size'); r.supply = v.q; }
+    fsup: function (r, v, rows) { r.motor = rowVal(rows, 'Motor size'); r.supply = v.q; },
+    // Electrical, plumbing, sanitary and fire — quantities for the BOQ
+    elec: function (r, v, rows) { r.el = { I: numIn(rowVal(rows, 'Current (3-phase)')), dem: numIn(rowVal(rows, 'Demand load')), V: v.v }; },
+    vdrop: function (r, v) { r.cable = { a: v.a, l: v.l, ph: v.ph, mat: v.mat }; },
+    pipe: function (r, v) { r.pipe = { d: v.d, l: v.l }; },
+    tank: function (r, v, rows) { r.tank = { vol: inSI(rowVal(rows, 'Storage volume'), 'vol'), peak: rowVal(rows, 'Peak flow (pump duty)') }; },
+    dfu: function (r, v, rows) {
+      r.fix = { wc: v.wc, ur: v.ur, lav: v.lav, sh: v.sh, bt: v.bt, ks: v.ks, fd: v.fd, cw: v.cw, df: v.df };
+      r.dfu = { branch: rowVal(rows, 'Horizontal fixture branch'), stack: rowVal(rows, 'Stack (≤ 3 branch intervals)'), drain: rowVal(rows, 'Building drain / sewer') };
+    },
+    roofdrain: function (r, v, rows) { r.roof = { n: numIn(rowVal(rows, 'Drains required')) }; },
+    septic: function (r, v, rows) { r.septic = { vol: rowVal(rows, 'Working volume'), plan: rowVal(rows, 'Inside plan (L × W)') }; },
+    sprinkler: function (r, v, rows) { r.spr = { cov: v.cov, k: v.k, store: inSI(rowVal(rows, 'Water storage'), 'vol') }; },
+    hazen: function (r, v) { r.fpipe = { d: v.d, l: v.l }; },
+    firepump: function (r, v, rows) { var rt = rowVal(rows, 'Next standard rating'); r.fp = rt ? { rating: rt, press: rowVal(rows, 'Rated pump pressure'), motor: rowVal(rows, 'Suggested motor (≥ 1.15 × shaft)') } : null; }
   };
   function pjApply(id, r) { if (!PJ_APPLY[id] || !r) return false; ensureVals(id); PJ_APPLY[id](r); return true; }
   function pjTake(id, r) {
@@ -7173,7 +7191,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       var d = e.target.dataset || {}, k = d.boq || d.boqt; if (!k) return;
       var s = boqSet(), v = e.target.value.trim(), open = !!($('.boq-sign') && $('.boq-sign').open);
       if (d.boqt) s[k] = k === 'cur' ? v.slice(0, 6) : v.slice(0, 80);
-      else { var x = num(v); if (x == null || x < 0 || (k === 'div' && !(x >= 1 && x <= 12))) { renderProjects(); return; } s[k] = k === 'flex' ? x * Q.len[sys][1] : k === 'div' ? Math.round(x) : x; }
+      else { var x = num(v), isDiv = /^div/.test(k); if (x == null || x < 0 || (isDiv && !(x >= 1 && x <= 12))) { renderProjects(); return; } s[k] = k === 'flex' ? x * Q.len[sys][1] : isDiv ? Math.round(x) : x; }
       boqStore(s); renderProjects();
       if (open && $('.boq-sign')) $('.boq-sign').open = true;
       var back = document.getElementById('boq-' + k); if (back) back.focus();
@@ -7295,12 +7313,19 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   }
   function pjReport() { var p = pjCur(); if (!p) return; if (!p.rooms.length) { window.alert('Add at least one room first.'); return; } rpOpen(pjReportHtml(p)); }
 
-  /* ---------- BOQ / BOM (HVAC) from project rooms ---------- */
+  /* ---------- BOQ / BOM from project rooms — all disciplines ---------- */
   // Layout follows the common Philippine QS format: division → groups → items, material and labor unit costs,
-  // subtotals per group, then total cost, supervision & profit, contingencies, VAT, project cost and cost per area.
+  // subtotals per group and division, then total cost, supervision & profit, contingencies, VAT, project cost, cost per area.
   var BOQ_KEY = 'mechtoolbox-boq';
   var BOQ_DEF_CUR = { ph: '₱', au: 'A$', us: '$' }, BOQ_DEF_TAX = { ph: 12, au: 10 };
   var ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+  // Divisions (default numbering: II Electrical, III Plumbing & Sanitary, IV Mechanical, V Fire Protection).
+  var BOQ_DIVS = {
+    E: { name: 'ELECTRICAL WORKS', set: 'divE', def: 2, groups: { A: 'Panelboards and Protection', B: 'Wires and Cables', C: 'Conduits and Accessories', Z: 'Others to complete' } },
+    P: { name: 'PLUMBING AND SANITARY WORKS', set: 'divP', def: 3, groups: { A: 'Water Supply', B: 'Plumbing Fixtures', C: 'Sanitary Drainage', D: 'Storm Drainage', E: 'Septic Tank', Z: 'Others to complete' } },
+    M: { name: 'MECHANICAL WORKS', set: 'div', def: 4, groups: { A: 'Air-Conditioning Equipment', B: 'Air Distribution', C: 'Ductwork', D: 'Insulation and Flexible Duct', E: 'Controls, Drains and Testing', Z: 'Others to complete' } },
+    F: { name: 'FIRE PROTECTION WORKS', set: 'divF', def: 5, groups: { A: 'Sprinkler System', B: 'Fire Pump and Water Storage', Z: 'Others to complete' } }
+  };
   function boqSet() {
     var s = {}; try { s = JSON.parse(localStorage.getItem(BOQ_KEY) || '{}') || {}; } catch (e) {}
     var m = rpMeta(), d = function (k, v) { if (s[k] == null) s[k] = v; };
@@ -7310,10 +7335,14 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     d('cont', 3);    // contingencies, % of (total + S&P)
     d('allow', 20);  // duct fittings, seams and waste, % of straight duct
     d('flex', 1.5);  // m of flexible duct per diffuser
-    d('div', 4);     // division number (IV — Mechanical Works)
+    d('waste', 10);  // % added to pipe, wire and conduit runs
+    Object.keys(BOQ_DIVS).forEach(function (k) { d(BOQ_DIVS[k].set, BOQ_DIVS[k].def); });
     d('owner', ''); d('prepBy', m.prepared || ''); d('prepPos', ''); d('chkBy', m.checked || ''); d('chkPos', ''); d('ctrBy', ''); d('ctrPos', '');
     s.rates = s.rates || {};
-    Object.keys(s.rates).forEach(function (k) { if (typeof s.rates[k] === 'number') s.rates[k] = { m: s.rates[k] }; }); // older single-rate price list
+    Object.keys(s.rates).forEach(function (k) {
+      if (typeof s.rates[k] === 'number') s.rates[k] = { m: s.rates[k] }; // older single-rate price list
+      if (!/^[EPMF]:/.test(k)) { if (!s.rates['M:' + k]) s.rates['M:' + k] = s.rates[k]; delete s.rates[k]; } // older HVAC-only keys
+    });
     return s;
   }
   function boqStore(s) { try { localStorage.setItem(BOQ_KEY, JSON.stringify(s)); } catch (e) {} }
@@ -7327,33 +7356,49 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     if (d) out.D = +d[1].replace(/,/g, '') * k(d[2]);
     return out;
   }
-  var BOQ_GROUPS = { A: 'Air-Conditioning Equipment', B: 'Air Distribution', C: 'Ductwork', D: 'Insulation and Flexible Duct', E: 'Controls, Drains and Testing', F: 'Others to complete' };
+  // Nominal pipe size nearest to an internal diameter (m): "65mmØ" or "2½"Ø".
+  function boqPipe(d) {
+    var best = PIPE_DN.reduce(function (b, x) { return Math.abs(x[1] - d * 1000) < Math.abs(b[1] - d * 1000) ? x : b; }, PIPE_DN[0]);
+    return sys === 'si' ? best[0] + 'mmØ' : best[2].replace(' in', '"') + 'Ø';
+  }
+  var BOQ_FIX = [['wc', 'Water closet, floor-mounted, with seat cover, flush valve / tank and fittings'], ['ur', 'Urinal, wall-hung, with flush valve and fittings'],
+    ['lav', 'Lavatory, with faucet, P-trap and supply fittings'], ['sh', 'Shower set, with mixing valve and floor drain'], ['bt', 'Bathtub, with faucet set and trap'],
+    ['ks', 'Kitchen sink, stainless, with faucet and trap'], ['fd', 'Floor drain, with stainless strainer'], ['cw', 'Clothes washer outlet box, with valves and trap'], ['df', 'Drinking fountain, with fittings']];
+  // Main breaker for a design current, by the active code basis.
+  function boqBreaker(I) {
+    if (codeBasis === 'au') return nextUp(AU_BRK, I);
+    if (codeBasis === 'ph' || codeBasis === 'us') return nextUp(PH_BRK, I * 1.25);
+    return nextUp(BREAKER_A, I * 1.25);
+  }
   // Take-off from the rooms. Quantities are SI here; display units are applied when shown.
   function boqBuild(p, s) {
-    var secs = [], warn = [], add = function (sec, key, desc, qty, unit, room, note) {
-      var S = secs.filter(function (x) { return x.name === sec; })[0];
-      if (!S) { S = { name: sec, items: [] }; secs.push(S); }
-      var it = S.items.filter(function (x) { return x.key === key; })[0];
-      if (!it) { it = { key: key, desc: desc, qty: 0, unit: unit, rooms: [], note: note || '' }; S.items.push(it); }
+    var divs = {}, warn = [], t = pjTotals(p), units = 0, noLen = [], wst = 1 + (+s.waste || 0) / 100;
+    var add = function (dv, grp, key, desc, qty, unit, room, note) {
+      var D = divs[dv] = divs[dv] || { key: dv, secs: {} };
+      var S = D.secs[grp] = D.secs[grp] || { name: grp, items: [], ref: [] };
+      var it = S.items.filter(function (x) { return x.key === dv + ':' + key; })[0];
+      if (!it) { it = { key: dv + ':' + key, desc: desc, qty: 0, unit: unit, rooms: [], note: note || '' }; S.items.push(it); }
       it.qty += qty; if (room && it.rooms.indexOf(room) < 0) it.rooms.push(room);
     };
-    var t = pjTotals(p), units = 0, noLen = [];
+    var find = function (dv, grp, key) { var D = divs[dv], S = D && D.secs[grp]; return S ? S.items.filter(function (x) { return x.key === dv + ':' + key; })[0] : null; };
+    var addOnce = function (dv, grp, key, desc, qty, unit, room, note) { if (!find(dv, grp, key)) add(dv, grp, key, desc, qty, unit, room, note); else if (room) { var it = find(dv, grp, key); if (it.rooms.indexOf(room) < 0) it.rooms.push(room); } };
+    // ---- IV Mechanical (HVAC)
     p.rooms.forEach(function (r) {
       if (!(r.loadW > 0)) return;
       units++;
-      var cap = acSize(r.loadW * 3.41214);
-      add('A', 'ac|' + cap + '|' + (r.motor || ''), 'Ducted split / packaged air-conditioning unit, ' + cap + (r.supply > 0 ? ', ' + fq(r.supply, 'air') : '') + (r.esp > 0 ? ' at ' + fq(r.esp, 'pv') + ' ESP' : '') + (r.motor ? ', fan motor ' + r.motor : ''), 1, 'set', r.name);
+      var cap = acSize(r.loadW * 3.41214).replace(/ packaged, ducted split or VRF$/, ''); // the description already names the type
+      add('M', 'A', 'ac|' + cap + '|' + (r.motor || ''), 'Ducted split / packaged air-conditioning unit, ' + cap + (r.supply > 0 ? ', ' + fq(r.supply, 'air') : '') + (r.esp > 0 ? ' at ' + fq(r.esp, 'pv') + ' ESP' : '') + (r.motor ? ', fan motor ' + r.motor : ''), 1, 'set', r.name);
     });
-    if (t.oa > 0) add('A', 'faf', 'Fresh-air fan with filter, backdraft damper and controls, ' + fq(t.oa, 'air'), 1, 'set', '', 'Size with the Fresh-Air Fan calculator');
+    if (t.oa > 0) add('M', 'A', 'faf', 'Fresh-air fan with filter, backdraft damper and controls, ' + fq(t.oa, 'air'), 1, 'set', '', 'Size with the Fresh-Air Fan calculator');
     p.rooms.forEach(function (r) {
-      if (r.nDiff > 0) add('B', 'diff|' + (r.neck || ''), '4-way square ceiling diffuser 600 × 600' + (r.neck ? ', ' + r.neck + ' neck' : '') + ', with opposed-blade volume damper', r.nDiff, 'pcs', r.name);
+      if (r.nDiff > 0) add('M', 'B', 'diff|' + (r.neck || ''), '4-way square ceiling diffuser 600 × 600' + (r.neck ? ', ' + r.neck + ' neck' : '') + ', with opposed-blade volume damper', r.nDiff, 'pcs', r.name);
       if (r.supply > 0) {
         var g = pickGrille(r.supply * 0.9 / NC_LIM['35'].ret, GRILLE_TYPES.eggcrate.fa);
         var gl = g.n > 1 ? g.label.replace(/^\d+ × /, '') : g.label; // "2 × 1200 × 600 mm" → one size, counted twice
-        add('B', 'rg|' + gl, 'Return-air grille, egg-crate core, ' + gl, g.n, 'pcs', r.name, 'Estimated at NC 35 face velocity');
+        add('M', 'B', 'rg|' + gl, 'Return-air grille, egg-crate core, ' + gl, g.n, 'pcs', r.name, 'Estimated at NC 35 face velocity');
       }
     });
-    if (t.oa > 0) { var lv = pickGrille(t.oa / 2.5, LOUVER_TYPES.std.fa), ll = lv.n > 1 ? lv.label.replace(/^\d+ × /, '') : lv.label; add('B', 'louv|' + ll, 'Fresh-air intake louvre with bird screen, ' + ll, lv.n, 'pcs', '', 'Estimated at 2.5 m/s free-area velocity'); }
+    if (t.oa > 0) { var lv = pickGrille(t.oa / 2.5, LOUVER_TYPES.std.fa), ll = lv.n > 1 ? lv.label.replace(/^\d+ × /, '') : lv.label; add('M', 'B', 'louv|' + ll, 'Fresh-air intake louvre with bird screen, ' + ll, lv.n, 'pcs', '', 'Estimated at 2.5 m/s free-area velocity'); }
     var allow = 1 + (s.allow || 0) / 100;
     p.rooms.forEach(function (r) {
       var d = boqDuct(r.duct), len = (r.ductS || 0) + (r.ductR || 0);
@@ -7362,29 +7407,92 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       var rect = d.W > 0 && d.H > 0, per = rect ? 2 * (d.W + d.H) : Math.PI * (d.D || 0), side = rect ? Math.max(d.W, d.H) : d.D || 0;
       var ga = BOQ_GAUGE.filter(function (x) { return side <= x[0] + 1e-9; })[0];
       var area = per * len * allow;
-      add('C', 'gi|' + ga[1] + '|' + (rect ? 'r' : 'o'), (rect ? 'Rectangular' : 'Spiral round') + ' G.I. duct, ' + ga[1] + ', incl. fittings, joints and sealant', area, 'area', r.name);
-      add('C', 'kg|' + ga[1], 'Galvanised sheet, ' + ga[1], area * ga[2] * 7.85, 'kg', r.name);
-      if (r.ductS > 0) add('D', 'ins25', 'Duct insulation, 25 mm THK fibreglass blanket with FSK vapour barrier (supply duct)', per * r.ductS * allow, 'area', r.name);
-      if (r.nDiff > 0 && s.flex > 0) add('D', 'flex|' + (r.neck || ''), 'Insulated flexible duct' + (r.neck ? ' ' + r.neck : '') + ', ' + fq(s.flex, 'len') + ' per diffuser', r.nDiff * s.flex, 'len', r.name);
+      add('M', 'C', 'gi|' + ga[1] + '|' + (rect ? 'r' : 'o'), (rect ? 'Rectangular' : 'Spiral round') + ' G.I. duct, ' + ga[1] + ', incl. fittings, joints and sealant', area, 'area', r.name);
+      var D = divs.M.secs.C; D.ref.push({ key: 'kg|' + ga[1], desc: 'Galvanised sheet, ' + ga[1], qty: area * ga[2] * 7.85, unit: 'kg', rooms: [r.name] });
+      if (r.ductS > 0) add('M', 'D', 'ins25', 'Duct insulation, 25 mm THK fibreglass blanket with FSK vapour barrier (supply duct)', per * r.ductS * allow, 'area', r.name);
+      if (r.nDiff > 0 && s.flex > 0) add('M', 'D', 'flex|' + (r.neck || ''), 'Insulated flexible duct' + (r.neck ? ' ' + r.neck : '') + ', ' + fq(s.flex, 'len') + ' per diffuser', r.nDiff * s.flex, 'len', r.name);
     });
     if (noLen.length) warn.push('Enter supply / return duct run lengths for ' + noLen.join(', ') + ' (edit the room) to quantify ductwork.');
-    if (!p.rooms.some(function (r) { return r.duct; })) warn.push('Save a duct size (Equal Friction step) to quantify ductwork.');
     if (units) {
-      add('E', 'tstat', 'Room thermostat / wired controller', units, 'pcs', '');
-      add('E', 'cond', 'Condensate drain piping with trap and insulation, per unit', units, 'lot', '');
+      add('M', 'E', 'tstat', 'Room thermostat / wired controller', units, 'pcs', '');
+      add('M', 'E', 'cond', 'Condensate drain piping with trap and insulation, per unit', units, 'lot', '');
+      add('M', 'E', 'tab', 'Testing, adjusting and balancing (TAB) of air systems, with report', 1, 'lot', '');
     }
-    if (p.rooms.length) add('E', 'tab', 'Testing, adjusting and balancing (TAB) of air systems, with report', 1, 'lot', '');
-    if (secs.length) { add('F', 'hang', 'Hangers and supports', 1, 'lot', ''); add('F', 'cons', 'Consumables', 1, 'lot', ''); }
-    secs.sort(function (a, b) { return a.name < b.name ? -1 : 1; });
-    var dv = +s.div || 4;
-    secs.forEach(function (S, gi) {
-      S.title = BOQ_GROUPS[S.name]; S.no = dv + '.' + (gi + 1);
-      var kg = S.items.filter(function (it) { return it.unit === 'kg'; });
-      S.ref = kg; // sheet weight: BOM only — shown as a remark in the BOQ
-      S.items = S.items.filter(function (it) { return it.unit !== 'kg'; });
-      S.items.forEach(function (it, i) { it.no = S.no + '.' + (i + 1); });
+    // ---- II Electrical
+    p.rooms.forEach(function (r) {
+      var e = r.el, c = r.cable;
+      if (e && e.I > 0) {
+        var b = boqBreaker(e.I);
+        add('E', 'A', 'mcb|' + b, 'Main circuit breaker, 3-pole, ' + (b ? b + ' AT' : 'size per load') + ', bolt-on / plug-in', 1, 'pcs', r.name, 'Design current ' + fmt(e.I, 1) + ' A');
+        add('E', 'A', 'pnl|' + r.id, 'Panelboard, 3-phase, with main and branch breakers, ' + fmt(e.dem, 1) + ' kW demand at ' + fmt(e.V, 0) + ' V', 1, 'set', r.name);
+      }
+      if (c && c.l > 0 && c.a > 0) {
+        var size = cableFor(c.a).replace(/ THHN$/, ''), cond = c.ph === '3' ? 4 : 2, mat = c.mat === 'al' ? 'Aluminium' : 'Copper';
+        add('E', 'B', 'w|' + size + '|' + c.mat, mat + ' THHN/THWN-2 wire, ' + size, c.l * wst * cond, 'len', r.name, (c.ph === '3' ? '3 phase + neutral' : 'line + neutral') + ' × ' + fmt(c.l / Q.len[sys][1]) + ' ' + Q.len[sys][0] + ' run');
+        add('E', 'B', 'g|' + size, 'Grounding conductor (size per code grounding table), for ' + size + ' feeder', c.l * wst, 'len', r.name);
+        add('E', 'C', 'cnd', 'Conduit, IMC / EMT / uPVC per specification, size per conduit fill', c.l * wst, 'len', r.name);
+        add('E', 'C', 'box|' + r.id, 'Pull boxes, junction boxes, fittings and supports', 1, 'lot', r.name);
+      }
     });
-    return { secs: secs, warn: warn };
+    if (divs.E) add('E', 'Z', 'tc', 'Testing and commissioning (insulation resistance, continuity, polarity)', 1, 'lot', '');
+    // ---- III Plumbing and Sanitary
+    p.rooms.forEach(function (r) {
+      if (r.pipe && r.pipe.l > 0) {
+        var ps = boqPipe(r.pipe.d);
+        add('P', 'A', 'wp|' + ps, ps + ' x 6m, water supply pipe (PPR PN20 / G.I. Sch. 40 per specification)', Math.ceil(r.pipe.l * wst / 6), 'length', r.name, fmt(r.pipe.l / Q.len[sys][1]) + ' ' + Q.len[sys][0] + ' run');
+        add('P', 'A', 'wf|' + ps, ps + ' fittings, valves and supports for the water line', 1, 'lot', r.name);
+      }
+      if (r.tank && r.tank.vol > 0) {
+        add('P', 'A', 'tank|' + r.id, 'Water storage tank, ' + fq(r.tank.vol, 'vol') + ' capacity, with overflow, vent and washout', 1, 'set', r.name);
+        if (r.tank.peak) add('P', 'A', 'bp|' + r.id, 'Booster pump set with pressure tank and controls, ' + r.tank.peak, 1, 'set', r.name);
+      }
+      if (r.fix) BOQ_FIX.forEach(function (f) { if (r.fix[f[0]] > 0) add('P', 'B', 'fx|' + f[0], f[1], r.fix[f[0]], 'set', r.name); });
+      if (r.dfu) {
+        if (r.dfu.drain) add('P', 'C', 'bd|' + r.dfu.drain, 'uPVC sanitary building drain, ' + r.dfu.drain.replace(/\s+/g, ' ') + ', with fittings', 1, 'lot', r.name, 'Length per drawings');
+        if (r.dfu.stack) add('P', 'C', 'st|' + r.dfu.stack, 'uPVC soil / waste stack, ' + r.dfu.stack.replace(/\s+/g, ' ') + ', with fittings and vents', 1, 'lot', r.name, 'Length per drawings');
+        add('P', 'C', 'co', 'Cleanouts at changes of direction and stack bases', 1, 'lot', r.name);
+      }
+      if (r.roof && r.roof.n > 0) {
+        add('P', 'D', 'rd', 'Roof drain with dome strainer and flashing', r.roof.n, 'pcs', r.name);
+        add('P', 'D', 'rl', 'Storm drain leaders, fittings and overflow provisions', 1, 'lot', r.name);
+      }
+      if (r.septic && r.septic.vol) add('P', 'E', 'sep|' + r.id, 'Reinforced-concrete septic tank, two-chamber, ' + r.septic.plan + ' inside, ' + r.septic.vol + ' working volume', 1, 'unit', r.name);
+    });
+    if (divs.P) add('P', 'Z', 'tc', 'Pressure test of water lines and flow test of drainage lines', 1, 'lot', '');
+    // ---- V Fire Protection
+    var store = 0;
+    p.rooms.forEach(function (r) {
+      if (r.spr && r.spr.cov > 0) {
+        var heads = Math.ceil(roomArea(r) / r.spr.cov), K = sys === 'si' ? 'K' + fmt(r.spr.k, 0) : 'K' + fmt(r.spr.k / 14.416, 1);
+        add('F', 'A', 'hd|' + K, 'Sprinkler head, pendent, ' + K + ', 68 °C quick-response, with escutcheon', heads, 'pcs', r.name, fq(roomArea(r), 'area') + ' ÷ ' + fq(r.spr.cov, 'area') + ' per head');
+        add('F', 'A', 'br|' + r.id, 'Sprinkler branch lines, drops, fittings and hangers', 1, 'lot', r.name);
+        store = Math.max(store, r.spr.store || 0);
+      }
+      if (r.fpipe && r.fpipe.l > 0) {
+        var fs2 = boqPipe(r.fpipe.d);
+        add('F', 'A', 'fp|' + fs2, fs2 + ' x 6m, B.I. seamless pipe, Sch. 40', Math.ceil(r.fpipe.l * wst / 6), 'length', r.name, fmt(r.fpipe.l / Q.len[sys][1]) + ' ' + Q.len[sys][0] + ' run');
+        add('F', 'A', 'ff|' + fs2, fs2 + ' grooved / threaded fittings, valves and supports', 1, 'lot', r.name);
+      }
+      if (r.fp && r.fp.rating) {
+        addOnce('F', 'B', 'pump', 'Fire pump set, ' + r.fp.rating + ' at ' + r.fp.press + (r.fp.motor ? ', ' + r.fp.motor + ' motor' : '') + ', with listed controller', 1, 'set', r.name);
+        addOnce('F', 'B', 'jockey', 'Jockey pump set with controller', 1, 'set', r.name);
+      }
+    });
+    if (store > 0) add('F', 'B', 'tank', 'Fire water storage tank (reserve), ' + fq(store, 'vol'), 1, 'set', '');
+    if (divs.F) add('F', 'Z', 'tc', 'Hydrostatic test, flushing and commissioning', 1, 'lot', '');
+    // Hangers / consumables close every division that has items.
+    Object.keys(divs).forEach(function (k) { add(k, 'Z', 'hang', 'Hangers and supports', 1, 'lot', ''); add(k, 'Z', 'cons', 'Consumables', 1, 'lot', ''); });
+    var hasOther = p.rooms.some(function (r) { return r.el || r.cable || r.pipe || r.tank || r.fix || r.roof || r.septic || r.spr || r.fpipe || r.fp; });
+    if (!hasOther) warn.push('Electrical, plumbing, sanitary and fire items come from those calculators — open one (e.g. Drainage Fixture Units, Voltage Drop, Sprinkler System Demand) and use Save to room.');
+    // Number divisions, groups and items.
+    var list = Object.keys(divs).map(function (k) {
+      var D = divs[k], meta = BOQ_DIVS[k], no = +s[meta.set] || meta.def;
+      var secs = Object.keys(D.secs).sort(function (a, b) { return a === 'Z' ? 1 : b === 'Z' ? -1 : a < b ? -1 : 1; }).map(function (g) { return D.secs[g]; });
+      secs.forEach(function (S, gi) { S.title = meta.groups[S.name]; S.no = no + '.' + (gi + 1); S.items.forEach(function (it, i) { it.no = S.no + '.' + (i + 1); }); });
+      var title = meta.name.split(' ').map(function (w) { return w === 'AND' ? 'and' : w.charAt(0) + w.slice(1).toLowerCase(); }).join(' '); // "Plumbing and Sanitary Works"
+      return { key: k, no: no, roman: ROMAN[no] || String(no), name: meta.name, title: title, secs: secs };
+    }).sort(function (a, b) { return a.no - b.no; });
+    return { divs: list, warn: warn };
   }
   function boqQty(it) {
     if (it.unit === 'area') return { q: it.qty / Q.area[sys][1], u: Q.area[sys][0] === 'm²' ? 'sq.m' : Q.area[sys][0] === 'ft²' ? 'sq.ft' : Q.area[sys][0] };
@@ -7392,103 +7500,117 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     if (it.unit === 'kg') return { q: sys === 'si' ? it.qty : it.qty * 2.20462, u: sys === 'si' ? 'kg' : 'lb' };
     return { q: it.qty, u: it.unit };
   }
-  function boqRound(q, u) { return u === 'pcs' || u === 'set' || u === 'lot' ? Math.round(q) : Number(q.toFixed(2)); }
+  function boqRound(q, u) { return u === 'pcs' || u === 'set' || u === 'lot' || u === 'unit' || u === 'length' ? Math.round(q) : Number(q.toFixed(2)); }
   function boqRateKey(it) { return it.key + '|' + boqQty(it).u; }
   var n2 = function (x) { return (x || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
   // All amounts for the current rates.
   function boqCompute(p, s) {
-    var b = boqBuild(p, s), lp = (+s.labor || 0) / 100, div = { m: 0, l: 0, t: 0 };
-    b.secs.forEach(function (S) {
-      S.sum = { m: 0, l: 0, t: 0 };
-      S.items.forEach(function (it) {
-        var dq = boqQty(it), r = s.rates[boqRateKey(it)] || {};
-        it.qd = boqRound(dq.q, dq.u); it.ud = dq.u;
-        it.mu = +r.m || 0; it.lAuto = r.l == null; it.lu = it.lAuto ? it.mu * lp : +r.l || 0; it.uu = it.mu + it.lu;
-        it.tm = it.qd * it.mu; it.tl = it.qd * it.lu; it.tt = it.tm + it.tl;
-        S.sum.m += it.tm; S.sum.l += it.tl; S.sum.t += it.tt;
-        var rem = [];
-        if (it.rooms.length) rem.push(it.rooms.join(', '));
-        if (it.note) rem.push(it.note);
-        if (S.name === 'C') S.ref.filter(function (k) { return k.key === 'kg|' + it.key.split('|')[1]; }).forEach(function (k) { var w = boqQty(k); rem.push('≈ ' + fmt(boqRound(w.q, w.u)) + ' ' + w.u + ' sheet'); });
-        it.remarks = rem.join(' · ');
+    var b = boqBuild(p, s), lp = (+s.labor || 0) / 100, all = { m: 0, l: 0, t: 0 };
+    b.divs.forEach(function (D) {
+      D.sum = { m: 0, l: 0, t: 0 };
+      D.secs.forEach(function (S) {
+        S.sum = { m: 0, l: 0, t: 0 };
+        S.items.forEach(function (it) {
+          var dq = boqQty(it), r = s.rates[boqRateKey(it)] || {};
+          it.qd = boqRound(dq.q, dq.u); it.ud = dq.u;
+          it.mu = +r.m || 0; it.lAuto = r.l == null; it.lu = it.lAuto ? it.mu * lp : +r.l || 0; it.uu = it.mu + it.lu;
+          it.tm = it.qd * it.mu; it.tl = it.qd * it.lu; it.tt = it.tm + it.tl;
+          S.sum.m += it.tm; S.sum.l += it.tl; S.sum.t += it.tt;
+          var rem = [];
+          if (it.rooms.length) rem.push(it.rooms.join(', '));
+          if (it.note) rem.push(it.note);
+          var kg = S.ref.filter(function (k) { return 'M:gi|' + k.key.slice(3) === it.key.split('|').slice(0, 2).join('|'); }).reduce(function (a, k) { return a + k.qty; }, 0);
+          if (kg > 0) { var w = boqQty({ qty: kg, unit: 'kg' }); rem.push('≈ ' + fmt(boqRound(w.q, w.u)) + ' ' + w.u + ' sheet'); }
+          it.remarks = rem.join(' · ');
+        });
+        D.sum.m += S.sum.m; D.sum.l += S.sum.l; D.sum.t += S.sum.t;
       });
-      div.m += S.sum.m; div.l += S.sum.l; div.t += S.sum.t;
+      all.m += D.sum.m; all.l += D.sum.l; all.t += D.sum.t;
     });
-    var tc = div.t, sp = tc * (+s.sp || 0) / 100, ct = (tc + sp) * (+s.cont || 0) / 100, vat = (tc + sp + ct) * (+s.tax || 0) / 100, proj = tc + sp + ct + vat;
+    var tc = all.t, sp = tc * (+s.sp || 0) / 100, ct = (tc + sp) * (+s.cont || 0) / 100, vat = (tc + sp + ct) * (+s.tax || 0) / 100, proj = tc + sp + ct + vat;
     var area = pjTotals(p).area / Q.area[sys][1];
-    return { b: b, div: div, tc: tc, sp: sp, ct: ct, vat: vat, proj: proj, area: area, psm: area > 0 ? proj / area : 0, dvNo: +s.div || 4 };
+    return { b: b, all: all, tc: tc, sp: sp, ct: ct, vat: vat, proj: proj, area: area, psm: area > 0 ? proj / area : 0 };
   }
   var BOQ_AREA = function () { return sys === 'si' ? 'SQ.M' : 'SQ.FT'; };
   function boqPanelHtml(p) {
     var s = boqSet(), C = boqCompute(p, s), b = C.b;
-    if (!b.secs.length) return '<div class="boq" id="pj-boq"><p class="pj-hint">Save results to the rooms first (cooling load, diffusers, duct) — the BOQ is built from them.</p></div>';
+    if (!b.divs.length) return '<div class="boq" id="pj-boq"><p class="pj-hint">Save results to the rooms first — cooling load, diffusers and duct for HVAC; Voltage Drop, Drainage Fixture Units, Sprinkler System Demand and the other calculators for electrical, plumbing, sanitary and fire.</p></div>';
     var fld = function (k, label, val, unit, text) { return '<div class="field"><label for="boq-' + k + '">' + label + '</label><div class="input-wrap"><input id="boq-' + k + '" ' + (text ? 'data-boqt' : 'data-boq') + '="' + k + '" type="text" ' + (text ? '' : 'inputmode="decimal" ') + 'autocomplete="off" value="' + esc(val) + '">' + (unit ? '<span class="unit">' + unit + '</span>' : '') + '</div></div>'; };
-    var rows = b.secs.map(function (S) {
-      return '<tr class="boq-grp"><td>' + S.no + '</td><td colspan="10">' + esc(S.title) + '</td></tr>' + S.items.map(function (it) {
-        var k = esc(boqRateKey(it));
-        return '<tr><td class="boq-no">' + it.no + '</td><td>' + esc(it.desc) + '</td><td class="num">' + fmt(it.qd) + '</td><td>' + esc(it.ud) + '</td>' +
-          '<td><div class="input-wrap boq-rate"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Material unit cost, ' + it.no + '" data-rate="' + k + '" data-kind="m" value="' + (it.mu ? it.mu : '') + '" placeholder="0.00"></div></td>' +
-          '<td><div class="input-wrap boq-rate"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Labor unit cost, ' + it.no + '" data-rate="' + k + '" data-kind="l" data-v="' + it.no + ':lph" value="' + (it.lAuto ? '' : it.lu) + '" placeholder="' + n2(it.lAuto ? it.lu : 0) + '"></div></td>' +
-          '<td class="num" data-v="' + it.no + ':uu">' + n2(it.uu) + '</td><td class="num" data-v="' + it.no + ':tm">' + n2(it.tm) + '</td><td class="num" data-v="' + it.no + ':tl">' + n2(it.tl) + '</td><td class="num" data-v="' + it.no + ':tt">' + n2(it.tt) + '</td>' +
-          '<td class="boq-rem">' + esc(it.remarks) + '</td></tr>';
-      }).join('') + '<tr class="boq-subt"><td></td><td colspan="6">Subtotal Cost:</td><td class="num" data-v="' + S.no + ':m">' + n2(S.sum.m) + '</td><td class="num" data-v="' + S.no + ':l">' + n2(S.sum.l) + '</td><td class="num" data-v="' + S.no + ':t">' + n2(S.sum.t) + '</td><td></td></tr>';
+    var rows = b.divs.map(function (D) {
+      return '<tr class="boq-div"><td>' + D.roman + '</td><td colspan="10">' + D.name + '</td></tr>' + D.secs.map(function (S) {
+        return '<tr class="boq-grp"><td>' + S.no + '</td><td colspan="10">' + esc(S.title) + '</td></tr>' + S.items.map(function (it) {
+          var k = esc(boqRateKey(it));
+          return '<tr><td class="boq-no">' + it.no + '</td><td>' + esc(it.desc) + '</td><td class="num">' + fmt(it.qd) + '</td><td>' + esc(it.ud) + '</td>' +
+            '<td><div class="input-wrap boq-rate"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Material unit cost, ' + it.no + '" data-rate="' + k + '" data-kind="m" value="' + (it.mu ? it.mu : '') + '" placeholder="0.00"></div></td>' +
+            '<td><div class="input-wrap boq-rate"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Labor unit cost, ' + it.no + '" data-rate="' + k + '" data-kind="l" data-v="' + it.no + ':lph" value="' + (it.lAuto ? '' : it.lu) + '" placeholder="' + n2(it.lAuto ? it.lu : 0) + '"></div></td>' +
+            '<td class="num" data-v="' + it.no + ':uu">' + n2(it.uu) + '</td><td class="num" data-v="' + it.no + ':tm">' + n2(it.tm) + '</td><td class="num" data-v="' + it.no + ':tl">' + n2(it.tl) + '</td><td class="num" data-v="' + it.no + ':tt">' + n2(it.tt) + '</td>' +
+            '<td class="boq-rem">' + esc(it.remarks) + '</td></tr>';
+        }).join('') + '<tr class="boq-subt"><td></td><td colspan="6">Subtotal Cost:</td><td class="num" data-v="' + S.no + ':m">' + n2(S.sum.m) + '</td><td class="num" data-v="' + S.no + ':l">' + n2(S.sum.l) + '</td><td class="num" data-v="' + S.no + ':t">' + n2(S.sum.t) + '</td><td></td></tr>';
+      }).join('') + '<tr class="boq-divt"><td></td><td colspan="6">Total Cost ' + D.roman + ' - ' + esc(D.title) + ':</td><td class="num" data-v="d' + D.no + ':m">' + n2(D.sum.m) + '</td><td class="num" data-v="d' + D.no + ':l">' + n2(D.sum.l) + '</td><td class="num" data-v="d' + D.no + ':t">' + n2(D.sum.t) + '</td><td></td></tr>';
     }).join('');
-    var dvName = ROMAN[C.dvNo] || C.dvNo;
-    return '<div class="boq" id="pj-boq"><div class="boq-head"><p class="pj-form-t">Bill of quantities — ' + dvName + ' Mechanical Works (HVAC)</p>' +
+    return '<div class="boq" id="pj-boq"><div class="boq-head"><p class="pj-form-t">Bill of quantities — ' + b.divs.map(function (D) { return D.roman + ' ' + D.title; }).join(' · ') + '</p>' +
       '<div class="boq-exp"><button type="button" class="btn btn-solid btn-sm" id="boq-pdf">BOQ PDF</button><button type="button" class="btn btn-outline btn-sm" id="boq-csv">BOQ (Excel)</button><button type="button" class="btn btn-outline btn-sm" id="bom-csv">BOM (Excel)</button></div></div>' +
       '<div class="fields boq-set">' + fld('cur', 'Currency', s.cur, '', true) + fld('labor', 'Labor (if blank)', s.labor, '% of mat.') + fld('sp', 'Supervision & profit', s.sp, '%') +
-      fld('cont', 'Contingencies', s.cont, '%') + fld('tax', 'VAT / GST', s.tax, '%') + fld('allow', 'Duct fittings allowance', s.allow, '%') +
-      fld('flex', 'Flex duct per diffuser', roundU(s.flex / Q.len[sys][1]), Q.len[sys][0]) + fld('div', 'Division no.', s.div, '') + fld('owner', 'Owner', s.owner, '', true) + '</div>' +
-      '<details class="boq-sign"><summary>Signatories (Prepared / Checked / Counter checked)</summary><div class="fields boq-set">' +
+      fld('cont', 'Contingencies', s.cont, '%') + fld('tax', 'VAT / GST', s.tax, '%') + fld('waste', 'Pipe / wire waste', s.waste, '%') + fld('allow', 'Duct fittings allowance', s.allow, '%') +
+      fld('flex', 'Flex duct per diffuser', roundU(s.flex / Q.len[sys][1]), Q.len[sys][0]) + fld('owner', 'Owner', s.owner, '', true) + '</div>' +
+      '<details class="boq-sign"><summary>Division numbers and signatories</summary><div class="fields boq-set">' +
+      fld('divE', 'Electrical division no.', s.divE, '') + fld('divP', 'Plumbing & sanitary no.', s.divP, '') + fld('div', 'Mechanical division no.', s.div, '') + fld('divF', 'Fire protection no.', s.divF, '') +
       fld('prepBy', 'Prepared by', s.prepBy, '', true) + fld('prepPos', 'Position', s.prepPos, '', true) + fld('chkBy', 'Checked by', s.chkBy, '', true) +
       fld('chkPos', 'Position', s.chkPos, '', true) + fld('ctrBy', 'Counter checked by', s.ctrBy, '', true) + fld('ctrPos', 'Position', s.ctrPos, '', true) + '</div></details>' +
       (b.warn.length ? '<ul class="boq-warn">' + b.warn.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul>' : '') +
       '<div class="table-wrap boq-table"><table><thead><tr><th rowspan="2">Item no.</th><th rowspan="2">Scope of work / item description</th><th rowspan="2">Qty</th><th rowspan="2">UOM</th><th colspan="3" class="c">Unit cost' + (s.cur ? ' (' + esc(s.cur) + ')' : '') + '</th>' +
-      '<th rowspan="2">Total material cost</th><th rowspan="2">Total labor cost</th><th rowspan="2">Total material &amp; labor cost</th><th rowspan="2">Remarks</th></tr><tr><th>Material</th><th>Labor</th><th>Total</th></tr></thead><tbody>' +
-      '<tr class="boq-div"><td>' + dvName + '</td><td colspan="10">MECHANICAL WORKS</td></tr>' + rows +
-      '<tr class="boq-divt"><td></td><td colspan="6">Total Cost ' + dvName + ' - Mechanical Works:</td><td class="num" data-v="div:m">' + n2(C.div.m) + '</td><td class="num" data-v="div:l">' + n2(C.div.l) + '</td><td class="num" data-v="div:t">' + n2(C.div.t) + '</td><td></td></tr></tbody>' +
-      '<tfoot><tr><td colspan="7">TOTAL COST</td><td class="num" data-v="div:m2">' + n2(C.div.m) + '</td><td class="num" data-v="div:l2">' + n2(C.div.l) + '</td><td class="num" data-v="sum:tc">' + n2(C.tc) + '</td><td></td></tr>' +
+      '<th rowspan="2">Total material cost</th><th rowspan="2">Total labor cost</th><th rowspan="2">Total material &amp; labor cost</th><th rowspan="2">Remarks</th></tr><tr><th>Material</th><th>Labor</th><th>Total</th></tr></thead><tbody>' + rows + '</tbody>' +
+      '<tfoot><tr><td colspan="7">TOTAL COST</td><td class="num" data-v="all:m">' + n2(C.all.m) + '</td><td class="num" data-v="all:l">' + n2(C.all.l) + '</td><td class="num" data-v="sum:tc">' + n2(C.tc) + '</td><td></td></tr>' +
       '<tr><td colspan="9">SUPERVISION &amp; PROFIT (' + fmt(+s.sp || 0) + ' %)</td><td class="num" data-v="sum:sp">' + n2(C.sp) + '</td><td></td></tr>' +
       '<tr><td colspan="9">CONTINGENCIES (' + fmt(+s.cont || 0) + ' %)</td><td class="num" data-v="sum:ct">' + n2(C.ct) + '</td><td></td></tr>' +
       '<tr><td colspan="9">VAT (' + fmt(+s.tax || 0) + ' %)</td><td class="num" data-v="sum:vat">' + n2(C.vat) + '</td><td></td></tr>' +
       '<tr class="boq-grand"><td colspan="9">PROJECT COST (LABOR, LIGHT EQUIPMENT AND POWER TOOLS)</td><td class="num" data-v="sum:proj">' + n2(C.proj) + '</td><td></td></tr>' +
       '<tr><td colspan="9">COST PER ' + BOQ_AREA() + ' (' + fmt(C.area) + ' ' + (sys === 'si' ? 'sq.m' : 'sq.ft') + ')</td><td class="num" data-v="sum:psm">' + n2(C.psm) + '</td><td></td></tr></tfoot></table></div>' +
-      '<p class="pj-hint boq-note">Type material unit costs; labor fills in at the labor % unless you type it. Contingencies apply to total + supervision & profit, and VAT to all three — the usual QS build-up. Quantities are preliminary take-offs from the saved room results. Your price list is remembered on this device.</p></div>';
+      '<p class="pj-hint boq-note">Type material unit costs; labor fills in at the labor % unless you type it. Contingencies apply to total + supervision & profit, and VAT to all three — the usual QS build-up. Quantities are preliminary take-offs from the results saved to each room. Your price list is remembered on this device.</p></div>';
   }
   // Refresh every amount in place while typing (keeps focus).
   function boqRecalc() {
     var p = pjCur(); if (!p) return;
     var s = boqSet(), C = boqCompute(p, s), set = function (k, v) { var c = $('[data-v="' + k + '"]'); if (c) c.textContent = n2(v); };
-    C.b.secs.forEach(function (S) {
-      S.items.forEach(function (it) { set(it.no + ':uu', it.uu); set(it.no + ':tm', it.tm); set(it.no + ':tl', it.tl); set(it.no + ':tt', it.tt); var ph = $('[data-v="' + it.no + ':lph"]'); if (ph) ph.placeholder = n2(it.lAuto ? it.lu : 0); });
-      set(S.no + ':m', S.sum.m); set(S.no + ':l', S.sum.l); set(S.no + ':t', S.sum.t);
+    C.b.divs.forEach(function (D) {
+      D.secs.forEach(function (S) {
+        S.items.forEach(function (it) { set(it.no + ':uu', it.uu); set(it.no + ':tm', it.tm); set(it.no + ':tl', it.tl); set(it.no + ':tt', it.tt); var ph = $('[data-v="' + it.no + ':lph"]'); if (ph) ph.placeholder = n2(it.lAuto ? it.lu : 0); });
+        set(S.no + ':m', S.sum.m); set(S.no + ':l', S.sum.l); set(S.no + ':t', S.sum.t);
+      });
+      set('d' + D.no + ':m', D.sum.m); set('d' + D.no + ':l', D.sum.l); set('d' + D.no + ':t', D.sum.t);
     });
-    set('div:m', C.div.m); set('div:l', C.div.l); set('div:t', C.div.t); set('div:m2', C.div.m); set('div:l2', C.div.l);
+    set('all:m', C.all.m); set('all:l', C.all.l);
     set('sum:tc', C.tc); set('sum:sp', C.sp); set('sum:ct', C.ct); set('sum:vat', C.vat); set('sum:proj', C.proj); set('sum:psm', C.psm);
   }
   function boqCsv(withPrices) {
     var p = pjCur(); if (!p) return;
-    var s = boqSet(), C = boqCompute(p, s), b = C.b, dvName = ROMAN[C.dvNo] || C.dvNo, meta = rpMeta(), r2 = function (x) { return Number((x || 0).toFixed(2)); };
+    var s = boqSet(), C = boqCompute(p, s), b = C.b, meta = rpMeta(), r2 = function (x) { return Number((x || 0).toFixed(2)); };
     var cell = function (v) { v = v == null ? '' : String(v); return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
     var L = [['Project', p.name], ['Location', meta.location || ''], ['Owner', s.owner || ''], ['Area', fmt(C.area) + (sys === 'si' ? ' sq.m' : ' sq.ft')], [], [withPrices ? 'BILL OF QUANTITIES' : 'BILL OF MATERIALS'], []];
     if (withPrices) {
       L.push(['ITEM NO.', 'SCOPE OF WORK / ITEM DESCRIPTION', 'QTY', 'UOM', 'UNIT COST - MATERIAL', 'UNIT COST - LABOR', 'UNIT COST - TOTAL', 'TOTAL MATERIAL COST', 'TOTAL LABOR COST', 'TOTAL MATERIAL & LABOR COST', 'REMARKS']);
-      L.push([dvName, 'MECHANICAL WORKS']);
-      b.secs.forEach(function (S) {
-        L.push([S.no, S.title]);
-        S.items.forEach(function (it) { L.push([it.no, it.desc, it.qd, it.ud, r2(it.mu), r2(it.lu), r2(it.uu), r2(it.tm), r2(it.tl), r2(it.tt), it.remarks]); });
-        L.push(['', 'Subtotal Cost:', '', '', '', '', '', r2(S.sum.m), r2(S.sum.l), r2(S.sum.t)]);
+      b.divs.forEach(function (D) {
+        L.push([D.roman, D.name]);
+        D.secs.forEach(function (S) {
+          L.push([S.no, S.title]);
+          S.items.forEach(function (it) { L.push([it.no, it.desc, it.qd, it.ud, r2(it.mu), r2(it.lu), r2(it.uu), r2(it.tm), r2(it.tl), r2(it.tt), it.remarks]); });
+          L.push(['', 'Subtotal Cost:', '', '', '', '', '', r2(S.sum.m), r2(S.sum.l), r2(S.sum.t)]);
+        });
+        L.push(['', 'Total Cost ' + D.roman + ' - ' + D.title + ':', '', '', '', '', '', r2(D.sum.m), r2(D.sum.l), r2(D.sum.t)], []);
       });
-      L.push(['', 'Total Cost ' + dvName + ' - Mechanical Works:', '', '', '', '', '', r2(C.div.m), r2(C.div.l), r2(C.div.t)], []);
-      L.push(['TOTAL COST', '', '', '', '', '', '', r2(C.div.m), r2(C.div.l), r2(C.tc)], ['SUPERVISION & PROFIT (' + (+s.sp || 0) + '%)', '', '', '', '', '', '', '', '', r2(C.sp)],
+      L.push(['TOTAL COST', '', '', '', '', '', '', r2(C.all.m), r2(C.all.l), r2(C.tc)], ['SUPERVISION & PROFIT (' + (+s.sp || 0) + '%)', '', '', '', '', '', '', '', '', r2(C.sp)],
         ['CONTINGENCIES (' + (+s.cont || 0) + '%)', '', '', '', '', '', '', '', '', r2(C.ct)], ['VAT (' + (+s.tax || 0) + '%)', '', '', '', '', '', '', '', '', r2(C.vat)],
         ['PROJECT COST (LABOR, LIGHT EQUIPMENT AND POWER TOOLS)', '', '', '', '', '', '', '', '', r2(C.proj)], ['COST PER ' + BOQ_AREA(), '', '', '', '', '', '', '', '', r2(C.psm)]);
     } else {
       L.push(['ITEM NO.', 'DESCRIPTION', 'QTY', 'UOM', 'ROOMS / REMARKS']);
-      b.secs.forEach(function (S) {
-        L.push([S.no, S.title]);
-        S.items.forEach(function (it) { L.push([it.no, it.desc, it.qd, it.ud, it.remarks]); });
-        S.ref.forEach(function (k) { var w = boqQty(k); L.push(['', k.desc + ' (weight)', boqRound(w.q, w.u), w.u, k.rooms.join(', ')]); });
+      b.divs.forEach(function (D) {
+        L.push([D.roman, D.name]);
+        D.secs.forEach(function (S) {
+          L.push([S.no, S.title]);
+          S.items.forEach(function (it) { L.push([it.no, it.desc, it.qd, it.ud, it.remarks]); });
+          S.ref.forEach(function (k) { var w = boqQty(k); L.push(['', k.desc + ' (weight)', boqRound(w.q, w.u), w.u, k.rooms.join(', ')]); });
+        });
+        L.push([]);
       });
     }
     L.push([], ['Prepared by', s.prepBy, s.prepPos], ['Checked by', s.chkBy, s.chkPos], ['Counter checked by', s.ctrBy, s.ctrPos]);
@@ -7496,18 +7618,20 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   }
   function boqPdf() {
     var p = pjCur(); if (!p) return;
-    var s = boqSet(), C = boqCompute(p, s), b = C.b, m = rpMeta(), E = esc, dvName = ROMAN[C.dvNo] || C.dvNo, now = new Date(), pad = function (x) { return (x < 10 ? '0' : '') + x; };
+    var s = boqSet(), C = boqCompute(p, s), b = C.b, m = rpMeta(), E = esc, now = new Date(), pad = function (x) { return (x < 10 ? '0' : '') + x; };
     var dateTxt = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
     var refNo = 'MTB-' + dateTxt.replace(/-/g, '') + '-BOQ-' + (pjFileBase(p).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12) || 'PROJECT');
     var blanks = new Array(10).join('<td></td>');
-    var body = '<tbody><tr class="div"><td>' + dvName + '</td><td colspan="10">MECHANICAL WORKS</td></tr></tbody>' + b.secs.map(function (S) {
-      return '<tbody class="g"><tr class="grp"><td>' + S.no + '</td><td class="b">' + E(S.title) + '</td>' + blanks + '</tr>' + S.items.map(function (it) {
-        return '<tr><td class="in">' + it.no + '</td><td class="in">' + E(it.desc) + '</td><td class="n">' + n2(it.qd) + '</td><td class="c">' + E(it.ud) + '</td><td class="n">' + n2(it.mu) + '</td><td class="n">' + n2(it.lu) + '</td><td class="n">' + n2(it.uu) + '</td>' +
-          '<td class="n">' + n2(it.tm) + '</td><td class="n">' + n2(it.tl) + '</td><td class="n">' + n2(it.tt) + '</td><td class="rem">' + E(it.remarks) + '</td></tr>';
-      }).join('') + '<tr class="sub"><td></td><td colspan="6" class="c">Subtotal Cost:</td><td class="n">' + n2(S.sum.m) + '</td><td class="n">' + n2(S.sum.l) + '</td><td class="n">' + n2(S.sum.t) + '</td><td></td></tr></tbody>';
-    }).join('') + '<tbody><tr class="divt"><td></td><td colspan="6" class="c">Total Cost ' + dvName + ' - Mechanical Works:</td><td class="n">' + n2(C.div.m) + '</td><td class="n">' + n2(C.div.l) + '</td><td class="n">' + n2(C.div.t) + '</td><td></td></tr></tbody>';
+    var body = b.divs.map(function (D) {
+      return '<tbody><tr class="div"><td>' + D.roman + '</td><td colspan="10">' + D.name + '</td></tr></tbody>' + D.secs.map(function (S) {
+        return '<tbody class="g"><tr class="grp"><td>' + S.no + '</td><td class="b">' + E(S.title) + '</td>' + blanks + '</tr>' + S.items.map(function (it) {
+          return '<tr><td class="in">' + it.no + '</td><td class="in">' + E(it.desc) + '</td><td class="n">' + n2(it.qd) + '</td><td class="c">' + E(it.ud) + '</td><td class="n">' + n2(it.mu) + '</td><td class="n">' + n2(it.lu) + '</td><td class="n">' + n2(it.uu) + '</td>' +
+            '<td class="n">' + n2(it.tm) + '</td><td class="n">' + n2(it.tl) + '</td><td class="n">' + n2(it.tt) + '</td><td class="rem">' + E(it.remarks) + '</td></tr>';
+        }).join('') + '<tr class="sub"><td></td><td colspan="6" class="c">Subtotal Cost:</td><td class="n">' + n2(S.sum.m) + '</td><td class="n">' + n2(S.sum.l) + '</td><td class="n">' + n2(S.sum.t) + '</td><td></td></tr></tbody>';
+      }).join('') + '<tbody><tr class="divt"><td></td><td colspan="6" class="c">Total Cost ' + D.roman + ' - ' + E(D.title) + ':</td><td class="n">' + n2(D.sum.m) + '</td><td class="n">' + n2(D.sum.l) + '</td><td class="n">' + n2(D.sum.t) + '</td><td></td></tr></tbody>';
+    }).join('');
     var sum = function (label, v, cls) { return '<tr class="sum' + (cls ? ' ' + cls : '') + '"><td colspan="9">' + label + '</td><td class="n">' + v + '</td><td></td></tr>'; };
-    var foot = '<tr class="sum tot"><td colspan="7">TOTAL COST</td><td class="n">' + n2(C.div.m) + '</td><td class="n">' + n2(C.div.l) + '</td><td class="n">' + n2(C.tc) + '</td><td></td></tr>' +
+    var foot = '<tr class="sum tot"><td colspan="7">TOTAL COST</td><td class="n">' + n2(C.all.m) + '</td><td class="n">' + n2(C.all.l) + '</td><td class="n">' + n2(C.tc) + '</td><td></td></tr>' +
       sum('SUPERVISION &amp; PROFIT', n2(C.sp)) + sum('CONTINGENCIES', n2(C.ct)) + sum('VAT', n2(C.vat)) +
       sum('PROJECT COST (LABOR, LIGHT EQUIPMENT AND POWER TOOLS)', n2(C.proj), 'proj') + sum('COST PER ' + BOQ_AREA(), C.psm ? n2(C.psm) : '—');
     var sig = function (k, name, pos) { return '<div><p class="k">' + k + '</p><p class="nm">' + (name ? E(name) : '&nbsp;') + '</p><p class="ps">' + (pos ? E(pos) : '&nbsp;') + '</p></div>'; };
@@ -7537,7 +7661,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       '<table class="q"><colgroup><col style="width:5%"><col style="width:26%"><col style="width:5%"><col style="width:4.5%"><col style="width:7.5%"><col style="width:7%"><col style="width:7.5%"><col style="width:8.5%"><col style="width:8%"><col style="width:9%"><col style="width:12%"></colgroup><thead><tr><th rowspan="2">ITEM NO.</th><th rowspan="2">SCOPE OF WORK / ITEM DESCRIPTION</th><th rowspan="2">QTY</th><th rowspan="2">UOM</th><th colspan="3">UNIT COST</th>' +
       '<th rowspan="2">TOTAL<br>MATERIAL COST</th><th rowspan="2">TOTAL LABOR<br>COST</th><th rowspan="2">TOTAL MATERIAL<br>&amp; LABOR COST</th><th rowspan="2">REMARKS</th></tr>' +
       '<tr><th>MATERIAL</th><th>LABOR</th><th>TOTAL</th></tr></thead>' + body + '<tbody class="foot">' + foot + '</tbody></table>' +
-      '<p class="mt">Amounts in ' + E(s.cur || 'local currency') + '. Supervision & profit ' + fmt(+s.sp || 0) + ' % of total cost; contingencies ' + fmt(+s.cont || 0) + ' % of total + S&P; VAT ' + fmt(+s.tax || 0) + ' % of total + S&P + contingencies. Quantities are preliminary take-offs from MechToolBox — verify against final drawings. Ref. ' + E(refNo) + '.</p>' +
+      '<p class="mt">Amounts in ' + E(s.cur || 'local currency') + '. Supervision & profit ' + fmt(+s.sp || 0) + ' % of total cost; contingencies ' + fmt(+s.cont || 0) + ' % of total + S&P; VAT ' + fmt(+s.tax || 0) + ' % of total + S&P + contingencies. Pipe, wire and conduit include ' + fmt(+s.waste || 0) + ' % waste. Quantities are preliminary take-offs from MechToolBox — verify against final drawings. Ref. ' + E(refNo) + '.</p>' +
       '<div class="sigs">' + sig('Prepared by:', s.prepBy, s.prepPos) + sig('Checked by:', s.chkBy, s.chkPos) + sig('Counter Checked by:', s.ctrBy, s.ctrPos) + '</div></div>' +
       '<scr' + 'ipt>window.addEventListener("load",function(){setTimeout(function(){window.print()},350)});<\/scr' + 'ipt></body></html>';
     rpOpen(html);
