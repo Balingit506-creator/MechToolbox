@@ -202,6 +202,55 @@ svg { display: block; }
 
 /* ---------- Cards ---------- */
 .cards { display: grid; gap: 16px; grid-template-columns: 1fr; }
+/* Projects */
+.pj-root { display: grid; gap: 16px; }
+.pj-empty { padding: 24px; border: 1px dashed var(--line-2); border-radius: var(--radius); background: var(--panel); }
+.pj-empty p { color: var(--muted); max-width: 70ch; margin: 0 0 16px; }
+.pj-empty p strong { color: var(--text); }
+.pj-new { display: flex; flex-wrap: wrap; gap: 8px; }
+.pj-new .input-wrap { flex: 1 1 260px; }
+.pj-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.pj-sel { flex: 1 1 240px; max-width: 420px; }
+.pj-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.pj-danger:hover { border-color: var(--danger); color: var(--danger); }
+.pj-form { padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+.pj-form-t { margin: 0 0 10px; font: 500 12px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mint); }
+.pj-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.pj-form-a { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+.pj-form-a .err { margin: 0; }
+.pj-hint { color: var(--muted); margin: 0; }
+.pj-table table { width: 100%; min-width: 940px; border-collapse: collapse; font-size: 14px; }
+.pj-table th, .pj-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.pj-table thead th { font: 500 11px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); background: var(--panel); white-space: nowrap; }
+.pj-table td.num { font-family: var(--mono); white-space: nowrap; }
+.pj-table tbody tr.pj-active { background: rgba(92,224,176,0.06); box-shadow: inset 3px 0 0 var(--mint); }
+.pj-table tfoot th, .pj-table tfoot td { border-bottom: 0; background: var(--panel); font-weight: 600; }
+.pj-table tbody th, .pj-table tfoot th { min-width: 150px; }
+.pj-pick { background: none; border: 0; padding: 0; color: var(--text); font: 600 15px/1.3 var(--head); cursor: pointer; text-align: left; }
+.pj-pick:hover { color: var(--mint); }
+.pj-dims, .pj-sub { display: block; margin-top: 2px; font: 400 12px/1.4 var(--mono); color: var(--muted); }
+.pj-dash { color: var(--muted); }
+.pj-steps { display: flex; gap: 4px; margin-bottom: 8px; }
+.pj-step { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line-2); background: transparent; color: var(--muted); font: 500 11px/1 var(--mono); cursor: pointer; transition: border-color var(--ease), background-color var(--ease), color var(--ease), transform var(--ease); }
+.pj-step:hover { border-color: var(--mint); color: var(--text); transform: translateY(-1px); }
+.pj-step.done { background: var(--mint); border-color: var(--mint); color: var(--deep); }
+.pj-next { white-space: nowrap; }
+.pj-done { font: 500 12px/1.4 var(--mono); color: var(--mint); }
+.pj-acts { white-space: nowrap; }
+.pj-icon { width: 30px; height: 30px; border: 1px solid var(--line); border-radius: var(--radius); background: transparent; color: var(--muted); cursor: pointer; }
+.pj-icon:hover { border-color: var(--mint); color: var(--text); }
+.pj-icon[data-del]:hover { border-color: var(--danger); color: var(--danger); }
+.pj-total-act { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 14px 16px; border: 1px solid rgba(92,224,176,0.35); border-left: 3px solid var(--mint); border-radius: var(--radius); background: rgba(92,224,176,0.05); }
+.pj-total-act p { margin: 0 auto 0 0; color: var(--muted); }
+.pj-total-act strong { color: var(--text); }
+.pj-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 0 0 16px; padding: 10px 12px; border: 1px solid var(--line); border-left: 3px solid var(--mint); border-radius: var(--radius); background: var(--panel); }
+.pj-bar-k { font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mint); }
+.pj-bar-name { margin-right: 4px; }
+.pj-room-wrap { flex: 0 1 200px; }
+.pj-room-wrap select { padding: 7px 10px; font-size: 14px; }
+.pj-bar-hint { color: var(--muted); font-size: 13px; }
+.pj-bar-msg { font: 500 12px/1.4 var(--mono); color: var(--mint); }
+.pj-bar-msg.pop { animation: suggIn .3s ease both; }
 .view-bar { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; margin: -8px 0 12px; }
 .min-note { margin: 0 auto 0 0; font: 500 12px/1.4 var(--mono); letter-spacing: 0.06em; color: var(--muted); animation: viewIn .3s ease both; }
 .min-note strong { color: var(--mint); font-weight: 500; }
@@ -914,6 +963,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     <a class="logo" href="#top" aria-label="MechToolBox home"><span>MECH</span><span class="slash">/</span><span class="tools">TOOLBOX</span></a>
     <nav class="nav-desktop" aria-label="Primary">
       <a href="#calculators">Calculators</a>
+      <a href="#projects">Projects</a>
       <a href="#utilities">Utilities</a>
       <a href="#plan">Plan</a>
       <a href="#standards">Standards</a>
@@ -934,6 +984,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   <nav class="nav-mobile" id="nav-mobile" aria-label="Mobile" hidden>
     <ul>
       <li><a href="#calculators">Calculators</a></li>
+      <li><a href="#projects">Projects</a></li>
       <li><a href="#utilities">Utilities</a></li>
       <li><a href="#plan">Plan</a></li>
       <li><a href="#standards">Standards</a></li>
@@ -1084,10 +1135,21 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     </div>
   </section>
 
+  <section class="section" id="projects" aria-labelledby="pj-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">02 — Projects</p>
+        <h2 id="pj-title">Design room by room.</h2>
+        <p>Add the rooms of a project once. Each calculator fills itself from the room and saves its result back, so the cooling load flows into outdoor air, diffusers, ducts, pressure and the fan — with project totals for the AHU.</p>
+      </div>
+      <div class="pj-root reveal" id="pj-root"></div>
+    </div>
+  </section>
+
   <section class="section" id="utilities" aria-labelledby="util-title">
     <div class="wrap">
       <div class="section-head reveal">
-        <p class="eyebrow">02 — Utilities</p>
+        <p class="eyebrow">03 — Utilities</p>
         <h2 id="util-title">Small tools. Big time savings.</h2>
         <p>Quick converters and references you reach for between calculations.</p>
       </div>
@@ -1103,7 +1165,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   <section class="section" id="plan" aria-labelledby="plan-title">
     <div class="wrap">
       <div class="section-head reveal">
-        <p class="eyebrow">03 — Plan Overlay</p>
+        <p class="eyebrow">04 — Plan Overlay</p>
         <h2 id="plan-title">Draw the design on your floor plan.</h2>
         <p>Upload or paste a floor-plan screenshot, set the scale, then trace runs and rooms. Every element is sized from your calculator values — duct diameters, cable voltage drop, pipe pressure loss, sprinkler layouts and drain falls appear on the plan automatically.</p>
       </div>
@@ -1175,7 +1237,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   <section class="section" id="standards" aria-labelledby="std-title">
     <div class="wrap">
       <div class="section-head reveal">
-        <p class="eyebrow">04 — Codes &amp; Standards</p>
+        <p class="eyebrow">05 — Codes &amp; Standards</p>
         <h2 id="std-title">Where the numbers come from.</h2>
         <p>Every calculator, the method it uses and the code, standard or published source behind it — so you know what to check before a result goes into a design.</p>
       </div>
@@ -1211,7 +1273,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   <section class="section" id="about" aria-labelledby="about-title">
     <div class="wrap about-grid">
       <div class="section-head reveal">
-        <p class="eyebrow">05 — About the Toolbox</p>
+        <p class="eyebrow">06 — About the Toolbox</p>
         <h2 id="about-title">Built for practical engineering work.</h2>
         <p>MechToolBox is designed as a simple engineering reference and calculator hub for students, designers, technicians, draftsmen, and practicing engineers.</p>
       </div>
@@ -4919,7 +4981,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   function renderCalc(id) {
     var d = CALCS[id];
     ensureVals(id);
-    var html = '<p class="m-desc">' + esc(d.desc) + '</p><form class="fields" novalidate>';
+    var html = pjBarHtml(id) + '<p class="m-desc">' + esc(d.desc) + '</p><form class="fields" novalidate>';
     d.fields.forEach(function (f) {
       if (f.show && !f.show(vals[id])) return; // field not relevant to the current choices
       var fid = 'f-' + id + '-' + f.k;
@@ -4940,7 +5002,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       '<div class="sugg" id="r-sugg" aria-live="polite" hidden></div>' +
       (d.note ? '<p class="note">' + esc(d.note) + '</p>' : '') + refLine(id) + '</section>';
     mBody.innerHTML = html;
-    $$('input, select:not(.unit-sel)', mBody).forEach(function (el) {
+    $$('form.fields input, form.fields select:not(.unit-sel)', mBody).forEach(function (el) {
       el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', function () {
         vals[id][el.dataset.k] = el.value;
         if (el.tagName === 'SELECT' && d.fields.some(function (x) { return x.show; })) { var keep = el.id; renderCalc(id); var again = document.getElementById(keep); if (again) again.focus(); return; }
@@ -6743,7 +6805,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     document.body.classList.add('modal-open');
     if (typeof modal.showModal === 'function') modal.showModal(); else modal.setAttribute('open', '');
     modal.scrollTop = 0;
-    var first = $('input, select', mBody) || $('#m-close');
+    var first = $('form.fields input, form.fields select', mBody) || $('input, select', mBody) || $('#m-close');
     first.focus();
   }
   function closeModal() {
@@ -6812,7 +6874,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       f('prepared', 'Prepared by', 'Name, licence no.') + f('checked', 'Checked by', 'Name') + '</div>' +
       '<div class="field rp-wide"><label for="rp-remarks">Remarks</label><div class="input-wrap"><input id="rp-remarks" data-rp="remarks" type="text" autocomplete="off" placeholder="Optional — shown on the report" value="' + esc(m.remarks || '') + '"></div></div>' +
       '<p class="rp-hint">Opens a print-ready A4 report — choose <strong>Save as PDF</strong> in the print dialog. Project details are remembered on this device.</p>' +
-      '<div class="rp-actions"><button type="button" class="btn btn-sm" id="rp-go">Generate PDF</button><button type="button" class="btn btn-outline btn-sm" id="rp-cancel">Cancel</button></div>' +
+      '<div class="rp-actions"><button type="button" class="btn btn-solid btn-sm" id="rp-go">Generate PDF</button><button type="button" class="btn btn-outline btn-sm" id="rp-cancel">Cancel</button></div>' +
       '<p class="err" id="rp-err" hidden></p></div>';
   }
   // Copy an on-screen SVG with its computed colours and fonts inlined, so it renders the same on its own page.
@@ -6967,6 +7029,249 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     if (e.target.closest('#rp-cancel')) rpClose();
   });
   mBody.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.dataset && e.target.dataset.rp != null) { e.preventDefault(); rpGenerate(); } });
+
+  /* ---------- Projects: rooms that carry results from one calculator to the next ---------- */
+  // Stored in SI: lengths m, airflow m³/s, loads W, pressure Pa.
+  var PJ_KEY = 'mechtoolbox-projects';
+  var PJ = { active: null, projects: [] };
+  try { var pjSaved = JSON.parse(localStorage.getItem(PJ_KEY) || 'null'); if (pjSaved && pjSaved.projects) PJ = pjSaved; } catch (e) {}
+  function pjSave() { try { localStorage.setItem(PJ_KEY, JSON.stringify(PJ)); } catch (e) {} }
+  function pjUid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function pjCur() { return PJ.projects.filter(function (p) { return p.id === PJ.active; })[0] || null; }
+  function pjRoom(p) { p = p || pjCur(); return p ? p.rooms.filter(function (r) { return r.id === p.activeRoom; })[0] || null : null; }
+  var roomArea = function (r) { return r.l * r.w; };
+  // The design chain, in order. Each step: calculator, short label, and whether the room already has its result.
+  var PJ_CHAIN = [
+    ['cool', 'Cooling load', function (r) { return r.loadW > 0; }],
+    ['oa', 'Outdoor air', function (r) { return r.oaQ > 0; }],
+    ['ndiff', 'Diffusers', function (r) { return r.nDiff > 0; }],
+    ['eqf', 'Duct', function (r) { return !!r.duct; }],
+    ['tpl', 'Pressure', function (r) { return r.esp > 0; }],
+    ['fsup', 'Fan', function (r) { return !!r.motor; }]
+  ];
+  // Write an SI value into a calculator field, shown in the active unit.
+  function pjSet(id, k, si) {
+    var f = CALCS[id].fields.filter(function (x) { return x.k === k; })[0];
+    if (!f || si == null || !isFinite(si)) return;
+    vals[id][k] = f.opts ? String(si) : roundU(f.q ? si / Q[f.q][sys][1] : si);
+  }
+  // Room → calculator inputs.
+  var PJ_APPLY = {
+    cool: function (r) { pjSet('cool', 'area', roomArea(r)); pjSet('cool', 'n', r.people); },
+    oa: function (r) { pjSet('oa', 'a', roomArea(r)); pjSet('oa', 'p', r.people); if (VENT_SPACES[r.space]) vals.oa.sp = r.space; },
+    ach: function (r) { pjSet('ach', 'vol', roomArea(r) * r.h); if (r.supply > 0) { vals.ach.mode = 'toach'; pjSet('ach', 'q', r.supply); } },
+    ndiff: function (r) { pjSet('ndiff', 'q', r.supply); pjSet('ndiff', 'l', r.l); pjSet('ndiff', 'w', r.w); },
+    cfmd: function (r) { pjSet('cfmd', 'q', r.supply); pjSet('cfmd', 'n', r.nDiff); pjSet('cfmd', 'a', roomArea(r)); },
+    sdiff: function (r) { if (r.supply > 0 && r.nDiff > 0) pjSet('sdiff', 'q', r.supply / r.nDiff); },
+    rgrille: function (r) { pjSet('rgrille', 'q', r.supply); },
+    duct: function (r) { pjSet('duct', 'q', r.supply); },
+    eqf: function (r) { pjSet('eqf', 'q', r.supply); },
+    dvel: function (r) { pjSet('dvel', 'q', r.supply); },
+    fsup: function (r) { pjSet('fsup', 'q', r.supply); pjSet('fsup', 'esp', r.esp); },
+    ffa: function (r) { pjSet('ffa', 'q', r.oaQ); },
+    btu: function (r) { pjSet('btu', 'area', roomArea(r)); pjSet('btu', 'h', r.h); pjSet('btu', 'n', r.people); }
+  };
+  // Calculator results → room.
+  var PJ_TAKE = {
+    cool: function (r, v) { var c = coolLoad(v); r.loadW = c.total; r.supply = c.sens * 1.1 / (1.21 * 10) / 1000; r.people = v.n; },
+    oa: function (r, v, rows) { r.oaQ = inSI(rowVal(rows, 'Outdoor air'), 'air'); },
+    ach: function (r, v, rows) { if (v.mode !== 'toach') r.supply = inSI(rowVal(rows, 'Airflow'), 'air'); },
+    ndiff: function (r, v, rows) { r.nDiff = numIn(rowVal(rows, 'Diffusers')); r.supply = v.q; },
+    cfmd: function (r, v, rows) { r.nDiff = v.n; r.neck = rowVal(rows, 'Neck size'); },
+    sdiff: function (r, v, rows) { r.neck = rowVal(rows, 'Neck size'); },
+    duct: function (r, v, rows) { r.duct = rowVal(rows, 'Rectangular') + ' / ' + rowVal(rows, 'Standard round'); },
+    eqf: function (r, v, rows) { r.duct = rowVal(rows, 'Rectangular') + ' / ' + rowVal(rows, 'Standard round'); },
+    tpl: function (r, v, rows) { r.esp = inSI(rowVal(rows, 'Fan external static pressure'), 'pv'); },
+    fsup: function (r, v, rows) { r.motor = rowVal(rows, 'Motor size'); r.supply = v.q; }
+  };
+  function pjApply(id, r) { if (!PJ_APPLY[id] || !r) return false; ensureVals(id); PJ_APPLY[id](r); return true; }
+  function pjTake(id, r) {
+    var res = readVals(id);
+    if (res.bad) return 'Fix the inputs first — the result is not valid.';
+    var rows = CALCS[id].calc(res.v);
+    try { if (PJ_TAKE[id]) PJ_TAKE[id](r, res.v, rows); } catch (e) {}
+    r.saved = r.saved || {};
+    r.saved[id] = { t: Date.now(), rows: rows.filter(function (x) { return x[2]; }).concat(rows).slice(0, 3).map(function (x) { return [x[0], x[1]]; }) };
+    return '';
+  }
+
+  /* Project bar inside a calculator */
+  function pjBarHtml(id) {
+    var p = pjCur();
+    if (!p || !CALCS[id] || SPECIAL[id]) return '';
+    var r = pjRoom(p), linked = !!PJ_APPLY[id];
+    if (!p.rooms.length) return '<div class="pj-bar"><span class="pj-bar-k">Project</span><strong>' + esc(p.name) + '</strong><span class="pj-bar-hint">Add rooms in the Projects section to link results.</span></div>';
+    return '<div class="pj-bar" role="group" aria-label="Project room">' +
+      '<span class="pj-bar-k">Project</span><strong class="pj-bar-name">' + esc(p.name) + '</strong>' +
+      '<label class="sr-only" for="pj-room">Room</label><div class="input-wrap pj-room-wrap"><select id="pj-room">' +
+      p.rooms.map(function (x) { return '<option value="' + x.id + '"' + (r && x.id === r.id ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('') + '</select></div>' +
+      (linked ? '<button type="button" class="btn btn-outline btn-sm" id="pj-use" title="Fill this calculator from the room">Use room data</button>' : '') +
+      '<button type="button" class="btn btn-solid btn-sm" id="pj-save" title="Store this result in the room">Save to room</button>' +
+      '<span class="pj-bar-msg" id="pj-msg" aria-live="polite">' + (r && r.saved && r.saved[id] ? '✓ Saved to ' + esc(r.name) : '') + '</span></div>';
+  }
+  mBody.addEventListener('change', function (e) {
+    if (e.target.id !== 'pj-room') return;
+    var p = pjCur(); if (!p) return;
+    p.activeRoom = e.target.value; pjSave(); renderProjects();
+    var r = pjRoom(p), msg = $('#pj-msg');
+    if (msg) msg.textContent = r && r.saved && r.saved[current] ? '✓ Saved to ' + r.name : '';
+  });
+  mBody.addEventListener('click', function (e) {
+    var p = pjCur(), r = pjRoom(p);
+    if (e.target.closest('#pj-use') && r) {
+      pjApply(current, r); renderCalc(current);
+      var m = $('#pj-msg'); if (m) m.textContent = 'Filled from ' + r.name;
+      return;
+    }
+    if (e.target.closest('#pj-save') && r) {
+      var err = pjTake(current, r), m2 = $('#pj-msg');
+      if (!err) { pjSave(); renderProjects(); }
+      if (m2) { m2.textContent = err || '✓ Saved to ' + r.name; m2.classList.remove('pop'); void m2.offsetWidth; m2.classList.add('pop'); }
+    }
+  });
+
+  /* Projects section */
+  var pjEl = $('#pj-root'), pjEdit = null;
+  function pjNum(id) { var x = num($(id).value); return x == null ? NaN : x; }
+  function pjFmtQ(si, q) { return si > 0 ? fq(si, q) : '<span class="pj-dash">—</span>'; }
+  function renderProjects() {
+    if (!pjEl) return;
+    var p = pjCur(), L = Q.len[sys][0];
+    if (!p) {
+      pjEl.innerHTML = '<div class="pj-empty"><p><strong>No project yet.</strong> Create one, add your rooms, and each calculator can fill itself from the room and save its result back — cooling load → outdoor air → diffusers → duct → pressure → fan.</p>' +
+        '<div class="pj-new"><label class="sr-only" for="pj-new-name">Project name</label><div class="input-wrap"><input id="pj-new-name" type="text" placeholder="Project name, e.g. Office fit-out L3" autocomplete="off"></div>' +
+        '<button type="button" class="btn btn-solid" id="pj-create">Create project</button>' + (PJ.projects.length ? '' : '<button type="button" class="btn btn-outline" id="pj-import-btn">Import project file</button>') + '</div></div>' +
+        '<input type="file" id="pj-file" accept=".json,application/json" hidden>';
+      return;
+    }
+    var rooms = p.rooms, sumW = 0, sumQ = 0, sumOA = 0;
+    rooms.forEach(function (r) { sumW += r.loadW || 0; sumQ += r.supply || 0; sumOA += r.oaQ || 0; });
+    var ed = pjEdit && rooms.filter(function (r) { return r.id === pjEdit; })[0];
+    var rowHtml = rooms.map(function (r) {
+      var nextStep = PJ_CHAIN.filter(function (s) { return !s[2](r); })[0];
+      return '<tr' + (r.id === p.activeRoom ? ' class="pj-active"' : '') + '>' +
+        '<th scope="row"><button type="button" class="pj-pick" data-room="' + r.id + '" title="Make this the active room">' + esc(r.name) + '</button>' +
+        '<span class="pj-dims">' + fmt(r.l / Q.len[sys][1]) + ' × ' + fmt(r.w / Q.len[sys][1]) + ' × ' + fmt(r.h / Q.len[sys][1]) + ' ' + esc(L) + ' · ' + fmt(r.people, 0) + ' people</span></th>' +
+        '<td class="num">' + (r.loadW > 0 ? pw(r.loadW) + '<span class="pj-sub">' + fmt(r.loadW / 3516.85, 2) + ' TR</span>' : '<span class="pj-dash">—</span>') + '</td>' +
+        '<td class="num">' + pjFmtQ(r.supply, 'air') + '</td><td class="num">' + pjFmtQ(r.oaQ, 'air') + '</td>' +
+        '<td>' + (r.nDiff > 0 ? fmt(r.nDiff, 0) + (r.neck ? '<span class="pj-sub">' + esc(r.neck) + '</span>' : '') : '<span class="pj-dash">—</span>') + '</td>' +
+        '<td>' + (r.duct ? esc(r.duct) : '<span class="pj-dash">—</span>') + '</td>' +
+        '<td>' + (r.motor ? esc(r.motor) + (r.esp ? '<span class="pj-sub">' + fq(r.esp, 'pv') + ' ESP</span>' : '') : r.esp ? fq(r.esp, 'pv') + ' ESP' : '<span class="pj-dash">—</span>') + '</td>' +
+        '<td><div class="pj-steps" role="group" aria-label="Design steps for ' + esc(r.name) + '">' + PJ_CHAIN.map(function (s, i) {
+          var done = s[2](r);
+          return '<button type="button" class="pj-step' + (done ? ' done' : '') + '" data-room="' + r.id + '" data-step="' + s[0] + '" title="' + (i + 1) + '. ' + s[1] + (done ? ' — done, open again' : ' — open') + '"><span class="sr-only">' + s[1] + (done ? ' (done)' : '') + '</span>' + (i + 1) + '</button>';
+        }).join('') + '</div>' +
+        (nextStep ? '<button type="button" class="btn btn-solid btn-sm pj-next" data-room="' + r.id + '" data-step="' + nextStep[0] + '">Next: ' + nextStep[1] + ' →</button>' : '<span class="pj-done">✓ Chain complete</span>') + '</td>' +
+        '<td class="pj-acts"><button type="button" class="pj-icon" data-edit="' + r.id + '" aria-label="Edit ' + esc(r.name) + '" title="Edit">✎</button><button type="button" class="pj-icon" data-del="' + r.id + '" aria-label="Delete ' + esc(r.name) + '" title="Delete">✕</button></td></tr>';
+    }).join('');
+    var f = function (idn, label, val, unit, type) {
+      return '<div class="field"><label for="' + idn + '">' + label + '</label><div class="input-wrap"><input id="' + idn + '" type="text" ' + (type === 'text' ? '' : 'inputmode="decimal" ') + 'autocomplete="off" value="' + esc(val) + '">' + (unit ? '<span class="unit">' + esc(unit) + '</span>' : '') + '</div></div>';
+    };
+    var dv = function (x) { return x == null ? '' : roundU(x / Q.len[sys][1]); };
+    pjEl.innerHTML =
+      '<div class="pj-top"><div class="input-wrap pj-sel"><label class="sr-only" for="pj-select">Project</label><select id="pj-select">' +
+      PJ.projects.map(function (x) { return '<option value="' + x.id + '"' + (x.id === p.id ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('') + '<option value="__new">+ New project…</option></select></div>' +
+      '<div class="pj-tools"><button type="button" class="btn btn-outline btn-sm" id="pj-rename">Rename</button><button type="button" class="btn btn-outline btn-sm" id="pj-export">Export</button>' +
+      '<button type="button" class="btn btn-outline btn-sm" id="pj-import-btn">Import</button><button type="button" class="btn btn-outline btn-sm pj-danger" id="pj-delete">Delete project</button></div></div>' +
+      '<input type="file" id="pj-file" accept=".json,application/json" hidden>' +
+      '<form class="pj-form" id="pj-form" novalidate><p class="pj-form-t">' + (ed ? 'Edit room' : 'Add a room') + '</p><div class="fields pj-fields">' +
+      f('pj-r-name', 'Room name', ed ? ed.name : 'Room ' + (rooms.length + 1), '', 'text') + f('pj-r-l', 'Length', ed ? dv(ed.l) : '', L) + f('pj-r-w', 'Width', ed ? dv(ed.w) : '', L) +
+      f('pj-r-h', 'Ceiling height', ed ? dv(ed.h) : dv(3), L) + f('pj-r-p', 'People', ed ? ed.people : '', 'people') +
+      '<div class="field"><label for="pj-r-sp">Space type</label><div class="input-wrap"><select id="pj-r-sp">' + Object.keys(VENT_SPACES).map(function (k) { return '<option value="' + k + '"' + ((ed ? ed.space : 'office') === k ? ' selected' : '') + '>' + esc(VENT_SPACES[k].label) + '</option>'; }).join('') + '</select></div></div>' +
+      '</div><div class="pj-form-a"><button type="submit" class="btn btn-solid btn-sm">' + (ed ? 'Update room' : 'Add room') + '</button>' + (ed ? '<button type="button" class="btn btn-outline btn-sm" id="pj-cancel">Cancel</button>' : '') + '<p class="err" id="pj-err" hidden></p></div></form>' +
+      (rooms.length ? '<div class="table-wrap pj-table"><table><thead><tr><th scope="col">Room</th><th scope="col">Cooling load</th><th scope="col">Supply air</th><th scope="col">Outdoor air</th><th scope="col">Diffusers</th><th scope="col">Duct</th><th scope="col">Fan</th><th scope="col">Design chain</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody>' + rowHtml + '</tbody>' +
+        '<tfoot><tr><th scope="row">Project total · ' + rooms.length + ' room' + (rooms.length === 1 ? '' : 's') + '</th><td class="num">' + (sumW > 0 ? pw(sumW) + '<span class="pj-sub">' + fmt(sumW / 3516.85, 2) + ' TR</span>' : '—') + '</td><td class="num">' + (sumQ > 0 ? fq(sumQ, 'air') : '—') + '</td><td class="num">' + (sumOA > 0 ? fq(sumOA, 'air') : '—') + '</td><td colspan="5"></td></tr></tfoot></table></div>' +
+        (sumQ > 0 ? '<div class="pj-total-act"><p>Size the air-handling unit for the whole project: <strong>' + fq(sumQ, 'air') + '</strong> supply' + (sumOA > 0 ? ' with <strong>' + fq(sumOA, 'air') + '</strong> outdoor air' : '') + (sumW > 0 ? ' and <strong>' + pw(sumW) + '</strong> (' + fmt(sumW / 3516.85, 2) + ' TR) cooling' : '') + '.</p>' +
+          '<button type="button" class="btn btn-outline btn-sm" id="pj-ahu">Size AHU supply fan →</button>' + (sumOA > 0 ? '<button type="button" class="btn btn-outline btn-sm" id="pj-fa">Size fresh-air fan →</button>' : '') + '</div>' : '')
+        : '<p class="pj-hint">Add the rooms of this project above. Then follow each room\'s design chain — every calculator fills itself from the room and saves its result back here.</p>');
+  }
+  // Open a calculator for a room, filled from the room's data.
+  function pjOpen(id, roomId, trigger) {
+    var p = pjCur(); if (!p) return;
+    if (roomId) { p.activeRoom = roomId; pjSave(); }
+    pjApply(id, pjRoom(p));
+    openModal(id, trigger);
+  }
+  // Project-level sizing: total airflow into one calculator.
+  function pjOpenTotal(id, trigger) {
+    var p = pjCur(); if (!p) return;
+    var t = { supply: 0, oaQ: 0, esp: 0 };
+    p.rooms.forEach(function (r) { t.supply += r.supply || 0; t.oaQ += r.oaQ || 0; t.esp = Math.max(t.esp, r.esp || 0); });
+    ensureVals(id);
+    if (id === 'fsup') { pjSet('fsup', 'q', t.supply); if (t.esp) pjSet('fsup', 'esp', t.esp); }
+    if (id === 'ffa') pjSet('ffa', 'q', t.oaQ);
+    openModal(id, trigger);
+  }
+  function pjDownload() {
+    var p = pjCur(); if (!p) return;
+    var blob = new Blob([JSON.stringify({ app: 'MechToolBox', version: 1, project: p }, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = (p.name || 'project').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-') + '.mechtoolbox.json';
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  if (pjEl) {
+    pjEl.addEventListener('click', function (e) {
+      var t = e.target.closest('button'); if (!t) return;
+      var p = pjCur();
+      if (t.id === 'pj-create') {
+        var nm = $('#pj-new-name').value.trim() || 'Project ' + (PJ.projects.length + 1);
+        var np = { id: pjUid(), name: nm, rooms: [], activeRoom: null, created: Date.now() };
+        PJ.projects.push(np); PJ.active = np.id; pjSave(); renderProjects();
+        var rn = $('#pj-r-l'); if (rn) rn.focus();
+        return;
+      }
+      if (t.id === 'pj-import-btn') { $('#pj-file').click(); return; }
+      if (!p) return;
+      if (t.id === 'pj-rename') { var n2 = window.prompt('Project name', p.name); if (n2 && n2.trim()) { p.name = n2.trim(); pjSave(); renderProjects(); } return; }
+      if (t.id === 'pj-delete') { if (window.confirm('Delete project "' + p.name + '" and its ' + p.rooms.length + ' room(s)? This cannot be undone — export it first if you need a copy.')) { PJ.projects = PJ.projects.filter(function (x) { return x !== p; }); PJ.active = PJ.projects.length ? PJ.projects[0].id : null; pjSave(); renderProjects(); } return; }
+      if (t.id === 'pj-export') { pjDownload(); return; }
+      if (t.id === 'pj-cancel') { pjEdit = null; renderProjects(); return; }
+      if (t.id === 'pj-ahu') { pjOpenTotal('fsup', t); return; }
+      if (t.id === 'pj-fa') { pjOpenTotal('ffa', t); return; }
+      if (t.dataset.edit) { pjEdit = t.dataset.edit; renderProjects(); $('#pj-r-name').focus(); return; }
+      if (t.dataset.del) {
+        var rd = p.rooms.filter(function (r) { return r.id === t.dataset.del; })[0];
+        if (rd && window.confirm('Delete room "' + rd.name + '" and its saved results?')) { p.rooms = p.rooms.filter(function (r) { return r !== rd; }); if (p.activeRoom === rd.id) p.activeRoom = p.rooms.length ? p.rooms[0].id : null; pjSave(); renderProjects(); }
+        return;
+      }
+      if (t.classList.contains('pj-pick')) { p.activeRoom = t.dataset.room; pjSave(); renderProjects(); return; }
+      if (t.dataset.step) { pjOpen(t.dataset.step, t.dataset.room, t); }
+    });
+    pjEl.addEventListener('change', function (e) {
+      if (e.target.id === 'pj-select') {
+        if (e.target.value === '__new') { PJ.active = null; } else PJ.active = e.target.value;
+        pjEdit = null; pjSave(); renderProjects();
+        return;
+      }
+      if (e.target.id === 'pj-file' && e.target.files[0]) {
+        var rdr = new FileReader();
+        rdr.onload = function () {
+          try {
+            var d = JSON.parse(rdr.result), pr = d && d.project;
+            if (!pr || !Array.isArray(pr.rooms)) throw new Error('bad');
+            pr.id = pjUid(); PJ.projects.push(pr); PJ.active = pr.id; pjSave(); renderProjects();
+          } catch (err) { window.alert('That file is not a MechToolBox project export.'); }
+        };
+        rdr.readAsText(e.target.files[0]);
+      }
+    });
+    pjEl.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var p = pjCur(); if (!p) return;
+      var k = Q.len[sys][1], l = pjNum('#pj-r-l'), w = pjNum('#pj-r-w'), hh = pjNum('#pj-r-h'), pp = pjNum('#pj-r-p'), err = $('#pj-err');
+      if (!(l > 0) || !(w > 0) || !(hh > 0) || !(pp >= 0)) { err.textContent = 'Enter positive length, width and height, and the number of people (0 or more).'; err.hidden = false; return; }
+      var data = { name: $('#pj-r-name').value.trim() || 'Room', l: l * k, w: w * k, h: hh * k, people: Math.round(pp), space: $('#pj-r-sp').value };
+      var ed = pjEdit && p.rooms.filter(function (r) { return r.id === pjEdit; })[0];
+      if (ed) Object.keys(data).forEach(function (x) { ed[x] = data[x]; });
+      else { data.id = pjUid(); data.saved = {}; p.rooms.push(data); p.activeRoom = data.id; }
+      pjEdit = null; pjSave(); renderProjects();
+      var nb = $('.pj-next[data-room="' + (ed ? ed.id : data.id) + '"]'); if (nb) nb.focus();
+    });
+  }
+  // Keep the projects table in step with unit changes and saved results.
+  var planRefreshBase = planRefresh;
+  planRefresh = function () { planRefreshBase(); renderProjects(); };
+  renderProjects();
 
   /* ---------- Plan overlay ---------- */
   // Geometry is stored in image pixels; plan.scale is image pixels per metre.

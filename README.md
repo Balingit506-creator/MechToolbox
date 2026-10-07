@@ -1,6 +1,6 @@
 # MechToolBox
 
-Engineering calculators for M·E·P·F·S design (mechanical, electrical, plumbing, fire protection, sanitary), with live drawings, design suggestions, printable PDF calculation reports, a plan overlay and code references for International, Philippine, Australian and US practice.
+Engineering calculators for M·E·P·F·S design (mechanical, electrical, plumbing, fire protection, sanitary), with live drawings, design suggestions, printable PDF calculation reports, projects that carry room data from one calculator to the next, a plan overlay and code references for International, Philippine, Australian and US practice.
 
 The whole site is one self-contained file, `index.html` (vanilla JavaScript, inline CSS and SVG). Vite is used only to serve and build it.
 
@@ -22,6 +22,7 @@ The whole site is one self-contained file, `index.html` (vanilla JavaScript, inl
 - `site.spec.js` — page loads without errors, category filters, compact view, minimize all, search.
 - `all-calculators.spec.js` — every calculator opens and produces a result in SI and IMP under every code basis (INTL / PH / AU / US).
 - `values.spec.js` — known results for key calculators (duct sizing, diffusers, electrical, fire). If one fails, a formula or table changed.
+- `projects.spec.js` — a project room followed through the design chain (cooling load → outdoor air → diffusers → duct → pressure → fan), persistence after reload, AHU totals, export.
 - `report.spec.js` — the PDF calculation report: project details, sections, results, drawing, suggestions, code basis, wide calculators.
 - `codes-units.spec.js` — Philippine / Australian / US electrical rules, natural-ventilation rules, unit conversion round trips and unit lists per system.
 
