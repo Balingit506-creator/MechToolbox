@@ -243,6 +243,26 @@ svg { display: block; }
 .pj-total-act { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 14px 16px; border: 1px solid rgba(92,224,176,0.35); border-left: 3px solid var(--mint); border-radius: var(--radius); background: rgba(92,224,176,0.05); }
 .pj-total-act p { margin: 0 auto 0 0; color: var(--muted); }
 .pj-total-act strong { color: var(--text); }
+.pj-tools .is-on { background: rgba(92,224,176,0.12); }
+.boq { padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); animation: suggIn .3s ease both; }
+.boq-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.boq-head .pj-form-t { margin: 0; }
+.boq-exp { display: flex; flex-wrap: wrap; gap: 8px; }
+.boq-set { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.boq-warn { margin: 0 0 12px; padding: 10px 14px 10px 30px; border-left: 3px solid var(--warn, #FFC857); background: rgba(255,200,87,0.07); border-radius: var(--radius); color: var(--text); font-size: 14px; }
+.boq-table table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 14px; }
+.boq-table th, .boq-table td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.boq-table thead th { font: 500 11px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.boq-table .num { text-align: right; font-family: var(--mono); white-space: nowrap; }
+.boq-no { font-family: var(--mono); color: var(--mint); white-space: nowrap; }
+.boq-sec th { padding-top: 14px; font: 600 12px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--mint); background: rgba(92,224,176,0.05); }
+.boq-subt td { font-weight: 600; color: var(--muted); }
+.boq-ref td { opacity: .7; }
+.boq-rate { width: 120px; margin-left: auto; }
+.boq-rate input { padding: 6px 8px; font-size: 14px; text-align: right; }
+.boq-table tfoot td { font-weight: 600; border-bottom: 0; }
+.boq-table tfoot .boq-grand td { font-size: 16px; color: var(--mint); border-top: 2px solid var(--mint); }
+.boq-note { margin-top: 10px; font-size: 13px; }
 .pj-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 0 0 16px; padding: 10px 12px; border: 1px solid var(--line); border-left: 3px solid var(--mint); border-radius: var(--radius); background: var(--panel); }
 .pj-bar-k { font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mint); }
 .pj-bar-name { margin-right: 4px; }
@@ -7140,7 +7160,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   });
 
   /* Projects section */
-  var pjEl = $('#pj-root'), pjEdit = null;
+  var pjEl = $('#pj-root'), pjEdit = null, pjBoqOpen = false;
   function pjNum(id) { var x = num($(id).value); return x == null ? NaN : x; }
   function pjFmtQ(si, q) { return si > 0 ? fq(si, q) : '<span class="pj-dash">—</span>'; }
   function renderProjects() {
@@ -7160,7 +7180,8 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       var nextStep = PJ_CHAIN.filter(function (s) { return !s[2](r); })[0];
       return '<tr' + (r.id === p.activeRoom ? ' class="pj-active"' : '') + '>' +
         '<th scope="row"><button type="button" class="pj-pick" data-room="' + r.id + '" title="Make this the active room">' + esc(r.name) + '</button>' +
-        '<span class="pj-dims">' + fmt(r.l / Q.len[sys][1]) + ' × ' + fmt(r.w / Q.len[sys][1]) + ' × ' + fmt(r.h / Q.len[sys][1]) + ' ' + esc(L) + ' · ' + fmt(r.people, 0) + ' people</span></th>' +
+        '<span class="pj-dims">' + fmt(r.l / Q.len[sys][1]) + ' × ' + fmt(r.w / Q.len[sys][1]) + ' × ' + fmt(r.h / Q.len[sys][1]) + ' ' + esc(L) + ' · ' + fmt(r.people, 0) + ' people' +
+        ((r.ductS || r.ductR) ? ' · duct ' + fmt(((r.ductS || 0) + (r.ductR || 0)) / Q.len[sys][1]) + ' ' + esc(L) : '') + '</span></th>' +
         '<td class="num">' + (r.loadW > 0 ? pw(r.loadW) + '<span class="pj-sub">' + fmt(r.loadW / 3516.85, 2) + ' TR</span>' : '<span class="pj-dash">—</span>') + '</td>' +
         '<td class="num">' + pjFmtQ(r.supply, 'air') + '</td><td class="num">' + pjFmtQ(r.oaQ, 'air') + '</td>' +
         '<td>' + (r.nDiff > 0 ? fmt(r.nDiff, 0) + (r.neck ? '<span class="pj-sub">' + esc(r.neck) + '</span>' : '') : '<span class="pj-dash">—</span>') + '</td>' +
@@ -7180,7 +7201,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     pjEl.innerHTML =
       '<div class="pj-top"><div class="input-wrap pj-sel"><label class="sr-only" for="pj-select">Project</label><select id="pj-select">' +
       PJ.projects.map(function (x) { return '<option value="' + x.id + '"' + (x.id === p.id ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('') + '<option value="__new">+ New project…</option></select></div>' +
-      '<div class="pj-tools"><button type="button" class="btn btn-solid btn-sm" id="pj-pdf" title="Room schedule, totals and every saved calculation — print or Save as PDF">Project PDF</button>' +
+      '<div class="pj-tools"><button type="button" class="btn btn-outline btn-sm' + (pjBoqOpen ? ' is-on' : '') + '" id="pj-boq-btn" aria-expanded="' + pjBoqOpen + '" aria-controls="pj-boq">BOQ / BOM</button><button type="button" class="btn btn-solid btn-sm" id="pj-pdf" title="Room schedule, totals and every saved calculation — print or Save as PDF">Project PDF</button>' +
       '<button type="button" class="btn btn-outline btn-sm" id="pj-csv" title="Room schedule for Excel / Google Sheets">Room schedule (Excel)</button>' +
       '<button type="button" class="btn btn-outline btn-sm" id="pj-export" title="Full backup to re-import later">Backup (.json)</button>' +
       '<button type="button" class="btn btn-outline btn-sm" id="pj-import-btn">Import</button><button type="button" class="btn btn-outline btn-sm" id="pj-rename">Rename</button>' +
@@ -7189,13 +7210,15 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       '<form class="pj-form" id="pj-form" novalidate><p class="pj-form-t">' + (ed ? 'Edit room' : 'Add a room') + '</p><div class="fields pj-fields">' +
       f('pj-r-name', 'Room name', ed ? ed.name : 'Room ' + (rooms.length + 1), '', 'text') + f('pj-r-l', 'Length', ed ? dv(ed.l) : '', L) + f('pj-r-w', 'Width', ed ? dv(ed.w) : '', L) +
       f('pj-r-h', 'Ceiling height', ed ? dv(ed.h) : dv(3), L) + f('pj-r-p', 'People', ed ? ed.people : '', 'people') +
+      f('pj-r-ds', 'Supply duct run (optional)', ed && ed.ductS ? dv(ed.ductS) : '', L) + f('pj-r-dr', 'Return duct run (optional)', ed && ed.ductR ? dv(ed.ductR) : '', L) +
       '<div class="field"><label for="pj-r-sp">Space type</label><div class="input-wrap"><select id="pj-r-sp">' + Object.keys(VENT_SPACES).map(function (k) { return '<option value="' + k + '"' + ((ed ? ed.space : 'office') === k ? ' selected' : '') + '>' + esc(VENT_SPACES[k].label) + '</option>'; }).join('') + '</select></div></div>' +
       '</div><div class="pj-form-a"><button type="submit" class="btn btn-solid btn-sm">' + (ed ? 'Update room' : 'Add room') + '</button>' + (ed ? '<button type="button" class="btn btn-outline btn-sm" id="pj-cancel">Cancel</button>' : '') + '<p class="err" id="pj-err" hidden></p></div></form>' +
       (rooms.length ? '<div class="table-wrap pj-table"><table><thead><tr><th scope="col">Room</th><th scope="col">Cooling load</th><th scope="col">Supply air</th><th scope="col">Outdoor air</th><th scope="col">Diffusers</th><th scope="col">Duct</th><th scope="col">Fan</th><th scope="col">Design chain</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody>' + rowHtml + '</tbody>' +
         '<tfoot><tr><th scope="row">Project total · ' + rooms.length + ' room' + (rooms.length === 1 ? '' : 's') + '</th><td class="num">' + (sumW > 0 ? pw(sumW) + '<span class="pj-sub">' + fmt(sumW / 3516.85, 2) + ' TR</span>' : '—') + '</td><td class="num">' + (sumQ > 0 ? fq(sumQ, 'air') : '—') + '</td><td class="num">' + (sumOA > 0 ? fq(sumOA, 'air') : '—') + '</td><td colspan="5"></td></tr></tfoot></table></div>' +
         (sumQ > 0 ? '<div class="pj-total-act"><p>Size the air-handling unit for the whole project: <strong>' + fq(sumQ, 'air') + '</strong> supply' + (sumOA > 0 ? ' with <strong>' + fq(sumOA, 'air') + '</strong> outdoor air' : '') + (sumW > 0 ? ' and <strong>' + pw(sumW) + '</strong> (' + fmt(sumW / 3516.85, 2) + ' TR) cooling' : '') + '.</p>' +
           '<button type="button" class="btn btn-outline btn-sm" id="pj-ahu">Size AHU supply fan →</button>' + (sumOA > 0 ? '<button type="button" class="btn btn-outline btn-sm" id="pj-fa">Size fresh-air fan →</button>' : '') + '</div>' : '')
-        : '<p class="pj-hint">Add the rooms of this project above. Then follow each room\'s design chain — every calculator fills itself from the room and saves its result back here.</p>');
+        : '<p class="pj-hint">Add the rooms of this project above. Then follow each room\'s design chain — every calculator fills itself from the room and saves its result back here.</p>') +
+      (pjBoqOpen && rooms.length ? boqPanelHtml(p) : '');
   }
   // Open a calculator for a room, filled from the room's data.
   function pjOpen(id, roomId, trigger) {
@@ -7239,6 +7262,10 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       if (t.id === 'pj-export') { pjDownload(); return; }
       if (t.id === 'pj-csv') { pjCsv(); return; }
       if (t.id === 'pj-pdf') { pjReport(); return; }
+      if (t.id === 'pj-boq-btn') { pjBoqOpen = !pjBoqOpen; renderProjects(); var bq = $('#pj-boq'); if (bq) bq.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+      if (t.id === 'boq-pdf') { boqPdf(); return; }
+      if (t.id === 'boq-csv') { boqCsv(true); return; }
+      if (t.id === 'bom-csv') { boqCsv(false); return; }
       if (t.id === 'pj-cancel') { pjEdit = null; renderProjects(); return; }
       if (t.id === 'pj-ahu') { pjOpenTotal('fsup', t); return; }
       if (t.id === 'pj-fa') { pjOpenTotal('ffa', t); return; }
@@ -7269,12 +7296,31 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
         rdr.readAsText(e.target.files[0]);
       }
     });
+    // Unit rates update the amounts as you type; settings rebuild the table when you leave the field.
+    pjEl.addEventListener('input', function (e) {
+      var k = e.target.dataset && e.target.dataset.rate; if (k == null) return;
+      var s = boqSet(), x = num(e.target.value);
+      if (x == null || x < 0) delete s.rates[k]; else s.rates[k] = x;
+      e.target.setAttribute('aria-invalid', e.target.value.trim() && (x == null || x < 0) ? 'true' : 'false');
+      boqStore(s); boqRecalc();
+    });
+    pjEl.addEventListener('change', function (e) {
+      var k = e.target.dataset && e.target.dataset.boq; if (!k) return;
+      var s = boqSet(), v = e.target.value.trim();
+      if (k === 'cur') s.cur = v.slice(0, 6);
+      else { var x = num(v); if (x == null || x < 0) { renderProjects(); return; } s[k] = k === 'flex' ? x * Q.len[sys][1] : x; }
+      boqStore(s); renderProjects();
+      var back = document.getElementById('boq-' + k); if (back) back.focus();
+    });
     pjEl.addEventListener('submit', function (e) {
       e.preventDefault();
       var p = pjCur(); if (!p) return;
       var k = Q.len[sys][1], l = pjNum('#pj-r-l'), w = pjNum('#pj-r-w'), hh = pjNum('#pj-r-h'), pp = pjNum('#pj-r-p'), err = $('#pj-err');
       if (!(l > 0) || !(w > 0) || !(hh > 0) || !(pp >= 0)) { err.textContent = 'Enter positive length, width and height, and the number of people (0 or more).'; err.hidden = false; return; }
-      var data = { name: $('#pj-r-name').value.trim() || 'Room', l: l * k, w: w * k, h: hh * k, people: Math.round(pp), space: $('#pj-r-sp').value };
+      var opt = function (sel) { var raw = $(sel).value.trim(); if (!raw) return 0; var x = num(raw); return x != null && x >= 0 ? x * k : NaN; };
+      var ds = opt('#pj-r-ds'), dr = opt('#pj-r-dr');
+      if (isNaN(ds) || isNaN(dr)) { err.textContent = 'Duct run lengths must be 0 or more (or left blank).'; err.hidden = false; return; }
+      var data = { name: $('#pj-r-name').value.trim() || 'Room', l: l * k, w: w * k, h: hh * k, people: Math.round(pp), space: $('#pj-r-sp').value, ductS: ds, ductR: dr };
       var ed = pjEdit && p.rooms.filter(function (r) { return r.id === pjEdit; })[0];
       if (ed) Object.keys(data).forEach(function (x) { ed[x] = data[x]; });
       else { data.id = pjUid(); data.saved = {}; p.rooms.push(data); p.activeRoom = data.id; }
@@ -7382,6 +7428,190 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       '<scr' + 'ipt>window.addEventListener("load",function(){setTimeout(function(){window.print()},350)});<\/scr' + 'ipt></body></html>';
   }
   function pjReport() { var p = pjCur(); if (!p) return; if (!p.rooms.length) { window.alert('Add at least one room first.'); return; } rpOpen(pjReportHtml(p)); }
+
+  /* ---------- BOQ / BOM (HVAC) from project rooms ---------- */
+  var BOQ_KEY = 'mechtoolbox-boq';
+  var BOQ_DEF_CUR = { ph: '₱', au: 'A$', us: '$' }, BOQ_DEF_TAX = { ph: 12, au: 10 };
+  function boqSet() {
+    var s = {}; try { s = JSON.parse(localStorage.getItem(BOQ_KEY) || '{}') || {}; } catch (e) {}
+    if (s.cur == null) s.cur = BOQ_DEF_CUR[codeBasis] || '';
+    if (s.tax == null) s.tax = BOQ_DEF_TAX[codeBasis] || 0;
+    if (s.cont == null) s.cont = 0;
+    if (s.allow == null) s.allow = 20;   // % added to straight duct for fittings, seams and waste
+    if (s.flex == null) s.flex = 1.5;    // m of flexible duct per diffuser
+    s.rates = s.rates || {};
+    return s;
+  }
+  function boqStore(s) { try { localStorage.setItem(BOQ_KEY, JSON.stringify(s)); } catch (e) {} }
+  // Galvanised sheet gauge by longest side — typical SMACNA rectangular duct, ±500 Pa (2 in.wg) low-pressure class.
+  var BOQ_GAUGE = [[0.30, '26 ga (0.55 mm)', 0.55], [0.75, '24 ga (0.70 mm)', 0.70], [1.35, '22 ga (0.85 mm)', 0.85], [2.10, '20 ga (1.00 mm)', 1.00], [1e9, '18 ga (1.30 mm)', 1.30]];
+  // Read "500 × 300 mm / ⌀ 450 mm" or "20 × 12 in" back into metres.
+  function boqDuct(txt) {
+    var t = String(txt || ''), k = function (u) { return u === 'in' ? 0.0254 : 0.001; }, out = {};
+    var r = /([\d.,]+)\s*×\s*([\d.,]+)\s*(mm|in)/.exec(t), d = /⌀\s*([\d.,]+)\s*(mm|in)/.exec(t);
+    if (r) { out.W = +r[1].replace(/,/g, '') * k(r[3]); out.H = +r[2].replace(/,/g, '') * k(r[3]); }
+    if (d) out.D = +d[1].replace(/,/g, '') * k(d[2]);
+    return out;
+  }
+  // Build the quantities. Lengths/areas are SI here; display units are applied when shown.
+  function boqBuild(p, s) {
+    var secs = [], warn = [], add = function (sec, key, desc, qty, unit, room, note) {
+      var S = secs.filter(function (x) { return x.name === sec; })[0];
+      if (!S) { S = { name: sec, items: [] }; secs.push(S); }
+      var it = S.items.filter(function (x) { return x.key === key; })[0];
+      if (!it) { it = { key: key, desc: desc, qty: 0, unit: unit, rooms: [], note: note || '' }; S.items.push(it); }
+      it.qty += qty; if (room && it.rooms.indexOf(room) < 0) it.rooms.push(room);
+    };
+    var t = pjTotals(p), units = 0, noLen = [];
+    // A. Equipment
+    p.rooms.forEach(function (r) {
+      if (!(r.loadW > 0)) return;
+      units++;
+      var cap = acSize(r.loadW * 3.41214);
+      add('A', 'ac|' + cap + '|' + (r.motor || ''), 'Ducted split / packaged air-conditioning unit, ' + cap + (r.supply > 0 ? ', ' + fq(r.supply, 'air') : '') + (r.esp > 0 ? ' at ' + fq(r.esp, 'pv') + ' ESP' : '') + (r.motor ? ', fan motor ' + r.motor : ''), 1, 'set', r.name);
+    });
+    if (t.oa > 0) add('A', 'faf', 'Fresh-air fan with filter, backdraft damper and controls, ' + fq(t.oa, 'air'), 1, 'set', '', 'Size with the Fresh-Air Fan calculator.');
+    // B. Air distribution
+    p.rooms.forEach(function (r) {
+      if (r.nDiff > 0) add('B', 'diff|' + (r.neck || ''), '4-way square ceiling diffuser 600 × 600' + (r.neck ? ', ' + r.neck + ' neck' : '') + ', with opposed-blade volume damper', r.nDiff, 'pcs', r.name);
+      if (r.supply > 0) {
+        var g = pickGrille(r.supply * 0.9 / NC_LIM['35'].ret, GRILLE_TYPES.eggcrate.fa);
+        var gl = g.n > 1 ? g.label.replace(/^\d+ × /, '') : g.label; // "2 × 1200 × 600 mm" → one size, counted twice
+        add('B', 'rg|' + gl, 'Return-air grille, egg-crate core, ' + gl + ' (estimated at NC 35 face velocity)', g.n, 'pcs', r.name, 'Confirm with the Return Grille calculator.');
+      }
+    });
+    if (t.oa > 0) { var lv = pickGrille(t.oa / 2.5, LOUVER_TYPES.std.fa), ll = lv.n > 1 ? lv.label.replace(/^\d+ × /, '') : lv.label; add('B', 'louv|' + ll, 'Fresh-air intake louvre with bird screen, ' + ll + ' (estimated at 2.5 m/s free-area velocity)', lv.n, 'pcs', '', 'Confirm with the Fresh-Air Louver calculator.'); }
+    // C. Ductwork and D. Insulation
+    var allow = 1 + (s.allow || 0) / 100;
+    p.rooms.forEach(function (r) {
+      var d = boqDuct(r.duct), len = (r.ductS || 0) + (r.ductR || 0);
+      if (!r.duct) return;
+      if (!(len > 0)) { noLen.push(r.name); return; }
+      var rect = d.W > 0 && d.H > 0, per = rect ? 2 * (d.W + d.H) : Math.PI * (d.D || 0), side = rect ? Math.max(d.W, d.H) : d.D || 0;
+      var ga = BOQ_GAUGE.filter(function (x) { return side <= x[0] + 1e-9; })[0];
+      var area = per * len * allow, kg = area * ga[2] * 7.85;
+      add('C', 'gi|' + ga[1] + '|' + (rect ? 'r' : 'o'), (rect ? 'Rectangular' : 'Spiral round') + ' galvanised-steel duct, ' + ga[1] + ', incl. fittings, joints, sealant and supports', area, 'area', r.name, '≈ ' + fmt(ga[2] * 7.85, 1) + ' kg/m² sheet');
+      add('C', 'kg|' + ga[1], 'Galvanised sheet weight, ' + ga[1] + ' (for reference)', kg, 'kg', r.name);
+      if (r.ductS > 0) add('D', 'ins25', 'Duct insulation, 25 mm fibreglass blanket with foil-scrim-kraft vapour barrier (supply duct)', per * r.ductS * allow, 'area', r.name, 'Confirm thickness with the Duct Insulation calculator.');
+      if (r.nDiff > 0 && s.flex > 0) add('D', 'flex|' + (r.neck || ''), 'Insulated flexible duct' + (r.neck ? ' ' + r.neck : '') + ' to diffusers, ' + fq(s.flex, 'len') + ' each', r.nDiff * s.flex, 'len', r.name);
+    });
+    if (noLen.length) warn.push('Enter supply / return duct run lengths for ' + noLen.join(', ') + ' (edit the room) to quantify ductwork.');
+    if (!p.rooms.some(function (r) { return r.duct; })) warn.push('Save a duct size (Equal Friction step) to quantify ductwork.');
+    // E. Controls and testing
+    if (units) {
+      add('E', 'tstat', 'Room thermostat / wired controller', units, 'pcs', '');
+      add('E', 'cond', 'Condensate drain piping with trap and insulation, per unit', units, 'lot', '');
+    }
+    if (p.rooms.length) add('E', 'tab', 'Testing, adjusting and balancing (TAB) of air systems, with report', 1, 'lot', '');
+    var NAMES = { A: 'Equipment', B: 'Air distribution', C: 'Ductwork', D: 'Insulation & flexible duct', E: 'Controls, drains & testing' };
+    secs.sort(function (a, b) { return a.name < b.name ? -1 : 1; });
+    secs.forEach(function (S) { S.title = NAMES[S.name]; S.items.forEach(function (it, i) { it.no = S.name + '.' + (i + 1); }); });
+    return { secs: secs, warn: warn };
+  }
+  // Quantity in display units; rate keys carry the unit so a price per m² is never reused for ft².
+  function boqQty(it) {
+    if (it.unit === 'area') return { q: it.qty / Q.area[sys][1], u: Q.area[sys][0] };
+    if (it.unit === 'len') return { q: it.qty / Q.len[sys][1], u: Q.len[sys][0] };
+    if (it.unit === 'kg') return { q: sys === 'si' ? it.qty : it.qty * 2.20462, u: sys === 'si' ? 'kg' : 'lb' };
+    return { q: it.qty, u: it.unit };
+  }
+  function boqRound(q, u) { return u === 'pcs' || u === 'set' || u === 'lot' ? Math.round(q) : Number(q.toFixed(1)); }
+  function boqRateKey(it) { return it.key + '|' + boqQty(it).u; }
+  function boqMoney(x, s) { return (s.cur ? s.cur + ' ' : '') + x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function boqTotals(b, s) {
+    var sub = {}, net = 0;
+    b.secs.forEach(function (S) {
+      sub[S.name] = 0;
+      S.items.forEach(function (it) { if (it.unit === 'kg') return; var dq = boqQty(it), rate = +s.rates[boqRateKey(it)] || 0; it.amount = boqRound(dq.q, dq.u) * rate; sub[S.name] += it.amount; });
+      net += sub[S.name];
+    });
+    var cont = net * (+s.cont || 0) / 100, tax = (net + cont) * (+s.tax || 0) / 100;
+    return { sub: sub, net: net, cont: cont, tax: tax, total: net + cont + tax };
+  }
+  function boqPanelHtml(p) {
+    var s = boqSet(), b = boqBuild(p, s), T = boqTotals(b, s);
+    if (!b.secs.length) return '<div class="boq" id="pj-boq"><p class="pj-hint">Save results to the rooms first (cooling load, diffusers, duct) — the BOQ is built from them.</p></div>';
+    var num = function (id, label, val, unit) { return '<div class="field"><label for="' + id + '">' + label + '</label><div class="input-wrap"><input id="' + id + '" data-boq="' + id.slice(4) + '" type="text" inputmode="decimal" autocomplete="off" value="' + esc(val) + '">' + (unit ? '<span class="unit">' + unit + '</span>' : '') + '</div></div>'; };
+    var rows = b.secs.map(function (S) {
+      return '<tr class="boq-sec"><th colspan="6">' + S.name + ' · ' + esc(S.title) + '</th></tr>' + S.items.map(function (it) {
+        var dq = boqQty(it), ref = it.unit === 'kg';
+        return '<tr' + (ref ? ' class="boq-ref"' : '') + '><td class="boq-no">' + it.no + '</td><td>' + esc(it.desc) + (it.rooms.length ? '<span class="pj-sub">' + esc(it.rooms.join(', ')) + '</span>' : '') + (it.note ? '<span class="pj-sub">' + esc(it.note) + '</span>' : '') + '</td>' +
+          '<td class="num">' + fmt(boqRound(dq.q, dq.u)) + '</td><td>' + esc(dq.u) + '</td>' +
+          (ref ? '<td></td><td class="num pj-sub">reference</td>' : '<td><div class="input-wrap boq-rate"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Unit rate for ' + esc(it.no) + '" data-rate="' + esc(boqRateKey(it)) + '" value="' + esc(s.rates[boqRateKey(it)] != null ? s.rates[boqRateKey(it)] : '') + '" placeholder="0.00"></div></td><td class="num" data-amt="' + it.no + '">' + boqMoney(it.amount || 0, s) + '</td>') + '</tr>';
+      }).join('') + '<tr class="boq-subt"><td></td><td colspan="4">Subtotal ' + S.name + '</td><td class="num" data-sub="' + S.name + '">' + boqMoney(T.sub[S.name], s) + '</td></tr>';
+    }).join('');
+    return '<div class="boq" id="pj-boq"><div class="boq-head"><p class="pj-form-t">Bill of quantities — HVAC</p>' +
+      '<div class="boq-exp"><button type="button" class="btn btn-solid btn-sm" id="boq-pdf">BOQ PDF</button><button type="button" class="btn btn-outline btn-sm" id="boq-csv">BOQ (Excel)</button><button type="button" class="btn btn-outline btn-sm" id="bom-csv">BOM (Excel)</button></div></div>' +
+      '<div class="fields boq-set">' + num('boq-cur', 'Currency', s.cur, '') + num('boq-cont', 'Contingency', s.cont, '%') + num('boq-tax', 'VAT / GST', s.tax, '%') + num('boq-allow', 'Duct fittings allowance', s.allow, '%') + num('boq-flex', 'Flex duct per diffuser', roundU(s.flex / Q.len[sys][1]), Q.len[sys][0]) + '</div>' +
+      (b.warn.length ? '<ul class="boq-warn">' + b.warn.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul>' : '') +
+      '<div class="table-wrap boq-table"><table><thead><tr><th scope="col">Item</th><th scope="col">Description</th><th scope="col">Qty</th><th scope="col">Unit</th><th scope="col">Unit rate</th><th scope="col">Amount</th></tr></thead><tbody>' + rows + '</tbody>' +
+      '<tfoot><tr><td></td><td colspan="4">Net total</td><td class="num" data-tot="net">' + boqMoney(T.net, s) + '</td></tr>' +
+      '<tr><td></td><td colspan="4">Contingency (' + fmt(+s.cont || 0) + ' %)</td><td class="num" data-tot="cont">' + boqMoney(T.cont, s) + '</td></tr>' +
+      '<tr><td></td><td colspan="4">VAT / GST (' + fmt(+s.tax || 0) + ' %)</td><td class="num" data-tot="tax">' + boqMoney(T.tax, s) + '</td></tr>' +
+      '<tr class="boq-grand"><td></td><td colspan="4">Grand total</td><td class="num" data-tot="total">' + boqMoney(T.total, s) + '</td></tr></tfoot></table></div>' +
+      '<p class="pj-hint boq-note">Quantities are preliminary take-offs from the saved room results. Ductwork uses typical SMACNA low-pressure gauges and the fittings allowance above; return grilles and the louvre are estimated. Your unit rates are remembered on this device.</p></div>';
+  }
+  // Refresh amounts and totals in place while typing rates (keeps focus).
+  function boqRecalc() {
+    var p = pjCur(); if (!p) return;
+    var s = boqSet(), b = boqBuild(p, s), T = boqTotals(b, s);
+    b.secs.forEach(function (S) { S.items.forEach(function (it) { var c = $('[data-amt="' + it.no + '"]'); if (c) c.textContent = boqMoney(it.amount || 0, s); }); var su = $('[data-sub="' + S.name + '"]'); if (su) su.textContent = boqMoney(T.sub[S.name], s); });
+    ['net', 'cont', 'tax', 'total'].forEach(function (k) { var c = $('[data-tot="' + k + '"]'); if (c) c.textContent = boqMoney(T[k], s); });
+  }
+  function boqCsv(withPrices) {
+    var p = pjCur(); if (!p) return;
+    var s = boqSet(), b = boqBuild(p, s), T = boqTotals(b, s), meta = rpMeta();
+    var cell = function (v) { v = v == null ? '' : String(v); return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var lines = [[withPrices ? 'MechToolBox bill of quantities — HVAC' : 'MechToolBox bill of materials — HVAC'], ['Project', p.name], ['Location / client', meta.location || ''],
+      ['Code basis', REG[codeBasis] ? REG[codeBasis].name : 'International'], ['Date', new Date().toISOString().slice(0, 10)], [],
+      withPrices ? ['Item', 'Description', 'Qty', 'Unit', 'Unit rate' + (s.cur ? ' (' + s.cur + ')' : ''), 'Amount' + (s.cur ? ' (' + s.cur + ')' : '')] : ['Item', 'Description', 'Qty', 'Unit', 'Rooms', 'Notes']];
+    b.secs.forEach(function (S) {
+      lines.push([S.name, S.title.toUpperCase()]);
+      S.items.forEach(function (it) {
+        var dq = boqQty(it), q = boqRound(dq.q, dq.u);
+        if (withPrices) { if (it.unit === 'kg') lines.push([it.no, it.desc, q, dq.u, '', 'reference']); else lines.push([it.no, it.desc, q, dq.u, +s.rates[boqRateKey(it)] || 0, Number((it.amount || 0).toFixed(2))]); }
+        else lines.push([it.no, it.desc, q, dq.u, it.rooms.join('; '), it.note]);
+      });
+      if (withPrices) lines.push(['', 'Subtotal ' + S.name, '', '', '', Number(T.sub[S.name].toFixed(2))]);
+      lines.push([]);
+    });
+    if (withPrices) {
+      lines.push(['', 'Net total', '', '', '', Number(T.net.toFixed(2))], ['', 'Contingency (' + (+s.cont || 0) + ' %)', '', '', '', Number(T.cont.toFixed(2))],
+        ['', 'VAT / GST (' + (+s.tax || 0) + ' %)', '', '', '', Number(T.tax.toFixed(2))], ['', 'Grand total', '', '', '', Number(T.total.toFixed(2))]);
+    }
+    pjSaveFile(pjFileBase(p) + (withPrices ? '-BOQ.csv' : '-BOM.csv'), '﻿' + lines.map(function (r) { return r.map(cell).join(','); }).join('\r\n'), 'text/csv;charset=utf-8');
+  }
+  function boqPdf() {
+    var p = pjCur(); if (!p) return;
+    var s = boqSet(), b = boqBuild(p, s), T = boqTotals(b, s), m = rpMeta(), E = esc, now = new Date(), pad = function (x) { return (x < 10 ? '0' : '') + x; };
+    var dateTxt = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+    var refNo = 'MTB-' + dateTxt.replace(/-/g, '') + '-BOQ-' + (pjFileBase(p).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12) || 'PROJECT');
+    var meta = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + (v ? E(v) : '<span class="blank">—</span>') + '</dd></div>'; };
+    var body = b.secs.map(function (S) {
+      return '<tbody><tr class="grp"><th colspan="6">' + S.name + ' · ' + E(S.title) + '</th></tr>' + S.items.map(function (it) {
+        var dq = boqQty(it), ref = it.unit === 'kg';
+        return '<tr><td>' + it.no + '</td><td>' + E(it.desc) + (it.rooms.length ? '<div class="sub">' + E(it.rooms.join(', ')) + '</div>' : '') + '</td><td class="num">' + fmt(boqRound(dq.q, dq.u)) + '</td><td>' + E(dq.u) + '</td>' +
+          (ref ? '<td></td><td class="num sub">reference</td>' : '<td class="num">' + (s.rates[boqRateKey(it)] ? boqMoney(+s.rates[boqRateKey(it)], s) : '') + '</td><td class="num">' + boqMoney(it.amount || 0, s) + '</td>') + '</tr>';
+      }).join('') + '<tr class="key"><td></td><td colspan="4">Subtotal ' + S.name + ' · ' + E(S.title) + '</td><td class="num">' + boqMoney(T.sub[S.name], s) + '</td></tr></tbody>';
+    }).join('');
+    var css = rpCss(refNo, 'A4') + '\n.boq td,.boq th{font-size:8.8pt}.boq thead th{background:#F1F6F4;font:600 7pt/1.3 "IBM Plex Mono",Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;color:#4D6560}.boq tbody{break-inside:auto}.boq tr{break-inside:avoid}.boq .sub{color:#4D6560;font-size:7.6pt}.boq td:first-child{width:7%}.boq td:nth-child(3){width:9%}.boq td:nth-child(4){width:6%}.boq td:nth-child(5),.boq td:nth-child(6){width:14%;text-align:right}.boq tfoot{display:table-row-group}.boq tfoot td{font-weight:600}.boq tfoot .grand td{font-weight:700;background:#ECF8F3;border-top:2px solid #0F7A57}';
+    var html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + E(refNo + ' — ' + p.name + ' BOQ') + '</title>' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet"><style>' + css + '</style></head><body>' +
+      '<div class="bar"><button type="button" onclick="window.print()">Print / Save as PDF</button><button type="button" class="o" onclick="window.close()">Close</button></div>' +
+      '<div class="page"><header><div class="logo">MECH<i>/</i><b>TOOLBOX</b><div class="doc" style="text-align:left;margin-top:6px">Bill of quantities — HVAC</div></div><div class="doc">Ref. <strong>' + E(refNo) + '</strong>Date <strong>' + dateTxt + '</strong></div></header>' +
+      '<p class="code" style="margin:14px 0 0">BILL OF QUANTITIES · MECHANICAL (HVAC)</p><h1>' + E(p.name) + '</h1>' +
+      '<dl class="meta">' + meta('Project', p.name) + meta('Location / client', m.location) + meta('Prepared by', m.prepared) + meta('Checked by', m.checked) +
+      meta('Code basis', REG[codeBasis] ? REG[codeBasis].name : 'International') + meta('Units', sys === 'si' ? 'SI (metric)' : 'Imperial (IP)') + meta('Currency', s.cur || '—') + meta('Status', 'Preliminary estimate') + '</dl>' +
+      '<section class="flow"><table class="boq"><thead><tr><th>Item</th><th>Description</th><th>Qty</th><th>Unit</th><th>Unit rate</th><th>Amount</th></tr></thead>' + body +
+      '<tfoot><tr><td></td><td colspan="4">Net total</td><td class="num">' + boqMoney(T.net, s) + '</td></tr><tr><td></td><td colspan="4">Contingency (' + fmt(+s.cont || 0) + ' %)</td><td class="num">' + boqMoney(T.cont, s) + '</td></tr>' +
+      '<tr><td></td><td colspan="4">VAT / GST (' + fmt(+s.tax || 0) + ' %)</td><td class="num">' + boqMoney(T.tax, s) + '</td></tr><tr class="grand"><td></td><td colspan="4">Grand total</td><td class="num">' + boqMoney(T.total, s) + '</td></tr></tfoot></table></section>' +
+      '<section class="flow"><h2><span>i</span>Notes</h2><ul class="plain">' + b.warn.concat(['Quantities are preliminary take-offs from MechToolBox room results; verify against the final drawings.', 'Ductwork: typical SMACNA low-pressure (±500 Pa) galvanised gauges by longest side, plus ' + fmt(+s.allow || 0) + ' % for fittings, joints and waste. Sheet weight is for reference and is not priced.',
+        'Return grilles and the fresh-air louvre are estimated; confirm sizes with their calculators and manufacturer data.', 'Rates are entered by the user and exclude items not listed (electrical power, builder\'s works, ceilings, permits).']).map(function (t) { return '<li>' + E(t) + '</li>'; }).join('') + '</ul></section>' +
+      '<div class="sign"><div>Prepared by<b>' + (m.prepared ? E(m.prepared) : '&nbsp;') + '</b></div><div>Checked by<b>' + (m.checked ? E(m.checked) : '&nbsp;') + '</b></div></div>' +
+      '<footer><span>Generated with MechToolBox · Built by JAB</span><span>' + E(refNo) + '</span></footer></div>' +
+      '<scr' + 'ipt>window.addEventListener("load",function(){setTimeout(function(){window.print()},350)});<\/scr' + 'ipt></body></html>';
+    rpOpen(html);
+  }
 
   // Keep the projects table in step with unit changes and saved results.
   var planRefreshBase = planRefresh;
