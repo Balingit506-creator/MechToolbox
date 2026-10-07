@@ -203,7 +203,7 @@ svg { display: block; }
 /* ---------- Cards ---------- */
 .cards { display: grid; gap: 16px; grid-template-columns: 1fr; }
 /* Projects */
-.pj-root { display: grid; gap: 16px; }
+.pj-root { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; } /* minmax(0, …) lets wide tables scroll inside .table-wrap instead of widening the page */
 .pj-empty { padding: 24px; border: 1px dashed var(--line-2); border-radius: var(--radius); background: var(--panel); }
 .pj-empty p { color: var(--muted); max-width: 70ch; margin: 0 0 16px; }
 .pj-empty p strong { color: var(--text); }
@@ -729,7 +729,7 @@ dialog.modal::backdrop { background: rgba(3, 8, 7, 0.78); }
 
 .ref h3 { font: 500 12px/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--mint); margin: 0 0 12px; }
 .ref section + section { margin-top: 28px; }
-.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+.table-wrap { position: relative; /* keeps absolutely positioned children (e.g. .sr-only labels) inside the scroll box */ overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
 .ref table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .ref th, .ref td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .ref tr:last-child td { border-bottom: 0; }
