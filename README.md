@@ -1,6 +1,6 @@
 # MechToolBox
 
-Engineering calculators for M·E·P·F·S design (mechanical, electrical, plumbing, fire protection, sanitary), with live drawings, design suggestions, printable PDF calculation reports, projects that carry room data from one calculator to the next, an HVAC bill of quantities (BOQ / BOM), a plan overlay and code references for International, Philippine, Australian and US practice.
+Engineering calculators for M·E·P·F·S design (mechanical, electrical, plumbing, fire protection, sanitary), with live drawings, design suggestions, printable PDF calculation reports, projects that carry room data from one calculator to the next, an HVAC bill of quantities in the standard QS format (material and labor costs, supervision & profit, contingencies, VAT) with a BOM, and code references for International, Philippine, Australian and US practice.
 
 The whole site is one self-contained file, `index.html` (vanilla JavaScript, inline CSS and SVG). Vite is used only to serve and build it.
 

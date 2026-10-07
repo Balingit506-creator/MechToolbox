@@ -250,15 +250,25 @@ svg { display: block; }
 .boq-exp { display: flex; flex-wrap: wrap; gap: 8px; }
 .boq-set { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px; }
 .boq-warn { margin: 0 0 12px; padding: 10px 14px 10px 30px; border-left: 3px solid var(--warn, #FFC857); background: rgba(255,200,87,0.07); border-radius: var(--radius); color: var(--text); font-size: 14px; }
-.boq-table table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 14px; }
+.boq-table table { width: 100%; min-width: 1240px; border-collapse: collapse; font-size: 13.5px; }
 .boq-table th, .boq-table td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 .boq-table thead th { font: 500 11px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .boq-table .num { text-align: right; font-family: var(--mono); white-space: nowrap; }
 .boq-no { font-family: var(--mono); color: var(--mint); white-space: nowrap; }
+.boq-table thead th { text-align: center; vertical-align: bottom; border-left: 1px solid var(--line); }
+.boq-table thead th.c { border-bottom: 1px solid var(--line); }
+.boq-div td { font: 600 13px/1.3 var(--mono); letter-spacing: .1em; color: var(--deep); background: var(--mint); }
+.boq-grp td { font-weight: 600; color: var(--mint); background: rgba(92,224,176,0.06); }
+.boq-grp td:first-child { font-family: var(--mono); }
+.boq-divt td { font-weight: 700; background: rgba(92,224,176,0.12); }
+.boq-rem { font-size: 12px; color: var(--muted); min-width: 180px; }
+.boq-sign { margin: -4px 0 12px; }
+.boq-sign summary { cursor: pointer; font: 500 12px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.boq-sign summary:hover { color: var(--text); }
 .boq-sec th { padding-top: 14px; font: 600 12px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--mint); background: rgba(92,224,176,0.05); }
 .boq-subt td { font-weight: 600; color: var(--muted); }
 .boq-ref td { opacity: .7; }
-.boq-rate { width: 120px; margin-left: auto; }
+.boq-rate { width: 104px; margin-left: auto; }
 .boq-rate input { padding: 6px 8px; font-size: 14px; text-align: right; }
 .boq-table tfoot td { font-weight: 600; border-bottom: 0; }
 .boq-table tfoot .boq-grand td { font-size: 16px; color: var(--mint); border-top: 2px solid var(--mint); }
@@ -407,78 +417,6 @@ mark.hl { color: var(--mint); background: linear-gradient(var(--mint), var(--min
   vertical-align: middle; transition: background var(--ease), color var(--ease);
 }
 .card:hover .disc-chip { background: var(--mint); color: var(--deep); }
-
-/* ---------- Plan overlay ---------- */
-.plan { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); overflow: hidden; }
-.plan [hidden] { display: none !important; }
-.plan-drop {
-  display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;
-  margin: 16px; padding: 48px 16px; border: 1px dashed var(--line-2); border-radius: var(--radius);
-  transition: border-color var(--ease), background var(--ease);
-}
-.plan-drop.over { border-color: var(--mint); background: rgba(92, 224, 176, 0.06); }
-.plan-drop-title { font: 600 20px/1.2 var(--head); letter-spacing: -0.02em; }
-.plan-drop-sub { color: var(--muted); font-size: 15px; }
-.plan-privacy { font: 400 12px/1.4 var(--mono); letter-spacing: 0.06em; color: var(--muted); }
-.plan-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 12px; border-bottom: 1px solid var(--line); }
-.tool-group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.tool-btn {
-  display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px;
-  border: 1px solid var(--line); border-radius: var(--radius); background: var(--deep); cursor: pointer;
-  font: 500 12px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
-  transition: border-color var(--ease), color var(--ease), background var(--ease), transform 120ms ease;
-}
-.tool-btn:hover { border-color: var(--line-2); color: var(--text); }
-.tool-btn:active { transform: scale(0.97); }
-.tool-btn[aria-pressed="true"] { border-color: var(--mint); background: rgba(92, 224, 176, 0.1); color: var(--text); }
-.tool-btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
-.tk {
-  display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; flex-shrink: 0;
-  border: 1px solid var(--tc); border-radius: 3px; color: var(--tc); font: 600 10px/1 var(--mono); letter-spacing: 0;
-}
-.ortho { display: inline-flex; align-items: center; gap: 6px; font: 500 12px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 0 6px; cursor: pointer; }
-.ortho input { accent-color: var(--mint); width: 16px; height: 16px; }
-.plan-statusbar {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; min-height: 52px;
-  padding: 10px 12px; border-bottom: 1px solid var(--line); font: 400 13px/1.5 var(--mono); color: var(--muted);
-}
-.plan-statusbar p { flex: 1 1 260px; }
-.plan-measure { color: var(--mint); font-weight: 500; }
-.plan-scale-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; padding: 12px; background: var(--panel-2); border-bottom: 1px solid var(--line); }
-.plan-scale-form .field { flex: 1 1 220px; }
-.plan-scale-form .btn { height: 44px; }
-.plan-scale-form .err { flex-basis: 100%; }
-.plan-body { display: grid; grid-template-columns: minmax(0, 1fr); }
-@media (min-width: 960px) {
-  .plan-body { grid-template-columns: minmax(0, 1fr) 300px; }
-  .plan-side { border-left: 1px solid var(--line); border-top: 0 !important; }
-}
-.plan-canvas-wrap { min-width: 0; background: var(--deep); }
-#plan-canvas { display: block; width: 100%; cursor: crosshair; }
-#plan-canvas.drawing { touch-action: none; }
-.plan-side { display: flex; flex-direction: column; gap: 24px; padding: 16px; border-top: 1px solid var(--line); }
-.plan-panel h3 { font: 500 12px/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--mint); margin-bottom: 12px; }
-.plan-panel > p { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
-.plan-panel > p strong { color: var(--text); font-weight: 500; }
-.plan-kv { margin-bottom: 12px; font-family: var(--mono); }
-.plan-kv dt { font-size: 12px; }
-.plan-kv dd { font-size: 13px; }
-.plan-panel .err { margin-bottom: 12px; }
-.plan-panel .btn + .btn { margin-left: 6px; }
-.plan-list { list-style: none; margin: 0; padding: 0; }
-.plan-list li {
-  display: flex; align-items: flex-start; gap: 8px; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius);
-  font: 400 12px/1.5 var(--mono); transition: border-color var(--ease), background var(--ease);
-}
-.plan-list li + li { margin-top: 6px; }
-.plan-list li:hover, .plan-list li:focus-within { border-color: var(--line-2); background: var(--panel-2); }
-.plan-list .txt { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-.plan-list .txt strong { color: var(--text); font-weight: 500; }
-.plan-list .sub { color: var(--muted); }
-.plan-list .warn { color: var(--danger); }
-.plan-list .icon-btn { width: 28px; height: 28px; }
-.plan-list .plan-empty { color: var(--muted); border-style: dashed; }
-.plan-totals { margin-top: 12px; font: 400 12px/1.6 var(--mono); color: var(--muted); }
 
 /* ---------- Precise cooling load ---------- */
 .cl-limits {
@@ -985,7 +923,6 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       <a href="#calculators">Calculators</a>
       <a href="#projects">Projects</a>
       <a href="#utilities">Utilities</a>
-      <a href="#plan">Plan</a>
       <a href="#standards">Standards</a>
       <a href="#about">About</a>
     </nav>
@@ -1006,7 +943,6 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       <li><a href="#calculators">Calculators</a></li>
       <li><a href="#projects">Projects</a></li>
       <li><a href="#utilities">Utilities</a></li>
-      <li><a href="#plan">Plan</a></li>
       <li><a href="#standards">Standards</a></li>
       <li><a href="#about">About</a></li>
     </ul>
@@ -1182,82 +1118,10 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     </div>
   </section>
 
-  <section class="section" id="plan" aria-labelledby="plan-title">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <p class="eyebrow">04 — Plan Overlay</p>
-        <h2 id="plan-title">Draw the design on your floor plan.</h2>
-        <p>Upload or paste a floor-plan screenshot, set the scale, then trace runs and rooms. Every element is sized from your calculator values — duct diameters, cable voltage drop, pipe pressure loss, sprinkler layouts and drain falls appear on the plan automatically.</p>
-      </div>
-
-      <div class="plan reveal" id="plan-app">
-        <div class="plan-drop" id="plan-drop">
-          <svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true"><rect x="6" y="10" width="44" height="36" rx="3" fill="none" stroke="#5CE0B0" stroke-width="1.5"/><path d="M6 24h18v22M24 32h26M36 10v14" fill="none" stroke="#8AA69D" stroke-width="1"/><path d="M28 4v14M22 10l6-6 6 6" fill="none" stroke="#5CE0B0" stroke-width="1.5" stroke-linecap="round"/></svg>
-          <p class="plan-drop-title">Drop a floor plan here</p>
-          <p class="plan-drop-sub">PNG or JPG screenshot — or paste one with Ctrl + V</p>
-          <button type="button" class="btn btn-solid" id="plan-choose">Choose image</button>
-          <input type="file" id="plan-file" accept="image/*" class="sr-only" tabindex="-1" aria-hidden="true">
-          <p class="plan-privacy">Your plan stays in this browser — nothing is uploaded.</p>
-          <p class="err" id="plan-drop-err" hidden></p>
-        </div>
-
-        <div class="plan-work" id="plan-work" hidden>
-          <div class="plan-toolbar" role="toolbar" aria-label="Plan tools">
-            <div class="tool-group" role="group" aria-label="Drawing tools">
-              <button type="button" class="tool-btn" data-tool="scale" aria-pressed="false"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h12M1 4v6M13 4v6" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>Scale</button>
-              <button type="button" class="tool-btn" data-tool="duct" aria-pressed="false"><span class="tk" style="--tc:#5CE0B0">M</span>Duct</button>
-              <button type="button" class="tool-btn" data-tool="load" aria-pressed="false"><span class="tk" style="--tc:#5CE0B0">M</span>Loads</button>
-              <button type="button" class="tool-btn" data-tool="cable" aria-pressed="false"><span class="tk" style="--tc:#FFC857">E</span>Cable</button>
-              <button type="button" class="tool-btn" data-tool="pipe" aria-pressed="false"><span class="tk" style="--tc:#6CB8FF">P</span>Pipe</button>
-              <button type="button" class="tool-btn" data-tool="sprinkler" aria-pressed="false"><span class="tk" style="--tc:#FF7A6B">F</span>Sprinklers</button>
-              <button type="button" class="tool-btn" data-tool="drain" aria-pressed="false"><span class="tk" style="--tc:#C49BFF">S</span>Drain</button>
-            </div>
-            <div class="tool-group" role="group" aria-label="Plan actions">
-              <label class="ortho"><input type="checkbox" id="plan-ortho" checked> Ortho</label>
-              <button type="button" class="tool-btn" id="plan-undo">Undo</button>
-              <button type="button" class="tool-btn" id="plan-clear">Clear</button>
-              <button type="button" class="tool-btn" id="plan-export">Export PNG</button>
-              <button type="button" class="tool-btn" id="plan-new">New image</button>
-            </div>
-          </div>
-
-          <div class="plan-statusbar">
-            <p id="plan-status" aria-live="polite"></p>
-            <span class="plan-measure" id="plan-measure"></span>
-            <button type="button" class="btn btn-solid btn-sm" id="plan-finish" hidden>Finish</button>
-            <button type="button" class="btn btn-outline btn-sm" id="plan-cancel" hidden>Cancel</button>
-          </div>
-
-          <form class="plan-scale-form" id="plan-scale-form" novalidate hidden>
-            <div class="field">
-              <label for="plan-scale-val">Real distance between the two points</label>
-              <div class="input-wrap"><input id="plan-scale-val" type="text" inputmode="decimal" autocomplete="off" spellcheck="false"><span class="unit" id="plan-scale-unit">m</span></div>
-            </div>
-            <button type="submit" class="btn btn-solid btn-sm">Set scale</button>
-            <button type="button" class="btn btn-outline btn-sm" id="plan-scale-cancel">Cancel</button>
-            <p class="err" id="plan-scale-err" hidden></p>
-          </form>
-
-          <div class="plan-body">
-            <div class="plan-canvas-wrap"><canvas id="plan-canvas" role="img" aria-label="Floor plan"></canvas></div>
-            <aside class="plan-side" aria-label="Plan details">
-              <section class="plan-panel" id="plan-params" aria-live="polite"></section>
-              <section class="plan-panel" aria-labelledby="plan-list-title">
-                <h3 id="plan-list-title">Elements</h3>
-                <ul class="plan-list" id="plan-list"></ul>
-                <p class="plan-totals" id="plan-totals"></p>
-              </section>
-            </aside>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="section" id="standards" aria-labelledby="std-title">
     <div class="wrap">
       <div class="section-head reveal">
-        <p class="eyebrow">05 — Codes &amp; Standards</p>
+        <p class="eyebrow">04 — Codes &amp; Standards</p>
         <h2 id="std-title">Where the numbers come from.</h2>
         <p>Every calculator, the method it uses and the code, standard or published source behind it — so you know what to check before a result goes into a design.</p>
       </div>
@@ -1293,7 +1157,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   <section class="section" id="about" aria-labelledby="about-title">
     <div class="wrap about-grid">
       <div class="section-head reveal">
-        <p class="eyebrow">06 — About the Toolbox</p>
+        <p class="eyebrow">05 — About the Toolbox</p>
         <h2 id="about-title">Built for practical engineering work.</h2>
         <p>MechToolBox is designed as a simple engineering reference and calculator hub for students, designers, technicians, draftsmen, and practicing engineers.</p>
       </div>
@@ -3978,7 +3842,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     var groups = DISC_ORDER.map(function (dk) {
       var ids = cardIds.filter(function (id) { return CALCS[id].disc === dk; });
       return [DISC[dk] + ' calculators', dk, ids];
-    }).concat([['Utilities & plan overlay', 'U', ['conv', 'rect', 'flow', 'ref', 'plan']]]);
+    }).concat([['Utilities', 'U', ['conv', 'rect', 'flow', 'ref']]]);
     var name = function (id) {
       if (CALCS[id]) return [CALCS[id].title, CALCS[id].code];
       return { conv: ['Unit Converter', 'UTIL / UNIT'], ref: ['MEP References', 'UTIL / HVAC'], plan: ['Plan Overlay', 'Section 03'] }[id];
@@ -7299,17 +7163,19 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     // Unit rates update the amounts as you type; settings rebuild the table when you leave the field.
     pjEl.addEventListener('input', function (e) {
       var k = e.target.dataset && e.target.dataset.rate; if (k == null) return;
-      var s = boqSet(), x = num(e.target.value);
-      if (x == null || x < 0) delete s.rates[k]; else s.rates[k] = x;
-      e.target.setAttribute('aria-invalid', e.target.value.trim() && (x == null || x < 0) ? 'true' : 'false');
+      var s = boqSet(), kind = e.target.dataset.kind, raw = e.target.value.trim(), x = num(raw), r = s.rates[k] || {};
+      if (!raw || x == null || x < 0) delete r[kind]; else r[kind] = x;
+      if (r.m == null && r.l == null) delete s.rates[k]; else s.rates[k] = r;
+      e.target.setAttribute('aria-invalid', raw && (x == null || x < 0) ? 'true' : 'false');
       boqStore(s); boqRecalc();
     });
     pjEl.addEventListener('change', function (e) {
-      var k = e.target.dataset && e.target.dataset.boq; if (!k) return;
-      var s = boqSet(), v = e.target.value.trim();
-      if (k === 'cur') s.cur = v.slice(0, 6);
-      else { var x = num(v); if (x == null || x < 0) { renderProjects(); return; } s[k] = k === 'flex' ? x * Q.len[sys][1] : x; }
+      var d = e.target.dataset || {}, k = d.boq || d.boqt; if (!k) return;
+      var s = boqSet(), v = e.target.value.trim(), open = !!($('.boq-sign') && $('.boq-sign').open);
+      if (d.boqt) s[k] = k === 'cur' ? v.slice(0, 6) : v.slice(0, 80);
+      else { var x = num(v); if (x == null || x < 0 || (k === 'div' && !(x >= 1 && x <= 12))) { renderProjects(); return; } s[k] = k === 'flex' ? x * Q.len[sys][1] : k === 'div' ? Math.round(x) : x; }
       boqStore(s); renderProjects();
+      if (open && $('.boq-sign')) $('.boq-sign').open = true;
       var back = document.getElementById('boq-' + k); if (back) back.focus();
     });
     pjEl.addEventListener('submit', function (e) {
@@ -7430,16 +7296,24 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   function pjReport() { var p = pjCur(); if (!p) return; if (!p.rooms.length) { window.alert('Add at least one room first.'); return; } rpOpen(pjReportHtml(p)); }
 
   /* ---------- BOQ / BOM (HVAC) from project rooms ---------- */
+  // Layout follows the common Philippine QS format: division → groups → items, material and labor unit costs,
+  // subtotals per group, then total cost, supervision & profit, contingencies, VAT, project cost and cost per area.
   var BOQ_KEY = 'mechtoolbox-boq';
   var BOQ_DEF_CUR = { ph: '₱', au: 'A$', us: '$' }, BOQ_DEF_TAX = { ph: 12, au: 10 };
+  var ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
   function boqSet() {
     var s = {}; try { s = JSON.parse(localStorage.getItem(BOQ_KEY) || '{}') || {}; } catch (e) {}
-    if (s.cur == null) s.cur = BOQ_DEF_CUR[codeBasis] || '';
-    if (s.tax == null) s.tax = BOQ_DEF_TAX[codeBasis] || 0;
-    if (s.cont == null) s.cont = 0;
-    if (s.allow == null) s.allow = 20;   // % added to straight duct for fittings, seams and waste
-    if (s.flex == null) s.flex = 1.5;    // m of flexible duct per diffuser
+    var m = rpMeta(), d = function (k, v) { if (s[k] == null) s[k] = v; };
+    d('cur', BOQ_DEF_CUR[codeBasis] || ''); d('tax', BOQ_DEF_TAX[codeBasis] || 0);
+    d('labor', 30);  // labor as % of material, when no labor rate is typed
+    d('sp', 10);     // supervision & profit, % of total cost
+    d('cont', 3);    // contingencies, % of (total + S&P)
+    d('allow', 20);  // duct fittings, seams and waste, % of straight duct
+    d('flex', 1.5);  // m of flexible duct per diffuser
+    d('div', 4);     // division number (IV — Mechanical Works)
+    d('owner', ''); d('prepBy', m.prepared || ''); d('prepPos', ''); d('chkBy', m.checked || ''); d('chkPos', ''); d('ctrBy', ''); d('ctrPos', '');
     s.rates = s.rates || {};
+    Object.keys(s.rates).forEach(function (k) { if (typeof s.rates[k] === 'number') s.rates[k] = { m: s.rates[k] }; }); // older single-rate price list
     return s;
   }
   function boqStore(s) { try { localStorage.setItem(BOQ_KEY, JSON.stringify(s)); } catch (e) {} }
@@ -7453,7 +7327,8 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     if (d) out.D = +d[1].replace(/,/g, '') * k(d[2]);
     return out;
   }
-  // Build the quantities. Lengths/areas are SI here; display units are applied when shown.
+  var BOQ_GROUPS = { A: 'Air-Conditioning Equipment', B: 'Air Distribution', C: 'Ductwork', D: 'Insulation and Flexible Duct', E: 'Controls, Drains and Testing', F: 'Others to complete' };
+  // Take-off from the rooms. Quantities are SI here; display units are applied when shown.
   function boqBuild(p, s) {
     var secs = [], warn = [], add = function (sec, key, desc, qty, unit, room, note) {
       var S = secs.filter(function (x) { return x.name === sec; })[0];
@@ -7463,25 +7338,22 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       it.qty += qty; if (room && it.rooms.indexOf(room) < 0) it.rooms.push(room);
     };
     var t = pjTotals(p), units = 0, noLen = [];
-    // A. Equipment
     p.rooms.forEach(function (r) {
       if (!(r.loadW > 0)) return;
       units++;
       var cap = acSize(r.loadW * 3.41214);
       add('A', 'ac|' + cap + '|' + (r.motor || ''), 'Ducted split / packaged air-conditioning unit, ' + cap + (r.supply > 0 ? ', ' + fq(r.supply, 'air') : '') + (r.esp > 0 ? ' at ' + fq(r.esp, 'pv') + ' ESP' : '') + (r.motor ? ', fan motor ' + r.motor : ''), 1, 'set', r.name);
     });
-    if (t.oa > 0) add('A', 'faf', 'Fresh-air fan with filter, backdraft damper and controls, ' + fq(t.oa, 'air'), 1, 'set', '', 'Size with the Fresh-Air Fan calculator.');
-    // B. Air distribution
+    if (t.oa > 0) add('A', 'faf', 'Fresh-air fan with filter, backdraft damper and controls, ' + fq(t.oa, 'air'), 1, 'set', '', 'Size with the Fresh-Air Fan calculator');
     p.rooms.forEach(function (r) {
       if (r.nDiff > 0) add('B', 'diff|' + (r.neck || ''), '4-way square ceiling diffuser 600 × 600' + (r.neck ? ', ' + r.neck + ' neck' : '') + ', with opposed-blade volume damper', r.nDiff, 'pcs', r.name);
       if (r.supply > 0) {
         var g = pickGrille(r.supply * 0.9 / NC_LIM['35'].ret, GRILLE_TYPES.eggcrate.fa);
         var gl = g.n > 1 ? g.label.replace(/^\d+ × /, '') : g.label; // "2 × 1200 × 600 mm" → one size, counted twice
-        add('B', 'rg|' + gl, 'Return-air grille, egg-crate core, ' + gl + ' (estimated at NC 35 face velocity)', g.n, 'pcs', r.name, 'Confirm with the Return Grille calculator.');
+        add('B', 'rg|' + gl, 'Return-air grille, egg-crate core, ' + gl, g.n, 'pcs', r.name, 'Estimated at NC 35 face velocity');
       }
     });
-    if (t.oa > 0) { var lv = pickGrille(t.oa / 2.5, LOUVER_TYPES.std.fa), ll = lv.n > 1 ? lv.label.replace(/^\d+ × /, '') : lv.label; add('B', 'louv|' + ll, 'Fresh-air intake louvre with bird screen, ' + ll + ' (estimated at 2.5 m/s free-area velocity)', lv.n, 'pcs', '', 'Confirm with the Fresh-Air Louver calculator.'); }
-    // C. Ductwork and D. Insulation
+    if (t.oa > 0) { var lv = pickGrille(t.oa / 2.5, LOUVER_TYPES.std.fa), ll = lv.n > 1 ? lv.label.replace(/^\d+ × /, '') : lv.label; add('B', 'louv|' + ll, 'Fresh-air intake louvre with bird screen, ' + ll, lv.n, 'pcs', '', 'Estimated at 2.5 m/s free-area velocity'); }
     var allow = 1 + (s.allow || 0) / 100;
     p.rooms.forEach(function (r) {
       var d = boqDuct(r.duct), len = (r.ductS || 0) + (r.ductR || 0);
@@ -7489,126 +7361,184 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       if (!(len > 0)) { noLen.push(r.name); return; }
       var rect = d.W > 0 && d.H > 0, per = rect ? 2 * (d.W + d.H) : Math.PI * (d.D || 0), side = rect ? Math.max(d.W, d.H) : d.D || 0;
       var ga = BOQ_GAUGE.filter(function (x) { return side <= x[0] + 1e-9; })[0];
-      var area = per * len * allow, kg = area * ga[2] * 7.85;
-      add('C', 'gi|' + ga[1] + '|' + (rect ? 'r' : 'o'), (rect ? 'Rectangular' : 'Spiral round') + ' galvanised-steel duct, ' + ga[1] + ', incl. fittings, joints, sealant and supports', area, 'area', r.name, '≈ ' + fmt(ga[2] * 7.85, 1) + ' kg/m² sheet');
-      add('C', 'kg|' + ga[1], 'Galvanised sheet weight, ' + ga[1] + ' (for reference)', kg, 'kg', r.name);
-      if (r.ductS > 0) add('D', 'ins25', 'Duct insulation, 25 mm fibreglass blanket with foil-scrim-kraft vapour barrier (supply duct)', per * r.ductS * allow, 'area', r.name, 'Confirm thickness with the Duct Insulation calculator.');
-      if (r.nDiff > 0 && s.flex > 0) add('D', 'flex|' + (r.neck || ''), 'Insulated flexible duct' + (r.neck ? ' ' + r.neck : '') + ' to diffusers, ' + fq(s.flex, 'len') + ' each', r.nDiff * s.flex, 'len', r.name);
+      var area = per * len * allow;
+      add('C', 'gi|' + ga[1] + '|' + (rect ? 'r' : 'o'), (rect ? 'Rectangular' : 'Spiral round') + ' G.I. duct, ' + ga[1] + ', incl. fittings, joints and sealant', area, 'area', r.name);
+      add('C', 'kg|' + ga[1], 'Galvanised sheet, ' + ga[1], area * ga[2] * 7.85, 'kg', r.name);
+      if (r.ductS > 0) add('D', 'ins25', 'Duct insulation, 25 mm THK fibreglass blanket with FSK vapour barrier (supply duct)', per * r.ductS * allow, 'area', r.name);
+      if (r.nDiff > 0 && s.flex > 0) add('D', 'flex|' + (r.neck || ''), 'Insulated flexible duct' + (r.neck ? ' ' + r.neck : '') + ', ' + fq(s.flex, 'len') + ' per diffuser', r.nDiff * s.flex, 'len', r.name);
     });
     if (noLen.length) warn.push('Enter supply / return duct run lengths for ' + noLen.join(', ') + ' (edit the room) to quantify ductwork.');
     if (!p.rooms.some(function (r) { return r.duct; })) warn.push('Save a duct size (Equal Friction step) to quantify ductwork.');
-    // E. Controls and testing
     if (units) {
       add('E', 'tstat', 'Room thermostat / wired controller', units, 'pcs', '');
       add('E', 'cond', 'Condensate drain piping with trap and insulation, per unit', units, 'lot', '');
     }
     if (p.rooms.length) add('E', 'tab', 'Testing, adjusting and balancing (TAB) of air systems, with report', 1, 'lot', '');
-    var NAMES = { A: 'Equipment', B: 'Air distribution', C: 'Ductwork', D: 'Insulation & flexible duct', E: 'Controls, drains & testing' };
+    if (secs.length) { add('F', 'hang', 'Hangers and supports', 1, 'lot', ''); add('F', 'cons', 'Consumables', 1, 'lot', ''); }
     secs.sort(function (a, b) { return a.name < b.name ? -1 : 1; });
-    secs.forEach(function (S) { S.title = NAMES[S.name]; S.items.forEach(function (it, i) { it.no = S.name + '.' + (i + 1); }); });
+    var dv = +s.div || 4;
+    secs.forEach(function (S, gi) {
+      S.title = BOQ_GROUPS[S.name]; S.no = dv + '.' + (gi + 1);
+      var kg = S.items.filter(function (it) { return it.unit === 'kg'; });
+      S.ref = kg; // sheet weight: BOM only — shown as a remark in the BOQ
+      S.items = S.items.filter(function (it) { return it.unit !== 'kg'; });
+      S.items.forEach(function (it, i) { it.no = S.no + '.' + (i + 1); });
+    });
     return { secs: secs, warn: warn };
   }
-  // Quantity in display units; rate keys carry the unit so a price per m² is never reused for ft².
   function boqQty(it) {
-    if (it.unit === 'area') return { q: it.qty / Q.area[sys][1], u: Q.area[sys][0] };
+    if (it.unit === 'area') return { q: it.qty / Q.area[sys][1], u: Q.area[sys][0] === 'm²' ? 'sq.m' : Q.area[sys][0] === 'ft²' ? 'sq.ft' : Q.area[sys][0] };
     if (it.unit === 'len') return { q: it.qty / Q.len[sys][1], u: Q.len[sys][0] };
     if (it.unit === 'kg') return { q: sys === 'si' ? it.qty : it.qty * 2.20462, u: sys === 'si' ? 'kg' : 'lb' };
     return { q: it.qty, u: it.unit };
   }
-  function boqRound(q, u) { return u === 'pcs' || u === 'set' || u === 'lot' ? Math.round(q) : Number(q.toFixed(1)); }
+  function boqRound(q, u) { return u === 'pcs' || u === 'set' || u === 'lot' ? Math.round(q) : Number(q.toFixed(2)); }
   function boqRateKey(it) { return it.key + '|' + boqQty(it).u; }
-  function boqMoney(x, s) { return (s.cur ? s.cur + ' ' : '') + x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-  function boqTotals(b, s) {
-    var sub = {}, net = 0;
+  var n2 = function (x) { return (x || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+  // All amounts for the current rates.
+  function boqCompute(p, s) {
+    var b = boqBuild(p, s), lp = (+s.labor || 0) / 100, div = { m: 0, l: 0, t: 0 };
     b.secs.forEach(function (S) {
-      sub[S.name] = 0;
-      S.items.forEach(function (it) { if (it.unit === 'kg') return; var dq = boqQty(it), rate = +s.rates[boqRateKey(it)] || 0; it.amount = boqRound(dq.q, dq.u) * rate; sub[S.name] += it.amount; });
-      net += sub[S.name];
+      S.sum = { m: 0, l: 0, t: 0 };
+      S.items.forEach(function (it) {
+        var dq = boqQty(it), r = s.rates[boqRateKey(it)] || {};
+        it.qd = boqRound(dq.q, dq.u); it.ud = dq.u;
+        it.mu = +r.m || 0; it.lAuto = r.l == null; it.lu = it.lAuto ? it.mu * lp : +r.l || 0; it.uu = it.mu + it.lu;
+        it.tm = it.qd * it.mu; it.tl = it.qd * it.lu; it.tt = it.tm + it.tl;
+        S.sum.m += it.tm; S.sum.l += it.tl; S.sum.t += it.tt;
+        var rem = [];
+        if (it.rooms.length) rem.push(it.rooms.join(', '));
+        if (it.note) rem.push(it.note);
+        if (S.name === 'C') S.ref.filter(function (k) { return k.key === 'kg|' + it.key.split('|')[1]; }).forEach(function (k) { var w = boqQty(k); rem.push('≈ ' + fmt(boqRound(w.q, w.u)) + ' ' + w.u + ' sheet'); });
+        it.remarks = rem.join(' · ');
+      });
+      div.m += S.sum.m; div.l += S.sum.l; div.t += S.sum.t;
     });
-    var cont = net * (+s.cont || 0) / 100, tax = (net + cont) * (+s.tax || 0) / 100;
-    return { sub: sub, net: net, cont: cont, tax: tax, total: net + cont + tax };
+    var tc = div.t, sp = tc * (+s.sp || 0) / 100, ct = (tc + sp) * (+s.cont || 0) / 100, vat = (tc + sp + ct) * (+s.tax || 0) / 100, proj = tc + sp + ct + vat;
+    var area = pjTotals(p).area / Q.area[sys][1];
+    return { b: b, div: div, tc: tc, sp: sp, ct: ct, vat: vat, proj: proj, area: area, psm: area > 0 ? proj / area : 0, dvNo: +s.div || 4 };
   }
+  var BOQ_AREA = function () { return sys === 'si' ? 'SQ.M' : 'SQ.FT'; };
   function boqPanelHtml(p) {
-    var s = boqSet(), b = boqBuild(p, s), T = boqTotals(b, s);
+    var s = boqSet(), C = boqCompute(p, s), b = C.b;
     if (!b.secs.length) return '<div class="boq" id="pj-boq"><p class="pj-hint">Save results to the rooms first (cooling load, diffusers, duct) — the BOQ is built from them.</p></div>';
-    var num = function (id, label, val, unit) { return '<div class="field"><label for="' + id + '">' + label + '</label><div class="input-wrap"><input id="' + id + '" data-boq="' + id.slice(4) + '" type="text" inputmode="decimal" autocomplete="off" value="' + esc(val) + '">' + (unit ? '<span class="unit">' + unit + '</span>' : '') + '</div></div>'; };
+    var fld = function (k, label, val, unit, text) { return '<div class="field"><label for="boq-' + k + '">' + label + '</label><div class="input-wrap"><input id="boq-' + k + '" ' + (text ? 'data-boqt' : 'data-boq') + '="' + k + '" type="text" ' + (text ? '' : 'inputmode="decimal" ') + 'autocomplete="off" value="' + esc(val) + '">' + (unit ? '<span class="unit">' + unit + '</span>' : '') + '</div></div>'; };
     var rows = b.secs.map(function (S) {
-      return '<tr class="boq-sec"><th colspan="6">' + S.name + ' · ' + esc(S.title) + '</th></tr>' + S.items.map(function (it) {
-        var dq = boqQty(it), ref = it.unit === 'kg';
-        return '<tr' + (ref ? ' class="boq-ref"' : '') + '><td class="boq-no">' + it.no + '</td><td>' + esc(it.desc) + (it.rooms.length ? '<span class="pj-sub">' + esc(it.rooms.join(', ')) + '</span>' : '') + (it.note ? '<span class="pj-sub">' + esc(it.note) + '</span>' : '') + '</td>' +
-          '<td class="num">' + fmt(boqRound(dq.q, dq.u)) + '</td><td>' + esc(dq.u) + '</td>' +
-          (ref ? '<td></td><td class="num pj-sub">reference</td>' : '<td><div class="input-wrap boq-rate"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Unit rate for ' + esc(it.no) + '" data-rate="' + esc(boqRateKey(it)) + '" value="' + esc(s.rates[boqRateKey(it)] != null ? s.rates[boqRateKey(it)] : '') + '" placeholder="0.00"></div></td><td class="num" data-amt="' + it.no + '">' + boqMoney(it.amount || 0, s) + '</td>') + '</tr>';
-      }).join('') + '<tr class="boq-subt"><td></td><td colspan="4">Subtotal ' + S.name + '</td><td class="num" data-sub="' + S.name + '">' + boqMoney(T.sub[S.name], s) + '</td></tr>';
+      return '<tr class="boq-grp"><td>' + S.no + '</td><td colspan="10">' + esc(S.title) + '</td></tr>' + S.items.map(function (it) {
+        var k = esc(boqRateKey(it));
+        return '<tr><td class="boq-no">' + it.no + '</td><td>' + esc(it.desc) + '</td><td class="num">' + fmt(it.qd) + '</td><td>' + esc(it.ud) + '</td>' +
+          '<td><div class="input-wrap boq-rate"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Material unit cost, ' + it.no + '" data-rate="' + k + '" data-kind="m" value="' + (it.mu ? it.mu : '') + '" placeholder="0.00"></div></td>' +
+          '<td><div class="input-wrap boq-rate"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Labor unit cost, ' + it.no + '" data-rate="' + k + '" data-kind="l" data-v="' + it.no + ':lph" value="' + (it.lAuto ? '' : it.lu) + '" placeholder="' + n2(it.lAuto ? it.lu : 0) + '"></div></td>' +
+          '<td class="num" data-v="' + it.no + ':uu">' + n2(it.uu) + '</td><td class="num" data-v="' + it.no + ':tm">' + n2(it.tm) + '</td><td class="num" data-v="' + it.no + ':tl">' + n2(it.tl) + '</td><td class="num" data-v="' + it.no + ':tt">' + n2(it.tt) + '</td>' +
+          '<td class="boq-rem">' + esc(it.remarks) + '</td></tr>';
+      }).join('') + '<tr class="boq-subt"><td></td><td colspan="6">Subtotal Cost:</td><td class="num" data-v="' + S.no + ':m">' + n2(S.sum.m) + '</td><td class="num" data-v="' + S.no + ':l">' + n2(S.sum.l) + '</td><td class="num" data-v="' + S.no + ':t">' + n2(S.sum.t) + '</td><td></td></tr>';
     }).join('');
-    return '<div class="boq" id="pj-boq"><div class="boq-head"><p class="pj-form-t">Bill of quantities — HVAC</p>' +
+    var dvName = ROMAN[C.dvNo] || C.dvNo;
+    return '<div class="boq" id="pj-boq"><div class="boq-head"><p class="pj-form-t">Bill of quantities — ' + dvName + ' Mechanical Works (HVAC)</p>' +
       '<div class="boq-exp"><button type="button" class="btn btn-solid btn-sm" id="boq-pdf">BOQ PDF</button><button type="button" class="btn btn-outline btn-sm" id="boq-csv">BOQ (Excel)</button><button type="button" class="btn btn-outline btn-sm" id="bom-csv">BOM (Excel)</button></div></div>' +
-      '<div class="fields boq-set">' + num('boq-cur', 'Currency', s.cur, '') + num('boq-cont', 'Contingency', s.cont, '%') + num('boq-tax', 'VAT / GST', s.tax, '%') + num('boq-allow', 'Duct fittings allowance', s.allow, '%') + num('boq-flex', 'Flex duct per diffuser', roundU(s.flex / Q.len[sys][1]), Q.len[sys][0]) + '</div>' +
+      '<div class="fields boq-set">' + fld('cur', 'Currency', s.cur, '', true) + fld('labor', 'Labor (if blank)', s.labor, '% of mat.') + fld('sp', 'Supervision & profit', s.sp, '%') +
+      fld('cont', 'Contingencies', s.cont, '%') + fld('tax', 'VAT / GST', s.tax, '%') + fld('allow', 'Duct fittings allowance', s.allow, '%') +
+      fld('flex', 'Flex duct per diffuser', roundU(s.flex / Q.len[sys][1]), Q.len[sys][0]) + fld('div', 'Division no.', s.div, '') + fld('owner', 'Owner', s.owner, '', true) + '</div>' +
+      '<details class="boq-sign"><summary>Signatories (Prepared / Checked / Counter checked)</summary><div class="fields boq-set">' +
+      fld('prepBy', 'Prepared by', s.prepBy, '', true) + fld('prepPos', 'Position', s.prepPos, '', true) + fld('chkBy', 'Checked by', s.chkBy, '', true) +
+      fld('chkPos', 'Position', s.chkPos, '', true) + fld('ctrBy', 'Counter checked by', s.ctrBy, '', true) + fld('ctrPos', 'Position', s.ctrPos, '', true) + '</div></details>' +
       (b.warn.length ? '<ul class="boq-warn">' + b.warn.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul>' : '') +
-      '<div class="table-wrap boq-table"><table><thead><tr><th scope="col">Item</th><th scope="col">Description</th><th scope="col">Qty</th><th scope="col">Unit</th><th scope="col">Unit rate</th><th scope="col">Amount</th></tr></thead><tbody>' + rows + '</tbody>' +
-      '<tfoot><tr><td></td><td colspan="4">Net total</td><td class="num" data-tot="net">' + boqMoney(T.net, s) + '</td></tr>' +
-      '<tr><td></td><td colspan="4">Contingency (' + fmt(+s.cont || 0) + ' %)</td><td class="num" data-tot="cont">' + boqMoney(T.cont, s) + '</td></tr>' +
-      '<tr><td></td><td colspan="4">VAT / GST (' + fmt(+s.tax || 0) + ' %)</td><td class="num" data-tot="tax">' + boqMoney(T.tax, s) + '</td></tr>' +
-      '<tr class="boq-grand"><td></td><td colspan="4">Grand total</td><td class="num" data-tot="total">' + boqMoney(T.total, s) + '</td></tr></tfoot></table></div>' +
-      '<p class="pj-hint boq-note">Quantities are preliminary take-offs from the saved room results. Ductwork uses typical SMACNA low-pressure gauges and the fittings allowance above; return grilles and the louvre are estimated. Your unit rates are remembered on this device.</p></div>';
+      '<div class="table-wrap boq-table"><table><thead><tr><th rowspan="2">Item no.</th><th rowspan="2">Scope of work / item description</th><th rowspan="2">Qty</th><th rowspan="2">UOM</th><th colspan="3" class="c">Unit cost' + (s.cur ? ' (' + esc(s.cur) + ')' : '') + '</th>' +
+      '<th rowspan="2">Total material cost</th><th rowspan="2">Total labor cost</th><th rowspan="2">Total material &amp; labor cost</th><th rowspan="2">Remarks</th></tr><tr><th>Material</th><th>Labor</th><th>Total</th></tr></thead><tbody>' +
+      '<tr class="boq-div"><td>' + dvName + '</td><td colspan="10">MECHANICAL WORKS</td></tr>' + rows +
+      '<tr class="boq-divt"><td></td><td colspan="6">Total Cost ' + dvName + ' - Mechanical Works:</td><td class="num" data-v="div:m">' + n2(C.div.m) + '</td><td class="num" data-v="div:l">' + n2(C.div.l) + '</td><td class="num" data-v="div:t">' + n2(C.div.t) + '</td><td></td></tr></tbody>' +
+      '<tfoot><tr><td colspan="7">TOTAL COST</td><td class="num" data-v="div:m2">' + n2(C.div.m) + '</td><td class="num" data-v="div:l2">' + n2(C.div.l) + '</td><td class="num" data-v="sum:tc">' + n2(C.tc) + '</td><td></td></tr>' +
+      '<tr><td colspan="9">SUPERVISION &amp; PROFIT (' + fmt(+s.sp || 0) + ' %)</td><td class="num" data-v="sum:sp">' + n2(C.sp) + '</td><td></td></tr>' +
+      '<tr><td colspan="9">CONTINGENCIES (' + fmt(+s.cont || 0) + ' %)</td><td class="num" data-v="sum:ct">' + n2(C.ct) + '</td><td></td></tr>' +
+      '<tr><td colspan="9">VAT (' + fmt(+s.tax || 0) + ' %)</td><td class="num" data-v="sum:vat">' + n2(C.vat) + '</td><td></td></tr>' +
+      '<tr class="boq-grand"><td colspan="9">PROJECT COST (LABOR, LIGHT EQUIPMENT AND POWER TOOLS)</td><td class="num" data-v="sum:proj">' + n2(C.proj) + '</td><td></td></tr>' +
+      '<tr><td colspan="9">COST PER ' + BOQ_AREA() + ' (' + fmt(C.area) + ' ' + (sys === 'si' ? 'sq.m' : 'sq.ft') + ')</td><td class="num" data-v="sum:psm">' + n2(C.psm) + '</td><td></td></tr></tfoot></table></div>' +
+      '<p class="pj-hint boq-note">Type material unit costs; labor fills in at the labor % unless you type it. Contingencies apply to total + supervision & profit, and VAT to all three — the usual QS build-up. Quantities are preliminary take-offs from the saved room results. Your price list is remembered on this device.</p></div>';
   }
-  // Refresh amounts and totals in place while typing rates (keeps focus).
+  // Refresh every amount in place while typing (keeps focus).
   function boqRecalc() {
     var p = pjCur(); if (!p) return;
-    var s = boqSet(), b = boqBuild(p, s), T = boqTotals(b, s);
-    b.secs.forEach(function (S) { S.items.forEach(function (it) { var c = $('[data-amt="' + it.no + '"]'); if (c) c.textContent = boqMoney(it.amount || 0, s); }); var su = $('[data-sub="' + S.name + '"]'); if (su) su.textContent = boqMoney(T.sub[S.name], s); });
-    ['net', 'cont', 'tax', 'total'].forEach(function (k) { var c = $('[data-tot="' + k + '"]'); if (c) c.textContent = boqMoney(T[k], s); });
+    var s = boqSet(), C = boqCompute(p, s), set = function (k, v) { var c = $('[data-v="' + k + '"]'); if (c) c.textContent = n2(v); };
+    C.b.secs.forEach(function (S) {
+      S.items.forEach(function (it) { set(it.no + ':uu', it.uu); set(it.no + ':tm', it.tm); set(it.no + ':tl', it.tl); set(it.no + ':tt', it.tt); var ph = $('[data-v="' + it.no + ':lph"]'); if (ph) ph.placeholder = n2(it.lAuto ? it.lu : 0); });
+      set(S.no + ':m', S.sum.m); set(S.no + ':l', S.sum.l); set(S.no + ':t', S.sum.t);
+    });
+    set('div:m', C.div.m); set('div:l', C.div.l); set('div:t', C.div.t); set('div:m2', C.div.m); set('div:l2', C.div.l);
+    set('sum:tc', C.tc); set('sum:sp', C.sp); set('sum:ct', C.ct); set('sum:vat', C.vat); set('sum:proj', C.proj); set('sum:psm', C.psm);
   }
   function boqCsv(withPrices) {
     var p = pjCur(); if (!p) return;
-    var s = boqSet(), b = boqBuild(p, s), T = boqTotals(b, s), meta = rpMeta();
+    var s = boqSet(), C = boqCompute(p, s), b = C.b, dvName = ROMAN[C.dvNo] || C.dvNo, meta = rpMeta(), r2 = function (x) { return Number((x || 0).toFixed(2)); };
     var cell = function (v) { v = v == null ? '' : String(v); return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
-    var lines = [[withPrices ? 'MechToolBox bill of quantities — HVAC' : 'MechToolBox bill of materials — HVAC'], ['Project', p.name], ['Location / client', meta.location || ''],
-      ['Code basis', REG[codeBasis] ? REG[codeBasis].name : 'International'], ['Date', new Date().toISOString().slice(0, 10)], [],
-      withPrices ? ['Item', 'Description', 'Qty', 'Unit', 'Unit rate' + (s.cur ? ' (' + s.cur + ')' : ''), 'Amount' + (s.cur ? ' (' + s.cur + ')' : '')] : ['Item', 'Description', 'Qty', 'Unit', 'Rooms', 'Notes']];
-    b.secs.forEach(function (S) {
-      lines.push([S.name, S.title.toUpperCase()]);
-      S.items.forEach(function (it) {
-        var dq = boqQty(it), q = boqRound(dq.q, dq.u);
-        if (withPrices) { if (it.unit === 'kg') lines.push([it.no, it.desc, q, dq.u, '', 'reference']); else lines.push([it.no, it.desc, q, dq.u, +s.rates[boqRateKey(it)] || 0, Number((it.amount || 0).toFixed(2))]); }
-        else lines.push([it.no, it.desc, q, dq.u, it.rooms.join('; '), it.note]);
-      });
-      if (withPrices) lines.push(['', 'Subtotal ' + S.name, '', '', '', Number(T.sub[S.name].toFixed(2))]);
-      lines.push([]);
-    });
+    var L = [['Project', p.name], ['Location', meta.location || ''], ['Owner', s.owner || ''], ['Area', fmt(C.area) + (sys === 'si' ? ' sq.m' : ' sq.ft')], [], [withPrices ? 'BILL OF QUANTITIES' : 'BILL OF MATERIALS'], []];
     if (withPrices) {
-      lines.push(['', 'Net total', '', '', '', Number(T.net.toFixed(2))], ['', 'Contingency (' + (+s.cont || 0) + ' %)', '', '', '', Number(T.cont.toFixed(2))],
-        ['', 'VAT / GST (' + (+s.tax || 0) + ' %)', '', '', '', Number(T.tax.toFixed(2))], ['', 'Grand total', '', '', '', Number(T.total.toFixed(2))]);
+      L.push(['ITEM NO.', 'SCOPE OF WORK / ITEM DESCRIPTION', 'QTY', 'UOM', 'UNIT COST - MATERIAL', 'UNIT COST - LABOR', 'UNIT COST - TOTAL', 'TOTAL MATERIAL COST', 'TOTAL LABOR COST', 'TOTAL MATERIAL & LABOR COST', 'REMARKS']);
+      L.push([dvName, 'MECHANICAL WORKS']);
+      b.secs.forEach(function (S) {
+        L.push([S.no, S.title]);
+        S.items.forEach(function (it) { L.push([it.no, it.desc, it.qd, it.ud, r2(it.mu), r2(it.lu), r2(it.uu), r2(it.tm), r2(it.tl), r2(it.tt), it.remarks]); });
+        L.push(['', 'Subtotal Cost:', '', '', '', '', '', r2(S.sum.m), r2(S.sum.l), r2(S.sum.t)]);
+      });
+      L.push(['', 'Total Cost ' + dvName + ' - Mechanical Works:', '', '', '', '', '', r2(C.div.m), r2(C.div.l), r2(C.div.t)], []);
+      L.push(['TOTAL COST', '', '', '', '', '', '', r2(C.div.m), r2(C.div.l), r2(C.tc)], ['SUPERVISION & PROFIT (' + (+s.sp || 0) + '%)', '', '', '', '', '', '', '', '', r2(C.sp)],
+        ['CONTINGENCIES (' + (+s.cont || 0) + '%)', '', '', '', '', '', '', '', '', r2(C.ct)], ['VAT (' + (+s.tax || 0) + '%)', '', '', '', '', '', '', '', '', r2(C.vat)],
+        ['PROJECT COST (LABOR, LIGHT EQUIPMENT AND POWER TOOLS)', '', '', '', '', '', '', '', '', r2(C.proj)], ['COST PER ' + BOQ_AREA(), '', '', '', '', '', '', '', '', r2(C.psm)]);
+    } else {
+      L.push(['ITEM NO.', 'DESCRIPTION', 'QTY', 'UOM', 'ROOMS / REMARKS']);
+      b.secs.forEach(function (S) {
+        L.push([S.no, S.title]);
+        S.items.forEach(function (it) { L.push([it.no, it.desc, it.qd, it.ud, it.remarks]); });
+        S.ref.forEach(function (k) { var w = boqQty(k); L.push(['', k.desc + ' (weight)', boqRound(w.q, w.u), w.u, k.rooms.join(', ')]); });
+      });
     }
-    pjSaveFile(pjFileBase(p) + (withPrices ? '-BOQ.csv' : '-BOM.csv'), '﻿' + lines.map(function (r) { return r.map(cell).join(','); }).join('\r\n'), 'text/csv;charset=utf-8');
+    L.push([], ['Prepared by', s.prepBy, s.prepPos], ['Checked by', s.chkBy, s.chkPos], ['Counter checked by', s.ctrBy, s.ctrPos]);
+    pjSaveFile(pjFileBase(p) + (withPrices ? '-BOQ.csv' : '-BOM.csv'), '﻿' + L.map(function (r) { return r.map(cell).join(','); }).join('\r\n'), 'text/csv;charset=utf-8');
   }
   function boqPdf() {
     var p = pjCur(); if (!p) return;
-    var s = boqSet(), b = boqBuild(p, s), T = boqTotals(b, s), m = rpMeta(), E = esc, now = new Date(), pad = function (x) { return (x < 10 ? '0' : '') + x; };
+    var s = boqSet(), C = boqCompute(p, s), b = C.b, m = rpMeta(), E = esc, dvName = ROMAN[C.dvNo] || C.dvNo, now = new Date(), pad = function (x) { return (x < 10 ? '0' : '') + x; };
     var dateTxt = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
     var refNo = 'MTB-' + dateTxt.replace(/-/g, '') + '-BOQ-' + (pjFileBase(p).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12) || 'PROJECT');
-    var meta = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + (v ? E(v) : '<span class="blank">—</span>') + '</dd></div>'; };
-    var body = b.secs.map(function (S) {
-      return '<tbody><tr class="grp"><th colspan="6">' + S.name + ' · ' + E(S.title) + '</th></tr>' + S.items.map(function (it) {
-        var dq = boqQty(it), ref = it.unit === 'kg';
-        return '<tr><td>' + it.no + '</td><td>' + E(it.desc) + (it.rooms.length ? '<div class="sub">' + E(it.rooms.join(', ')) + '</div>' : '') + '</td><td class="num">' + fmt(boqRound(dq.q, dq.u)) + '</td><td>' + E(dq.u) + '</td>' +
-          (ref ? '<td></td><td class="num sub">reference</td>' : '<td class="num">' + (s.rates[boqRateKey(it)] ? boqMoney(+s.rates[boqRateKey(it)], s) : '') + '</td><td class="num">' + boqMoney(it.amount || 0, s) + '</td>') + '</tr>';
-      }).join('') + '<tr class="key"><td></td><td colspan="4">Subtotal ' + S.name + ' · ' + E(S.title) + '</td><td class="num">' + boqMoney(T.sub[S.name], s) + '</td></tr></tbody>';
-    }).join('');
-    var css = rpCss(refNo, 'A4') + '\n.boq td,.boq th{font-size:8.8pt}.boq thead th{background:#F1F6F4;font:600 7pt/1.3 "IBM Plex Mono",Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;color:#4D6560}.boq tbody{break-inside:auto}.boq tr{break-inside:avoid}.boq .sub{color:#4D6560;font-size:7.6pt}.boq td:first-child{width:7%}.boq td:nth-child(3){width:9%}.boq td:nth-child(4){width:6%}.boq td:nth-child(5),.boq td:nth-child(6){width:14%;text-align:right}.boq tfoot{display:table-row-group}.boq tfoot td{font-weight:600}.boq tfoot .grand td{font-weight:700;background:#ECF8F3;border-top:2px solid #0F7A57}';
-    var html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + E(refNo + ' — ' + p.name + ' BOQ') + '</title>' +
-      '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet"><style>' + css + '</style></head><body>' +
+    var blanks = new Array(10).join('<td></td>');
+    var body = '<tbody><tr class="div"><td>' + dvName + '</td><td colspan="10">MECHANICAL WORKS</td></tr></tbody>' + b.secs.map(function (S) {
+      return '<tbody class="g"><tr class="grp"><td>' + S.no + '</td><td class="b">' + E(S.title) + '</td>' + blanks + '</tr>' + S.items.map(function (it) {
+        return '<tr><td class="in">' + it.no + '</td><td class="in">' + E(it.desc) + '</td><td class="n">' + n2(it.qd) + '</td><td class="c">' + E(it.ud) + '</td><td class="n">' + n2(it.mu) + '</td><td class="n">' + n2(it.lu) + '</td><td class="n">' + n2(it.uu) + '</td>' +
+          '<td class="n">' + n2(it.tm) + '</td><td class="n">' + n2(it.tl) + '</td><td class="n">' + n2(it.tt) + '</td><td class="rem">' + E(it.remarks) + '</td></tr>';
+      }).join('') + '<tr class="sub"><td></td><td colspan="6" class="c">Subtotal Cost:</td><td class="n">' + n2(S.sum.m) + '</td><td class="n">' + n2(S.sum.l) + '</td><td class="n">' + n2(S.sum.t) + '</td><td></td></tr></tbody>';
+    }).join('') + '<tbody><tr class="divt"><td></td><td colspan="6" class="c">Total Cost ' + dvName + ' - Mechanical Works:</td><td class="n">' + n2(C.div.m) + '</td><td class="n">' + n2(C.div.l) + '</td><td class="n">' + n2(C.div.t) + '</td><td></td></tr></tbody>';
+    var sum = function (label, v, cls) { return '<tr class="sum' + (cls ? ' ' + cls : '') + '"><td colspan="9">' + label + '</td><td class="n">' + v + '</td><td></td></tr>'; };
+    var foot = '<tr class="sum tot"><td colspan="7">TOTAL COST</td><td class="n">' + n2(C.div.m) + '</td><td class="n">' + n2(C.div.l) + '</td><td class="n">' + n2(C.tc) + '</td><td></td></tr>' +
+      sum('SUPERVISION &amp; PROFIT', n2(C.sp)) + sum('CONTINGENCIES', n2(C.ct)) + sum('VAT', n2(C.vat)) +
+      sum('PROJECT COST (LABOR, LIGHT EQUIPMENT AND POWER TOOLS)', n2(C.proj), 'proj') + sum('COST PER ' + BOQ_AREA(), C.psm ? n2(C.psm) : '—');
+    var sig = function (k, name, pos) { return '<div><p class="k">' + k + '</p><p class="nm">' + (name ? E(name) : '&nbsp;') + '</p><p class="ps">' + (pos ? E(pos) : '&nbsp;') + '</p></div>'; };
+    var css = rpCss(refNo, 'A4 landscape') + '\n' + [
+      'body{font-family:Arial,Helvetica,sans-serif}.page.wide{max-width:none}',
+      '.hdr{font:700 8.5pt/1.5 Arial,sans-serif;margin:0 0 6px}.hdr span{display:inline-block;width:62px}',
+      'h1.t{font:700 11pt Arial,sans-serif;text-align:center;margin:10px 0 8px;letter-spacing:.02em}',
+      'table.q{width:100%;table-layout:fixed;border-collapse:collapse;font:7.6pt/1.3 Arial,sans-serif;border:1.5px solid #000}',
+      'table.q th,table.q td{border:1px solid #000;padding:2px 4px;vertical-align:middle}',
+      'table.q tbody td{border-top:0;border-bottom:0;padding-top:3px;padding-bottom:3px}table.q tbody tr:not(.sub):not(.divt):not(.div):not(.sum) td{border-left:1px solid #000;border-right:1px solid #000}table.q tbody tr.sub td,table.q tbody tr.divt td,table.q tbody tr.div td{border:1px solid #000}',
+      'table.q thead th{background:#D9D9D9;font-weight:700;text-align:center;font-size:7.4pt}',
+      'table.q .n{text-align:right;white-space:nowrap}table.q .c{text-align:center}table.q .in{padding-left:10px}table.q .b{font-weight:700}',
+      'table.q tr.div td{background:#8EA9DB;font-weight:700}table.q tr.grp td{font-weight:700}',
+      'table.q tr.sub td{background:#D9E1F2}table.q tr.divt td{background:#8EA9DB;font-weight:700}',
+      'table.q tr.sum td{background:#D9D9D9;font-weight:700;font-size:8.2pt;border:1px solid #000;padding:3px 6px}table.q tr.sum.tot td{border-top:2px solid #000}',
+      'table.q .rem{font-size:6.8pt;color:#333}table.q td,table.q th{overflow-wrap:anywhere}',
+      'table.q thead{display:table-header-group}table.q tr{break-inside:avoid}table.q tbody.g,table.q tbody.foot{break-inside:avoid}',
+      '.sigs{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:34px;break-inside:avoid;font:8pt Arial,sans-serif}',
+      '.sigs .k{margin:0 0 26px}.sigs .nm{margin:0;font-weight:700}.sigs .ps{margin:0;color:#333}',
+      '.mt{margin-top:10px;font:7pt Arial,sans-serif;color:#555}'
+    ].join('\n');
+    var html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + E(refNo + ' — ' + p.name + ' BOQ') + '</title><style>' + css + '</style></head><body>' +
       '<div class="bar"><button type="button" onclick="window.print()">Print / Save as PDF</button><button type="button" class="o" onclick="window.close()">Close</button></div>' +
-      '<div class="page"><header><div class="logo">MECH<i>/</i><b>TOOLBOX</b><div class="doc" style="text-align:left;margin-top:6px">Bill of quantities — HVAC</div></div><div class="doc">Ref. <strong>' + E(refNo) + '</strong>Date <strong>' + dateTxt + '</strong></div></header>' +
-      '<p class="code" style="margin:14px 0 0">BILL OF QUANTITIES · MECHANICAL (HVAC)</p><h1>' + E(p.name) + '</h1>' +
-      '<dl class="meta">' + meta('Project', p.name) + meta('Location / client', m.location) + meta('Prepared by', m.prepared) + meta('Checked by', m.checked) +
-      meta('Code basis', REG[codeBasis] ? REG[codeBasis].name : 'International') + meta('Units', sys === 'si' ? 'SI (metric)' : 'Imperial (IP)') + meta('Currency', s.cur || '—') + meta('Status', 'Preliminary estimate') + '</dl>' +
-      '<section class="flow"><table class="boq"><thead><tr><th>Item</th><th>Description</th><th>Qty</th><th>Unit</th><th>Unit rate</th><th>Amount</th></tr></thead>' + body +
-      '<tfoot><tr><td></td><td colspan="4">Net total</td><td class="num">' + boqMoney(T.net, s) + '</td></tr><tr><td></td><td colspan="4">Contingency (' + fmt(+s.cont || 0) + ' %)</td><td class="num">' + boqMoney(T.cont, s) + '</td></tr>' +
-      '<tr><td></td><td colspan="4">VAT / GST (' + fmt(+s.tax || 0) + ' %)</td><td class="num">' + boqMoney(T.tax, s) + '</td></tr><tr class="grand"><td></td><td colspan="4">Grand total</td><td class="num">' + boqMoney(T.total, s) + '</td></tr></tfoot></table></section>' +
-      '<section class="flow"><h2><span>i</span>Notes</h2><ul class="plain">' + b.warn.concat(['Quantities are preliminary take-offs from MechToolBox room results; verify against the final drawings.', 'Ductwork: typical SMACNA low-pressure (±500 Pa) galvanised gauges by longest side, plus ' + fmt(+s.allow || 0) + ' % for fittings, joints and waste. Sheet weight is for reference and is not priced.',
-        'Return grilles and the fresh-air louvre are estimated; confirm sizes with their calculators and manufacturer data.', 'Rates are entered by the user and exclude items not listed (electrical power, builder\'s works, ceilings, permits).']).map(function (t) { return '<li>' + E(t) + '</li>'; }).join('') + '</ul></section>' +
-      '<div class="sign"><div>Prepared by<b>' + (m.prepared ? E(m.prepared) : '&nbsp;') + '</b></div><div>Checked by<b>' + (m.checked ? E(m.checked) : '&nbsp;') + '</b></div></div>' +
-      '<footer><span>Generated with MechToolBox · Built by JAB</span><span>' + E(refNo) + '</span></footer></div>' +
+      '<div class="page wide"><p class="hdr"><span>Project</span>: ' + E(p.name) + '<br><span>Location</span>: ' + E(m.location || '') + '<br><span>Owner</span>: ' + E(s.owner || '') +
+      '<br><span>Area</span>: ' + (C.area > 0 ? fmt(C.area) : '___') + (sys === 'si' ? ' sq.m' : ' sq.ft') + '</p>' +
+      '<h1 class="t">BILL OF QUANTITIES</h1>' +
+      '<table class="q"><colgroup><col style="width:5%"><col style="width:26%"><col style="width:5%"><col style="width:4.5%"><col style="width:7.5%"><col style="width:7%"><col style="width:7.5%"><col style="width:8.5%"><col style="width:8%"><col style="width:9%"><col style="width:12%"></colgroup><thead><tr><th rowspan="2">ITEM NO.</th><th rowspan="2">SCOPE OF WORK / ITEM DESCRIPTION</th><th rowspan="2">QTY</th><th rowspan="2">UOM</th><th colspan="3">UNIT COST</th>' +
+      '<th rowspan="2">TOTAL<br>MATERIAL COST</th><th rowspan="2">TOTAL LABOR<br>COST</th><th rowspan="2">TOTAL MATERIAL<br>&amp; LABOR COST</th><th rowspan="2">REMARKS</th></tr>' +
+      '<tr><th>MATERIAL</th><th>LABOR</th><th>TOTAL</th></tr></thead>' + body + '<tbody class="foot">' + foot + '</tbody></table>' +
+      '<p class="mt">Amounts in ' + E(s.cur || 'local currency') + '. Supervision & profit ' + fmt(+s.sp || 0) + ' % of total cost; contingencies ' + fmt(+s.cont || 0) + ' % of total + S&P; VAT ' + fmt(+s.tax || 0) + ' % of total + S&P + contingencies. Quantities are preliminary take-offs from MechToolBox — verify against final drawings. Ref. ' + E(refNo) + '.</p>' +
+      '<div class="sigs">' + sig('Prepared by:', s.prepBy, s.prepPos) + sig('Checked by:', s.chkBy, s.chkPos) + sig('Counter Checked by:', s.ctrBy, s.ctrPos) + '</div></div>' +
       '<scr' + 'ipt>window.addEventListener("load",function(){setTimeout(function(){window.print()},350)});<\/scr' + 'ipt></body></html>';
     rpOpen(html);
   }
@@ -7618,485 +7548,9 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   planRefresh = function () { planRefreshBase(); renderProjects(); };
   renderProjects();
 
-  /* ---------- Plan overlay ---------- */
-  // Geometry is stored in image pixels; plan.scale is image pixels per metre.
-  var PLAN_TOOLS = {
-    duct:      { calc: 'duct',      disc: 'M', name: 'Duct run',         color: '#5CE0B0', kind: 'line' },
-    load:      { calc: 'cool',      disc: 'M', name: 'Room load',        color: '#5CE0B0', kind: 'rect' },
-    cable:     { calc: 'vdrop',     disc: 'E', name: 'Cable run',        color: '#FFC857', kind: 'line' },
-    pipe:      { calc: 'pipe',      disc: 'P', name: 'Pipe run',         color: '#6CB8FF', kind: 'line' },
-    sprinkler: { calc: 'sprinkler', disc: 'F', name: 'Sprinkler layout', color: '#FF7A6B', kind: 'rect' },
-    drain:     { calc: 'drain',     disc: 'S', name: 'Drain run',        color: '#C49BFF', kind: 'line' }
-  };
-  var plan = { img: null, w: 0, h: 0, scale: 0, tool: 'scale', items: [], draft: [], rect: null, scalePts: [], hover: null, hi: -1, cssW: 0 };
-  var pc = $('#plan-canvas'), pctx = pc.getContext('2d'), pWrap = $('.plan-canvas-wrap');
-
+  function planRefresh() {} // the plan overlay was removed; kept so callers stay simple
+  // Value of the first result row with this label (used by drawings, suggestions and projects).
   function rowVal(rows, label) { for (var i = 0; i < rows.length; i++) if (rows[i][0] === label) return rows[i][1]; return ''; }
-  function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
-  function polyLen(pts) { var s = 0; for (var i = 1; i < pts.length; i++) s += dist(pts[i - 1], pts[i]); return s; }
-  function rgba(hex, a) { var n = parseInt(hex.slice(1), 16); return 'rgba(' + (n >> 16) + ',' + (n >> 8 & 255) + ',' + (n & 255) + ',' + a + ')'; }
-
-  // Size an element from the calculator values captured when it was drawn.
-  function describe(it) {
-    var p = it.p;
-    if (it.tool === 'load') {
-      var rw = it.rect.w / plan.scale, rh = it.rect.h / plan.scale, ra = rw * rh;
-      var cd = coolLoad(p).total / p.area, hd = it.ph ? heatLoad(it.ph).total / it.ph.area : 0;
-      return {
-        kw: cd * ra,
-        label: '≈ ' + pw(cd * ra) + ' cool' + (it.ph ? ' · ' + pw(hd * ra) + ' heat' : ''),
-        detail: 'Room ' + fq(rw, 'len') + ' × ' + fq(rh, 'len') + ' · ' + fmt(cd * ra * 3.41214 / 12000, 2) + ' TR · ' + density(cd) + ' cooling' + (it.ph ? ', ' + density(hd) + ' heating' : '')
-      };
-    }
-    if (it.tool === 'sprinkler') {
-      var W = it.rect.w / plan.scale, H = it.rect.h / plan.scale, S = Math.min(Math.sqrt(p.cov), 4.572);
-      var nx = Math.max(1, Math.ceil(W / S - 1e-9)), ny = Math.max(1, Math.ceil(H / S - 1e-9));
-      return {
-        nx: nx, ny: ny, count: nx * ny,
-        label: nx * ny + ' heads · ' + fq(W / nx, 'len') + ' × ' + fq(H / ny, 'len'),
-        detail: 'Room ' + fq(W, 'len') + ' × ' + fq(H, 'len') + ' · ' + rowVal(CALCS.sprinkler.calc(p), 'Flow per sprinkler') + ' per head'
-      };
-    }
-    var L = polyLen(it.pts) / plan.scale, len = fq(L, 'len');
-    if (it.tool === 'duct') {
-      var D = Math.sqrt(4 * (p.q / p.v) / Math.PI);
-      return { len: L, width: D, label: 'Ø ' + fq(D, 'dia') + ' · ' + fq(p.q, 'air'), detail: len + ' · ' + fq(p.v, 'vduct') };
-    }
-    if (it.tool === 'pipe') {
-      var pr = CALCS.pipe.calc({ d: p.d, q: p.q, l: L });
-      return { len: L, width: p.d, label: 'Ø ' + fq(p.d, 'dia') + ' · ΔP ' + rowVal(pr, 'Pressure drop'), detail: len + ' · ' + fq(p.q, 'liq') + ' · ' + rowVal(pr, 'Velocity') };
-    }
-    if (it.tool === 'cable') {
-      var cr = CALCS.vdrop.calc(Object.assign({}, p, { l: L }));
-      var warn = rowVal(cr, 'Check (3 % limit)').indexOf('Exceeds') === 0;
-      return { len: L, warn: warn, label: fq(p.a, 'csa') + ' · ' + fmt(p.i) + ' A · ΔV ' + cr[1][1], detail: len + (warn ? ' · over 3 % — upsize the cable' : ' · within 3 %') };
-    }
-    var dr = CALCS.drain.calc(p);
-    return { len: L, width: p.d, label: 'Ø ' + fq(p.d, 'dia') + ' @ ' + fmt(p.s) + ' % · fall ' + fq(L * p.s / 100, 'len'), detail: len + ' · capacity ' + rowVal(dr, 'Flow capacity') };
-  }
-
-  /* Drawing */
-  function pathPts(ctx, pts) { ctx.beginPath(); pts.forEach(function (q, i) { if (i) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y); }); }
-  function tag(ctx, text, x, y, color, u) {
-    ctx.setLineDash([]);
-    ctx.font = '500 ' + 12 * u + 'px "IBM Plex Mono", ui-monospace, monospace';
-    var w = ctx.measureText(text).width + 12 * u, h = 20 * u;
-    var bx = Math.max(2 * u, Math.min(x - w / 2, plan.w - w - 2 * u)), by = Math.max(2 * u, Math.min(y - h - 6 * u, plan.h - h - 2 * u));
-    // Nudge the tag down until it clears tags already placed in this paint pass.
-    var hits = function () {
-      return plan.tags.some(function (t) { return bx < t.x + t.w && bx + w > t.x && by < t.y + t.h && by + h > t.y; });
-    };
-    for (var tries = 0; tries < 8 && hits(); tries++) by = Math.min(by + h + 3 * u, plan.h - h - 2 * u);
-    plan.tags.push({ x: bx, y: by, w: w, h: h });
-    ctx.fillStyle = 'rgba(7,17,15,0.9)'; ctx.fillRect(bx, by, w, h);
-    ctx.strokeStyle = color; ctx.lineWidth = u; ctx.strokeRect(bx, by, w, h);
-    ctx.fillStyle = color; ctx.textBaseline = 'middle'; ctx.fillText(text, bx + 6 * u, by + h / 2);
-  }
-  function anchor(pts) {
-    var best = -1, bi = 1;
-    for (var i = 1; i < pts.length; i++) { var d = dist(pts[i - 1], pts[i]); if (d > best) { best = d; bi = i; } }
-    return { x: (pts[bi - 1].x + pts[bi].x) / 2, y: (pts[bi - 1].y + pts[bi].y) / 2 };
-  }
-  function chevrons(ctx, pts, color, u) {
-    ctx.strokeStyle = color; ctx.lineWidth = 1.5 * u; ctx.setLineDash([]);
-    for (var i = 1; i < pts.length; i++) {
-      var a = pts[i - 1], b = pts[i], d = dist(a, b);
-      if (!d) continue;
-      var ux = (b.x - a.x) / d, uy = (b.y - a.y) / d, s = 6 * u;
-      for (var t = 24 * u; t < d - 8 * u; t += 56 * u) {
-        var x = a.x + ux * t, y = a.y + uy * t;
-        ctx.beginPath();
-        ctx.moveTo(x - ux * s - uy * s, y - uy * s + ux * s); ctx.lineTo(x, y); ctx.lineTo(x - ux * s + uy * s, y - uy * s - ux * s);
-        ctx.stroke();
-      }
-    }
-  }
-  function drawItem(ctx, it, u, hi) {
-    var t = PLAN_TOOLS[it.tool], c = t.color, info = describe(it);
-    ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.setLineDash([]);
-    if (it.tool === 'load') {
-      var R = it.rect;
-      ctx.fillStyle = rgba(c, hi ? 0.2 : 0.1); ctx.fillRect(R.x, R.y, R.w, R.h);
-      ctx.strokeStyle = c; ctx.lineWidth = (hi ? 3 : 1.5) * u; ctx.setLineDash([2 * u, 3 * u]); ctx.strokeRect(R.x, R.y, R.w, R.h);
-      tag(ctx, info.label, R.x + R.w / 2, R.y + R.h / 2 + 16 * u, c, u);
-      return;
-    }
-    if (it.tool === 'sprinkler') {
-      var r = it.rect, sx = r.w / info.nx, sy = r.h / info.ny, i, j;
-      if (hi) { ctx.fillStyle = 'rgba(232,243,239,0.08)'; ctx.fillRect(r.x, r.y, r.w, r.h); }
-      ctx.strokeStyle = rgba(c, 0.3); ctx.lineWidth = u; ctx.setLineDash([4 * u, 4 * u]); ctx.beginPath();
-      if (info.nx + info.ny <= 400) {
-        for (i = 1; i < info.nx; i++) { ctx.moveTo(r.x + i * sx, r.y); ctx.lineTo(r.x + i * sx, r.y + r.h); }
-        for (j = 1; j < info.ny; j++) { ctx.moveTo(r.x, r.y + j * sy); ctx.lineTo(r.x + r.w, r.y + j * sy); }
-      }
-      ctx.stroke();
-      ctx.strokeStyle = c; ctx.lineWidth = (hi ? 3 : 1.5) * u; ctx.setLineDash([8 * u, 4 * u]); ctx.strokeRect(r.x, r.y, r.w, r.h);
-      ctx.setLineDash([]);
-      if (info.nx * info.ny <= 2000) for (i = 0; i < info.nx; i++) for (j = 0; j < info.ny; j++) {
-        var hx = r.x + (i + 0.5) * sx, hy = r.y + (j + 0.5) * sy;
-        ctx.beginPath(); ctx.arc(hx, hy, 5 * u, 0, Math.PI * 2);
-        ctx.fillStyle = c; ctx.fill(); ctx.strokeStyle = '#07110F'; ctx.lineWidth = 1.5 * u; ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(hx - 3 * u, hy); ctx.lineTo(hx + 3 * u, hy); ctx.moveTo(hx, hy - 3 * u); ctx.lineTo(hx, hy + 3 * u); ctx.stroke();
-      }
-      tag(ctx, info.label, r.x + r.w / 2, r.y, c, u);
-      return;
-    }
-    var pts = it.pts, px = info.width ? Math.max(3 * u, info.width * plan.scale) : 2 * u;
-    if (hi) { ctx.strokeStyle = 'rgba(232,243,239,0.35)'; ctx.lineWidth = px + 8 * u; pathPts(ctx, pts); ctx.stroke(); }
-    if (it.tool === 'duct') {
-      ctx.strokeStyle = rgba(c, 0.3); ctx.lineWidth = Math.max(6 * u, px); ctx.lineCap = 'butt'; pathPts(ctx, pts); ctx.stroke();
-      ctx.strokeStyle = c; ctx.lineWidth = 1.2 * u; ctx.setLineDash([10 * u, 4 * u, 2 * u, 4 * u]); pathPts(ctx, pts); ctx.stroke();
-    } else if (it.tool === 'cable') {
-      ctx.strokeStyle = info.warn ? '#FF9A85' : c; ctx.lineWidth = 2 * u; ctx.setLineDash([7 * u, 4 * u]); pathPts(ctx, pts); ctx.stroke();
-    } else {
-      ctx.strokeStyle = rgba(c, 0.85); ctx.lineWidth = px; pathPts(ctx, pts); ctx.stroke();
-      if (it.tool === 'drain') chevrons(ctx, pts, px >= 10 * u ? '#07110F' : c, u);
-    }
-    ctx.setLineDash([]); ctx.fillStyle = c;
-    pts.forEach(function (q) { ctx.beginPath(); ctx.arc(q.x, q.y, 2.5 * u, 0, Math.PI * 2); ctx.fill(); });
-    var a = anchor(pts);
-    tag(ctx, info.label, a.x, a.y - px / 2, info.warn ? '#FF9A85' : c, u);
-  }
-  function drawDraft(ctx, u) {
-    var t = PLAN_TOOLS[plan.tool], hv = plan.hover;
-    if (plan.tool === 'scale' && plan.scalePts.length) {
-      var sp = plan.scalePts.concat(plan.scalePts.length < 2 && hv ? [hv] : []);
-      ctx.strokeStyle = '#E8F3EF'; ctx.lineWidth = 1.5 * u; ctx.setLineDash([6 * u, 4 * u]); pathPts(ctx, sp); ctx.stroke(); ctx.setLineDash([]);
-      sp.forEach(function (q) { ctx.beginPath(); ctx.arc(q.x, q.y, 4 * u, 0, Math.PI * 2); ctx.fillStyle = '#E8F3EF'; ctx.fill(); });
-      return;
-    }
-    if (!t) return;
-    if (t.kind === 'rect' && plan.rect) {
-      ctx.strokeStyle = t.color; ctx.lineWidth = 1.5 * u; ctx.setLineDash([6 * u, 4 * u]);
-      ctx.strokeRect(plan.rect.x, plan.rect.y, plan.rect.w, plan.rect.h); ctx.setLineDash([]);
-      return;
-    }
-    if (!plan.draft.length) return;
-    var pts = plan.draft.concat(hv ? [hv] : []);
-    ctx.strokeStyle = t.color; ctx.lineWidth = 2 * u; ctx.setLineDash([6 * u, 4 * u]); pathPts(ctx, pts); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle = t.color;
-    plan.draft.forEach(function (q) { ctx.beginPath(); ctx.arc(q.x, q.y, 3.5 * u, 0, Math.PI * 2); ctx.fill(); });
-  }
-  function drawScaleBar(ctx, u) {
-    var unit = sys === 'si' ? 1 : 0.3048, name = sys === 'si' ? 'm' : 'ft', steps = [0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500], n = steps[0];
-    steps.forEach(function (s) { if (s * unit * plan.scale <= 160 * u) n = s; });
-    var len = n * unit * plan.scale, x = 12 * u, y = plan.h - 14 * u;
-    ctx.fillStyle = 'rgba(7,17,15,0.85)'; ctx.fillRect(x - 6 * u, y - 24 * u, len + 64 * u, 34 * u);
-    ctx.strokeStyle = '#E8F3EF'; ctx.lineWidth = 1.5 * u; ctx.setLineDash([]);
-    ctx.beginPath(); ctx.moveTo(x, y - 6 * u); ctx.lineTo(x, y); ctx.lineTo(x + len, y); ctx.lineTo(x + len, y - 6 * u); ctx.stroke();
-    ctx.fillStyle = '#E8F3EF'; ctx.font = '500 ' + 11 * u + 'px "IBM Plex Mono", ui-monospace, monospace'; ctx.textBaseline = 'alphabetic';
-    ctx.fillText(fmt(n) + ' ' + name, x + len + 8 * u, y);
-  }
-  function paint(ctx, u, live) {
-    ctx.clearRect(0, 0, plan.w, plan.h);
-    ctx.drawImage(plan.img, 0, 0, plan.w, plan.h);
-    plan.tags = [];
-    plan.items.forEach(function (it, i) { drawItem(ctx, it, u, live && i === plan.hi); });
-    if (live) drawDraft(ctx, u);
-    if (plan.scale) drawScaleBar(ctx, u);
-  }
-  function planRender() {
-    if (!plan.img) return;
-    var cssW = pWrap.clientWidth;
-    if (!cssW) return;
-    var k = cssW / plan.w, dpr = window.devicePixelRatio || 1;
-    plan.cssW = cssW;
-    pc.width = Math.round(cssW * dpr); pc.height = Math.round(plan.h * k * dpr);
-    pc.style.height = plan.h * k + 'px';
-    pctx.setTransform(k * dpr, 0, 0, k * dpr, 0, 0);
-    paint(pctx, 1 / k, true);
-  }
-  var renderQueued = false;
-  function queueRender() {
-    if (renderQueued) return;
-    renderQueued = true;
-    requestAnimationFrame(function () { renderQueued = false; planRender(); updateMeasure(); });
-  }
-
-  /* Panels & status */
-  function setStatus(msg) { $('#plan-status').textContent = msg; }
-  function updateMeasure() {
-    var m = '', t = PLAN_TOOLS[plan.tool];
-    if (t && t.kind === 'line' && plan.draft.length) m = 'Length ' + fq(polyLen(plan.draft.concat(plan.hover ? [plan.hover] : [])) / plan.scale, 'len');
-    if (t && t.kind === 'rect' && plan.rect) m = fq(plan.rect.w / plan.scale, 'len') + ' × ' + fq(plan.rect.h / plan.scale, 'len');
-    $('#plan-measure').textContent = m;
-    $('#plan-finish').hidden = !(t && t.kind === 'line' && plan.draft.length >= 2);
-    $('#plan-cancel').hidden = !(plan.draft.length || plan.scalePts.length);
-  }
-  function toolHelp() {
-    var t = PLAN_TOOLS[plan.tool];
-    if (plan.tool === 'scale') return 'Step 1 · Scale — click both ends of a dimension you know (a wall, door or grid line), then enter its real length.';
-    if (!t) return 'Pick a tool to start drawing.';
-    if (plan.tool === 'load') return 'Room load — drag across a room. Cooling and heating are scaled from the Cooling and Heat Load calculators (load per floor area).';
-    if (t.kind === 'rect') return t.name + ' — drag across a room. Heads are spaced from the Sprinkler calculator coverage (max 4.6 m / 15 ft).';
-    return t.name + ' — click to place points. Click the last point again, press Enter or tap Finish to complete. Esc cancels. Ortho keeps runs straight (Shift toggles).';
-  }
-  function renderParams() {
-    var box = $('#plan-params'), t = PLAN_TOOLS[plan.tool];
-    if (!t) {
-      box.innerHTML = '<h3>Scale</h3><p>' + (plan.scale
-        ? 'Set — <strong>1 ' + (sys === 'si' ? 'm' : 'ft') + ' = ' + fmt(plan.scale * (sys === 'si' ? 1 : 0.3048), 1) + ' px</strong> of the image. Measure again any time to correct it.'
-        : 'Not set yet. Click two points of a known dimension on the plan.') + '</p>';
-      return;
-    }
-    var d = CALCS[t.calc], r = readVals(t.calc);
-    box.innerHTML = '<h3><span class="tk" style="--tc:' + t.color + '">' + t.disc + '</span> ' + esc(t.name) + '</h3>' +
-      '<p>Sized by <strong>' + esc(d.title) + '</strong> (' + d.code + '). New elements use these values.</p>' +
-      '<dl class="rows plan-kv">' + d.fields.map(function (f) {
-        var val = f.opts ? f.opts.filter(function (o) { return o[0] === vals[t.calc][f.k]; })[0][1] : vals[t.calc][f.k] + ' ' + unitOf(f);
-        return '<div><dt>' + esc(f.label) + '</dt><dd>' + esc(val) + '</dd></div>';
-      }).join('') + '</dl>' +
-      (r.bad ? '<p class="err">' + esc(r.msg) + '</p>' : '') +
-      '<button type="button" class="btn btn-outline btn-sm" data-open="' + t.calc + '">Edit values</button>' +
-      (plan.tool === 'load' ? '<button type="button" class="btn btn-outline btn-sm" data-open="heat">Edit heating</button>' : '') +
-      (plan.items.some(function (it) { return it.tool === plan.tool; }) && !r.bad ? '<button type="button" class="btn btn-outline btn-sm" id="plan-apply">Apply to all</button>' : '');
-  }
-  function refreshList() {
-    var ul = $('#plan-list'), counts = {}, totals = {};
-    if (!plan.items.length) {
-      ul.innerHTML = '<li class="plan-empty">Nothing drawn yet.</li>';
-    } else {
-      ul.innerHTML = plan.items.map(function (it, i) {
-        var t = PLAN_TOOLS[it.tool], info = describe(it), n = counts[it.tool] = (counts[it.tool] || 0) + 1;
-        totals[it.tool] = (totals[it.tool] || 0) + (it.tool === 'sprinkler' ? info.count : it.tool === 'load' ? info.kw : info.len);
-        return '<li data-i="' + i + '"><span class="tk" style="--tc:' + t.color + '">' + t.disc + '</span>' +
-          '<span class="txt"><strong>' + esc(t.name) + ' ' + n + '</strong><br><span' + (info.warn ? ' class="warn"' : '') + '>' + esc(info.label) + '</span><br>' +
-          '<span class="sub">' + esc(info.detail) + '</span></span>' +
-          '<button type="button" class="icon-btn" data-del="' + i + '" aria-label="Delete ' + esc(t.name) + ' ' + n + '">' +
-          '<svg width="14" height="14" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></li>';
-      }).join('');
-    }
-    var parts = Object.keys(totals).map(function (k) {
-      if (k === 'sprinkler') return totals[k] + ' sprinkler heads';
-      if (k === 'load') return 'Cooling ' + pw(totals[k]) + ' (' + fmt(totals[k] * 3.41214 / 12000, 2) + ' TR)';
-      return PLAN_TOOLS[k].name.replace(' run', '') + ' ' + fq(totals[k], 'len');
-    });
-    $('#plan-totals').textContent = parts.length ? 'Totals: ' + parts.join(' · ') : '';
-    pc.setAttribute('aria-label', 'Floor plan' + (parts.length ? ' with ' + parts.join(', ') : ''));
-  }
-  function planRefresh() {
-    if (!plan.img) return;
-    renderParams(); refreshList(); planRender(); updateMeasure();
-    $('#plan-scale-unit').textContent = sys === 'si' ? 'm' : 'ft';
-  }
-
-  /* Tools */
-  function cancelDraft() {
-    plan.draft = []; plan.rect = null; plan.scalePts = [];
-    $('#plan-scale-form').hidden = true;
-    queueRender();
-  }
-  function setTool(tool) {
-    if (tool !== 'scale' && !plan.scale) { setStatus('Set the scale first — click both ends of a known dimension.'); tool = 'scale'; }
-    cancelDraft();
-    plan.tool = tool;
-    $$('.tool-btn[data-tool]').forEach(function (b) {
-      b.setAttribute('aria-pressed', b.dataset.tool === tool ? 'true' : 'false');
-      b.setAttribute('aria-disabled', b.dataset.tool !== 'scale' && !plan.scale ? 'true' : 'false');
-    });
-    pc.classList.add('drawing');
-    renderParams();
-    setStatus(toolHelp());
-    updateMeasure();
-  }
-  function addItem(geom) {
-    var t = PLAN_TOOLS[plan.tool], r = readVals(t.calc);
-    if (r.bad) { setStatus('Fix the ' + CALCS[t.calc].title + ' values first: ' + r.msg); return; }
-    var it = { tool: plan.tool, p: r.v };
-    if (plan.tool === 'load') { var hr = readVals('heat'); it.ph = hr.bad ? null : hr.v; }
-    if (geom.pts) it.pts = geom.pts; else it.rect = geom.rect;
-    plan.items.push(it);
-    refreshList(); renderParams();
-    setStatus(t.name + ' added — ' + describe(it).label + '.');
-  }
-  function finishDraft() {
-    if (plan.draft.length >= 2 && polyLen(plan.draft) > 0) addItem({ pts: plan.draft.slice() });
-    plan.draft = []; plan.hover = null;
-    queueRender();
-  }
-  function snapTo(pt, e, from) {
-    if (!from || $('#plan-ortho').checked === e.shiftKey) return pt;
-    return Math.abs(pt.x - from.x) > Math.abs(pt.y - from.y) ? { x: pt.x, y: from.y } : { x: from.x, y: pt.y };
-  }
-  function toImg(e) {
-    var r = pc.getBoundingClientRect();
-    return { x: (e.clientX - r.left) / r.width * plan.w, y: (e.clientY - r.top) / r.height * plan.h };
-  }
-
-  pc.addEventListener('pointerdown', function (e) {
-    if (!plan.img || e.button > 0) return;
-    var pt = toImg(e), t = PLAN_TOOLS[plan.tool];
-    if (plan.tool === 'scale') {
-      if (plan.scalePts.length >= 2) { plan.scalePts = []; $('#plan-scale-form').hidden = true; }
-      plan.scalePts.push(snapTo(pt, e, plan.scalePts[0]));
-      if (plan.scalePts.length === 2) {
-        $('#plan-scale-form').hidden = false; $('#plan-scale-err').hidden = true;
-        $('#plan-scale-val').value = ''; $('#plan-scale-val').focus();
-        setStatus('Now enter the real length of the line you measured.');
-      }
-      queueRender();
-      return;
-    }
-    if (!t) return;
-    var r = readVals(t.calc);
-    if (r.bad) { setStatus('Fix the ' + CALCS[t.calc].title + ' values first: ' + r.msg); return; }
-    if (t.kind === 'rect') {
-      plan.rect = { x0: pt.x, y0: pt.y, x: pt.x, y: pt.y, w: 0, h: 0 };
-      try { pc.setPointerCapture(e.pointerId); } catch (err) { /* keep dragging without capture */ }
-      queueRender();
-      return;
-    }
-    var last = plan.draft[plan.draft.length - 1];
-    pt = snapTo(pt, e, last);
-    if (last && dist(last, pt) < 6 * plan.w / plan.cssW) { finishDraft(); return; } // clicking the last point again finishes
-    plan.draft.push(pt);
-    queueRender();
-  });
-  pc.addEventListener('pointermove', function (e) {
-    if (!plan.img) return;
-    var pt = toImg(e);
-    if (plan.rect) {
-      var R = plan.rect;
-      R.x = Math.min(R.x0, pt.x); R.y = Math.min(R.y0, pt.y); R.w = Math.abs(pt.x - R.x0); R.h = Math.abs(pt.y - R.y0);
-    } else {
-      var from = plan.tool === 'scale' ? plan.scalePts[0] : plan.draft[plan.draft.length - 1];
-      plan.hover = snapTo(pt, e, plan.tool === 'scale' && plan.scalePts.length !== 1 ? null : from);
-    }
-    queueRender();
-  });
-  pc.addEventListener('pointerup', function () {
-    if (!plan.rect) return;
-    var R = plan.rect, minPx = 12 * plan.w / plan.cssW;
-    plan.rect = null;
-    if (R.w > minPx && R.h > minPx) addItem({ rect: { x: R.x, y: R.y, w: R.w, h: R.h } });
-    queueRender();
-  });
-  pc.addEventListener('pointerleave', function () { plan.hover = null; queueRender(); });
-
-  $('#plan-scale-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var x = num($('#plan-scale-val').value), err = $('#plan-scale-err');
-    var px = plan.scalePts.length === 2 ? dist(plan.scalePts[0], plan.scalePts[1]) : 0;
-    if (!(x > 0) || !px) { err.textContent = 'Enter the real length as a positive number.'; err.hidden = false; return; }
-    plan.scale = px / (x * (sys === 'si' ? 1 : 0.3048));
-    setTool('duct');
-    setStatus('Scale set. Now pick a tool — Duct is selected. ' + toolHelp());
-    planRefresh();
-  });
-  $('#plan-scale-cancel').addEventListener('click', function () { cancelDraft(); setStatus(toolHelp()); });
-  $('#plan-finish').addEventListener('click', finishDraft);
-  $('#plan-cancel').addEventListener('click', function () { cancelDraft(); setStatus(toolHelp()); });
-  $$('.tool-btn[data-tool]').forEach(function (b) { b.addEventListener('click', function () { setTool(b.dataset.tool); }); });
-  $('#plan-ortho').addEventListener('change', queueRender);
-
-  function planUndo() {
-    if (plan.draft.length) plan.draft.pop();
-    else if (plan.scalePts.length) cancelDraft();
-    else if (plan.items.length) { plan.items.pop(); refreshList(); renderParams(); }
-    queueRender();
-  }
-  $('#plan-undo').addEventListener('click', planUndo);
-  $('#plan-clear').addEventListener('click', function () {
-    if (plan.items.length && !window.confirm('Remove all ' + plan.items.length + ' drawn elements?')) return;
-    plan.items = []; cancelDraft(); refreshList(); renderParams();
-  });
-  $('#plan-export').addEventListener('click', function () {
-    var c = document.createElement('canvas');
-    c.width = plan.w; c.height = plan.h;
-    paint(c.getContext('2d'), Math.max(1, plan.w / (plan.cssW || plan.w)), false);
-    c.toBlob(function (blob) {
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob); a.download = 'mechtoolbox-plan.png';
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
-    });
-  });
-  $('#plan-new').addEventListener('click', function () {
-    if (plan.items.length && !window.confirm('Start over with a new image? Your drawn elements will be removed.')) return;
-    $('#plan-file').click();
-  });
-
-  $('#plan-list').addEventListener('click', function (e) {
-    var b = e.target.closest('[data-del]');
-    if (!b) return;
-    plan.items.splice(+b.dataset.del, 1);
-    plan.hi = -1;
-    refreshList(); renderParams(); queueRender();
-    var next = $('#plan-list [data-del]');
-    (next || $('#plan-undo')).focus();
-  });
-  ['pointerover', 'focusin'].forEach(function (ev) {
-    $('#plan-list').addEventListener(ev, function (e) {
-      var li = e.target.closest('li[data-i]');
-      var i = li ? +li.dataset.i : -1;
-      if (i !== plan.hi) { plan.hi = i; queueRender(); }
-    });
-  });
-  ['pointerleave', 'focusout'].forEach(function (ev) {
-    $('#plan-list').addEventListener(ev, function () { plan.hi = -1; queueRender(); });
-  });
-  $('#plan-params').addEventListener('click', function (e) {
-    if (!e.target.closest('#plan-apply')) return;
-    var t = PLAN_TOOLS[plan.tool], r = readVals(t.calc);
-    if (r.bad) return;
-    var hv = readVals('heat');
-    plan.items.forEach(function (it) {
-      if (it.tool !== plan.tool) return;
-      it.p = r.v;
-      if (it.tool === 'load') it.ph = hv.bad ? null : hv.v;
-    });
-    planRefresh();
-    setStatus('Updated every ' + t.name.toLowerCase() + ' with the current ' + CALCS[t.calc].title + ' values.');
-  });
-
-  /* Loading the image */
-  function loadPlanFile(file) {
-    var err = $('#plan-drop-err');
-    if (!file || !/^image\//.test(file.type)) { err.textContent = 'That file is not an image — use a PNG or JPG screenshot.'; err.hidden = false; return; }
-    var reader = new FileReader();
-    reader.onload = function () {
-      var img = new Image();
-      img.onload = function () {
-        plan.img = img; plan.w = img.naturalWidth; plan.h = img.naturalHeight;
-        plan.items = []; plan.scale = 0; plan.hi = -1;
-        err.hidden = true;
-        $('#plan-drop').hidden = true; $('#plan-work').hidden = false;
-        setTool('scale');
-        planRefresh();
-      };
-      img.onerror = function () { err.textContent = 'The image could not be read.'; err.hidden = false; };
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
-  }
-  var drop = $('#plan-drop');
-  $('#plan-choose').addEventListener('click', function () { $('#plan-file').click(); });
-  $('#plan-file').addEventListener('change', function (e) { loadPlanFile(e.target.files[0]); e.target.value = ''; });
-  ['dragenter', 'dragover'].forEach(function (ev) {
-    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); });
-  });
-  ['dragleave', 'drop'].forEach(function (ev) {
-    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('over'); });
-  });
-  drop.addEventListener('drop', function (e) { loadPlanFile(e.dataTransfer.files[0]); });
-  document.addEventListener('paste', function (e) {
-    if (modal.open || !e.clipboardData) return;
-    var item = Array.prototype.filter.call(e.clipboardData.items || [], function (i) { return i.type.indexOf('image/') === 0; })[0];
-    if (!item) return;
-    if (plan.items.length && !window.confirm('Replace the current plan with the pasted image?')) return;
-    e.preventDefault();
-    loadPlanFile(item.getAsFile());
-    $('#plan').scrollIntoView({ block: 'start' });
-  });
-  document.addEventListener('keydown', function (e) {
-    if (!plan.img || modal.open || /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
-    if (e.key === 'Enter' && plan.draft.length) { e.preventDefault(); finishDraft(); }
-    else if (e.key === 'Escape' && (plan.draft.length || plan.scalePts.length || plan.rect)) { cancelDraft(); setStatus(toolHelp()); }
-    else if (e.key === 'Backspace' && plan.draft.length) { e.preventDefault(); plan.draft.pop(); queueRender(); }
-    else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && (document.activeElement === document.body || $('#plan-app').contains(document.activeElement))) { e.preventDefault(); planUndo(); }
-  });
-  if ('ResizeObserver' in window) new ResizeObserver(function () { queueRender(); }).observe(pWrap);
-  else window.addEventListener('resize', queueRender);
 
   /* ---------- Unit system toggle ---------- */
   function syncSys() {
