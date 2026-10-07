@@ -6924,20 +6924,10 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       notes: $$('.note', mBody).map(function (p) { return p.textContent.trim(); }).concat($$('.cl-limits li', mBody).map(function (li) { return li.textContent.trim(); }))
     };
   }
-  function rpHtml(r, m) {
-    var now = new Date(), pad = function (n) { return (n < 10 ? '0' : '') + n; };
-    var dateTxt = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
-    var refNo = 'MTB-' + dateTxt.replace(/-/g, '') + '-' + r.code.replace(/[^A-Z0-9]/gi, '');
-    var basis = REG[codeBasis] ? REG[codeBasis].name : 'International (ASHRAE / NFPA / IPC / NEC)';
-    var E = esc, meta = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + (v ? E(v) : '<span class="blank">—</span>') + '</dd></div>'; };
-    var inputs = r.groups.map(function (g) {
-      return (g.name ? '<tr class="grp"><th colspan="3">' + E(g.name) + '</th></tr>' : '') +
-        g.items.map(function (it) { return '<tr><td>' + E(it[0]) + '</td><td class="num">' + E(it[1]) + '</td><td class="unit">' + E(it[2]) + '</td></tr>'; }).join('');
-    }).join('');
-    var results = r.rows.map(function (x) { return '<tr' + (x[3] ? ' class="key"' : '') + '><td>' + E(x[0]) + '</td><td class="num">' + E(x[1]) + '</td><td class="sub">' + E(x[2]) + '</td></tr>'; }).join('');
-    var n = 0, sec = function (cls, title, body) { if (!body) return ''; n++; return '<section class="' + cls + '"><h2><span>' + (n < 10 ? '0' : '') + n + '</span>' + title + '</h2>' + body + '</section>'; };
-    var css = [
-      '@page{size:A4;margin:14mm 14mm 16mm}',
+  // Print stylesheet shared by the calculation report and the project report.
+  function rpCss(refNo, size) {
+    return [
+      '@page{size:' + (size || 'A4') + ';margin:14mm 14mm 16mm}',
       '*{box-sizing:border-box}html,body{margin:0;background:#fff;color:#14201C;-webkit-print-color-adjust:exact;print-color-adjust:exact}',
       'body{font:10.5pt/1.45 Inter,"Segoe UI",Arial,sans-serif}',
       '.bar{position:sticky;top:0;display:flex;gap:8px;justify-content:flex-end;padding:10px 16px;background:#07110F;z-index:2}',
@@ -6972,8 +6962,23 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       'footer{margin-top:18px;padding-top:8px;border-top:1px solid #CFDDD8;font-size:7.8pt;color:#4D6560;display:flex;justify-content:space-between;gap:12px}',
       '@page{@bottom-left{content:"Generated with MechToolBox · Built by JAB";font:7.5pt Inter,Arial,sans-serif;color:#4D6560}@bottom-right{content:"' + refNo + ' · Page " counter(page) " of " counter(pages);font:7.5pt Inter,Arial,sans-serif;color:#4D6560}}',
       '@media print{.bar{display:none}.page{padding:0;max-width:none}footer{display:none}}',
+      '.page.wide{max-width:none}@media screen{.page.wide{max-width:277mm}}',
       '@media screen{body{background:#E9EFED}.page{background:#fff;padding:16mm 14mm;margin:18px auto;box-shadow:0 10px 30px rgba(0,0,0,.12)}}'
     ].join('\n');
+  }
+  function rpHtml(r, m) {
+    var now = new Date(), pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    var dateTxt = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+    var refNo = 'MTB-' + dateTxt.replace(/-/g, '') + '-' + r.code.replace(/[^A-Z0-9]/gi, '');
+    var basis = REG[codeBasis] ? REG[codeBasis].name : 'International (ASHRAE / NFPA / IPC / NEC)';
+    var E = esc, meta = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + (v ? E(v) : '<span class="blank">—</span>') + '</dd></div>'; };
+    var inputs = r.groups.map(function (g) {
+      return (g.name ? '<tr class="grp"><th colspan="3">' + E(g.name) + '</th></tr>' : '') +
+        g.items.map(function (it) { return '<tr><td>' + E(it[0]) + '</td><td class="num">' + E(it[1]) + '</td><td class="unit">' + E(it[2]) + '</td></tr>'; }).join('');
+    }).join('');
+    var results = r.rows.map(function (x) { return '<tr' + (x[3] ? ' class="key"' : '') + '><td>' + E(x[0]) + '</td><td class="num">' + E(x[1]) + '</td><td class="sub">' + E(x[2]) + '</td></tr>'; }).join('');
+    var n = 0, sec = function (cls, title, body) { if (!body) return ''; n++; return '<section class="' + cls + '"><h2><span>' + (n < 10 ? '0' : '') + n + '</span>' + title + '</h2>' + body + '</section>'; };
+    var css = rpCss(refNo, 'A4');
     return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + E(refNo + ' — ' + r.title) + '</title>' +
       '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">' +
       '<style>' + css + '</style></head><body>' +
@@ -7002,7 +7007,11 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     var m = {};
     $$('[data-rp]', mBody).forEach(function (i) { m[i.dataset.rp] = i.value.trim(); });
     try { localStorage.setItem(RP_KEY, JSON.stringify(m)); } catch (e) {}
-    var html = rpHtml(rpCollect(), m), w = null;
+    rpOpen(rpHtml(rpCollect(), m));
+    rpClose();
+  }
+  function rpOpen(html) {
+    var w = null;
     try { w = window.open('', '_blank'); } catch (e) {}
     if (w && w.document) { w.document.open(); w.document.write(html); w.document.close(); }
     else { // pop-up blocked: print from a hidden frame instead
@@ -7012,7 +7021,6 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       fr.contentDocument.open(); fr.contentDocument.write(html.replace(/<scr[i]pt>[\s\S]*?<\/scr[i]pt>/, '')); fr.contentDocument.close();
       setTimeout(function () { fr.contentWindow.focus(); fr.contentWindow.print(); setTimeout(function () { fr.remove(); }, 2000); }, 600);
     }
-    rpClose();
   }
   function rpClose() { var p = $('#report-panel'); if (p) p.remove(); var b = $('#pdf-btn'); if (b) { b.setAttribute('aria-expanded', 'false'); b.focus(); } }
   mBody.addEventListener('click', function (e) {
@@ -7076,7 +7084,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     cool: function (r, v) { var c = coolLoad(v); r.loadW = c.total; r.supply = c.sens * 1.1 / (1.21 * 10) / 1000; r.people = v.n; },
     oa: function (r, v, rows) { r.oaQ = inSI(rowVal(rows, 'Outdoor air'), 'air'); },
     ach: function (r, v, rows) { if (v.mode !== 'toach') r.supply = inSI(rowVal(rows, 'Airflow'), 'air'); },
-    ndiff: function (r, v, rows) { r.nDiff = numIn(rowVal(rows, 'Diffusers')); r.supply = v.q; },
+    ndiff: function (r, v, rows) { r.nDiff = numIn(rowVal(rows, 'Diffusers')); r.supply = v.q; if (r.nDiff > 0) r.neck = SPEC_SDIFF({ q: v.q / r.nDiff, t: 'sq4', nc: '35' })[0][1]; },
     cfmd: function (r, v, rows) { r.nDiff = v.n; r.neck = rowVal(rows, 'Neck size'); },
     sdiff: function (r, v, rows) { r.neck = rowVal(rows, 'Neck size'); },
     duct: function (r, v, rows) { r.duct = rowVal(rows, 'Rectangular') + ' / ' + rowVal(rows, 'Standard round'); },
@@ -7091,7 +7099,8 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     var rows = CALCS[id].calc(res.v);
     try { if (PJ_TAKE[id]) PJ_TAKE[id](r, res.v, rows); } catch (e) {}
     r.saved = r.saved || {};
-    r.saved[id] = { t: Date.now(), rows: rows.filter(function (x) { return x[2]; }).concat(rows).slice(0, 3).map(function (x) { return [x[0], x[1]]; }) };
+    var keyRows = rows.filter(function (x) { return x[2]; }).concat(rows.filter(function (x) { return !x[2]; }));
+    r.saved[id] = { t: Date.now(), rows: keyRows.slice(0, 3).map(function (x) { return [x[0], x[1]]; }) };
     return '';
   }
 
@@ -7171,8 +7180,11 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     pjEl.innerHTML =
       '<div class="pj-top"><div class="input-wrap pj-sel"><label class="sr-only" for="pj-select">Project</label><select id="pj-select">' +
       PJ.projects.map(function (x) { return '<option value="' + x.id + '"' + (x.id === p.id ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('') + '<option value="__new">+ New project…</option></select></div>' +
-      '<div class="pj-tools"><button type="button" class="btn btn-outline btn-sm" id="pj-rename">Rename</button><button type="button" class="btn btn-outline btn-sm" id="pj-export">Export</button>' +
-      '<button type="button" class="btn btn-outline btn-sm" id="pj-import-btn">Import</button><button type="button" class="btn btn-outline btn-sm pj-danger" id="pj-delete">Delete project</button></div></div>' +
+      '<div class="pj-tools"><button type="button" class="btn btn-solid btn-sm" id="pj-pdf" title="Room schedule, totals and every saved calculation — print or Save as PDF">Project PDF</button>' +
+      '<button type="button" class="btn btn-outline btn-sm" id="pj-csv" title="Room schedule for Excel / Google Sheets">Room schedule (Excel)</button>' +
+      '<button type="button" class="btn btn-outline btn-sm" id="pj-export" title="Full backup to re-import later">Backup (.json)</button>' +
+      '<button type="button" class="btn btn-outline btn-sm" id="pj-import-btn">Import</button><button type="button" class="btn btn-outline btn-sm" id="pj-rename">Rename</button>' +
+      '<button type="button" class="btn btn-outline btn-sm pj-danger" id="pj-delete">Delete project</button></div></div>' +
       '<input type="file" id="pj-file" accept=".json,application/json" hidden>' +
       '<form class="pj-form" id="pj-form" novalidate><p class="pj-form-t">' + (ed ? 'Edit room' : 'Add a room') + '</p><div class="fields pj-fields">' +
       f('pj-r-name', 'Room name', ed ? ed.name : 'Room ' + (rooms.length + 1), '', 'text') + f('pj-r-l', 'Length', ed ? dv(ed.l) : '', L) + f('pj-r-w', 'Width', ed ? dv(ed.w) : '', L) +
@@ -7225,6 +7237,8 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       if (t.id === 'pj-rename') { var n2 = window.prompt('Project name', p.name); if (n2 && n2.trim()) { p.name = n2.trim(); pjSave(); renderProjects(); } return; }
       if (t.id === 'pj-delete') { if (window.confirm('Delete project "' + p.name + '" and its ' + p.rooms.length + ' room(s)? This cannot be undone — export it first if you need a copy.')) { PJ.projects = PJ.projects.filter(function (x) { return x !== p; }); PJ.active = PJ.projects.length ? PJ.projects[0].id : null; pjSave(); renderProjects(); } return; }
       if (t.id === 'pj-export') { pjDownload(); return; }
+      if (t.id === 'pj-csv') { pjCsv(); return; }
+      if (t.id === 'pj-pdf') { pjReport(); return; }
       if (t.id === 'pj-cancel') { pjEdit = null; renderProjects(); return; }
       if (t.id === 'pj-ahu') { pjOpenTotal('fsup', t); return; }
       if (t.id === 'pj-fa') { pjOpenTotal('ffa', t); return; }
@@ -7268,6 +7282,107 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       var nb = $('.pj-next[data-room="' + (ed ? ed.id : data.id) + '"]'); if (nb) nb.focus();
     });
   }
+  /* Project outputs: room schedule (Excel / CSV) and project PDF report */
+  var STEP_DONE = function (r) { return PJ_CHAIN.filter(function (s) { return s[2](r); }).length; };
+  function pjTotals(p) {
+    var t = { w: 0, q: 0, oa: 0, esp: 0, area: 0, people: 0, diff: 0 };
+    p.rooms.forEach(function (r) { t.w += r.loadW || 0; t.q += r.supply || 0; t.oa += r.oaQ || 0; t.esp = Math.max(t.esp, r.esp || 0); t.area += roomArea(r); t.people += r.people || 0; t.diff += r.nDiff || 0; });
+    return t;
+  }
+  function pjFileBase(p) { return (p.name || 'project').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-') || 'project'; }
+  function pjSaveFile(name, text, type) {
+    var blob = new Blob([text], { type: type }), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  // Room schedule as CSV (UTF-8 with BOM so Excel shows m³, ², ⌀ correctly). Numbers are plain, in the active units.
+  function pjCsv() {
+    var p = pjCur(); if (!p) return;
+    var u = function (q) { return Q[q][sys][0]; }, d = function (si, q) { return si > 0 ? Number((si / Q[q][sys][1]).toPrecision(5)) : ''; };
+    var cell = function (v) { v = v == null ? '' : String(v); return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var head = ['Room', 'Length (' + u('len') + ')', 'Width (' + u('len') + ')', 'Height (' + u('len') + ')', 'Area (' + u('area') + ')', 'People', 'Space type',
+      'Cooling load (kW)', 'Cooling load (TR)', 'Cooling load (BTU/h)', 'Supply air (' + u('air') + ')', 'Outdoor air (' + u('air') + ')', 'Diffusers', 'Diffuser neck', 'Duct size',
+      'Fan ESP (' + u('pv') + ')', 'Fan motor', 'Design steps done'];
+    var rows = p.rooms.map(function (r) {
+      return [r.name, d(r.l, 'len'), d(r.w, 'len'), d(r.h, 'len'), d(roomArea(r), 'area'), r.people, (VENT_SPACES[r.space] || {}).label || '',
+        r.loadW > 0 ? Number((r.loadW / 1000).toFixed(2)) : '', r.loadW > 0 ? Number((r.loadW / 3516.85).toFixed(2)) : '', r.loadW > 0 ? Math.round(r.loadW * 3.41214) : '',
+        d(r.supply, 'air'), d(r.oaQ, 'air'), r.nDiff || '', r.neck || '', r.duct || '', d(r.esp, 'pv'), r.motor || '', STEP_DONE(r) + ' of ' + PJ_CHAIN.length];
+    });
+    var t = pjTotals(p);
+    rows.push([]);
+    rows.push(['Project total', '', '', '', d(t.area, 'area'), t.people, '', t.w > 0 ? Number((t.w / 1000).toFixed(2)) : '', t.w > 0 ? Number((t.w / 3516.85).toFixed(2)) : '',
+      t.w > 0 ? Math.round(t.w * 3.41214) : '', d(t.q, 'air'), d(t.oa, 'air'), t.diff || '', '', '', d(t.esp, 'pv') ? 'max ' + d(t.esp, 'pv') : '', '', '']);
+    var meta = rpMeta(), info = [['MechToolBox room schedule'], ['Project', p.name], ['Location / client', meta.location || ''], ['Code basis', REG[codeBasis] ? REG[codeBasis].name : 'International'],
+      ['Units', sys === 'si' ? 'SI (metric)' : 'Imperial (IP)'], ['Exported', new Date().toISOString().slice(0, 10)], []];
+    var text = '﻿' + info.concat([head], rows).map(function (r) { return r.map(cell).join(','); }).join('\r\n');
+    pjSaveFile(pjFileBase(p) + '-room-schedule.csv', text, 'text/csv;charset=utf-8');
+  }
+  // Project PDF report: cover details, room schedule, totals with equipment sizing, then every saved calculation per room.
+  function pjReportHtml(p) {
+    var E = esc, m = rpMeta(), now = new Date(), pad = function (x) { return (x < 10 ? '0' : '') + x; };
+    var dateTxt = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+    var refNo = 'MTB-' + dateTxt.replace(/-/g, '') + '-PRJ-' + (pjFileBase(p).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12) || 'PROJECT');
+    var basis = REG[codeBasis] ? REG[codeBasis].name : 'International (ASHRAE / NFPA / IPC / NEC)';
+    var meta = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + (v ? E(v) : '<span class="blank">—</span>') + '</dd></div>'; };
+    var dash = '<span class="blank">—</span>', L = Q.len[sys][1], Lu = Q.len[sys][0];
+    var t = pjTotals(p), n = 0, sec = function (cls, title, body) { if (!body) return ''; n++; return '<section class="' + cls + '"><h2><span>' + (n < 10 ? '0' : '') + n + '</span>' + title + '</h2>' + body + '</section>'; };
+    var sched = p.rooms.map(function (r) {
+      return '<tr><td><b>' + E(r.name) + '</b><div class="sub">' + E((VENT_SPACES[r.space] || {}).label || '') + '</div></td>' +
+        '<td class="num">' + fmt(r.l / L) + ' × ' + fmt(r.w / L) + ' × ' + fmt(r.h / L) + ' ' + E(Lu) + '</td><td class="num">' + fq(roomArea(r), 'area') + '</td><td class="num">' + fmt(r.people, 0) + '</td>' +
+        '<td class="num">' + (r.loadW > 0 ? pw(r.loadW) + '<div class="sub">' + fmt(r.loadW / 3516.85, 2) + ' TR</div>' : dash) + '</td>' +
+        '<td class="num">' + (r.supply > 0 ? fq(r.supply, 'air') : dash) + '</td><td class="num">' + (r.oaQ > 0 ? fq(r.oaQ, 'air') : dash) + '</td>' +
+        '<td>' + (r.nDiff > 0 ? fmt(r.nDiff, 0) + (r.neck ? '<div class="sub">' + E(r.neck) + '</div>' : '') : dash) + '</td><td>' + (r.duct ? E(r.duct) : dash) + '</td>' +
+        '<td>' + (r.motor ? E(r.motor) : dash) + (r.esp > 0 ? '<div class="sub">' + fq(r.esp, 'pv') + ' ESP</div>' : '') + '</td><td class="num">' + STEP_DONE(r) + ' of ' + PJ_CHAIN.length + '</td></tr>';
+    }).join('');
+    var schedule = p.rooms.length ? '<table class="sched"><thead><tr><th>Room</th><th>L × W × H</th><th>Area</th><th>People</th><th>Cooling load</th><th>Supply air</th><th>Outdoor air</th><th>Diffusers</th><th>Duct</th><th>Fan</th><th>Steps</th></tr></thead><tbody>' + sched + '</tbody>' +
+      '<tfoot><tr class="key"><td>Total · ' + p.rooms.length + ' room' + (p.rooms.length === 1 ? '' : 's') + '</td><td></td><td class="num">' + fq(t.area, 'area') + '</td><td class="num">' + fmt(t.people, 0) + '</td>' +
+      '<td class="num">' + (t.w > 0 ? pw(t.w) + '<div class="sub">' + fmt(t.w / 3516.85, 2) + ' TR</div>' : dash) + '</td><td class="num">' + (t.q > 0 ? fq(t.q, 'air') : dash) + '</td><td class="num">' + (t.oa > 0 ? fq(t.oa, 'air') : dash) + '</td>' +
+      '<td class="num">' + (t.diff || dash) + '</td><td></td><td>' + (t.esp > 0 ? 'max ' + fq(t.esp, 'pv') : '') + '</td><td></td></tr></tfoot></table>' : '';
+    var eq = [];
+    if (t.w > 0) eq.push(['Cooling equipment', 'Total room load ' + pw(t.w) + ' (' + fmt(t.w / 3516.85, 2) + ' TR, ' + fmt(t.w * 3.41214, 0) + ' BTU/h) — next standard size ' + acSize(t.w * 3.41214) + '.', 'Sum of room peaks; apply a diversity factor if rooms peak at different hours (ASHRAE Fundamentals Ch. 18).']);
+    if (t.q > 0) eq.push(['AHU supply air', fq(t.q, 'air') + (t.esp > 0 ? ' at ' + fq(t.esp, 'pv') + ' external static pressure (highest room run)' : '') + '.', 'Size the fan with the Supply Fan calculator; add AHU internal losses.']);
+    if (t.oa > 0) eq.push(['Outdoor air', fq(t.oa, 'air') + ' total — ' + fmt(t.oa / (t.q || t.oa) * 100, 0) + ' % of supply' + (t.q > 0 ? '' : '') + '.', 'Multi-zone systems: correct for system ventilation efficiency (ASHRAE 62.1 §6.2.5).']);
+    var eqHtml = eq.length ? '<ul class="sg">' + eq.map(function (x) { return '<li><b>' + E(x[0]) + ':</b> ' + E(x[1]) + '<em>' + E(x[2]) + '</em></li>'; }).join('') + '</ul>' : '';
+    var rooms = p.rooms.map(function (r) {
+      var steps = PJ_CHAIN.map(function (s) { return '<span class="chip' + (s[2](r) ? ' on' : '') + '">' + E(s[1]) + '</span>'; }).join('');
+      var saved = Object.keys(r.saved || {}).map(function (id) {
+        var s = r.saved[id], c = CALCS[id]; if (!c) return '';
+        var dt = new Date(s.t);
+        return '<tbody><tr class="grp"><th colspan="2">' + E(c.code + ' · ' + c.title) + '<span class="when">' + dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()) + '</span></th></tr>' +
+          s.rows.filter(function (x, i, a) { return a.findIndex(function (y) { return y[0] === x[0] && y[1] === x[1]; }) === i; }).map(function (x) { return '<tr><td>' + E(x[0]) + '</td><td class="num">' + E(x[1]) + '</td></tr>'; }).join('') + '</tbody>';
+      }).join('');
+      return '<div class="room"><h3>' + E(r.name) + '<span>' + fmt(r.l / L) + ' × ' + fmt(r.w / L) + ' × ' + fmt(r.h / L) + ' ' + E(Lu) + ' · ' + fq(roomArea(r), 'area') + ' · ' + fmt(r.people, 0) + ' people</span></h3>' +
+        '<div class="chips">' + steps + '</div>' + (saved ? '<table class="calcs">' + saved + '</table>' : '<p class="sub">No calculations saved for this room yet.</p>') + '</div>';
+    }).join('');
+    var extra = [
+      '.sched{font-size:8.5pt}.sched th{background:#F1F6F4;font:600 7pt/1.3 "IBM Plex Mono",Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;color:#4D6560;text-align:left}',
+      '.sched td .sub,.room .sub{color:#4D6560;font-size:7.8pt}.sched tfoot td{border-top:1.5px solid #0F7A57}',
+      '.room{margin-top:12px;padding:10px 12px;border:1px solid #CFDDD8;border-radius:6px}.room h3,.room .chips{break-after:avoid}.calcs tbody{break-inside:avoid}',
+      '.room h3{margin:0 0 6px;font:600 11pt/1.3 "Space Grotesk",Arial,sans-serif}.room h3 span{display:block;font:400 8pt/1.4 "IBM Plex Mono",Consolas,monospace;color:#4D6560}',
+      '.chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}.chip{font:500 7pt/1 "IBM Plex Mono",Consolas,monospace;padding:4px 6px;border-radius:10px;border:1px solid #CFDDD8;color:#8AA79E}.chip.on{background:#0F7A57;border-color:#0F7A57;color:#fff}',
+      '.calcs{font-size:8.5pt}.calcs .when{float:right;font-weight:400;color:#8AA79E;letter-spacing:0}.calcs td:first-child{width:55%}'
+    ].join('\n');
+    return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + E(refNo + ' — ' + p.name) + '</title>' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">' +
+      '<style>' + rpCss(refNo, 'A4 landscape') + '\n' + extra + '</style></head><body>' +
+      '<div class="bar"><button type="button" onclick="window.print()">Print / Save as PDF</button><button type="button" class="o" onclick="window.close()">Close</button></div>' +
+      '<div class="page wide"><header><div class="logo">MECH<i>/</i><b>TOOLBOX</b><div class="doc" style="text-align:left;margin-top:6px">Project design report</div></div>' +
+      '<div class="doc">Ref. <strong>' + E(refNo) + '</strong>Date <strong>' + dateTxt + '</strong></div></header>' +
+      '<p class="code" style="margin:14px 0 0">PROJECT · ' + p.rooms.length + ' ROOM' + (p.rooms.length === 1 ? '' : 'S') + '</p><h1>' + E(p.name) + '</h1>' +
+      '<dl class="meta">' + meta('Project', p.name) + meta('Location / client', m.location) + meta('Prepared by', m.prepared) + meta('Checked by', m.checked) +
+      meta('Code basis', basis) + meta('Units', sys === 'si' ? 'SI (metric)' : 'Imperial (IP)') + meta('Date', dateTxt) + meta('Status', 'Preliminary') + '</dl>' +
+      sec('flow', 'Room schedule', schedule) +
+      sec('flow', 'Project totals & equipment', eqHtml) +
+      sec('flow', 'Room calculations', rooms) +
+      sec('flow', 'Notes & limitations', '<ul class="plain"><li>Each room shows the key results saved from MechToolBox calculators on the date given. Re-save a step after changing a room.</li>' +
+        '<li>Totals add room peaks; the coincident block load may be lower — check with an hourly method for the whole system.</li>' +
+        '<li>Preliminary engineering estimate. Verify against the codes adopted by the authority having jurisdiction and manufacturer data before construction.</li></ul>') +
+      '<div class="sign"><div>Prepared by<b>' + (m.prepared ? E(m.prepared) : '&nbsp;') + '</b></div><div>Checked by<b>' + (m.checked ? E(m.checked) : '&nbsp;') + '</b></div></div>' +
+      '<footer><span>Generated with MechToolBox · Built by JAB</span><span>' + E(refNo) + '</span></footer></div>' +
+      '<scr' + 'ipt>window.addEventListener("load",function(){setTimeout(function(){window.print()},350)});<\/scr' + 'ipt></body></html>';
+  }
+  function pjReport() { var p = pjCur(); if (!p) return; if (!p.rooms.length) { window.alert('Add at least one room first.'); return; } rpOpen(pjReportHtml(p)); }
+
   // Keep the projects table in step with unit changes and saved results.
   var planRefreshBase = planRefresh;
   planRefresh = function () { planRefreshBase(); renderProjects(); };

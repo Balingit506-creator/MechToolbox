@@ -22,7 +22,7 @@ The whole site is one self-contained file, `index.html` (vanilla JavaScript, inl
 - `site.spec.js` — page loads without errors, category filters, compact view, minimize all, search.
 - `all-calculators.spec.js` — every calculator opens and produces a result in SI and IMP under every code basis (INTL / PH / AU / US).
 - `values.spec.js` — known results for key calculators (duct sizing, diffusers, electrical, fire). If one fails, a formula or table changed.
-- `projects.spec.js` — a project room followed through the design chain (cooling load → outdoor air → diffusers → duct → pressure → fan), persistence after reload, AHU totals, export.
+- `projects.spec.js` — a project room followed through the design chain (cooling load → outdoor air → diffusers → duct → pressure → fan), persistence after reload, AHU totals, JSON backup, Excel/CSV room schedule and the project PDF report.
 - `report.spec.js` — the PDF calculation report: project details, sections, results, drawing, suggestions, code basis, wide calculators.
 - `codes-units.spec.js` — Philippine / Australian / US electrical rules, natural-ventilation rules, unit conversion round trips and unit lists per system.
 
