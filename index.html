@@ -696,6 +696,17 @@ dialog.modal::backdrop { background: rgba(3, 8, 7, 0.78); }
 .rows dd .sub { display: block; font-size: 12px; font-weight: 400; color: var(--muted); }
 .err { color: var(--danger); font-size: 14px; }
 .note { margin-top: 12px; font-size: 13px; color: var(--muted); }
+.result-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+#pdf-btn { display: inline-flex; align-items: center; gap: 6px; }
+#pdf-btn[aria-expanded="true"] { border-color: var(--mint); background: rgba(92,224,176,0.1); }
+.report-panel { margin: 0 0 14px; padding: 14px 16px; border: 1px solid var(--mint); border-radius: var(--radius); background: rgba(92,224,176,0.05); animation: suggIn .3s ease both; }
+.rp-title { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font: 600 13px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+.report-panel .rp-fields { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 560px) { .report-panel .rp-fields { grid-template-columns: 1fr 1fr; } }
+.report-panel .rp-wide { margin-top: 10px; }
+.rp-hint { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); }
+.rp-hint strong { color: var(--text); }
+.rp-actions { display: flex; gap: 8px; margin-top: 12px; }
 .sugg { margin-top: 16px; padding: 14px 16px; border: 1px solid rgba(92,224,176,0.35); border-left: 3px solid var(--mint); border-radius: var(--radius); background: rgba(92,224,176,0.06); animation: suggIn .35s ease both; }
 .sugg[hidden] { display: none; }
 .sugg-title { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font: 600 13px/1.2 'IBM Plex Mono', monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
@@ -4899,8 +4910,10 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   }
 
   function copyBlock() {
-    return '<div class="result-head"><h3 id="r-title">Result</h3>' +
-      '<button type="button" class="btn btn-outline btn-sm" id="copy-btn">Copy result</button></div>';
+    return '<div class="result-head"><h3 id="r-title">Result</h3><div class="result-actions">' +
+      '<button type="button" class="btn btn-outline btn-sm" id="pdf-btn" aria-expanded="false" aria-controls="report-panel">' +
+      '<svg width="13" height="13" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h7l3.5 3.5v11.5H5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 8.5v6M7.5 12l2.5 2.5 2.5-2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF report</button>' +
+      '<button type="button" class="btn btn-outline btn-sm" id="copy-btn">Copy result</button></div></div>';
   }
 
   function renderCalc(id) {
@@ -6785,6 +6798,175 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     var t = e.target.closest('[data-open]');
     if (t) openModal(t.dataset.open, t);
   });
+
+  /* ---------- PDF calculation report (print-to-PDF, no libraries) ---------- */
+  var RP_KEY = 'mechtoolbox-report';
+  function rpMeta() { try { return JSON.parse(localStorage.getItem(RP_KEY) || '{}') || {}; } catch (e) { return {}; } }
+  function rpPanelHtml() {
+    var m = rpMeta(), f = function (k, label, ph) {
+      return '<div class="field"><label for="rp-' + k + '">' + label + '</label><div class="input-wrap"><input id="rp-' + k + '" data-rp="' + k + '" type="text" autocomplete="off" placeholder="' + ph + '" value="' + esc(m[k] || '') + '"></div></div>';
+    };
+    return '<div class="report-panel" id="report-panel" role="group" aria-labelledby="rp-title">' +
+      '<p class="rp-title" id="rp-title"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h7l3.5 3.5v11.5H5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 2.5V6h3.5M7.5 10h5M7.5 13h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Calculation report</p>' +
+      '<div class="fields rp-fields">' + f('project', 'Project', 'e.g. Office fit-out, Level 3') + f('location', 'Location / client', 'e.g. Makati City') +
+      f('prepared', 'Prepared by', 'Name, licence no.') + f('checked', 'Checked by', 'Name') + '</div>' +
+      '<div class="field rp-wide"><label for="rp-remarks">Remarks</label><div class="input-wrap"><input id="rp-remarks" data-rp="remarks" type="text" autocomplete="off" placeholder="Optional — shown on the report" value="' + esc(m.remarks || '') + '"></div></div>' +
+      '<p class="rp-hint">Opens a print-ready A4 report — choose <strong>Save as PDF</strong> in the print dialog. Project details are remembered on this device.</p>' +
+      '<div class="rp-actions"><button type="button" class="btn btn-sm" id="rp-go">Generate PDF</button><button type="button" class="btn btn-outline btn-sm" id="rp-cancel">Cancel</button></div>' +
+      '<p class="err" id="rp-err" hidden></p></div>';
+  }
+  // Copy an on-screen SVG with its computed colours and fonts inlined, so it renders the same on its own page.
+  var SVG_PROPS = ['fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin', 'opacity', 'fill-opacity', 'stroke-opacity', 'font-size', 'font-family', 'font-weight', 'letter-spacing', 'text-anchor', 'dominant-baseline'];
+  function svgSnapshot(svg) {
+    if (!svg) return '';
+    var clone = svg.cloneNode(true), src = svg.querySelectorAll('*'), dst = clone.querySelectorAll('*');
+    for (var i = 0; i < src.length; i++) {
+      var cs = getComputedStyle(src[i]), st = '';
+      SVG_PROPS.forEach(function (p) { var v = cs.getPropertyValue(p); if (v) st += p + ':' + v + ';'; });
+      dst[i].setAttribute('style', st + 'animation:none;transition:none;');
+      dst[i].removeAttribute('class');
+    }
+    // The page-level grid pattern is not inside the SVG — use a plain drawing-board colour instead.
+    clone.innerHTML = clone.innerHTML.replace(/url\(#pt-mini\)/g, '#0B1714').replace(/url\(&quot;#pt-mini&quot;\)/g, '#0B1714');
+    clone.removeAttribute('class');
+    clone.setAttribute('width', '100%');
+    return clone.outerHTML;
+  }
+  function rpCollect() {
+    var id = current, sp = SPECIAL[id], d = sp || CALCS[id], skip = '.result, .cl-results, .report-panel, .sugg, .cl-limits, .dd-draw, .cl-chart, .cl-builder';
+    var groups = [], cur = { name: '', items: [] };
+    $$('h3, h4, legend, .field', mBody).forEach(function (el) {
+      if (el.closest(skip) || !el.offsetParent) return;
+      if (!el.classList.contains('field')) { if (cur.items.length) groups.push(cur); cur = { name: el.textContent.trim(), items: [] }; return; }
+      var lab = $('label', el), ctl = $('input:not([type=hidden]), select:not(.unit-sel), textarea', el);
+      if (!lab || !ctl) return;
+      var val = ctl.tagName === 'SELECT' ? (ctl.options[ctl.selectedIndex] || {}).text || '' : ctl.type === 'checkbox' ? (ctl.checked ? 'Yes' : 'No') : ctl.value;
+      var u = $('.unit-sel', el), us = $('span.unit', el);
+      cur.items.push([lab.textContent.trim(), val, u ? u.value : us ? us.textContent.trim() : '']);
+    });
+    if (cur.items.length) groups.push(cur);
+    var rowsOut = $$('#r-rows > div', mBody).map(function (r) {
+      var dd = $('dd', r), sub = $('.sub', dd);
+      return [$('dt', r).textContent.trim(), dd.firstChild ? dd.firstChild.textContent.trim() : '', sub ? sub.textContent.trim() : '', r.classList.contains('strong')];
+    });
+    var drawEl = $('#calc-draw svg, #dd-draw svg, #df-draw svg', mBody), chartEl = $('#cl-chart svg', mBody);
+    var tables = $$('#cl-table table, #dd-fit-table table', mBody).map(function (t) {
+      var c = t.cloneNode(true); $$('[class]', c).forEach(function (x) { if (!/num|cl-peak-row/.test(x.className)) x.removeAttribute('class'); }); return c.outerHTML;
+    });
+    return {
+      code: d.code, title: d.title, desc: CALCS[id] && CALCS[id].desc || '', groups: groups, rows: rowsOut,
+      formula: ($('#r-formula', mBody) || {}).textContent || '',
+      drawing: svgSnapshot(drawEl), chart: svgSnapshot(chartEl), tables: tables,
+      sugg: $$('#r-sugg li', mBody).map(function (li) { return [li.firstChild.textContent, ($('.sugg-ref', li) || {}).textContent || '']; }),
+      refs: $$('.ref-line', mBody).map(function (p) { return p.textContent.trim(); }),
+      notes: $$('.note', mBody).map(function (p) { return p.textContent.trim(); }).concat($$('.cl-limits li', mBody).map(function (li) { return li.textContent.trim(); }))
+    };
+  }
+  function rpHtml(r, m) {
+    var now = new Date(), pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    var dateTxt = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+    var refNo = 'MTB-' + dateTxt.replace(/-/g, '') + '-' + r.code.replace(/[^A-Z0-9]/gi, '');
+    var basis = REG[codeBasis] ? REG[codeBasis].name : 'International (ASHRAE / NFPA / IPC / NEC)';
+    var E = esc, meta = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + (v ? E(v) : '<span class="blank">—</span>') + '</dd></div>'; };
+    var inputs = r.groups.map(function (g) {
+      return (g.name ? '<tr class="grp"><th colspan="3">' + E(g.name) + '</th></tr>' : '') +
+        g.items.map(function (it) { return '<tr><td>' + E(it[0]) + '</td><td class="num">' + E(it[1]) + '</td><td class="unit">' + E(it[2]) + '</td></tr>'; }).join('');
+    }).join('');
+    var results = r.rows.map(function (x) { return '<tr' + (x[3] ? ' class="key"' : '') + '><td>' + E(x[0]) + '</td><td class="num">' + E(x[1]) + '</td><td class="sub">' + E(x[2]) + '</td></tr>'; }).join('');
+    var n = 0, sec = function (cls, title, body) { if (!body) return ''; n++; return '<section class="' + cls + '"><h2><span>' + (n < 10 ? '0' : '') + n + '</span>' + title + '</h2>' + body + '</section>'; };
+    var css = [
+      '@page{size:A4;margin:14mm 14mm 16mm}',
+      '*{box-sizing:border-box}html,body{margin:0;background:#fff;color:#14201C;-webkit-print-color-adjust:exact;print-color-adjust:exact}',
+      'body{font:10.5pt/1.45 Inter,"Segoe UI",Arial,sans-serif}',
+      '.bar{position:sticky;top:0;display:flex;gap:8px;justify-content:flex-end;padding:10px 16px;background:#07110F;z-index:2}',
+      '.bar button{font:600 12px/1 "IBM Plex Mono",Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;padding:10px 14px;border-radius:6px;border:1px solid #5CE0B0;background:#5CE0B0;color:#07110F;cursor:pointer}',
+      '.bar button.o{background:transparent;color:#5CE0B0}',
+      '.page{max-width:190mm;margin:0 auto;padding:18px 0 28px}',
+      'header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:12px;border-bottom:2.5px solid #0F7A57}',
+      '.logo{font:700 15pt/1 "Space Grotesk",Arial,sans-serif;letter-spacing:-.02em}.logo b{color:#0F7A57;font-weight:700}.logo i{font-style:normal;color:#8AA79E;margin:0 1px}',
+      '.doc{font:500 8pt/1.4 "IBM Plex Mono",Consolas,monospace;letter-spacing:.12em;text-transform:uppercase;color:#4D6560;text-align:right}',
+      '.doc strong{display:block;color:#14201C;font-size:9pt}',
+      'h1{font:700 19pt/1.15 "Space Grotesk",Arial,sans-serif;letter-spacing:-.02em;margin:14px 0 2px}',
+      '.code{font:600 9pt/1 "IBM Plex Mono",Consolas,monospace;letter-spacing:.14em;color:#0F7A57}',
+      '.desc{color:#4D6560;margin:4px 0 0}',
+      '.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:14px 0 4px;border:1px solid #CFDDD8;border-radius:6px;overflow:hidden}',
+      '.meta div{padding:7px 9px;border-right:1px solid #CFDDD8;border-bottom:1px solid #CFDDD8}.meta div:nth-child(4n){border-right:0}.meta div:nth-last-child(-n+4){border-bottom:0}',
+      '.meta dt{font:500 6.8pt/1.3 "IBM Plex Mono",Consolas,monospace;letter-spacing:.12em;text-transform:uppercase;color:#4D6560}.meta dd{margin:2px 0 0;font-weight:600}.blank{color:#A9BBB5;font-weight:400}',
+      'section{margin-top:16px}section.keep{break-inside:avoid}h2{break-after:avoid}tr,li{break-inside:avoid}thead{display:table-header-group}',
+      'h2{display:flex;align-items:center;gap:8px;font:600 11.5pt/1.2 "Space Grotesk",Arial,sans-serif;margin:0 0 7px;padding-bottom:5px;border-bottom:1px solid #CFDDD8}',
+      'h2 span{font:600 8pt/1 "IBM Plex Mono",Consolas,monospace;color:#fff;background:#0F7A57;border-radius:4px;padding:3px 5px}',
+      'table{width:100%;border-collapse:collapse;font-size:9.5pt}td,th{padding:5px 8px;border-bottom:1px solid #E3ECE9;text-align:left;vertical-align:top}',
+      'tr.grp th{background:#F1F6F4;font:600 7.5pt/1.3 "IBM Plex Mono",Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;color:#4D6560}',
+      'td.num{font-family:"IBM Plex Mono",Consolas,monospace;white-space:nowrap}td.unit{color:#4D6560;font-family:"IBM Plex Mono",Consolas,monospace;white-space:nowrap;width:1%}',
+      'td.sub{color:#4D6560;font-size:8.5pt}tr.key td{font-weight:700;background:#ECF8F3}tr.key td.num{color:#0B5E43}',
+      '.inputs td:first-child{width:52%}.results td:first-child{width:34%}.results td.num{width:24%}',
+      'pre{margin:0;padding:9px 11px;background:#F1F6F4;border-left:3px solid #0F7A57;border-radius:4px;font:9pt/1.6 "IBM Plex Mono",Consolas,monospace;white-space:pre-wrap}',
+      '.fig{border-radius:6px;overflow:hidden;background:#0B1714;padding:6px}.fig svg{display:block;width:100%;height:auto}',
+      '.extra table{font-size:8pt}.extra table th{background:#F1F6F4;text-align:right}.extra table th:first-child,.extra table td:first-child{text-align:left}.extra .cl-peak-row td{font-weight:700;background:#ECF8F3}.extra .num{font-family:"IBM Plex Mono",Consolas,monospace;text-align:right}',
+      'ul.sg{margin:0;padding:0;list-style:none;display:grid;gap:6px}ul.sg li{padding:7px 10px 7px 12px;border-left:3px solid #0F7A57;background:#F1F6F4;border-radius:4px}ul.sg em{display:block;font-size:8.5pt;color:#4D6560}',
+      'ul.plain{margin:0;padding-left:16px}ul.plain li{margin:2px 0;color:#33463F}',
+      '.sign{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px;break-inside:avoid}',
+      '.sign div{border-top:1px solid #14201C;padding-top:5px;font:500 7.5pt/1.4 "IBM Plex Mono",Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;color:#4D6560}.sign b{display:block;font:600 10pt Inter,Arial,sans-serif;letter-spacing:0;text-transform:none;color:#14201C;margin-top:2px}',
+      'footer{margin-top:18px;padding-top:8px;border-top:1px solid #CFDDD8;font-size:7.8pt;color:#4D6560;display:flex;justify-content:space-between;gap:12px}',
+      '@page{@bottom-left{content:"Generated with MechToolBox · Built by JAB";font:7.5pt Inter,Arial,sans-serif;color:#4D6560}@bottom-right{content:"' + refNo + ' · Page " counter(page) " of " counter(pages);font:7.5pt Inter,Arial,sans-serif;color:#4D6560}}',
+      '@media print{.bar{display:none}.page{padding:0;max-width:none}footer{display:none}}',
+      '@media screen{body{background:#E9EFED}.page{background:#fff;padding:16mm 14mm;margin:18px auto;box-shadow:0 10px 30px rgba(0,0,0,.12)}}'
+    ].join('\n');
+    return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + E(refNo + ' — ' + r.title) + '</title>' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">' +
+      '<style>' + css + '</style></head><body>' +
+      '<div class="bar"><button type="button" onclick="window.print()">Print / Save as PDF</button><button type="button" class="o" onclick="window.close()">Close</button></div>' +
+      '<div class="page"><header><div class="logo">MECH<i>/</i><b>TOOLBOX</b><div class="doc" style="text-align:left;margin-top:6px">Engineering calculation sheet</div></div>' +
+      '<div class="doc">Ref. <strong>' + E(refNo) + '</strong>Date <strong>' + dateTxt + '</strong></div></header>' +
+      '<p class="code" style="margin:14px 0 0">' + E(r.code) + '</p><h1>' + E(r.title) + '</h1>' + (r.desc ? '<p class="desc">' + E(r.desc) + '</p>' : '') +
+      '<dl class="meta">' + meta('Project', m.project) + meta('Location / client', m.location) + meta('Prepared by', m.prepared) + meta('Checked by', m.checked) +
+      meta('Code basis', basis) + meta('Units', sys === 'si' ? 'SI (metric)' : 'Imperial (IP)') + meta('Date', dateTxt) + meta('Status', 'Preliminary') + '</dl>' +
+      (m.remarks ? '<p style="margin:8px 0 0"><strong>Remarks:</strong> ' + E(m.remarks) + '</p>' : '') +
+      sec('flow', 'Design inputs', inputs ? '<table class="inputs"><tbody>' + inputs + '</tbody></table>' : '') +
+      sec('keep', 'Method', r.formula ? '<pre>' + E(r.formula) + '</pre>' : '') +
+      sec('flow', 'Results', results ? '<table class="results"><tbody>' + results + '</tbody></table>' : '') +
+      sec('keep', r.chart ? 'Drawing & chart' : 'Drawing', (r.drawing ? '<div class="fig">' + r.drawing + '</div>' : '') + (r.chart ? '<div class="fig" style="margin-top:8px">' + r.chart + '</div>' : '')) +
+      sec('flow', 'Detailed tables', r.tables.length ? '<div class="extra">' + r.tables.join('') + '</div>' : '') +
+      sec('flow', 'Design suggestions', r.sugg.length ? '<ul class="sg">' + r.sugg.map(function (s) { return '<li>' + E(s[0]) + (s[1] ? '<em>' + E(s[1]) + '</em>' : '') + '</li>'; }).join('') + '</ul>' : '') +
+      sec('keep', 'Codes & references', r.refs.length ? '<ul class="plain">' + r.refs.map(function (t) { return '<li>' + E(t) + '</li>'; }).join('') + '</ul>' : '') +
+      sec('flow', 'Notes & limitations', '<ul class="plain">' + r.notes.concat(['Preliminary engineering estimate. Verify against the codes adopted by the authority having jurisdiction and manufacturer data before construction.']).map(function (t) { return '<li>' + E(t) + '</li>'; }).join('') + '</ul>') +
+      '<div class="sign"><div>Prepared by<b>' + (m.prepared ? E(m.prepared) : '&nbsp;') + '</b></div><div>Checked by<b>' + (m.checked ? E(m.checked) : '&nbsp;') + '</b></div></div>' +
+      '<footer><span>Generated with MechToolBox · Built by JAB</span><span>' + E(refNo) + '</span></footer></div>' +
+      '<scr' + 'ipt>window.addEventListener("load",function(){setTimeout(function(){window.print()},350)});<\/script></body></html>';
+  }
+  function rpGenerate() {
+    var err = $('#rp-err');
+    if (!$$('#r-rows > div', mBody).length) { err.textContent = 'Enter valid values first — the report needs a result.'; err.hidden = false; return; }
+    var m = {};
+    $$('[data-rp]', mBody).forEach(function (i) { m[i.dataset.rp] = i.value.trim(); });
+    try { localStorage.setItem(RP_KEY, JSON.stringify(m)); } catch (e) {}
+    var html = rpHtml(rpCollect(), m), w = null;
+    try { w = window.open('', '_blank'); } catch (e) {}
+    if (w && w.document) { w.document.open(); w.document.write(html); w.document.close(); }
+    else { // pop-up blocked: print from a hidden frame instead
+      var fr = document.createElement('iframe');
+      fr.setAttribute('aria-hidden', 'true'); fr.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0';
+      document.body.appendChild(fr);
+      fr.contentDocument.open(); fr.contentDocument.write(html.replace(/<scr[i]pt>[\s\S]*?<\/scr[i]pt>/, '')); fr.contentDocument.close();
+      setTimeout(function () { fr.contentWindow.focus(); fr.contentWindow.print(); setTimeout(function () { fr.remove(); }, 2000); }, 600);
+    }
+    rpClose();
+  }
+  function rpClose() { var p = $('#report-panel'); if (p) p.remove(); var b = $('#pdf-btn'); if (b) { b.setAttribute('aria-expanded', 'false'); b.focus(); } }
+  mBody.addEventListener('click', function (e) {
+    if (e.target.closest('#pdf-btn')) {
+      var open = $('#report-panel');
+      if (open) { rpClose(); return; }
+      var head = $('.result-head', mBody);
+      head.insertAdjacentHTML('afterend', rpPanelHtml());
+      e.target.closest('#pdf-btn').setAttribute('aria-expanded', 'true');
+      $('#rp-project').focus();
+      return;
+    }
+    if (e.target.closest('#rp-go')) { rpGenerate(); return; }
+    if (e.target.closest('#rp-cancel')) rpClose();
+  });
+  mBody.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.dataset && e.target.dataset.rp != null) { e.preventDefault(); rpGenerate(); } });
 
   /* ---------- Plan overlay ---------- */
   // Geometry is stored in image pixels; plan.scale is image pixels per metre.
