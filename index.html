@@ -202,6 +202,57 @@ svg { display: block; }
 
 /* ---------- Cards ---------- */
 .cards { display: grid; gap: 16px; grid-template-columns: 1fr; }
+/* Design guide */
+.gd-root { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.gd-k { margin: 0 0 6px; font: 500 11px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mint); }
+.gd-start { display: grid; gap: 18px; padding: 22px; border: 1px solid var(--line); border-left: 3px solid var(--mint); border-radius: var(--radius); background: var(--panel); }
+@media (min-width: 900px) { .gd-start { grid-template-columns: 1fr 1.4fr; align-items: start; } }
+.gd-start h3 { margin: 0 0 8px; font-size: 22px; }
+.gd-start p { color: var(--muted); margin: 0; }
+.gd-quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.gd-quick-a { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.gd-quick-a .err { margin: 0; }
+.gd-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+.gd-proj { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.gd-proj .gd-k { margin: 0; }
+.gd-room { min-width: 160px; }
+.gd-room select { padding: 7px 10px; font-size: 14px; }
+.gd-link { font: 500 12px/1.3 var(--mono); letter-spacing: .06em; color: var(--muted); }
+.gd-link:hover { color: var(--mint); }
+.gd-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.gd-tab { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--muted); font: 500 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: border-color var(--ease), color var(--ease); }
+.gd-tab:hover { color: var(--text); border-color: var(--line-2); }
+.gd-tab[aria-pressed="true"] { border-color: var(--mint); color: var(--text); background: rgba(92,224,176,0.08); }
+.gd-pill { padding: 2px 6px; border-radius: 4px; background: var(--deep); color: var(--muted); letter-spacing: 0; }
+.gd-tab[aria-pressed="true"] .gd-pill { background: var(--mint); color: var(--deep); }
+.gd-bar { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.gd-bar span { display: block; height: 100%; background: var(--mint); transition: width 400ms cubic-bezier(.2, .7, .2, 1); }
+.gd-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+@media (min-width: 860px) { .gd-grid { grid-template-columns: minmax(240px, 0.8fr) minmax(0, 2fr); align-items: start; } }
+.gd-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.gd-step { width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 9px 10px; border: 1px solid transparent; border-radius: var(--radius); background: none; color: var(--text); text-align: left; cursor: pointer; transition: background-color var(--ease), border-color var(--ease); }
+.gd-step:hover { background: var(--panel); }
+.gd-step.cur { border-color: var(--mint); background: rgba(92,224,176,0.06); }
+.gd-n { flex: 0 0 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line-2); border-radius: 50%; font: 500 12px/1 var(--mono); color: var(--muted); }
+.gd-step.cur .gd-n { border-color: var(--mint); color: var(--mint); }
+.gd-step.done .gd-n { background: var(--mint); border-color: var(--mint); color: var(--deep); }
+.gd-t { display: flex; flex-direction: column; gap: 2px; font-weight: 600; font-size: 15px; min-width: 0; }
+.gd-t em { font: 400 11px var(--mono); color: var(--muted); font-style: normal; }
+.gd-t small { font: 400 12px/1.35 var(--mono); color: var(--muted); overflow-wrap: anywhere; }
+.gd-panel { padding: 18px 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); animation: suggIn .3s ease both; }
+.gd-panel h3 { margin: 0 0 8px; font-size: 22px; }
+.gd-why { color: var(--text); margin: 0 0 14px; }
+.gd-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+@media (min-width: 640px) { .gd-cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); } }
+.gd-panel ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; color: var(--muted); font-size: 14px; }
+.gd-result { margin-top: 14px; padding: 12px 14px; border-left: 3px solid var(--mint); border-radius: var(--radius); background: rgba(92,224,176,0.06); }
+.gd-result dl { margin: 0; display: grid; gap: 4px; }
+.gd-result dl div { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
+.gd-result dt { color: var(--muted); }
+.gd-result dd { margin: 0; font-family: var(--mono); color: var(--text); text-align: right; }
+.gd-note { margin: 14px 0 0; color: var(--muted); font-size: 14px; }
+.gd-note strong { color: var(--text); }
+.gd-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 /* Projects */
 .pj-root { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; } /* minmax(0, …) lets wide tables scroll inside .table-wrap instead of widening the page */
 .pj-empty { padding: 24px; border: 1px dashed var(--line-2); border-radius: var(--radius); background: var(--panel); }
@@ -921,6 +972,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     <a class="logo" href="#top" aria-label="MechToolBox home"><span>MECH</span><span class="slash">/</span><span class="tools">TOOLBOX</span></a>
     <nav class="nav-desktop" aria-label="Primary">
       <a href="#calculators">Calculators</a>
+      <a href="#guide">Guide</a>
       <a href="#projects">Projects</a>
       <a href="#utilities">Utilities</a>
       <a href="#standards">Standards</a>
@@ -941,6 +993,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   <nav class="nav-mobile" id="nav-mobile" aria-label="Mobile" hidden>
     <ul>
       <li><a href="#calculators">Calculators</a></li>
+      <li><a href="#guide">Design guide</a></li>
       <li><a href="#projects">Projects</a></li>
       <li><a href="#utilities">Utilities</a></li>
       <li><a href="#standards">Standards</a></li>
@@ -1091,10 +1144,21 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     </div>
   </section>
 
+  <section class="section" id="guide" aria-labelledby="gd-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">02 — Design Guide</p>
+        <h2 id="gd-title">Design it step by step.</h2>
+        <p>Pick a workflow and follow the steps in order. Each one explains what it does, what you need and the code targets, then opens the right calculator already filled from your room — save the result and the next step is ready.</p>
+      </div>
+      <div class="gd-root reveal" id="gd-root"></div>
+    </div>
+  </section>
+
   <section class="section" id="projects" aria-labelledby="pj-title">
     <div class="wrap">
       <div class="section-head reveal">
-        <p class="eyebrow">02 — Projects</p>
+        <p class="eyebrow">03 — Projects</p>
         <h2 id="pj-title">Design room by room.</h2>
         <p>Add the rooms of a project once. Each calculator fills itself from the room and saves its result back, so the cooling load flows into outdoor air, diffusers, ducts, pressure and the fan — with project totals for the AHU.</p>
       </div>
@@ -1105,7 +1169,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   <section class="section" id="utilities" aria-labelledby="util-title">
     <div class="wrap">
       <div class="section-head reveal">
-        <p class="eyebrow">03 — Utilities</p>
+        <p class="eyebrow">04 — Utilities</p>
         <h2 id="util-title">Small tools. Big time savings.</h2>
         <p>Quick converters and references you reach for between calculations.</p>
       </div>
@@ -1121,7 +1185,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   <section class="section" id="standards" aria-labelledby="std-title">
     <div class="wrap">
       <div class="section-head reveal">
-        <p class="eyebrow">04 — Codes &amp; Standards</p>
+        <p class="eyebrow">05 — Codes &amp; Standards</p>
         <h2 id="std-title">Where the numbers come from.</h2>
         <p>Every calculator, the method it uses and the code, standard or published source behind it — so you know what to check before a result goes into a design.</p>
       </div>
@@ -1157,7 +1221,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   <section class="section" id="about" aria-labelledby="about-title">
     <div class="wrap about-grid">
       <div class="section-head reveal">
-        <p class="eyebrow">05 — About the Toolbox</p>
+        <p class="eyebrow">06 — About the Toolbox</p>
         <h2 id="about-title">Built for practical engineering work.</h2>
         <p>MechToolBox is designed as a simple engineering reference and calculator hub for students, designers, technicians, draftsmen, and practicing engineers.</p>
       </div>
@@ -8075,6 +8139,174 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       '<scr' + 'ipt>window.addEventListener("load",function(){setTimeout(function(){window.print()},350)});<\/scr' + 'ipt></body></html>';
     rpOpen(html);
   }
+
+  /* ---------- Design guide: step-by-step workflows on top of Projects ---------- */
+  // Each step opens a calculator filled from the active room; saving the result to the room completes the step.
+  var CB = function (o) { return o[codeBasis] || o.intl; }; // pick the text for the active code basis
+  var GUIDE = {
+    hvac: { name: 'HVAC', full: 'HVAC — air-conditioning', steps: [
+      { id: 'cool', t: 'Cooling load', why: 'Sets the equipment size (kW / TR) and the supply airflow that every later step uses.',
+        need: ['Room size and people (filled from the room)', 'Exposed wall and window areas, main window orientation', 'Lighting and equipment loads'],
+        tips: function () { return ['Glass-heavy or west-facing rooms: use Precise Cooling Load for the hourly peak.', 'Offices usually land around 100–200 W/m² (30–60 BTU/h·ft²) — much higher points to large glazing.',
+          CB({ intl: 'Method: ASHRAE Fundamentals Ch. 18.', ph: 'PMEC practice follows ASHRAE Fundamentals Ch. 18; check the Green Building Code for envelope and AC efficiency.', au: 'NCC Section J sets envelope and AC efficiency; AIRAH guidance for loads.', us: 'ASHRAE Fundamentals Ch. 18 (ACCA Manual J for homes); IECC / ASHRAE 90.1 for efficiency.' })]; } },
+      { id: 'oa', t: 'Outdoor air', why: 'Fresh air for the occupants — it adds coil load and sets the fresh-air fan and louvre.',
+        need: ['Space type', 'Floor area and occupants (filled from the room)'],
+        tips: function () { return ['Office default ≈ 2.5 L/s per person + 0.3 L/s·m² (ASHRAE 62.1).',
+          CB({ intl: 'Correct for zone air-distribution effectiveness (Ez) when supplying from the ceiling in heating.', ph: 'Mechanical ventilation per PMEC / ASHRAE 62.1; PD 1096 needs openings ≥ 10 % of floor area if naturally ventilated.', au: 'Use AS 1668.2 rates for the space type (called up by NCC Part F6).', us: 'IMC Table 403.3.1.1 (ASHRAE 62.1 based).' })]; } },
+      { id: 'ndiff', t: 'Supply diffusers', why: 'Spreads the supply air evenly and quietly across the room.',
+        need: ['Supply airflow (from the cooling load)', 'Room length and width (from the room)'],
+        tips: function () { return ['Keep neck velocity ≤ 3 m/s (600 fpm) for NC 35 offices.', 'Aim for ADPI T50/L ≈ 0.8 — check throw with the Throw / Spread / Drop checker.', 'Confirm NC and throw with the manufacturer\'s AHRI 880 data.']; } },
+      { id: 'rgrille', t: 'Return grilles', optional: true, why: 'Returns the air without noise or short-circuiting the supply.',
+        need: ['Return airflow (≈ supply − exhaust)'], tips: function () { return ['Face velocity ≤ 2 m/s (400 fpm) for NC 35.', 'Place returns away from supply throws; use door undercuts or transfer grilles for closed rooms.']; } },
+      { id: 'eqf', t: 'Duct sizing', why: 'Sizes the supply duct so friction and noise stay within limits.',
+        need: ['Supply airflow (filled from the room)', 'Duct location and noise target'],
+        tips: function () { return ['Typical friction 0.8–1.2 Pa/m (0.1–0.15 in.wg/100 ft).', CB({ intl: 'Check the ASHRAE maximum velocities for the RC/NC of the space.', ph: 'Check the ASHRAE maximum velocities for the RC/NC of the space; SMACNA for construction.', au: 'AS 4254 for ductwork; NCC Section J for duct insulation.', us: 'Commercial: ASHRAE noise limits. Homes: ACCA Manual D (supply trunk 900, return trunk 700 fpm).' }),
+          'Add the supply / return run lengths to the room so the BOQ can measure the duct.']; } },
+      { id: 'tpl', t: 'Pressure loss', why: 'Adds duct, fittings, filter, coil and diffuser losses — the fan\'s external static pressure.',
+        need: ['Index-run length and friction rate', 'Filter, coil and terminal pressure drops'], tips: function () { return ['Use the longest (index) run, not the average.', 'Allow for dirty filters — use the average or final filter drop, not the clean one.']; } },
+      { id: 'fsup', t: 'Supply fan / AHU', why: 'Selects the fan duty and motor for the airflow and pressure.',
+        need: ['Supply airflow and external static (filled from the room)', 'AHU internal losses'],
+        tips: function () { return [CB({ intl: 'Check specific fan power (EN 16798-3) and pick an IE3 motor.', ph: 'Pick an IE3 motor with VSD; check the Green Building Code efficiency rules.', au: 'Check NCC Section J (Part J6) fan-power limits.', us: 'Check ASHRAE 90.1 §6.5.3.1 fan power; NEMA Premium motors.' }), 'Select the fan near peak efficiency on the manufacturer\'s curve.']; } },
+      { id: 'chw', t: 'Chilled-water pipe', optional: true, why: 'For chilled-water systems: sizes the CHW branch from the room load.',
+        need: ['Cooling load (filled from the room)', 'Supply – return ΔT (usually 5.5–7 K)', 'Pipe run length'], tips: function () { return ['Velocity ≤ 1.2 m/s (4 ft/s) up to 50 mm; friction ≤ about 400 Pa/m (4 ft/100 ft).', 'Insulate with a continuous vapour barrier to stop condensation.']; } },
+      { id: 'pump', t: 'Chilled-water pump', optional: true, why: 'Pump duty from the pipe, coil, valve and chiller losses.',
+        need: ['CHW flow and loop pressure drop (filled from the room)', 'Chiller / coil and valve drops from manufacturer data'], tips: function () { return ['Select near best efficiency (70–110 % of BEP flow).', 'Use a VSD and a standby pump for variable-flow or critical systems.']; } }
+    ] },
+    elec: { name: 'Electrical', full: 'Electrical', steps: [
+      { id: 'light', t: 'Lighting', why: 'Number and layout of luminaires for the target illuminance, and the lighting load.',
+        need: ['Room size and ceiling height (filled from the room)', 'Luminaire lumens and watts from the catalogue'],
+        tips: function () { return ['Targets: offices 500 lx, corridors 100 lx, toilets 200 lx, retail 300 lx (EN 12464-1).', CB({ intl: 'Check lighting power density against your energy code.', ph: 'Check lighting power density against the Philippine Green Building Code.', au: 'Check NCC Section J (Part J7) lighting power limits.', us: 'Check ASHRAE 90.1 §9 / IECC lighting power allowance.' })]; } },
+      { id: 'elec', t: 'Electrical load', why: 'Connected and demand load, and the design current for the feeder.',
+        need: ['Number of loads and kW each', 'Demand factor', 'Supply voltage'],
+        tips: function () { return [CB({ intl: 'Apply demand factors per your wiring code (IEC 60364 / local rules).', ph: 'Demand factors per PEC 2017 Art. 2.20; supply 230 V, 60 Hz.', au: 'Maximum demand per AS/NZS 3000 Appendix C; 230 / 400 V, 50 Hz.', us: 'Load calculation per NEC Article 220; 120/208 V or 277/480 V.' })]; } },
+      { id: 'cable', t: 'Cable sizing', why: 'Picks the conductor for the design current after derating, then checks voltage drop.',
+        need: ['Load current (filled from the electrical load)', 'Ambient temperature and conductors per raceway', 'Run length'],
+        tips: function () { return [CB({ intl: 'Continuous loads at 125 %; confirm ampacity with IEC 60364-5-52.', ph: 'Continuous loads at 125 % (PEC Art. 2.10 / 2.15); confirm ampacity with PEC Table 3.10.1.16.', au: 'Ib ≤ In ≤ Iz (AS/NZS 3000 Cl. 2.5); ampacity from AS/NZS 3008.1.1.', us: 'Continuous loads at 125 % (NEC 210.20 / 215.3); ampacity from NEC Table 310.16.' }), 'Split circuits rather than run more than 3 current-carrying conductors in one raceway.']; } },
+      { id: 'vdrop', t: 'Voltage drop check', optional: true, why: 'Confirms the selected cable keeps the voltage drop within the limit.',
+        need: ['Current, length and cable size'], tips: function () { return [CB({ intl: 'Keep ≤ 3 % on branches, 5 % in total.', ph: '3 % branch / 5 % total (PEC Sec. 2.10.2.19 FPN).', au: '≤ 5 % from the point of supply (AS/NZS 3000 Cl. 3.6.2).', us: '3 % branch / 5 % total (NEC 210.19(A) Informational Note).' })]; } }
+    ] },
+    plumb: { name: 'Plumbing & Sanitary', full: 'Plumbing & Sanitary', steps: [
+      { id: 'dfu', t: 'Fixtures & drainage', why: 'Counts the fixtures and sizes the drain, stack and building sewer.',
+        need: ['Number of each fixture type'], tips: function () { return [CB({ intl: 'Minimum fixtures per occupancy come from the plumbing code (e.g. IPC Table 2902.1).', ph: 'Minimum fixtures per NPCP / PD 1096 for the occupancy.', au: 'Minimum facilities per NCC Part F4; sizes per AS/NZS 3500.2.', us: 'Minimum fixtures per IPC Table 2902.1 (or UPC Table 422.1).' })]; } },
+      { id: 'wsfu', t: 'Water supply', why: 'Peak water demand from the fixtures, and the cold-water main size.',
+        need: ['Fixture counts (filled from the fixtures step)', 'Flush tank or flush valve'], tips: function () { return ['Flush valves need more flow and pressure than flush tanks.', 'Keep velocity ≤ 2.4 m/s (8 ft/s) to limit noise and water hammer.']; } },
+      { id: 'tank', t: 'Water tank & booster pump', why: 'Storage volume and booster-pump duty for the building.',
+        need: ['Occupants (filled from the room)', 'Daily use per person', 'Storage period'], tips: function () { return ['One day of storage is a common starting point — check the local water district.', 'Size the booster pump for the peak flow at the most remote fixture pressure.']; } },
+      { id: 'drain', t: 'Drain capacity', optional: true, why: 'Checks a drain pipe\'s capacity and self-cleansing velocity at its slope.',
+        need: ['Pipe size and slope'], tips: function () { return [CB({ intl: 'Minimum slope about 2 % up to 75 mm, 1 % for 100 mm and larger (IPC 704.1).', ph: 'NPCP: 2 % minimum (1 % for 100 mm and larger where approved).', au: 'Minimum grades per AS/NZS 3500.2.', us: 'IPC Table 704.1: ¼ in/ft up to 2½ in, ⅛ in/ft for 3–6 in.' })]; } },
+      { id: 'roofdrain', t: 'Roof / storm drainage', optional: true, why: 'Number of roof drains for the catchment and rainfall intensity.',
+        need: ['Roof area (filled from the room)', 'Design rainfall intensity'], tips: function () { return [CB({ intl: 'Use the local design rainfall intensity.', ph: 'Use PAGASA rainfall intensity for the site.', au: 'Use BoM IFD data with the AS/NZS 3500.3 average recurrence interval.', us: 'IPC uses the 100-year, 1-hour rainfall (NOAA Atlas 14).' }), 'Always add secondary (overflow) drains or scuppers.']; } },
+      { id: 'septic', t: 'Septic tank', optional: true, why: 'Septic tank volume and plan size where there is no sewer connection.',
+        need: ['Users (filled from the room)', 'Wastewater per person, desludging interval'], tips: function () { return [CB({ intl: 'Follow the local health / environmental code.', ph: 'Code on Sanitation PD 856 and IRR; DENR effluent standards.', au: 'AS/NZS 1547 and local council approval.', us: 'State / county onsite-wastewater rules.' })]; } }
+    ] },
+    fire: { name: 'Fire Protection', full: 'Fire Protection', steps: [
+      { id: 'sprinkler', t: 'Sprinkler demand', why: 'Water demand, number of heads and storage for the hazard class.',
+        need: ['Hazard class density and design area', 'Coverage per head, K-factor'],
+        tips: function () { return ['Light hazard (offices): 4.1 mm/min over 139 m² (0.10 gpm/ft² over 1,500 ft²).', 'Coverage per head ≤ 20.9 m² (225 ft²) light hazard, ≤ 12.1 m² (130 ft²) ordinary hazard.',
+          CB({ intl: 'Design to NFPA 13 or EN 12845.', ph: 'RA 9514 (2019 RIRR) adopts NFPA 13; submit plans to the BFP for the FSEC.', au: 'Design to AS 2118.1 hazard classes.', us: 'NFPA 13; hydraulic calculations to the AHJ.' })]; } },
+      { id: 'hazen', t: 'Pipe friction', why: 'Friction loss in the sprinkler mains for the hydraulic calculation.',
+        need: ['Flow, pipe size and length', 'C-factor'], tips: function () { return ['C = 120 for black steel wet systems (NFPA 13).', 'Add equivalent lengths for fittings and the elevation rise.']; } },
+      { id: 'firepump', t: 'Fire pump', why: 'Rated flow and pressure when the water supply cannot meet the demand.',
+        need: ['System demand flow and pressure', 'Suction (residual) pressure'], tips: function () { return ['Shut-off ≤ 140 % of rated pressure; ≥ 65 % of rated pressure at 150 % flow (NFPA 20).', CB({ intl: 'Listed pump, controller and jockey pump.', ph: 'Listed fire pump per NFPA 20 as adopted by RA 9514.', au: 'Fire pumpsets per AS 2941.', us: 'NFPA 20 listed pump and controller.' })]; } },
+      { id: 'hydrant', t: 'Hydrant flow test', optional: true, why: 'Confirms the available water supply from a flow test.',
+        need: ['Static and residual pressure, test flow'], tips: function () { return [CB({ intl: 'Test per NFPA 291.', ph: 'Coordinate the test with the BFP and the water district.', au: 'Hydrant systems per AS 2419.1.', us: 'Test per NFPA 291 with the water purveyor.' })]; } }
+    ] }
+  };
+  var GD_KEY = 'mechtoolbox-guide', gdEl = $('#gd-root'), gdLast = null;
+  var GD = { wf: 'hvac', step: 0 };
+  try { var gs = JSON.parse(localStorage.getItem(GD_KEY) || 'null'); if (gs && GUIDE[gs.wf]) GD = gs; } catch (e) {}
+  function gdSave() { try { localStorage.setItem(GD_KEY, JSON.stringify(GD)); } catch (e) {} }
+  function gdDone(r, id) { return !!(r && r.saved && r.saved[id]); }
+  function gdProgress(r, wf) { var st = GUIDE[wf].steps, req = st.filter(function (s) { return !s.optional; }); return { done: req.filter(function (s) { return gdDone(r, s.id); }).length, of: req.length }; }
+  function renderGuide() {
+    if (!gdEl) return;
+    var p = pjCur(), r = pjRoom(p);
+    if (!p || !p.rooms.length) {
+      gdEl.innerHTML = '<div class="gd-start"><div><p class="gd-k">Start here</p><h3>Set up your project in one step</h3><p>Name the project and add the first room. Everything else in the guide fills itself from this room.</p></div>' +
+        '<form id="gd-quick" class="fields gd-quick" novalidate>' +
+        ['name|Project name|text|' + (p ? esc(p.name) : 'My project'), 'room|Room name|text|Room 1', 'l|Length|' + Q.len[sys][0] + '|', 'w|Width|' + Q.len[sys][0] + '|', 'h|Ceiling height|' + Q.len[sys][0] + '|' + roundU(3 / Q.len[sys][1]), 'p|People|people|'].map(function (f) {
+          var a = f.split('|'), text = a[2] === 'text';
+          return '<div class="field"><label for="gd-q-' + a[0] + '">' + a[1] + '</label><div class="input-wrap"><input id="gd-q-' + a[0] + '" type="text" ' + (text ? '' : 'inputmode="decimal" ') + 'autocomplete="off" value="' + a[3] + '">' + (text ? '' : '<span class="unit">' + a[2] + '</span>') + '</div></div>';
+        }).join('') + '<div class="gd-quick-a"><button type="submit" class="btn btn-solid">Start designing →</button><p class="err" id="gd-q-err" hidden></p></div></form></div>';
+      return;
+    }
+    var wf = GUIDE[GD.wf], steps = wf.steps.concat([{ id: '_review', t: 'Review & export', why: 'Check the room schedule, then produce the bill of quantities and the project report.', need: [], tips: function () { return []; } }]);
+    if (GD.step >= steps.length) GD.step = 0;
+    var cur = steps[GD.step], tabs = Object.keys(GUIDE).map(function (k) {
+      var pr = gdProgress(r, k);
+      return '<button type="button" class="gd-tab" data-wf="' + k + '" aria-pressed="' + (k === GD.wf) + '">' + esc(GUIDE[k].name) + '<span class="gd-pill">' + pr.done + '/' + pr.of + '</span></button>';
+    }).join('');
+    var pr = gdProgress(r, GD.wf), pct = Math.round(pr.done / Math.max(pr.of, 1) * 100);
+    var list = steps.map(function (s, i) {
+      var done = s.id === '_review' ? false : gdDone(r, s.id), sv = done && r.saved[s.id].rows[0];
+      return '<li><button type="button" class="gd-step' + (i === GD.step ? ' cur' : '') + (done ? ' done' : '') + '" data-step="' + i + '" aria-current="' + (i === GD.step ? 'step' : 'false') + '">' +
+        '<span class="gd-n" aria-hidden="true">' + (done ? '✓' : i + 1) + '</span><span class="gd-t">' + esc(s.t) + (s.optional ? ' <em>optional</em>' : '') + '<small>' + (sv ? esc(sv[0] + ': ' + sv[1]) : done ? 'Done' : s.id === '_review' ? 'BOQ, report, schedule' : 'Not done yet') + '</small></span></button></li>';
+    }).join('');
+    var body;
+    if (cur.id === '_review') {
+      body = '<p>' + esc(cur.why) + '</p><div class="gd-actions"><button type="button" class="btn btn-solid" id="gd-boq">Open the BOQ / BOM</button><button type="button" class="btn btn-outline" id="gd-pdf">Project PDF</button><button type="button" class="btn btn-outline" id="gd-csv">Room schedule (Excel)</button></div>' +
+        '<p class="gd-note">' + pr.done + ' of ' + pr.of + ' required ' + esc(wf.name) + ' steps are done for <strong>' + esc(r.name) + '</strong>. Repeat the workflow for each room — pick another room above.</p>';
+    } else {
+      var calc = CALCS[cur.id], saved = gdDone(r, cur.id) ? r.saved[cur.id] : null;
+      body = '<p class="gd-why">' + esc(cur.why) + '</p>' +
+        '<div class="gd-cols"><div><p class="gd-k">You\'ll need</p><ul>' + cur.need.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul></div>' +
+        '<div><p class="gd-k">Design targets · ' + esc(REG[codeBasis] ? REG[codeBasis].name : 'International') + '</p><ul>' + cur.tips().map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul></div></div>' +
+        (saved ? '<div class="gd-result"><p class="gd-k">✓ Your result — ' + esc(calc.title) + '</p><dl>' + saved.rows.map(function (x) { return '<div><dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd></div>'; }).join('') + '</dl></div>'
+          : '<p class="gd-note">Open the calculator, check the values filled from <strong>' + esc(r.name) + '</strong>, then press <strong>Save to room</strong> in its project bar.</p>') +
+        '<div class="gd-actions"><button type="button" class="btn btn-solid" id="gd-open" data-calc="' + cur.id + '">' + (saved ? 'Open again' : 'Open ' + esc(calc.title)) + ' →</button>' +
+        (GD.step > 0 ? '<button type="button" class="btn btn-outline" id="gd-prev">← Previous</button>' : '') + '<button type="button" class="btn btn-outline" id="gd-next">' + (cur.optional && !saved ? 'Skip' : 'Next') + ' →</button></div>';
+    }
+    gdEl.innerHTML = '<div class="gd-top"><div class="gd-proj"><span class="gd-k">Project</span><strong>' + esc(p.name) + '</strong>' +
+      '<label class="sr-only" for="gd-room">Room</label><div class="input-wrap gd-room"><select id="gd-room">' + p.rooms.map(function (x) { return '<option value="' + x.id + '"' + (x.id === r.id ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('') + '</select></div>' +
+      '<a class="gd-link" href="#projects">+ Add / edit rooms</a></div><div class="gd-tabs" role="group" aria-label="Design workflow">' + tabs + '</div></div>' +
+      '<div class="gd-bar" role="progressbar" aria-label="' + esc(wf.full) + ' progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"><span style="width:' + pct + '%"></span></div>' +
+      '<div class="gd-grid"><ol class="gd-list">' + list + '</ol><div class="gd-panel" aria-live="polite"><p class="gd-k">Step ' + (GD.step + 1) + ' of ' + steps.length + ' · ' + esc(wf.full) + '</p><h3>' + esc(cur.t) + '</h3>' + body + '</div></div>';
+  }
+  function gdGo(i) { GD.step = i; gdSave(); renderGuide(); var pn = $('.gd-panel'); if (pn && window.matchMedia('(max-width: 860px)').matches) pn.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+  if (gdEl) {
+    gdEl.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      var p = pjCur(), r = pjRoom(p);
+      if (b.dataset.wf) { GD.wf = b.dataset.wf; GD.step = 0; var st = GUIDE[GD.wf].steps; for (var i = 0; i < st.length; i++) if (!st[i].optional && !gdDone(r, st[i].id)) { GD.step = i; break; } gdSave(); renderGuide(); return; }
+      if (b.dataset.step != null) { gdGo(+b.dataset.step); return; }
+      if (b.id === 'gd-open') { gdLast = { wf: GD.wf, step: GD.step, id: b.dataset.calc }; pjOpen(b.dataset.calc, r.id, b); return; }
+      if (b.id === 'gd-prev') { gdGo(Math.max(0, GD.step - 1)); return; }
+      if (b.id === 'gd-next') { gdGo(GD.step + 1); return; }
+      if (b.id === 'gd-boq') { pjBoqOpen = true; renderProjects(); var bq = $('#pj-boq'); if (bq) bq.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+      if (b.id === 'gd-pdf') { pjReport(); return; }
+      if (b.id === 'gd-csv') { pjCsv(); return; }
+    });
+    gdEl.addEventListener('change', function (e) {
+      if (e.target.id !== 'gd-room') return;
+      var p = pjCur(); if (!p) return;
+      p.activeRoom = e.target.value; pjSave(); renderProjects(); renderGuide();
+    });
+    gdEl.addEventListener('submit', function (e) {
+      if (e.target.id !== 'gd-quick') return;
+      e.preventDefault();
+      var k = Q.len[sys][1], val = function (id) { return num($('#gd-q-' + id).value); }, l = val('l'), w = val('w'), hh = val('h'), pp = val('p'), err = $('#gd-q-err');
+      if (!(l > 0) || !(w > 0) || !(hh > 0) || !(pp >= 0) || pp == null) { err.textContent = 'Enter the room length, width, ceiling height and number of people.'; err.hidden = false; return; }
+      var p = pjCur();
+      if (!p) { p = { id: pjUid(), name: $('#gd-q-name').value.trim() || 'My project', rooms: [], activeRoom: null, created: Date.now() }; PJ.projects.push(p); PJ.active = p.id; }
+      var room = { id: pjUid(), name: $('#gd-q-room').value.trim() || 'Room 1', l: l * k, w: w * k, h: hh * k, people: Math.round(pp), space: 'office', ductS: 0, ductR: 0, saved: {} };
+      p.rooms.push(room); p.activeRoom = room.id; GD.step = 0; pjSave(); gdSave(); renderProjects(); renderGuide();
+      var o = $('#gd-open'); if (o) o.focus();
+    });
+  }
+  // After a calculator closes: refresh, and move on if the step was just completed.
+  var planRefreshGuide = planRefresh;
+  planRefresh = function () {
+    planRefreshGuide();
+    if (gdLast) {
+      var r = pjRoom(), st = GUIDE[gdLast.wf].steps[gdLast.step];
+      if (st && gdDone(r, st.id) && GD.wf === gdLast.wf && GD.step === gdLast.step) GD.step = gdLast.step + 1;
+      gdLast = null; gdSave();
+    }
+    renderGuide();
+  };
+  var renderProjectsBase = renderProjects;
+  renderProjects = function () { renderProjectsBase(); renderGuide(); };
+  renderGuide();
 
   // Keep the projects table in step with unit changes and saved results.
   var planRefreshBase = planRefresh;

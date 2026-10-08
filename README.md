@@ -1,6 +1,6 @@
 # MechToolBox
 
-Engineering calculators for M·E·P·F·S design (mechanical, electrical, plumbing, fire protection, sanitary), with live drawings, design suggestions, printable PDF calculation reports, projects that carry room data from one calculator to the next, a bill of quantities for Electrical, Plumbing & Sanitary, Mechanical and Fire Protection in the standard QS format (material and labor costs, supervision & profit, contingencies, VAT) with a BOM, and code references for International, Philippine, Australian and US practice.
+Engineering calculators for M·E·P·F·S design (mechanical, electrical, plumbing, fire protection, sanitary), with live drawings, design suggestions, printable PDF calculation reports, a step-by-step design guide (HVAC, electrical, plumbing & sanitary, fire), projects that carry room data from one calculator to the next, a bill of quantities for Electrical, Plumbing & Sanitary, Mechanical and Fire Protection in the standard QS format (material and labor costs, supervision & profit, contingencies, VAT) with a BOM, and code references for International, Philippine, Australian and US practice.
 
 The whole site is one self-contained file, `index.html` (vanilla JavaScript, inline CSS and SVG). Vite is used only to serve and build it.
 
@@ -22,6 +22,7 @@ The whole site is one self-contained file, `index.html` (vanilla JavaScript, inl
 - `site.spec.js` — page loads without errors, category filters, compact view, minimize all, search.
 - `all-calculators.spec.js` — every calculator opens and produces a result in SI and IMP under every code basis (INTL / PH / AU / US).
 - `values.spec.js` — known results for key calculators (duct sizing, diffusers, electrical, fire). If one fails, a formula or table changed.
+- `guide.spec.js` — the design guide: quick start, steps that open calculators filled from the room, auto-advance after saving, code-basis targets, optional steps, review / BOQ, and switching rooms.
 - `projects.spec.js` — a project room followed through the design chain (cooling load → outdoor air → diffusers → duct → pressure → fan), persistence after reload, AHU totals, JSON backup, Excel/CSV room schedule and the project PDF report.
 - `boq.spec.js` — the HVAC BOQ take-off (equipment, diffusers, duct area by gauge, insulation), unit rates with VAT, BOQ / BOM CSV and the BOQ PDF.
 - `boq-mepfs.spec.js` — electrical (breaker, wire, conduit), plumbing & sanitary (pipe lengths, fixtures, drains) and fire (sprinkler heads, B.I. pipe, fire pump) divisions, and totals across divisions.
