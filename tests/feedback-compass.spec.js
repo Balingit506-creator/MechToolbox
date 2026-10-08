@@ -1,0 +1,54 @@
+import { test, expect } from '@playwright/test'
+import { openSite, openCalc } from './helpers.js'
+
+test('feedback from a calculator attaches its inputs and result', async ({ page }) => {
+  const errors = await openSite(page)
+  await openCalc(page, 'ach')
+  await page.locator('#calc-fb').click()
+  await expect(page.locator('#fb')).toBeVisible()
+  await expect(page.locator('#fb-calc')).toHaveText('Air Changes Calculator')
+  // empty message is refused
+  await page.locator('#fb-copy').click()
+  await expect(page.locator('#fb-err')).toBeVisible()
+  await page.locator('label', { hasText: 'Wrong value / bug' }).click()
+  await page.locator('#fb-msg').fill('Please add 12 ACH for operating rooms.')
+  await page.locator('#fb-name').fill('Engr. Test')
+  await page.locator('.fb-prev summary').click()
+  const text = await page.locator('#fb-preview').textContent()
+  expect(text).toContain('Type: Wrong value / bug')
+  expect(text).toContain('Please add 12 ACH for operating rooms.')
+  expect(text).toContain('From: Engr. Test')
+  expect(text).toContain('--- Calculator ---')
+  expect(text).toContain('Air Changes Calculator')
+  expect(text).toMatch(/MechToolBox v[\d.]+ · units SI · code basis INTL/)
+  // closing returns to the calculator, which is still open
+  await page.locator('#fb-close').click()
+  await expect(page.locator('#fb')).toBeHidden()
+  await expect(page.locator('#modal')).toBeVisible()
+  expect(errors).toEqual([])
+})
+
+test('floating feedback keeps a draft and needs no calculator', async ({ page }) => {
+  await openSite(page)
+  await page.locator('#fb-fab').click()
+  await expect(page.locator('#fb-ctx')).toBeHidden()
+  await page.locator('#fb-msg').fill('Love the BOQ export')
+  await page.locator('#fb-close').click()
+  await page.reload()
+  await page.locator('#fb-fab').click()
+  await expect(page.locator('#fb-msg')).toHaveValue('Love the BOQ export')
+})
+
+test('compass turns with the device heading and shows the sun', async ({ page }) => {
+  const errors = await openSite(page)
+  await page.locator('#cp-btn').click()
+  await expect(page.locator('#cp-panel')).toBeVisible()
+  await expect(page.locator('#cp-sun')).toContainText('°')
+  // Android-style absolute orientation: alpha 90 → heading 270° W
+  await page.evaluate(() => window.dispatchEvent(new DeviceOrientationEvent('deviceorientationabsolute', { alpha: 90, absolute: true })))
+  await expect(page.locator('#cp-head')).toHaveText('270° W')
+  await expect(page.locator('#compass')).toHaveClass(/live/)
+  await page.keyboard.press('Escape')
+  await expect(page.locator('#cp-panel')).toBeHidden()
+  expect(errors).toEqual([])
+})

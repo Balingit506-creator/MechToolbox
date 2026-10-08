@@ -174,6 +174,7 @@ svg { display: block; }
 .btn-outline:hover { background: rgba(92, 224, 176, 0.08); color: var(--mint-hover); border-color: var(--mint-hover); }
 .btn-sm { padding: 8px 12px; font: 500 12px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn[hidden] { display: none; }
 
 /* ---------- Hero ---------- */
 .hero { padding: 56px 0 72px; }
@@ -1111,6 +1112,64 @@ dialog.modal[open] { animation: sheetIn 320ms cubic-bezier(.2, .7, .2, 1); }
 @media (prefers-reduced-motion: reduce) {
   .fl, .bp-fan, .bp-imp, .puff, .cone, .wave, .hero-badge, .blueprint[data-focus="f"] .spray { animation: none; }
 }
+
+/* Floating tools: compass + feedback */
+.cp { position: fixed; left: 16px; bottom: 16px; z-index: 40; }
+.cp-btn { position: relative; width: 56px; height: 56px; padding: 4px; border: 1px solid var(--edge); border-radius: 50%; background: rgba(13, 27, 24, 0.85); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 14px 30px -14px rgba(0, 0, 0, 0.9); cursor: pointer; transition: transform 200ms ease, border-color 200ms ease; }
+.cp-btn:hover, .cp.open .cp-btn { border-color: rgba(92, 224, 176, 0.55); transform: translateY(-2px); }
+.cp-svg { width: 100%; height: 100%; overflow: visible; }
+.cp-ring { fill: rgba(7, 17, 15, 0.7); stroke: var(--line-2); stroke-width: 1; }
+.cp-ticks line { stroke: var(--muted); }
+.cp-n { font: 700 11px var(--head); fill: var(--danger); text-anchor: middle; }
+.cp-l { font: 600 8px var(--mono); fill: var(--muted); text-anchor: middle; }
+.cp-needle-n { fill: var(--danger); }
+.cp-needle-s { fill: rgba(232, 243, 239, 0.25); }
+.cp-hub { fill: var(--deep); stroke: var(--mint); stroke-width: 1; }
+.cp-lubber { fill: var(--mint); }
+.cp-sun circle { fill: #FFC857; filter: drop-shadow(0 0 3px #FFC857); }
+.cp-live { position: absolute; top: 3px; right: 3px; width: 9px; height: 9px; border-radius: 50%; background: var(--muted); border: 2px solid var(--deep); }
+.cp.live .cp-live { background: var(--mint); animation: live 2.2s ease-out infinite; }
+.cp-panel { position: absolute; left: 0; bottom: 68px; width: min(340px, calc(100vw - 32px)); display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 14px; align-items: center; padding: 16px; border: 1px solid var(--edge); border-radius: 16px; background: rgba(13, 27, 24, 0.94); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.95); animation: sheetIn 240ms cubic-bezier(.2, .7, .2, 1); }
+.cp-panel[hidden] { display: none; }
+.cp-big { width: 120px; height: 120px; }
+.cp-k { font: 500 10px/1.3 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--mint); }
+.cp-k2 { margin-top: 10px; }
+.cp-head { font: 700 26px/1.1 var(--head); letter-spacing: -0.02em; margin: 2px 0 4px; }
+.cp-status, .cp-loc { font-size: 12px; line-height: 1.4; color: var(--muted); }
+.cp-sunline { font: 500 13px/1.35 var(--mono); color: #FFC857; margin-top: 2px; }
+.cp-loc { margin-top: 4px; }
+.cp-link { padding: 0; border: 0; background: none; color: var(--mint); font: inherit; text-decoration: underline; cursor: pointer; }
+#cp-enable { margin-top: 8px; }
+@media (max-width: 380px) { .cp-panel { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
+
+.fb-fab { position: fixed; right: 16px; bottom: 16px; z-index: 40; display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px 12px 15px; border: 0; border-radius: 999px; background: var(--grad-mint); color: var(--deep); font: 600 14px/1 var(--body); cursor: pointer; box-shadow: 0 14px 30px -12px rgba(92, 224, 176, 0.8); transition: transform 200ms ease, box-shadow 200ms ease; }
+.fb-fab:hover { transform: translateY(-2px); box-shadow: 0 18px 36px -12px rgba(92, 224, 176, 1); }
+@media (max-width: 520px) { .fb-fab { padding: 12px; } .fb-fab span { display: none; } }
+body.modal-open .fb-fab, body.modal-open .cp { visibility: hidden; }
+.site-footer { padding-bottom: 96px; }
+
+dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
+.fb-body { display: grid; gap: 16px; }
+.fb-body .m-desc { margin: 0; }
+.fb-types { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: 0; }
+.fb-label, .fb-body .field label { display: block; width: 100%; margin-bottom: 8px; font: 500 12px/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.fb-types label { position: relative; cursor: pointer; }
+.fb-types input { position: absolute; opacity: 0; pointer-events: none; }
+.fb-types span { display: inline-block; padding: 8px 13px; border: 1px solid var(--edge); border-radius: 999px; background: rgba(7, 17, 15, 0.7); font-size: 14px; color: var(--muted); transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease; }
+.fb-types label:hover span { color: var(--text); border-color: var(--line-2); }
+.fb-types input:checked + span { color: var(--text); border-color: var(--mint); background: rgba(92, 224, 176, 0.1); }
+.fb-types input:focus-visible + span { outline: 2px solid var(--mint); outline-offset: 2px; }
+.fb-area textarea { flex: 1; min-width: 0; width: 100%; padding: 12px; border: 0; background: transparent; outline: none; resize: vertical; font: 400 15px/1.5 var(--body); color: var(--text); }
+.fb-row { display: grid; gap: 16px; }
+@media (min-width: 560px) { .fb-row { grid-template-columns: 1fr 1fr; } }
+.fb-ctx { padding: 10px 14px; border-left: 3px solid var(--mint); border-radius: 10px; background: rgba(92, 224, 176, 0.06); font-size: 14px; }
+.fb-check { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.fb-check input { accent-color: var(--mint); width: 16px; height: 16px; }
+.fb-prev summary { cursor: pointer; font: 500 12px/1.4 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.fb-prev pre { margin: 10px 0 0; padding: 12px; max-height: 220px; overflow: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--deep); font: 400 12px/1.5 var(--mono); color: var(--muted); white-space: pre-wrap; }
+.fb-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.fb-msg { font: 500 12px/1.4 var(--mono); color: var(--mint); }
+@media (prefers-reduced-motion: reduce) { .cp.live .cp-live, .cp-panel { animation: none; } }
 </style>
 </head>
 <body>
@@ -1433,11 +1492,110 @@ dialog.modal[open] { animation: sheetIn 320ms cubic-bezier(.2, .7, .2, 1); }
   <div class="wrap">
     <a class="logo" href="#top" aria-label="MechToolBox, back to top"><span>MECH</span><span class="slash">/</span><span class="tools">TOOLBOX</span></a>
     <p>Results are preliminary estimates. Verify against applicable codes with a qualified engineer.</p>
-    <p class="copy">© 2026 MechToolBox · Built by
+    <p class="copy">© 2026 MechToolBox · <span class="ver" id="foot-ver"></span> · Built by
       <button type="button" class="sig" aria-label="JAB"><span class="sig-gear" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="currentColor" stroke-width="6" stroke-dasharray="3.93 3.93"/><circle cx="16" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="3"/></svg></span><span class="sig-l" style="--i:0" aria-hidden="true">J</span><span class="sig-l" style="--i:1" aria-hidden="true">A</span><span class="sig-l" style="--i:2" aria-hidden="true">B</span></button>
     </p>
   </div>
 </footer>
+
+<!-- Floating tools: live compass (left) and feedback (right) -->
+<div class="cp" id="compass">
+  <button type="button" class="cp-btn" id="cp-btn" aria-expanded="false" aria-controls="cp-panel" aria-label="Compass — heading not available">
+    <svg class="cp-svg" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="47" class="cp-ring"/>
+      <g class="cp-dial">
+        <g class="cp-ticks"><line x1="50" y1="6" x2="50" y2="14" transform="rotate(0 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(15 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(30 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(45 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(60 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(75 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="14" transform="rotate(90 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(105 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(120 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(135 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(150 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(165 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="14" transform="rotate(180 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(195 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(210 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(225 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(240 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(255 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="14" transform="rotate(270 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(285 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(300 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(315 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(330 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(345 50 50)" stroke-width="1"/></g>
+        <text x="50" y="26" class="cp-n">N</text>
+        
+        <g class="cp-sun" hidden><circle cx="50" cy="12" r="5"/></g>
+        <path d="M50 30L54 50L50 70L46 50z" class="cp-needle-s"/>
+        <path d="M50 30L54 50H46z" class="cp-needle-n"/>
+      </g>
+      <circle cx="50" cy="50" r="2.4" class="cp-hub"/>
+      <path d="M50 1.5l3 5h-6z" class="cp-lubber"/>
+    </svg>
+    <span class="cp-live" aria-hidden="true"></span>
+  </button>
+  <div class="cp-panel" id="cp-panel" hidden>
+    <div class="cp-big"><svg class="cp-svg" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="47" class="cp-ring"/>
+      <g class="cp-dial">
+        <g class="cp-ticks"><line x1="50" y1="6" x2="50" y2="14" transform="rotate(0 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(15 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(30 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(45 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(60 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(75 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="14" transform="rotate(90 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(105 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(120 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(135 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(150 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(165 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="14" transform="rotate(180 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(195 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(210 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(225 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(240 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(255 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="14" transform="rotate(270 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(285 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(300 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(315 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(330 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(345 50 50)" stroke-width="1"/></g>
+        <text x="50" y="24" class="cp-n">N</text>
+        <text x="78" y="53.5" class="cp-l">E</text><text x="50" y="82" class="cp-l">S</text><text x="22" y="53.5" class="cp-l">W</text>
+        <g class="cp-sun" hidden><circle cx="50" cy="12" r="4.2"/></g>
+        <path d="M50 30L54 50L50 70L46 50z" class="cp-needle-s"/>
+        <path d="M50 30L54 50H46z" class="cp-needle-n"/>
+      </g>
+      <circle cx="50" cy="50" r="2.4" class="cp-hub"/>
+      <path d="M50 1.5l3 5h-6z" class="cp-lubber"/>
+    </svg></div>
+    <div class="cp-info">
+      <p class="cp-k">Heading</p>
+      <p class="cp-head" id="cp-head" aria-live="polite">—</p>
+      <p class="cp-status" id="cp-status">Checking for a compass sensor…</p>
+      <button type="button" class="btn btn-solid btn-sm" id="cp-enable" hidden>Enable compass</button>
+      <p class="cp-k cp-k2">Sun now</p>
+      <p class="cp-sunline" id="cp-sun">—</p>
+      <p class="cp-loc"><span id="cp-loc">—</span> <button type="button" class="cp-link" id="cp-myloc">Use my location</button></p>
+    </div>
+  </div>
+</div>
+
+<button type="button" class="fb-fab" id="fb-fab" aria-haspopup="dialog">
+  <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 4.5h13v9h-7l-4 3v-3h-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 8h6M7 10.8h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  <span>Feedback</span>
+</button>
+
+<dialog class="modal fb" id="fb" aria-labelledby="fb-title">
+  <div class="m-head">
+    <div>
+      <p class="eyebrow">MechToolBox <span id="fb-ver"></span> · beta</p>
+      <h2 id="fb-title">Send feedback</h2>
+    </div>
+    <div class="m-tools">
+      <button type="button" class="icon-btn" id="fb-close" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+  <form class="m-body fb-body" id="fb-form" novalidate>
+    <p class="m-desc">Spotted a wrong value, missing code reference, or have an idea for a calculator? Tell me — it all helps.</p>
+    <fieldset class="fb-types">
+      <legend class="fb-label">Type</legend>
+      <label><input type="radio" name="fb-type" value="Suggestion" checked><span>💡 Suggestion</span></label>
+      <label><input type="radio" name="fb-type" value="Wrong value / bug"><span>🐞 Wrong value / bug</span></label>
+      <label><input type="radio" name="fb-type" value="New calculator"><span>🧮 New calculator</span></label>
+      <label><input type="radio" name="fb-type" value="Codes & standards"><span>📘 Codes &amp; standards</span></label>
+      <label><input type="radio" name="fb-type" value="Design / usability"><span>🎨 Design</span></label>
+    </fieldset>
+    <div class="fb-ctx" id="fb-ctx" hidden>
+      <label class="fb-check"><input type="checkbox" id="fb-attach" checked> Attach <strong id="fb-calc"></strong> inputs &amp; result</label>
+    </div>
+    <div class="field">
+      <label for="fb-msg">Your feedback</label>
+      <div class="input-wrap fb-area"><textarea id="fb-msg" rows="6" placeholder="e.g. The sprinkler calculator should also check NFPA 13 ordinary hazard group 2 density…" required></textarea></div>
+      <p class="err" id="fb-err" hidden>Please write a few words first.</p>
+    </div>
+    <div class="fb-row">
+      <div class="field">
+        <label for="fb-name">Name <span class="sym">(optional)</span></label>
+        <div class="input-wrap"><input id="fb-name" autocomplete="name" placeholder="Engr. Juan Dela Cruz"></div>
+      </div>
+      <div class="field">
+        <label for="fb-role">Discipline / company <span class="sym">(optional)</span></label>
+        <div class="input-wrap"><input id="fb-role" placeholder="Mechanical · ABC Consultants"></div>
+      </div>
+    </div>
+    <details class="fb-prev"><summary>Preview what will be sent</summary><pre id="fb-preview"></pre></details>
+    <div class="fb-actions">
+      <button type="submit" class="btn btn-solid" id="fb-send">Send by email</button>
+      <button type="button" class="btn btn-outline" id="fb-copy">Copy text</button>
+      <a class="btn btn-outline" id="fb-form-link" target="_blank" rel="noopener" hidden>Open feedback form ↗</a>
+      <span class="fb-msg" id="fb-done" aria-live="polite"></span>
+    </div>
+  </form>
+</dialog>
 
 <dialog class="modal" id="modal" aria-labelledby="m-title">
   <div class="m-head">
@@ -5541,7 +5699,8 @@ dialog.modal[open] { animation: sheetIn 320ms cubic-bezier(.2, .7, .2, 1); }
     return '<div class="result-head"><h3 id="r-title">Result</h3><div class="result-actions">' +
       '<button type="button" class="btn btn-outline btn-sm" id="pdf-btn" aria-expanded="false" aria-controls="report-panel">' +
       '<svg width="13" height="13" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h7l3.5 3.5v11.5H5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 8.5v6M7.5 12l2.5 2.5 2.5-2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF report</button>' +
-      '<button type="button" class="btn btn-outline btn-sm" id="copy-btn">Copy result</button></div></div>';
+      '<button type="button" class="btn btn-outline btn-sm" id="copy-btn">Copy result</button>' +
+      '<button type="button" class="btn btn-outline btn-sm" id="calc-fb">Feedback</button></div></div>';
   }
 
   function renderCalc(id) {
@@ -8902,6 +9061,178 @@ dialog.modal[open] { animation: sheetIn 320ms cubic-bezier(.2, .7, .2, 1); }
     sigSeen.observe(sig);
   }
 
+
+  /* ---------- Feedback ---------- */
+  // Where feedback goes: set FEEDBACK_TO to your email and/or FEEDBACK_FORM to a Google Form / Tally link.
+  var APP_VERSION = 'v0.9';
+  var FEEDBACK_TO = '';
+  var FEEDBACK_FORM = '';
+  var FB_DRAFT = 'mechtoolbox-feedback';
+  var fb = $('#fb'), fbMsg = $('#fb-msg'), fbCtxCalc = null, fbCtxText = '', fbOpener = null;
+  $('#fb-ver').textContent = APP_VERSION;
+  $('#foot-ver').textContent = APP_VERSION + ' beta';
+  if (FEEDBACK_FORM) { $('#fb-form-link').href = FEEDBACK_FORM; $('#fb-form-link').hidden = false; }
+  try { var fbd = JSON.parse(localStorage.getItem(FB_DRAFT) || 'null'); if (fbd) { fbMsg.value = fbd.msg || ''; $('#fb-name').value = fbd.name || ''; $('#fb-role').value = fbd.role || ''; } } catch (e) {}
+  function fbText() {
+    var type = ($('input[name="fb-type"]:checked', fb) || {}).value || 'Suggestion';
+    var who = [$('#fb-name').value.trim(), $('#fb-role').value.trim()].filter(Boolean).join(' — ');
+    var lines = ['Type: ' + type, '', fbMsg.value.trim() || '(no message yet)', ''];
+    if (who) lines.push('From: ' + who);
+    if (fbCtxCalc && $('#fb-attach').checked && fbCtxText) lines.push('', '--- Calculator ---', fbCtxText);
+    lines.push('', '--- Context ---', 'MechToolBox ' + APP_VERSION + ' · units ' + sys.toUpperCase() + ' · code basis ' + codeBasis.toUpperCase() + ' · screen ' + window.innerWidth + '×' + window.innerHeight);
+    if (location.protocol !== 'file:') lines.push('Page: ' + location.origin + location.pathname);
+    return lines.join('\n');
+  }
+  function fbRefresh() {
+    $('#fb-preview').textContent = fbText();
+    try { localStorage.setItem(FB_DRAFT, JSON.stringify({ msg: fbMsg.value, name: $('#fb-name').value, role: $('#fb-role').value })); } catch (e) {}
+  }
+  function fbOpen(calcId, trigger) {
+    fbOpener = trigger || document.activeElement;
+    fbCtxCalc = calcId || null;
+    fbCtxText = calcId ? lastCopy : '';
+    $('#fb-ctx').hidden = !calcId;
+    if (calcId) $('#fb-calc').textContent = CALCS[calcId] ? CALCS[calcId].title : calcId;
+    $('#fb-err').hidden = true; $('#fb-done').textContent = '';
+    fbRefresh();
+    if (typeof fb.showModal === 'function') fb.showModal(); else fb.setAttribute('open', '');
+    document.body.classList.add('modal-open');
+    fbMsg.focus();
+  }
+  function fbClose() { if (fb.open) fb.close(); }
+  fb.addEventListener('close', function () {
+    if (!modal.open) document.body.classList.remove('modal-open');
+    if (fbOpener && fbOpener.focus) fbOpener.focus();
+  });
+  fb.addEventListener('click', function (e) { if (e.target === fb) fbClose(); });
+  $('#fb-close').addEventListener('click', fbClose);
+  $('#fb-fab').addEventListener('click', function (e) { fbOpen(null, e.currentTarget); });
+  mBody.addEventListener('click', function (e) { var b = e.target.closest('#calc-fb'); if (b) fbOpen(current, b); });
+  $('#fb-form').addEventListener('input', fbRefresh);
+  $('#fb-form').addEventListener('change', fbRefresh);
+  function fbCheck() {
+    var ok = fbMsg.value.trim().length > 0;
+    $('#fb-err').hidden = ok;
+    if (!ok) fbMsg.focus();
+    return ok;
+  }
+  $('#fb-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!fbCheck()) return;
+    var type = ($('input[name="fb-type"]:checked', fb) || {}).value || 'Suggestion';
+    var subject = 'MechToolBox feedback — ' + type + (fbCtxCalc && CALCS[fbCtxCalc] ? ' — ' + CALCS[fbCtxCalc].title : '');
+    var body = fbText();
+    if (body.length > 1800) body = body.slice(0, 1800) + '\n… (trimmed — use Copy text for the full version)';
+    window.location.href = 'mailto:' + encodeURIComponent(FEEDBACK_TO) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    $('#fb-done').textContent = FEEDBACK_TO ? '✓ Opening your email app…' : '✓ Opening your email app — add the address to send to';
+  });
+  $('#fb-copy').addEventListener('click', function () {
+    if (!fbCheck()) return;
+    var t = fbText(), done = function () { $('#fb-done').textContent = '✓ Copied — paste it into an email or chat'; };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(done, function () { fbFallbackCopy(t); done(); });
+    else { fbFallbackCopy(t); done(); }
+  });
+  function fbFallbackCopy(t) {
+    var ta = document.createElement('textarea');
+    ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    fb.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    ta.remove();
+  }
+
+  /* ---------- Compass: device heading (phones) + live sun position ---------- */
+  var cp = $('#compass'), cpBtn = $('#cp-btn'), cpPanel = $('#cp-panel');
+  var cpDials = $$('.cp-dial', cp), cpSuns = $$('.cp-sun', cp);
+  var cpHeading = null, cpShown = 0, cpRaf = 0, cpGotEvent = false;
+  var CP_PTS = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+  var cardinal = function (deg) { return CP_PTS[Math.round(((deg % 360) + 360) % 360 / 22.5) % 16]; };
+  function cpDraw() {
+    var target = cpHeading == null ? 0 : cpHeading;
+    var diff = ((target - cpShown + 540) % 360) - 180;          // shortest way round
+    cpShown = (cpShown + diff * (reduceMotion.matches ? 1 : 0.18) + 360) % 360;
+    cpDials.forEach(function (d) { d.setAttribute('transform', 'rotate(' + (-cpShown).toFixed(2) + ' 50 50)'); });
+    cpRaf = Math.abs(diff) > 0.05 ? requestAnimationFrame(cpDraw) : 0;
+  }
+  function cpSet(deg) {
+    cpHeading = (deg + 360) % 360;
+    cp.classList.add('live');
+    var txt = Math.round(cpHeading) % 360 + '° ' + cardinal(cpHeading);
+    $('#cp-head').textContent = txt;
+    cpBtn.setAttribute('aria-label', 'Compass — heading ' + txt);
+    $('#cp-status').textContent = 'Live from your device compass. Hold the phone flat; wave it in a figure-8 to calibrate.';
+    $('#cp-enable').hidden = true;
+    if (!cpRaf) cpRaf = requestAnimationFrame(cpDraw);
+  }
+  function screenAngle() { return (screen.orientation && screen.orientation.angle) || window.orientation || 0; }
+  function onOrient(e) {
+    if (typeof e.webkitCompassHeading === 'number') { cpGotEvent = true; cpSet(e.webkitCompassHeading); return; }   // iOS
+    if (e.absolute && typeof e.alpha === 'number') { cpGotEvent = true; cpSet(360 - e.alpha + screenAngle()); }       // Android
+  }
+  function cpListen() {
+    window.addEventListener('deviceorientationabsolute', onOrient);
+    window.addEventListener('deviceorientation', onOrient);
+    setTimeout(function () {
+      if (cpGotEvent) return;
+      if (!window.isSecureContext) $('#cp-status').textContent = 'The compass needs a secure (https) link. Sun position below is live.';
+      else if (needsPerm && !cpAsked) { $('#cp-enable').hidden = false; $('#cp-status').textContent = 'Tap Enable compass to use your phone’s heading.'; }
+      else $('#cp-status').textContent = 'No compass sensor on this device — north is shown up. Open the site on your phone for a live heading.';
+    }, 1500);
+  }
+  // iOS needs a tap to allow the sensor; other browsers send readings straight away (some also expose requestPermission).
+  var needsPerm = window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function', cpAsked = false;
+  cpListen();
+  $('#cp-enable').addEventListener('click', function () {
+    cpAsked = true;
+    DeviceOrientationEvent.requestPermission().then(function (r) {
+      if (r === 'granted') { cpListen(); $('#cp-enable').hidden = true; $('#cp-status').textContent = 'Waiting for the compass…'; }
+      else $('#cp-status').textContent = 'Compass permission was declined.';
+    }).catch(function () { $('#cp-status').textContent = 'Could not ask for compass permission (https needed).'; });
+  });
+
+  // Sun azimuth / altitude (NOAA low-precision formulas, about ±1°).
+  var CP_CITIES = { intl: ['Manila', 14.5995, 120.9842], ph: ['Manila', 14.5995, 120.9842], au: ['Sydney', -33.8688, 151.2093], us: ['Washington, DC', 38.9072, -77.0369] };
+  var cpLoc = null;
+  try { cpLoc = JSON.parse(localStorage.getItem('mechtoolbox-loc') || 'null'); } catch (e) {}
+  function sunPos(date, lat, lon) {
+    var rad = Math.PI / 180, d = date.getTime() / 86400000 + 2440587.5 - 2451545.0;
+    var g = (357.529 + 0.98560028 * d) * rad, q = 280.459 + 0.98564736 * d;
+    var L = (q + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * rad, e = (23.439 - 0.00000036 * d) * rad;
+    var ra = Math.atan2(Math.cos(e) * Math.sin(L), Math.cos(L)), dec = Math.asin(Math.sin(e) * Math.sin(L));
+    var gmst = (18.697374558 + 24.06570982441908 * d) % 24;
+    var H = (gmst * 15 + lon) * rad - ra, la = lat * rad;
+    var alt = Math.asin(Math.sin(la) * Math.sin(dec) + Math.cos(la) * Math.cos(dec) * Math.cos(H));
+    var az = Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(la) - Math.tan(dec) * Math.cos(la)) / rad + 180;
+    return { az: (az + 360) % 360, alt: alt / rad };
+  }
+  function cpSun() {
+    var c = cpLoc || CP_CITIES[codeBasis] || CP_CITIES.intl, s = sunPos(new Date(), c[1], c[2]);
+    var up = s.alt > -0.8;
+    cpSuns.forEach(function (g) { g.hidden = !up; g.setAttribute('transform', 'rotate(' + s.az.toFixed(1) + ' 50 50)'); });
+    $('#cp-sun').textContent = up
+      ? '☀ ' + Math.round(s.az) + '° ' + cardinal(s.az) + ' · ' + Math.round(s.alt) + '° above the horizon'
+      : '☾ Sun below the horizon (' + Math.round(s.az) + '° ' + cardinal(s.az) + ')';
+    $('#cp-loc').textContent = cpLoc ? 'Your location (' + c[1].toFixed(2) + ', ' + c[2].toFixed(2) + ')' : c[0] + ' — approximate';
+  }
+  cpSun();
+  setInterval(cpSun, 30000);
+  $('#cp-myloc').addEventListener('click', function () {
+    if (!navigator.geolocation) { $('#cp-loc').textContent = 'Location not available in this browser'; return; }
+    $('#cp-loc').textContent = 'Locating…';
+    navigator.geolocation.getCurrentPosition(function (p) {
+      cpLoc = ['You', p.coords.latitude, p.coords.longitude];
+      try { localStorage.setItem('mechtoolbox-loc', JSON.stringify(cpLoc)); } catch (e) {}
+      cpSun();
+    }, function () { $('#cp-loc').textContent = 'Location blocked — using ' + (CP_CITIES[codeBasis] || CP_CITIES.intl)[0]; }, { maximumAge: 600000, timeout: 10000 });
+  });
+  function cpToggle(open) {
+    cpPanel.hidden = !open;
+    cpBtn.setAttribute('aria-expanded', String(open));
+    cp.classList.toggle('open', open);
+    if (open) cpSun();
+  }
+  cpBtn.addEventListener('click', function () { cpToggle(cpPanel.hidden); });
+  document.addEventListener('click', function (e) { if (!cpPanel.hidden && !cp.contains(e.target)) cpToggle(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !cpPanel.hidden) { cpToggle(false); cpBtn.focus(); } });
 })();
 </script>
 </body>
