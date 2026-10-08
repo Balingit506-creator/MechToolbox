@@ -61,7 +61,7 @@ test('a room carries results along the design chain', async ({ page }) => {
   await page.locator('#pj-save').click()
   await closeCalc(page)
 
-  await expect(page.locator('.pj-done')).toHaveText('✓ Chain complete')
+  await expect(page.locator('.pj-done')).toHaveText('✓ HVAC complete')
   await expect(page.locator('.pj-step.done')).toHaveCount(6)
   await expect(page.locator('.pj-table tfoot')).toContainText('TR')
   await expect(page.locator('#pj-ahu')).toBeVisible()
@@ -124,4 +124,51 @@ test('project PDF report lists the rooms, totals and saved calculations', async 
   await expect(report.locator('table.sched tfoot')).toContainText('TR')
   await expect(report.locator('.room .chip.on')).toHaveText(['Cooling load'])
   await expect(report.locator('.room table.calcs')).toContainText('Cooling Load Calculator')
+})
+
+test('room table has a tab per discipline with its own columns, chain and totals', async ({ page }) => {
+  const errors = await openSite(page)
+  await createProjectWithRoom(page)
+  await expect(page.locator('.pj-tab[aria-pressed="true"]')).toContainText('HVAC')
+  // Electrical: the chain starts with lighting, filled from the room
+  await page.locator('.pj-tab', { hasText: 'Electrical' }).click()
+  await expect(page.locator('.pj-table thead')).toContainText('Demand load')
+  await expect(page.locator('.pj-next')).toHaveText('Next: Lighting →')
+  await page.locator('.pj-next').click()
+  await expect(page.locator('#f-light-l')).toHaveValue('12.5')
+  await page.locator('#pj-save').click()
+  await closeCalc(page)
+  await expect(page.locator('.pj-table tbody td').first()).toContainText('24 × 4,000 lm')
+  await expect(page.locator('.pj-next')).toHaveText('Next: Load →')
+  // Plumbing & Sanitary: fixtures from Drainage Fixture Units
+  await page.locator('.pj-tab', { hasText: 'Plumbing' }).click()
+  await page.locator('.pj-next').click()
+  await expect(page.locator('#m-title')).toHaveText('Drainage Fixture Units')
+  await page.locator('#pj-save').click()
+  await closeCalc(page)
+  await expect(page.locator('.pj-table tbody td').first()).toContainText('WC 4')
+  await expect(page.locator('#pj-allfix')).toBeVisible()
+  // Fire: 100 m² / 12 m² per head = 9 heads
+  await page.locator('.pj-tab', { hasText: 'Fire' }).click()
+  await page.locator('.pj-next').click()
+  await page.locator('#pj-save').click()
+  await closeCalc(page)
+  await expect(page.locator('.pj-table tbody td').first()).toContainText('9')
+  await expect(page.locator('.pj-table tfoot')).toContainText('9')
+  // the tab pills count rooms with a complete chain; HVAC is untouched
+  await expect(page.locator('.pj-tab', { hasText: 'HVAC' })).toContainText('0/1')
+  // the electrical total sizes the main feeder in the cable calculator
+  await page.locator('.pj-tab', { hasText: 'Electrical' }).click()
+  await page.locator('#pj-mainfeed').click()
+  await expect(page.locator('#m-title')).toHaveText('Cable Sizing (Ampacity & Derating)')
+  expect(errors).toEqual([])
+})
+
+test('ceiling height defaults to 10 ft in imperial units', async ({ page }) => {
+  await openSite(page)
+  await page.locator('.site-header button[data-sys="imp"]').click()
+  await expect(page.locator('#gd-q-h')).toHaveValue('10')
+  await page.locator('#pj-new-name').fill('X')
+  await page.locator('#pj-create').click()
+  await expect(page.locator('#pj-r-h')).toHaveValue('10')
 })

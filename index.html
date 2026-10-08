@@ -270,6 +270,11 @@ svg { display: block; }
 .pj-form-a { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
 .pj-form-a .err { margin: 0; }
 .pj-hint { color: var(--muted); margin: 0; }
+.pj-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: -4px; }
+.pj-tab { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--muted); font: 500 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: border-color var(--ease), color var(--ease); }
+.pj-tab:hover { color: var(--text); border-color: var(--line-2); }
+.pj-tab[aria-pressed="true"] { border-color: var(--mint); color: var(--text); background: rgba(92,224,176,0.08); }
+.pj-tab[aria-pressed="true"] .gd-pill { background: var(--mint); color: var(--deep); }
 .pj-table table { width: 100%; min-width: 940px; border-collapse: collapse; font-size: 14px; }
 .pj-table th, .pj-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 .pj-table thead th { font: 500 11px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); background: var(--panel); white-space: nowrap; }
@@ -1160,7 +1165,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       <div class="section-head reveal">
         <p class="eyebrow">03 — Projects</p>
         <h2 id="pj-title">Design room by room.</h2>
-        <p>Add the rooms of a project once. Each calculator fills itself from the room and saves its result back, so the cooling load flows into outdoor air, diffusers, ducts, pressure and the fan — with project totals for the AHU.</p>
+        <p>Add the rooms of a project once. Each calculator fills itself from the room and saves its result back — HVAC, electrical, plumbing &amp; sanitary and fire protection, each with its own design chain and project totals.</p>
       </div>
       <div class="pj-root reveal" id="pj-root"></div>
     </div>
@@ -7495,6 +7500,102 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   var pjEl = $('#pj-root'), pjEdit = null, pjBoqOpen = false;
   function pjNum(id) { var x = num($(id).value); return x == null ? NaN : x; }
   function pjFmtQ(si, q) { return si > 0 ? fq(si, q) : '<span class="pj-dash">—</span>'; }
+  /* Room table by discipline: HVAC, Electrical, Plumbing & Sanitary, Fire Protection. */
+  var PJ_TAB_KEY = 'mechtoolbox-pjtab', pjTab = 'hvac';
+  try { var pt = localStorage.getItem(PJ_TAB_KEY); if (pt) pjTab = pt; } catch (e) {}
+  var PJ_DASH = '<span class="pj-dash">—</span>';
+  var pjSub = function (s) { return s ? '<span class="pj-sub">' + s + '</span>' : ''; };
+  var pjSum = function (rooms, f) { return rooms.reduce(function (a, r) { return a + (f(r) || 0); }, 0); };
+  var pjHeads = function (r) { return r.spr && r.spr.cov > 0 ? Math.ceil(roomArea(r) / r.spr.cov) : 0; };
+  var pjFixN = function (r) { return r.fix ? Object.keys(r.fix).reduce(function (a, k) { return a + (r.fix[k] || 0); }, 0) : 0; };
+  var FIX_SHORT = { wc: 'WC', ur: 'UR', lav: 'LAV', sh: 'SH', bt: 'BT', ks: 'KS', fd: 'FD', cw: 'CW', df: 'DF' };
+  var PJ_TABS = {
+    hvac: { name: 'HVAC', chain: PJ_CHAIN, cols: [
+      ['Cooling load', function (r) { return r.loadW > 0 ? pw(r.loadW) + pjSub(fmt(r.loadW / 3516.85, 2) + ' TR') : PJ_DASH; }, function (R) { var w = pjSum(R, function (r) { return r.loadW; }); return w > 0 ? pw(w) + pjSub(fmt(w / 3516.85, 2) + ' TR') : PJ_DASH; }, 1],
+      ['Supply air', function (r) { return pjFmtQ(r.supply, 'air'); }, function (R) { var q = pjSum(R, function (r) { return r.supply; }); return q > 0 ? fq(q, 'air') : PJ_DASH; }, 1],
+      ['Outdoor air', function (r) { return pjFmtQ(r.oaQ, 'air'); }, function (R) { var q = pjSum(R, function (r) { return r.oaQ; }); return q > 0 ? fq(q, 'air') : PJ_DASH; }, 1],
+      ['Diffusers', function (r) { return r.nDiff > 0 ? fmt(r.nDiff, 0) + pjSub(esc(r.neck || '')) : PJ_DASH; }, function (R) { var n = pjSum(R, function (r) { return r.nDiff; }); return n > 0 ? fmt(n, 0) : ''; }],
+      ['Duct', function (r) { return r.duct ? esc(r.duct) : PJ_DASH; }],
+      ['Fan', function (r) { return r.motor ? esc(r.motor) + (r.esp ? pjSub(fq(r.esp, 'pv') + ' ESP') : '') : r.esp ? fq(r.esp, 'pv') + ' ESP' : PJ_DASH; }]
+    ] },
+    elec: { name: 'Electrical', chain: [['light', 'Lighting', function (r) { return !!r.lights; }], ['elec', 'Load', function (r) { return !!r.el; }], ['cable', 'Cable', function (r) { return !!r.cable; }]], cols: [
+      ['Lighting', function (r) { return r.lights ? fmt(r.lights.n, 0) + ' × ' + fmt(r.lights.lm, 0) + ' lm' + pjSub(fmt(r.lights.n * r.lights.w / 1000, 2) + ' kW') : PJ_DASH; },
+        function (R) { var n = pjSum(R, function (r) { return r.lights && r.lights.n; }), kw = pjSum(R, function (r) { return r.lights && r.lights.n * r.lights.w / 1000; }); return n > 0 ? fmt(n, 0) + ' luminaires' + pjSub(fmt(kw, 2) + ' kW') : PJ_DASH; }],
+      ['Demand load', function (r) { return r.el ? fmt(r.el.dem, 1) + ' kW' + pjSub(fmt(r.el.I, 1) + ' A at ' + fmt(r.el.V, 0) + ' V') : PJ_DASH; }, function (R) { var k = pjSum(R, function (r) { return r.el && r.el.dem; }); return k > 0 ? fmt(k, 1) + ' kW' : PJ_DASH; }, 1],
+      ['Breaker', function (r) { var b = r.el && boqBreaker(r.el.I); return b ? b + ' A' + pjSub('3-pole') : PJ_DASH; }],
+      ['Cable', function (r) { return r.cable ? esc(cableFor(r.cable.a).replace(/ THHN$/, '')) + ' ' + (r.cable.mat === 'al' ? 'Al' : 'Cu') + pjSub(fq(r.cable.l, 'len') + ' · ' + (r.cable.ph === '3' ? '3-phase' : '1-phase')) : PJ_DASH; }]
+    ] },
+    plumb: { name: 'Plumbing & Sanitary', chain: [['dfu', 'Fixtures', function (r) { return !!r.fix; }], ['wsfu', 'Water supply', function (r) { return !!r.wsfu; }], ['tank', 'Tank', function (r) { return !!r.tank; }]], cols: [
+      ['Fixtures', function (r) { var n = pjFixN(r); return n > 0 ? fmt(n, 0) + pjSub(Object.keys(r.fix).filter(function (k) { return r.fix[k] > 0; }).map(function (k) { return FIX_SHORT[k] + ' ' + r.fix[k]; }).join(' · ')) : PJ_DASH; }, function (R) { var n = pjSum(R, pjFixN); return n > 0 ? fmt(n, 0) : PJ_DASH; }],
+      ['Water main', function (r) { return r.wsfu ? esc(pipeLabel(r.wsfu.mat, r.wsfu.row)) + pjSub(esc(PIPE_MATS[r.wsfu.mat].label)) : PJ_DASH; }],
+      ['Water tank', function (r) { return r.tank && r.tank.vol > 0 ? fq(r.tank.vol, 'vol') + pjSub(esc(r.tank.peak ? 'pump ' + r.tank.peak : '')) : PJ_DASH; }, function (R) { var v = pjSum(R, function (r) { return r.tank && r.tank.vol; }); return v > 0 ? fq(v, 'vol') : PJ_DASH; }, 1],
+      ['Drain / stack', function (r) { return r.dfu && r.dfu.drain ? esc(r.dfu.drain.replace(/\s+/g, ' ')) + pjSub(r.dfu.stack ? 'stack ' + esc(r.dfu.stack.replace(/\s+/g, ' ')) : '') : PJ_DASH; }],
+      ['Roof drains', function (r) { return r.roof && r.roof.n > 0 ? fmt(r.roof.n, 0) : PJ_DASH; }, function (R) { var n = pjSum(R, function (r) { return r.roof && r.roof.n; }); return n > 0 ? fmt(n, 0) : ''; }],
+      ['Septic', function (r) { return r.septic && r.septic.vol ? esc(r.septic.vol) + pjSub(esc(r.septic.plan)) : PJ_DASH; }]
+    ] },
+    fire: { name: 'Fire Protection', chain: [['sprinkler', 'Sprinklers', function (r) { return !!r.spr; }], ['hazen', 'Pipe', function (r) { return !!r.fpipe; }], ['firepump', 'Fire pump', function (r) { return !!r.fp; }]], cols: [
+      ['Sprinkler heads', function (r) { var n = pjHeads(r); return n > 0 ? fmt(n, 0) + pjSub((sys === 'si' ? 'K' + fmt(r.spr.k, 0) : 'K' + fmt(r.spr.k / 14.416, 1)) + ' · ' + fq(r.spr.cov, 'area') + ' each') : PJ_DASH; }, function (R) { var n = pjSum(R, pjHeads); return n > 0 ? fmt(n, 0) : PJ_DASH; }, 1],
+      ['Fire pipe', function (r) { return r.fpipe ? esc(boqPipe(r.fpipe.d)) + pjSub('B.I. Sch. 40 · ' + fq(r.fpipe.l, 'len')) : PJ_DASH; }],
+      ['Fire pump', function (r) { return r.fp && r.fp.rating ? esc(r.fp.rating) + pjSub(esc(r.fp.press + (r.fp.motor ? ' · ' + r.fp.motor : ''))) : PJ_DASH; }],
+      ['Water storage', function (r) { return r.spr && r.spr.store > 0 ? fq(r.spr.store, 'vol') : PJ_DASH; }, function (R) { var v = R.reduce(function (a, r) { return Math.max(a, (r.spr && r.spr.store) || 0); }, 0); return v > 0 ? fq(v, 'vol') + pjSub('largest demand') : PJ_DASH; }, 1]
+    ] }
+  };
+  function pjTableHtml(p) {
+    if (!PJ_TABS[pjTab]) pjTab = 'hvac';
+    var T = PJ_TABS[pjTab], rooms = p.rooms, L = Q.len[sys][0];
+    var tabs = '<div class="pj-tabs" role="group" aria-label="Discipline">' + Object.keys(PJ_TABS).map(function (k) {
+      var X = PJ_TABS[k], done = rooms.filter(function (r) { return X.chain.every(function (s) { return s[2](r); }); }).length;
+      return '<button type="button" class="pj-tab" data-ptab="' + k + '" aria-pressed="' + (k === pjTab) + '">' + esc(X.name) + '<span class="gd-pill">' + done + '/' + rooms.length + '</span></button>';
+    }).join('') + '</div>';
+    var body = rooms.map(function (r) {
+      var nextStep = T.chain.filter(function (s) { return !s[2](r); })[0];
+      return '<tr' + (r.id === p.activeRoom ? ' class="pj-active"' : '') + '>' +
+        '<th scope="row"><button type="button" class="pj-pick" data-room="' + r.id + '" title="Make this the active room">' + esc(r.name) + '</button>' +
+        '<span class="pj-dims">' + fmt(r.l / Q.len[sys][1]) + ' × ' + fmt(r.w / Q.len[sys][1]) + ' × ' + fmt(r.h / Q.len[sys][1]) + ' ' + esc(L) + ' · ' + fmt(r.people, 0) + ' people' +
+        ((r.ductS || r.ductR) ? ' · duct ' + fmt(((r.ductS || 0) + (r.ductR || 0)) / Q.len[sys][1]) + ' ' + esc(L) : '') + '</span></th>' +
+        T.cols.map(function (c) { return '<td' + (c[3] ? ' class="num"' : '') + '>' + c[1](r) + '</td>'; }).join('') +
+        '<td><div class="pj-steps" role="group" aria-label="' + esc(T.name) + ' design steps for ' + esc(r.name) + '">' + T.chain.map(function (s, i) {
+          var done = s[2](r);
+          return '<button type="button" class="pj-step' + (done ? ' done' : '') + '" data-room="' + r.id + '" data-step="' + s[0] + '" title="' + (i + 1) + '. ' + s[1] + (done ? ' — done, open again' : ' — open') + '"><span class="sr-only">' + s[1] + (done ? ' (done)' : '') + '</span>' + (i + 1) + '</button>';
+        }).join('') + '</div>' +
+        (nextStep ? '<button type="button" class="btn btn-solid btn-sm pj-next" data-room="' + r.id + '" data-step="' + nextStep[0] + '">Next: ' + nextStep[1] + ' →</button>' : '<span class="pj-done">✓ ' + esc(T.name) + ' complete</span>') + '</td>' +
+        '<td class="pj-acts"><button type="button" class="pj-icon" data-edit="' + r.id + '" aria-label="Edit ' + esc(r.name) + '" title="Edit">✎</button><button type="button" class="pj-icon" data-del="' + r.id + '" aria-label="Delete ' + esc(r.name) + '" title="Delete">✕</button></td></tr>';
+    }).join('');
+    var foot = '<tfoot><tr><th scope="row">Project total · ' + rooms.length + ' room' + (rooms.length === 1 ? '' : 's') + '</th>' +
+      T.cols.map(function (c) { return '<td' + (c[3] ? ' class="num"' : '') + '>' + (c[2] ? c[2](rooms) : '') + '</td>'; }).join('') + '<td colspan="2"></td></tr></tfoot>';
+    var act = '';
+    if (pjTab === 'hvac') {
+      var sumW = pjSum(rooms, function (r) { return r.loadW; }), sumQ = pjSum(rooms, function (r) { return r.supply; }), sumOA = pjSum(rooms, function (r) { return r.oaQ; });
+      if (sumQ > 0) act = '<div class="pj-total-act"><p>Size the air-handling unit for the whole project: <strong>' + fq(sumQ, 'air') + '</strong> supply' + (sumOA > 0 ? ' with <strong>' + fq(sumOA, 'air') + '</strong> outdoor air' : '') + (sumW > 0 ? ' and <strong>' + pw(sumW) + '</strong> (' + fmt(sumW / 3516.85, 2) + ' TR) cooling' : '') + '.</p>' +
+        '<button type="button" class="btn btn-outline btn-sm" id="pj-ahu">Size AHU supply fan →</button>' + (sumOA > 0 ? '<button type="button" class="btn btn-outline btn-sm" id="pj-fa">Size fresh-air fan →</button>' : '') + '</div>';
+    } else if (pjTab === 'elec') {
+      var dem = pjSum(rooms, function (r) { return r.el && r.el.dem; }), lk = pjSum(rooms, function (r) { return r.lights && r.lights.n * r.lights.w / 1000; });
+      if (dem > 0 || lk > 0) act = '<div class="pj-total-act"><p>Project electrical load: <strong>' + fmt(dem, 1) + ' kW</strong> demand' + (lk > 0 ? ' and <strong>' + fmt(lk, 2) + ' kW</strong> of lighting' : '') + ' — size the main feeder and switchboard from the total.</p><button type="button" class="btn btn-outline btn-sm" id="pj-mainfeed">Size the main feeder →</button></div>';
+    } else if (pjTab === 'plumb') {
+      var fx = pjSum(rooms, pjFixN);
+      if (fx > 0) act = '<div class="pj-total-act"><p>Project fixtures: <strong>' + fmt(fx, 0) + '</strong> in total — size the building water main and building drain from all of them together.</p><button type="button" class="btn btn-outline btn-sm" id="pj-allfix">Size the building water main →</button></div>';
+    } else if (pjTab === 'fire') {
+      var hd = pjSum(rooms, pjHeads);
+      if (hd > 0) act = '<div class="pj-total-act"><p>Project sprinklers: <strong>' + fmt(hd, 0) + ' heads</strong>. The fire pump and storage follow the most demanding design area, not the total.</p></div>';
+    }
+    return tabs + '<div class="table-wrap pj-table"><table><thead><tr><th scope="col">Room</th>' + T.cols.map(function (c) { return '<th scope="col">' + c[0] + '</th>'; }).join('') +
+      '<th scope="col">Design chain</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody>' + body + '</tbody>' + foot + '</table></div>' + act;
+  }
+  // Project-level sizing from the totals of other disciplines.
+  function pjOpenTotals(kind, trigger) {
+    var p = pjCur(); if (!p) return;
+    if (kind === 'feeder') {
+      var kw = pjSum(p.rooms, function (r) { return r.el && r.el.dem; }) + pjSum(p.rooms, function (r) { return r.lights && r.lights.n * r.lights.w / 1000; });
+      var V = (p.rooms.filter(function (r) { return r.el; })[0] || { el: { V: defOf(CALCS.cable.fields.filter(function (f) { return f.k === 'v'; })[0]) } }).el.V;
+      ensureVals('cable'); pjSet('cable', 'i', kw * 1000 / (Math.sqrt(3) * V * 0.85)); pjSet('cable', 'v', V);
+      openModal('cable', trigger);
+    } else if (kind === 'water') {
+      ensureVals('wsfu');
+      ['wc', 'ur', 'lav', 'sh', 'bt', 'ks', 'cw', 'df'].forEach(function (k) { pjSet('wsfu', k, pjSum(p.rooms, function (r) { return r.fix && r.fix[k]; })); });
+      openModal('wsfu', trigger);
+    }
+  }
+
   function renderProjects() {
     if (!pjEl) return;
     var p = pjCur(), L = Q.len[sys][0];
@@ -7505,27 +7606,9 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
         '<input type="file" id="pj-file" accept=".json,application/json" hidden>';
       return;
     }
-    var rooms = p.rooms, sumW = 0, sumQ = 0, sumOA = 0;
-    rooms.forEach(function (r) { sumW += r.loadW || 0; sumQ += r.supply || 0; sumOA += r.oaQ || 0; });
+    var rooms = p.rooms;
     var ed = pjEdit && rooms.filter(function (r) { return r.id === pjEdit; })[0];
-    var rowHtml = rooms.map(function (r) {
-      var nextStep = PJ_CHAIN.filter(function (s) { return !s[2](r); })[0];
-      return '<tr' + (r.id === p.activeRoom ? ' class="pj-active"' : '') + '>' +
-        '<th scope="row"><button type="button" class="pj-pick" data-room="' + r.id + '" title="Make this the active room">' + esc(r.name) + '</button>' +
-        '<span class="pj-dims">' + fmt(r.l / Q.len[sys][1]) + ' × ' + fmt(r.w / Q.len[sys][1]) + ' × ' + fmt(r.h / Q.len[sys][1]) + ' ' + esc(L) + ' · ' + fmt(r.people, 0) + ' people' +
-        ((r.ductS || r.ductR) ? ' · duct ' + fmt(((r.ductS || 0) + (r.ductR || 0)) / Q.len[sys][1]) + ' ' + esc(L) : '') + '</span></th>' +
-        '<td class="num">' + (r.loadW > 0 ? pw(r.loadW) + '<span class="pj-sub">' + fmt(r.loadW / 3516.85, 2) + ' TR</span>' : '<span class="pj-dash">—</span>') + '</td>' +
-        '<td class="num">' + pjFmtQ(r.supply, 'air') + '</td><td class="num">' + pjFmtQ(r.oaQ, 'air') + '</td>' +
-        '<td>' + (r.nDiff > 0 ? fmt(r.nDiff, 0) + (r.neck ? '<span class="pj-sub">' + esc(r.neck) + '</span>' : '') : '<span class="pj-dash">—</span>') + '</td>' +
-        '<td>' + (r.duct ? esc(r.duct) : '<span class="pj-dash">—</span>') + '</td>' +
-        '<td>' + (r.motor ? esc(r.motor) + (r.esp ? '<span class="pj-sub">' + fq(r.esp, 'pv') + ' ESP</span>' : '') : r.esp ? fq(r.esp, 'pv') + ' ESP' : '<span class="pj-dash">—</span>') + '</td>' +
-        '<td><div class="pj-steps" role="group" aria-label="Design steps for ' + esc(r.name) + '">' + PJ_CHAIN.map(function (s, i) {
-          var done = s[2](r);
-          return '<button type="button" class="pj-step' + (done ? ' done' : '') + '" data-room="' + r.id + '" data-step="' + s[0] + '" title="' + (i + 1) + '. ' + s[1] + (done ? ' — done, open again' : ' — open') + '"><span class="sr-only">' + s[1] + (done ? ' (done)' : '') + '</span>' + (i + 1) + '</button>';
-        }).join('') + '</div>' +
-        (nextStep ? '<button type="button" class="btn btn-solid btn-sm pj-next" data-room="' + r.id + '" data-step="' + nextStep[0] + '">Next: ' + nextStep[1] + ' →</button>' : '<span class="pj-done">✓ Chain complete</span>') + '</td>' +
-        '<td class="pj-acts"><button type="button" class="pj-icon" data-edit="' + r.id + '" aria-label="Edit ' + esc(r.name) + '" title="Edit">✎</button><button type="button" class="pj-icon" data-del="' + r.id + '" aria-label="Delete ' + esc(r.name) + '" title="Delete">✕</button></td></tr>';
-    }).join('');
+    var tableHtml = rooms.length ? pjTableHtml(p) : '';
     var f = function (idn, label, val, unit, type) {
       return '<div class="field"><label for="' + idn + '">' + label + '</label><div class="input-wrap"><input id="' + idn + '" type="text" ' + (type === 'text' ? '' : 'inputmode="decimal" ') + 'autocomplete="off" value="' + esc(val) + '">' + (unit ? '<span class="unit">' + esc(unit) + '</span>' : '') + '</div></div>';
     };
@@ -7541,15 +7624,11 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       '<input type="file" id="pj-file" accept=".json,application/json" hidden>' +
       '<form class="pj-form" id="pj-form" novalidate><p class="pj-form-t">' + (ed ? 'Edit room' : 'Add a room') + '</p><div class="fields pj-fields">' +
       f('pj-r-name', 'Room name', ed ? ed.name : 'Room ' + (rooms.length + 1), '', 'text') + f('pj-r-l', 'Length', ed ? dv(ed.l) : '', L) + f('pj-r-w', 'Width', ed ? dv(ed.w) : '', L) +
-      f('pj-r-h', 'Ceiling height', ed ? dv(ed.h) : dv(3), L) + f('pj-r-p', 'People', ed ? ed.people : '', 'people') +
+      f('pj-r-h', 'Ceiling height', ed ? dv(ed.h) : (sys === 'si' ? '3' : '10'), L) + f('pj-r-p', 'People', ed ? ed.people : '', 'people') +
       f('pj-r-ds', 'Supply duct run (optional)', ed && ed.ductS ? dv(ed.ductS) : '', L) + f('pj-r-dr', 'Return duct run (optional)', ed && ed.ductR ? dv(ed.ductR) : '', L) +
       '<div class="field"><label for="pj-r-sp">Space type</label><div class="input-wrap"><select id="pj-r-sp">' + Object.keys(VENT_SPACES).map(function (k) { return '<option value="' + k + '"' + ((ed ? ed.space : 'office') === k ? ' selected' : '') + '>' + esc(VENT_SPACES[k].label) + '</option>'; }).join('') + '</select></div></div>' +
       '</div><div class="pj-form-a"><button type="submit" class="btn btn-solid btn-sm">' + (ed ? 'Update room' : 'Add room') + '</button>' + (ed ? '<button type="button" class="btn btn-outline btn-sm" id="pj-cancel">Cancel</button>' : '') + '<p class="err" id="pj-err" hidden></p></div></form>' +
-      (rooms.length ? '<div class="table-wrap pj-table"><table><thead><tr><th scope="col">Room</th><th scope="col">Cooling load</th><th scope="col">Supply air</th><th scope="col">Outdoor air</th><th scope="col">Diffusers</th><th scope="col">Duct</th><th scope="col">Fan</th><th scope="col">Design chain</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody>' + rowHtml + '</tbody>' +
-        '<tfoot><tr><th scope="row">Project total · ' + rooms.length + ' room' + (rooms.length === 1 ? '' : 's') + '</th><td class="num">' + (sumW > 0 ? pw(sumW) + '<span class="pj-sub">' + fmt(sumW / 3516.85, 2) + ' TR</span>' : '—') + '</td><td class="num">' + (sumQ > 0 ? fq(sumQ, 'air') : '—') + '</td><td class="num">' + (sumOA > 0 ? fq(sumOA, 'air') : '—') + '</td><td colspan="5"></td></tr></tfoot></table></div>' +
-        (sumQ > 0 ? '<div class="pj-total-act"><p>Size the air-handling unit for the whole project: <strong>' + fq(sumQ, 'air') + '</strong> supply' + (sumOA > 0 ? ' with <strong>' + fq(sumOA, 'air') + '</strong> outdoor air' : '') + (sumW > 0 ? ' and <strong>' + pw(sumW) + '</strong> (' + fmt(sumW / 3516.85, 2) + ' TR) cooling' : '') + '.</p>' +
-          '<button type="button" class="btn btn-outline btn-sm" id="pj-ahu">Size AHU supply fan →</button>' + (sumOA > 0 ? '<button type="button" class="btn btn-outline btn-sm" id="pj-fa">Size fresh-air fan →</button>' : '') + '</div>' : '')
-        : '<p class="pj-hint">Add the rooms of this project above. Then follow each room\'s design chain — every calculator fills itself from the room and saves its result back here.</p>') +
+      (rooms.length ? tableHtml : '<p class="pj-hint">Add the rooms of this project above. Then follow each room\'s design chain for HVAC, electrical, plumbing & sanitary and fire — every calculator fills itself from the room and saves its result back here.</p>') +
       (pjBoqOpen && rooms.length ? boqPanelHtml(p) : '');
   }
   // Open a calculator for a room, filled from the room's data.
@@ -7599,6 +7678,9 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       if (t.id === 'boq-csv') { boqCsv(true); return; }
       if (t.id === 'bom-csv') { boqCsv(false); return; }
       if (t.id === 'pj-cancel') { pjEdit = null; renderProjects(); return; }
+      if (t.dataset.ptab) { pjTab = t.dataset.ptab; try { localStorage.setItem(PJ_TAB_KEY, pjTab); } catch (e) {} renderProjects(); var tb = $('.pj-tab[data-ptab="' + pjTab + '"]'); if (tb) tb.focus(); return; }
+      if (t.id === 'pj-mainfeed') { pjOpenTotals('feeder', t); return; }
+      if (t.id === 'pj-allfix') { pjOpenTotals('water', t); return; }
       if (t.id === 'pj-ahu') { pjOpenTotal('fsup', t); return; }
       if (t.id === 'pj-fa') { pjOpenTotal('ffa', t); return; }
       if (t.dataset.edit) { pjEdit = t.dataset.edit; renderProjects(); $('#pj-r-name').focus(); return; }
@@ -8224,7 +8306,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     if (!p || !p.rooms.length) {
       gdEl.innerHTML = '<div class="gd-start"><div><p class="gd-k">Start here</p><h3>Set up your project in one step</h3><p>Name the project and add the first room. Everything else in the guide fills itself from this room.</p></div>' +
         '<form id="gd-quick" class="fields gd-quick" novalidate>' +
-        ['name|Project name|text|' + (p ? esc(p.name) : 'My project'), 'room|Room name|text|Room 1', 'l|Length|' + Q.len[sys][0] + '|', 'w|Width|' + Q.len[sys][0] + '|', 'h|Ceiling height|' + Q.len[sys][0] + '|' + roundU(3 / Q.len[sys][1]), 'p|People|people|'].map(function (f) {
+        ['name|Project name|text|' + (p ? esc(p.name) : 'My project'), 'room|Room name|text|Room 1', 'l|Length|' + Q.len[sys][0] + '|', 'w|Width|' + Q.len[sys][0] + '|', 'h|Ceiling height|' + Q.len[sys][0] + '|' + (sys === 'si' ? '3' : '10'), 'p|People|people|'].map(function (f) {
           var a = f.split('|'), text = a[2] === 'text';
           return '<div class="field"><label for="gd-q-' + a[0] + '">' + a[1] + '</label><div class="input-wrap"><input id="gd-q-' + a[0] + '" type="text" ' + (text ? '' : 'inputmode="decimal" ') + 'autocomplete="off" value="' + a[3] + '">' + (text ? '' : '<span class="unit">' + a[2] + '</span>') + '</div></div>';
         }).join('') + '<div class="gd-quick-a"><button type="submit" class="btn btn-solid">Start designing →</button><p class="err" id="gd-q-err" hidden></p></div></form></div>';
