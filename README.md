@@ -25,6 +25,7 @@ The whole site is one self-contained file, `index.html` (vanilla JavaScript, inl
 - `projects.spec.js` — a project room followed through the design chain (cooling load → outdoor air → diffusers → duct → pressure → fan), persistence after reload, AHU totals, JSON backup, Excel/CSV room schedule and the project PDF report.
 - `boq.spec.js` — the HVAC BOQ take-off (equipment, diffusers, duct area by gauge, insulation), unit rates with VAT, BOQ / BOM CSV and the BOQ PDF.
 - `boq-mepfs.spec.js` — electrical (breaker, wire, conduit), plumbing & sanitary (pipe lengths, fixtures, drains) and fire (sprinkler heads, B.I. pipe, fire pump) divisions, and totals across divisions.
+- `new-calcs.spec.js` — chilled-water pipe sizing, pump head, cable sizing with derating, lighting (lumen method) and water supply fixture units: known values, project-room links and their BOQ items.
 - `report.spec.js` — the PDF calculation report: project details, sections, results, drawing, suggestions, code basis, wide calculators.
 - `codes-units.spec.js` — Philippine / Australian / US electrical rules, natural-ventilation rules, unit conversion round trips and unit lists per system.
 

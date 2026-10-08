@@ -11,7 +11,7 @@ for (const sys of ['si', 'imp']) {
       if (sys === 'imp') await setSystem(page, 'imp')
       if (code !== 'intl') await setCode(page, code)
       const ids = await page.locator('#card-grid .card [data-open]').evaluateAll((b) => b.map((x) => x.dataset.open))
-      expect(ids).toHaveLength(61)
+      expect(ids).toHaveLength(66)
       const empty = []
       for (const id of ids) {
         await page.evaluate((x) => document.querySelector('#card-grid [data-open="' + x + '"]').click(), id) // open directly, no scrolling

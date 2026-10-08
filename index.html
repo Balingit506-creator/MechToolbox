@@ -1244,6 +1244,8 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     wpa:   { si: ['W/m²', 1],       imp: ['W/ft²', 10.7639] },
     oa:    { si: ['L/s/person', 1], imp: ['CFM/person', 0.4719474] },
     raq:   { si: ['L/s·m²', 1],     imp: ['CFM/ft²', 5.08] },
+    fricw: { si: ['Pa/m', 1],       imp: ['ft/100 ft', 98.0665] }, // water friction (ft of head per 100 ft)
+    lux:   { si: ['lx', 1],         imp: ['fc', 10.7639] },
     fricq: { si: ['Pa/m', 1],       imp: ['in.wg/100 ft', 8.1715] },
     kq:    { si: ['W/m·K', 1],      imp: ['BTU·in/h·ft²·°F', 0.14423] },
     kwhp:  { si: ['kW', 1],         imp: ['hp', 0.7457] },
@@ -2042,6 +2044,134 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   });
 
   function SPEC_SDIFF(v) { return CALCS.sdiff.calc(v); } // supply-diffuser neck check reused by CFM per Diffuser
+
+  /* ---------- Chilled water, pumps, cables, lighting, water supply ---------- */
+  // Pipe internal diameters: [nominal, ID mm, imperial label].
+  var PIPE_ST40 = [[15, 15.8, '½"'], [20, 20.9, '¾"'], [25, 26.6, '1"'], [32, 35.1, '1¼"'], [40, 40.9, '1½"'], [50, 52.5, '2"'], [65, 62.7, '2½"'], [80, 77.9, '3"'],
+                   [100, 102.3, '4"'], [125, 128.2, '5"'], [150, 154.1, '6"'], [200, 202.7, '8"'], [250, 254.5, '10"'], [300, 303.2, '12"']]; // ASME B36.10 Sch. 40
+  var PIPE_CUL = [[15, 13.8, '½"'], [20, 19.9, '¾"'], [25, 26.0, '1"'], [32, 32.1, '1¼"'], [40, 38.2, '1½"'], [50, 50.4, '2"'], [65, 62.6, '2½"'], [80, 74.8, '3"'],
+                  [100, 99.2, '4"'], [125, 123.8, '5"'], [150, 148.5, '6"']];                                                     // ASTM B88 Type L
+  var PIPE_PPR = [[20, 13.2], [25, 16.6], [32, 21.2], [40, 26.6], [50, 33.4], [63, 42.0], [75, 50.0], [90, 60.0], [110, 73.4], [125, 83.4], [160, 106.8]]; // PN20, by outside diameter
+  var PIPE_MATS = {
+    st:  { label: 'Black steel, Sch. 40',  t: PIPE_ST40, e: 0.046,  C: 120, boq: 'B.I. seamless pipe, Sch. 40' },
+    cu:  { label: 'Copper, Type L',        t: PIPE_CUL,  e: 0.0015, C: 140, boq: 'Copper pipe, Type L' },
+    ppr: { label: 'PPR, PN20',             t: PIPE_PPR,  e: 0.007,  C: 150, boq: 'PPR pipe, PN20' }
+  };
+  function pipeLabel(mat, row) {
+    if (mat === 'ppr') return 'PPR ⌀' + row[0] + ' mm';
+    return sys === 'si' ? row[0] + 'mmØ' : row[2] + 'Ø';
+  }
+  // Darcy friction factor (laminar, else Swamee–Jain) and friction rate in Pa/m.
+  function darcyF(Re, eMm, D) { return Re < 2300 ? 64 / Math.max(Re, 1) : 0.25 / Math.pow(Math.log10(eMm / 1000 / (3.7 * D) + 5.74 / Math.pow(Re, 0.9)), 2); }
+  function pipeFric(q, D, eMm, nu, rho) { var V = q / (Math.PI * D * D / 4), Re = V * D / nu; return { V: V, Re: Re, dpm: darcyF(Re, eMm, D) / D * rho * V * V / 2 }; }
+  var CHW_RHO = 999.7, CHW_NU = 1.31e-6, CHW_CP = 4.19; // water at about 10 °C
+  // Smallest pipe meeting the velocity limit (1.2 m/s up to 50 mm, 3.0 m/s above) and the friction target.
+  function chwSize(v) {
+    var M = PIPE_MATS[v.mat], q = v.p / (CHW_CP * v.dt * CHW_RHO), pick = null, k;
+    var vlim = function (row) { return (v.mat === 'ppr' ? row[0] <= 63 : row[0] <= 50) ? 1.2 : 3.0; };
+    for (k = 0; k < M.t.length; k++) {
+      var f = pipeFric(q, M.t[k][1] / 1000, M.e, CHW_NU, CHW_RHO);
+      if (f.V <= vlim(M.t[k]) + 1e-9 && f.dpm <= v.fr + 1e-9) { pick = k; break; }
+    }
+    if (pick == null) pick = M.t.length - 1;
+    var row = M.t[pick], D = row[1] / 1000, fr = pipeFric(q, D, M.e, CHW_NU, CHW_RHO);
+    var loop = fr.dpm * 2 * v.l * (1 + v.fa / 100);
+    return { q: q, M: M, row: row, idx: pick, D: D, V: fr.V, dpm: fr.dpm, Re: fr.Re, vlim: vlim(row), loop: loop, label: pipeLabel(v.mat, row),
+             prev: pick > 0 ? M.t[pick - 1] : null, ins: row[0] >= 50 ? [50, '2"'] : [25, '1"'] };
+  }
+  // Pump duty from the component losses.
+  function pumpCalc(v) {
+    var g = 9.81, rho = 999.7, dp = (v.hs * rho * g + v.hp + v.he + v.hv + v.ho) * (1 + v.sf / 100), H = dp / (rho * g);
+    var ph = v.q * dp, shaft = ph / (v.eta / 100);
+    return { dp: dp, H: H, ph: ph, shaft: shaft, motor: motorSize(shaft), stat: v.hs * rho * g * (1 + v.sf / 100) };
+  }
+  // NEC Table 310.16 ampacities (A) — AWG / kcmil sizes in the same order as AWG[].
+  var AMP_TBL = {
+    cu75: [20, 25, 35, 50, 65, 85, 100, 115, 130, 150, 175, 200, 230, 255, 285, 310, 380],
+    cu90: [25, 30, 40, 55, 75, 95, 115, 130, 145, 170, 195, 225, 260, 290, 320, 350, 430],
+    al75: [null, 20, 30, 40, 50, 65, 75, 90, 100, 120, 135, 155, 180, 205, 230, 250, 310],
+    al90: [null, 25, 35, 45, 55, 75, 85, 100, 115, 135, 150, 175, 205, 230, 260, 280, 350]
+  };
+  // NEC 310.15(B)(1) ambient correction (30 °C base) and 310.15(C)(1) adjustment for more than 3 current-carrying conductors.
+  var AMB_STEPS = [30, 35, 40, 45, 50, 55, 60, 65, 70];
+  var AMB_F = { '75': [1, 0.94, 0.88, 0.82, 0.75, 0.67, 0.58, 0.47, 0.33], '90': [1, 0.96, 0.91, 0.87, 0.82, 0.76, 0.71, 0.65, 0.58] };
+  function ambFactor(t, rating) { for (var i = 0; i < AMB_STEPS.length; i++) if (t <= AMB_STEPS[i] + 1e-9) return AMB_F[rating][i]; return 0; }
+  function groupFactor(n) { return n <= 3 ? 1 : n <= 6 ? 0.8 : n <= 9 ? 0.7 : n <= 20 ? 0.5 : n <= 30 ? 0.45 : n <= 40 ? 0.4 : 0.35; }
+  // Table ampacity for an AWG index, or interpolated (log–log by conductor area) for a metric size.
+  function ampAt(areaMM2, col) {
+    var A = AMP_TBL[col], pts = AWG.map(function (a, i) { return [a[1], A[i]]; }).filter(function (p) { return p[1] != null; });
+    var lx = Math.log(areaMM2), i = 0;
+    while (i < pts.length - 2 && areaMM2 > pts[i + 1][0]) i++;
+    var x0 = Math.log(pts[i][0]), x1 = Math.log(pts[i + 1][0]), y0 = Math.log(pts[i][1]), y1 = Math.log(pts[i + 1][1]);
+    return Math.exp(y0 + (y1 - y0) * (lx - x0) / (x1 - x0));
+  }
+  var SMALL_OCPD = { cu: { '14 AWG': 15, '12 AWG': 20, '10 AWG': 30 }, al: { '12 AWG': 15, '10 AWG': 25 } };
+  function cableSize(v) {
+    var us = codeBasis === 'us', au = codeBasis === 'au', mat = v.mat;
+    var Ib = v.i, design = au ? Ib : Ib * (v.cont === '1' ? 1.25 : 1);
+    var brk = au ? nextUp(AU_BRK, Ib) : nextUp(us || codeBasis === 'ph' ? PH_BRK : BREAKER_A, design);
+    var need = au ? (brk || Ib) : design, ct = ambFactor(v.amb, v.tr), cg = groupFactor(v.ccc);
+    var list = us ? AWG.map(function (a, i) { return { name: a[0], a: a[1], idx: i }; })
+      : (codeBasis === 'ph' ? PH_MM2 : CABLE_MM2).map(function (a) { return { name: (codeBasis === 'ph' ? mm2Txt(a) : fmt(a)) + ' mm²', a: a }; });
+    var iz = function (c) {
+      var col = mat + v.tr, a75 = mat + '75';
+      var base = c.idx != null ? AMP_TBL[col][c.idx] : ampAt(c.a, col), lim = c.idx != null ? AMP_TBL[a75][c.idx] : ampAt(c.a, a75);
+      if (base == null) return 0;
+      var z = base * ct * cg;
+      if (v.tr === '90') z = Math.min(z, lim); // 75 °C terminations (NEC 110.14(C))
+      var sm = SMALL_OCPD[mat][c.name]; if (sm) z = Math.min(z, sm);
+      return z;
+    };
+    var vd = function (c) { return (v.ph === '3' ? Math.sqrt(3) : 2) * Ib * v.l * (mat === 'cu' ? 0.0225 : 0.036) / c.a / v.v * 100; };
+    var byAmp = list.filter(function (c) { return iz(c) >= need - 1e-9; })[0] || null, sel = byAmp, byVd = false;
+    if (sel) { var k = list.indexOf(sel); while (k < list.length - 1 && vd(list[k]) > v.vdl + 1e-9) { k++; byVd = true; } sel = list[k]; }
+    return { Ib: Ib, design: design, brk: brk, need: need, ct: ct, cg: cg, sel: sel, byAmp: byAmp, byVd: byVd, iz: sel ? iz(sel) : 0, vd: sel ? vd(sel) : 0, au: au };
+  }
+  // Lumen method with a typical utilisation factor for recessed LED panels (reflectances about 70 / 50 / 20).
+  var UF_RI = [[0.6, 0.40], [0.8, 0.47], [1.0, 0.52], [1.25, 0.57], [1.5, 0.61], [2.0, 0.66], [2.5, 0.69], [3.0, 0.71], [4.0, 0.74], [5.0, 0.76]];
+  function ufFor(ri) {
+    if (ri <= UF_RI[0][0]) return UF_RI[0][1];
+    for (var i = 1; i < UF_RI.length; i++) if (ri <= UF_RI[i][0]) { var a = UF_RI[i - 1], b = UF_RI[i]; return a[1] + (b[1] - a[1]) * (ri - a[0]) / (b[0] - a[0]); }
+    return UF_RI[UF_RI.length - 1][1];
+  }
+  function lightCalc(v) {
+    var A = v.l * v.w, ri = A / (v.hm * (v.l + v.w)), uf = v.uf > 0 ? v.uf : ufFor(ri);
+    var nMin = Math.max(1, Math.ceil(v.e * A / (v.lm * uf * v.mf) - 1e-9));
+    var long = Math.max(v.l, v.w), short = Math.min(v.l, v.w), nx = Math.max(1, Math.round(Math.sqrt(nMin * long / short))), ny = Math.max(1, Math.ceil(nMin / nx));
+    var n = nx * ny, sx = long / nx, sy = short / ny;
+    return { A: A, ri: ri, uf: uf, est: !(v.uf > 0), nMin: nMin, nx: nx, ny: ny, n: n, sx: sx, sy: sy, shr: Math.max(sx, sy) / v.hm, e: n * v.lm * uf * v.mf / A, lpd: n * v.fw / A, kw: n * v.fw / 1000 };
+  }
+  // Water supply fixture units (IPC Table E103.3(2) style, total cold + hot) and Hunter's curve demand (IPC Table E103.3(3)), gpm.
+  var WSFU = { pub: { wct: 5, wcv: 10, ur: 5, lav: 2, sh: 4, bt: 4, ks: 4, cw: 4, df: 0.25 }, prv: { wct: 3, wcv: 6, ur: 5, lav: 1, sh: 2, bt: 2, ks: 2, cw: 2, df: 0.25 } };
+  var HUNTER = {
+    tank:  [[1, 3], [2, 5], [3, 6.5], [4, 8], [5, 9.4], [6, 10.7], [8, 12.8], [10, 14.6], [12, 16], [15, 17.5], [20, 19.6], [25, 21.5], [30, 23.3], [40, 26.3], [50, 29.1], [60, 32], [80, 38], [100, 43.5], [120, 48], [140, 52.5], [160, 57], [180, 61], [200, 65], [250, 75], [300, 85], [400, 105], [500, 124], [750, 170], [1000, 208]],
+    valve: [[5, 15], [6, 17.4], [8, 20.2], [10, 23], [12, 24.6], [15, 27], [20, 31], [25, 34], [30, 36], [40, 41], [50, 45], [60, 48], [80, 54], [100, 59.6], [120, 64], [140, 68], [160, 72], [180, 76], [200, 80], [250, 89], [300, 98], [400, 116], [500, 132], [750, 175], [1000, 210]]
+  };
+  function hunterGpm(fu, col) {
+    var t = HUNTER[col];
+    if (fu <= t[0][0]) return t[0][1] * (col === 'tank' ? Math.max(fu, 0.25) / t[0][0] : 1);
+    for (var i = 1; i < t.length; i++) if (fu <= t[i][0]) return t[i - 1][1] + (t[i][1] - t[i - 1][1]) * (fu - t[i - 1][0]) / (t[i][0] - t[i - 1][0]);
+    return t[t.length - 1][1] * fu / t[t.length - 1][0];
+  }
+  function wsfuCalc(v) {
+    var W = WSFU[v.occ], valve = v.fv === 'valve';
+    var fu = v.wc * (valve ? W.wcv : W.wct) + v.ur * W.ur + v.lav * W.lav + v.sh * W.sh + v.bt * W.bt + v.ks * W.ks + v.cw * W.cw + v.df * W.df;
+    var col = valve && v.wc > 0 ? 'valve' : 'tank', gpm = hunterGpm(fu, col), q = gpm * 6.30901964e-5;
+    var M = PIPE_MATS[v.mat], k, pick = M.t.length - 1;
+    for (k = 0; k < M.t.length; k++) { if (q / (Math.PI * Math.pow(M.t[k][1] / 1000, 2) / 4) <= v.vmax + 1e-9) { pick = k; break; } }
+    var row = M.t[pick], D = row[1] / 1000, V = q / (Math.PI * D * D / 4);
+    var hfm = 10.67 * Math.pow(q, 1.852) / (Math.pow(M.C, 1.852) * Math.pow(D, 4.87)); // m head per m (Hazen-Williams)
+    var dp = hfm * v.l * 1.5 * 9.81 * 999.7;                                              // with 50 % for fittings
+    return { fu: fu, col: col, q: q, row: row, D: D, V: V, dp: dp, label: pipeLabel(v.mat, row), M: M };
+  }
+  var art5 = function (inner, tag) { return inner + '<text x="10" y="86" class="ink-t">' + tag + '</text>'; };
+  Object.assign(ART, {
+    chw: art5('<path d="M14 30h132M14 54h132" class="ink"/><path d="M22 30h120M140 54H24" class="ink-m a-march"/><circle cx="128" cy="42" r="10" class="ink"/><path d="M123 42h10" class="ink-m"/>', 'CHWS / CHWR'),
+    pump: art5('<circle cx="70" cy="42" r="22" class="ink"/><path d="M70 20v-8h50M48 42H14" class="ink"/><path d="M70 42l14-10" class="ink-m a-spin"/>', 'Duty · head'),
+    cable: art5('<circle cx="80" cy="42" r="28" class="ink"/><circle cx="68" cy="34" r="8" class="ink-m"/><circle cx="92" cy="34" r="8" class="ink-m"/><circle cx="68" cy="52" r="8" class="ink-m"/><circle cx="92" cy="52" r="8" class="ink-m a-flicker"/>', 'Iz · derating'),
+    light: art5('<rect x="16" y="10" width="128" height="66" class="ink-m"/><g class="a-flicker"><rect x="34" y="24" width="20" height="10" class="ink"/><rect x="70" y="24" width="20" height="10" class="ink"/><rect x="106" y="24" width="20" height="10" class="ink"/><rect x="34" y="52" width="20" height="10" class="ink"/><rect x="70" y="52" width="20" height="10" class="ink"/><rect x="106" y="52" width="20" height="10" class="ink"/></g>', 'lux · N'),
+    wsfu: art5('<path d="M20 60h120" class="ink"/><path d="M40 60V36M80 60V30M120 60V40" class="ink"/><path d="M34 36h12M74 30h12M114 40h12" class="ink-m"/><path d="M24 60h112" class="ink-m a-march"/>', 'WSFU → gpm')
+  });
 
   /* ---------- Calculator definitions (all maths in SI) ---------- */
   var CALCS = {
@@ -3546,6 +3676,154 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       note: 'ADPI ratios from ASHRAE Fundamentals Ch. 20. ' + MANU_NOTE
     },
 
+    chw: {
+      code: 'HVAC / 000', title: 'Chilled Water Pipe Sizing', card: true, disc: 'M',
+      desc: 'Chilled-water flow from the cooling load, then the smallest pipe that meets the velocity and friction limits, with the loop pressure drop for the pump.',
+      fields: [
+        { k: 'p', label: 'Cooling load (Q)', q: 'power', def: [35.17, 120000] },
+        { k: 'dt', label: 'Supply – return ΔT', q: 'dT', def: [5.6, 10] },
+        { k: 'mat', label: 'Pipe material', opts: optsOf(PIPE_MATS), def: ['st', 'st'] },
+        { k: 'fr', label: 'Friction limit', q: 'fricw', def: [400, 4] },
+        { k: 'l', label: 'Run length, one way (L)', q: 'len', def: [30, 100] },
+        { k: 'fa', label: 'Fittings & valves allowance', unit: '%', def: [50, 50], zero: true, max: 300, maxMsg: 'Use an allowance of 300 % or less.' }
+      ],
+      formula: function () { return ['Q = P / (ρ · cp · ΔT)', 'Δp/L = (f / D) · ρV²/2   (Darcy–Weisbach, Swamee–Jain f)', 'Smallest size with V ≤ limit and Δp/L ≤ target   ·   loop Δp = Δp/L × 2L × (1 + allowance)']; },
+      calc: function (v) {
+        var r = chwSize(v), ok = r.V <= r.vlim + 1e-9 && r.dpm <= v.fr + 1e-9;
+        return [
+          ['Chilled-water flow', fq(r.q, 'liq'), 1, sys === 'si' ? fmt(r.q * 3600) + ' m³/h · ' + fmt(r.q / 6.30901964e-5) + ' gpm' : fmt(r.q * 1000) + ' L/s · ' + fmt(r.q * 3600) + ' m³/h'],
+          ['Pipe size', r.label, 1, r.M.label + ' · ID ' + fq(r.D, 'dia')],
+          ['Velocity', fq(r.V, 'vpipe'), 0, (r.V <= r.vlim + 1e-9 ? STATUS.pass : STATUS.warn) + ' limit ' + fq(r.vlim, 'vpipe')],
+          ['Friction rate', fq(r.dpm, 'fricw'), 0, (r.dpm <= v.fr + 1e-9 ? STATUS.pass : STATUS.warn) + ' target ' + fq(v.fr, 'fricw')],
+          ['Loop pressure drop', fq(r.loop, 'press'), 1, fq(r.loop / (999.7 * 9.81), 'len') + ' head · supply + return, incl. ' + fmt(v.fa, 0) + ' % fittings'],
+          ['One size smaller', r.prev ? pipeLabel(v.mat, r.prev) : '—', 0, r.prev ? fq(pipeFric(r.q, r.prev[1] / 1000, r.M.e, CHW_NU, CHW_RHO).V, 'vpipe') + ' · ' + fq(pipeFric(r.q, r.prev[1] / 1000, r.M.e, CHW_NU, CHW_RHO).dpm, 'fricw') + ' — exceeds a limit' : ''],
+          ['Check', ok ? STATUS.pass : STATUS.warn, 0, ok ? 'within velocity and friction limits' : 'largest size in the table — split the flow']
+        ];
+      },
+      note: 'Water at about 10 °C (ρ = 1000 kg/m³, ν = 1.31 mm²/s). Velocity limits: 1.2 m/s (4 ft/s) up to 50 mm, 3 m/s (10 ft/s) above — typical ASHRAE guidance for noise and erosion.'
+    },
+
+    pump: {
+      code: 'HVAC / 000', title: 'Pump Head & Selection', card: true, disc: 'M',
+      desc: 'Pump head from pipe, fitting, equipment and valve losses, then the duty point, shaft power and motor size.',
+      fields: [
+        { k: 'q', label: 'Flow (Q)', q: 'liq', def: [1.5, 24] },
+        { k: 'hs', label: 'Static lift (open systems only)', q: 'len', def: [0, 0], zero: true },
+        { k: 'hp', label: 'Pipe & fittings loss', q: 'press', def: [40, 5.8], zero: true },
+        { k: 'he', label: 'Chiller / coil / equipment loss', q: 'press', def: [60, 8.7], zero: true },
+        { k: 'hv', label: 'Control & balancing valves', q: 'press', def: [30, 4.4], zero: true },
+        { k: 'ho', label: 'Other (strainer, check valve)', q: 'press', def: [15, 2.2], zero: true },
+        { k: 'sf', label: 'Safety margin', unit: '%', def: [10, 10], zero: true, max: 50, maxMsg: 'Use a margin of 50 % or less.' },
+        { k: 'eta', label: 'Pump efficiency (η)', unit: '%', def: [65, 65], max: 95, maxMsg: 'Pump efficiency must be 95 % or less.' }
+      ],
+      check: function (v) { return v.hs + v.hp + v.he + v.hv + v.ho > 0 ? '' : 'Enter at least one loss or the static lift.'; },
+      formula: function () { return ['Δp = (ρ·g·h_static + Δp_pipe + Δp_equipment + Δp_valves + Δp_other) × (1 + margin)', 'P_hyd = Q · Δp   ·   P_shaft = P_hyd / η   ·   motor ≥ 1.15 × P_shaft']; },
+      calc: function (v) {
+        var r = pumpCalc(v);
+        return [
+          ['Pump head', fq(r.dp, 'press'), 1, fq(r.H, 'len') + ' of water'],
+          ['Duty point', fq(v.q, 'liq') + ' @ ' + fq(r.H, 'len'), 1, sys === 'si' ? fmt(v.q * 3600) + ' m³/h' : fmt(v.q * 1000) + ' L/s'],
+          ['Hydraulic power', pwr(r.ph)],
+          ['Shaft power', pwr(r.shaft), 0, 'at ' + fmt(v.eta, 0) + ' % pump efficiency'],
+          ['Motor size', r.motor, 1, '≥ 1.15 × shaft power']
+        ];
+      },
+      note: 'Closed chilled / hot-water loops need no static lift — the expansion tank sets the pressure. Equipment and valve drops come from manufacturer data (chiller evaporators typically 30–70 kPa, coils 20–50 kPa).'
+    },
+
+    cable: {
+      code: 'ELEC / 000', title: 'Cable Sizing (Ampacity & Derating)', card: true, disc: 'E',
+      desc: 'Conductor size from the design current with ambient and grouping derating, then upsized if the voltage drop exceeds the limit.',
+      fields: [
+        { k: 'i', label: 'Load current (Ib)', unit: 'A', def: [40, 40] },
+        { k: 'cont', label: 'Continuous load (3 h or more)', opts: [['1', 'Yes — size at 125 %'], ['0', 'No']], def: ['1', '1'] },
+        { k: 'ph', label: 'System', opts: [['3', 'Three-phase'], ['1', 'Single-phase']], def: ['3', '3'] },
+        { k: 'v', label: 'Supply voltage (V)', unit: 'V', def: [400, 480], reg: { ph: 230, au: 400, us: 480 } },
+        { k: 'l', label: 'Cable length, one way (L)', q: 'len', def: [30, 100] },
+        { k: 'mat', label: 'Conductor', opts: [['cu', 'Copper'], ['al', 'Aluminium']], def: ['cu', 'cu'] },
+        { k: 'tr', label: 'Insulation rating', opts: [['75', '75 °C (THW, THWN)'], ['90', '90 °C (THHN, XHHW-2) — 75 °C terminals']], def: ['90', '90'] },
+        { k: 'amb', label: 'Ambient temperature', q: 'tc', def: [35, 95], neg: true },
+        { k: 'ccc', label: 'Current-carrying conductors in raceway', unit: 'qty', def: [3, 3] },
+        { k: 'vdl', label: 'Voltage-drop limit', unit: '%', def: [3, 3], max: 10, maxMsg: 'Use a limit of 10 % or less.', reg: { au: 5 } }
+      ],
+      check: function (v) { return v.amb > 70 ? 'Ambient must be 70 °C (158 °F) or less for these correction factors.' : v.ccc < 1 ? 'Enter at least one current-carrying conductor.' : ''; },
+      formula: function () { return ['Iz = I_table × Ct (ambient) × Cg (grouping)   ≥   design current', 'ΔV % = k · I · L · ρ / A / V × 100   (k = √3 three-phase, 2 single-phase)']; },
+      calc: function (v) {
+        var r = cableSize(v), s = r.sel;
+        if (!s) return [['Cable size', 'Beyond the table — use parallel conductors', 1]];
+        return [
+          ['Design current', fmt(r.design, 1) + ' A', 0, r.au ? 'Ib (AS/NZS 3000: Ib ≤ In ≤ Iz)' : v.cont === '1' ? fmt(r.Ib, 1) + ' A × 125 % continuous' : 'non-continuous'],
+          ['Protective device', r.brk ? r.brk + ' A' : 'above the table', 1, r.au ? 'In ≥ Ib; cable Iz ≥ In' : 'next standard rating ≥ design current'],
+          ['Derating', '× ' + fmt(r.ct * r.cg, 2), 0, 'ambient ' + fmt(r.ct, 2) + ' · grouping ' + fmt(r.cg, 2) + ' (' + fmt(v.ccc, 0) + ' conductors)'],
+          ['Cable size', s.name + ' ' + (v.mat === 'cu' ? 'Cu' : 'Al'), 1, 'Iz ≈ ' + fmt(r.iz, 0) + ' A after derating · ' + (r.byVd ? 'upsized for voltage drop' : 'sized by ampacity')],
+          ['Voltage drop', fmt(r.vd, 2) + ' %', 0, (r.vd <= v.vdl + 1e-9 ? STATUS.pass : STATUS.warn) + ' limit ' + fmt(v.vdl, 1) + ' % · ' + fmt(r.vd * v.v / 100, 1) + ' V'],
+          ['Minimum by ampacity', r.byAmp ? r.byAmp.name : '—', 0, r.byVd ? 'voltage drop governs' : '']
+        ];
+      },
+      note: 'Ampacities follow NEC Table 310.16 with 310.15 corrections (exact for AWG sizes). Metric sizes are interpolated from it by conductor area — indicative only; confirm with PEC Table 3.10.1.16, AS/NZS 3008.1.1 or IEC 60364-5-52 for the installation method.'
+    },
+
+    light: {
+      code: 'ELEC / 000', title: 'Lighting Design (Lumen Method)', card: true, disc: 'E',
+      desc: 'Number of luminaires for a target illuminance by the lumen method, with grid layout, spacing check and lighting power density.',
+      fields: [
+        { k: 'l', label: 'Room length', q: 'len', def: [12.5, 40] },
+        { k: 'w', label: 'Room width', q: 'len', def: [8, 26] },
+        { k: 'hm', label: 'Mounting height above work plane', q: 'len', def: [2.15, 7] },
+        { k: 'e', label: 'Target illuminance (E)', q: 'lux', def: [500, 50] },
+        { k: 'lm', label: 'Luminaire output (Φ)', unit: 'lm', def: [4000, 4000] },
+        { k: 'fw', label: 'Luminaire power', unit: 'W', def: [36, 36] },
+        { k: 'mf', label: 'Maintenance factor (MF)', unit: '0–1', def: [0.8, 0.8], max: 1, maxMsg: 'Maintenance factor must be 1 or less.' },
+        { k: 'uf', label: 'Utilisation factor (0 = estimate)', unit: '0–1', def: [0, 0], zero: true, max: 1, maxMsg: 'Utilisation factor must be 1 or less.' }
+      ],
+      formula: function () { return ['RI = L·W / (Hm · (L + W))', 'N = E · A / (Φ · UF · MF)   ·   E_avg = N · Φ · UF · MF / A']; },
+      calc: function (v) {
+        var r = lightCalc(v);
+        return [
+          ['Luminaires', fmt(r.n, 0), 1, r.nx + ' × ' + r.ny + ' grid · minimum ' + r.nMin],
+          ['Average illuminance', fq(r.e, 'lux'), 1, 'maintained · target ' + fq(v.e, 'lux')],
+          ['Spacing', fq(r.sx, 'len') + ' × ' + fq(r.sy, 'len'), 0, 'S/Hm ' + fmt(r.shr, 2) + (r.shr <= 1.5 + 1e-9 ? ' — ' + STATUS.pass : ' — ' + STATUS.warn + ' above 1.5, uneven light')],
+          ['Room index (RI)', fmt(r.ri, 2), 0, 'UF ' + fmt(r.uf, 2) + (r.est ? ' (typical LED panel)' : ' (entered)')],
+          ['Lighting power density', fq(r.lpd, 'wpa'), 0, fmt(r.kw, 2) + ' kW connected'],
+          ['Floor area', fq(r.A, 'area')]
+        ];
+      },
+      note: 'UF estimated for recessed LED panels with ceiling / wall / floor reflectances of about 70 / 50 / 20 % — use the manufacturer\'s UF table for the actual luminaire. MF 0.8 suits clean offices with LED.'
+    },
+
+    wsfu: {
+      code: 'PIPE / 000', title: 'Water Supply Fixture Units', card: true, disc: 'P',
+      desc: 'Peak water demand from fixture units (Hunter\'s curve), then the cold-water main size by velocity, with friction loss.',
+      fields: [
+        { k: 'occ', label: 'Occupancy', opts: [['pub', 'Public (offices, malls, schools)'], ['prv', 'Private (dwellings)']], def: ['pub', 'pub'] },
+        { k: 'fv', label: 'Water-closet type', opts: [['tank', 'Flush tank'], ['valve', 'Flush valve (flushometer)']], def: ['tank', 'tank'] },
+        { k: 'wc', label: 'Water closets', unit: 'qty', def: [4, 4], zero: true },
+        { k: 'ur', label: 'Urinals', unit: 'qty', def: [2, 2], zero: true },
+        { k: 'lav', label: 'Lavatories', unit: 'qty', def: [4, 4], zero: true },
+        { k: 'sh', label: 'Showers', unit: 'qty', def: [0, 0], zero: true },
+        { k: 'bt', label: 'Bathtubs', unit: 'qty', def: [0, 0], zero: true },
+        { k: 'ks', label: 'Kitchen sinks', unit: 'qty', def: [1, 1], zero: true },
+        { k: 'cw', label: 'Clothes washers', unit: 'qty', def: [0, 0], zero: true },
+        { k: 'df', label: 'Drinking fountains', unit: 'qty', def: [1, 1], zero: true },
+        { k: 'mat', label: 'Pipe material', opts: optsOf(PIPE_MATS), def: ['ppr', 'cu'] },
+        { k: 'vmax', label: 'Maximum velocity', q: 'vpipe', def: [2.4, 8] },
+        { k: 'l', label: 'Main length (L)', q: 'len', def: [30, 100] }
+      ],
+      check: function (v) { return (v.wc + v.ur + v.lav + v.sh + v.bt + v.ks + v.cw + v.df) > 0 ? '' : 'Add at least one fixture.'; },
+      formula: function () { return ['WSFU = Σ (fixture count × fixture units)', 'Peak demand from Hunter\'s curve (flush tank or flush valve)', 'Smallest pipe with V ≤ limit   ·   friction by Hazen-Williams (+50 % fittings)']; },
+      calc: function (v) {
+        var r = wsfuCalc(v);
+        return [
+          ['Water supply fixture units', fmt(r.fu, 1) + ' WSFU', 1, (v.occ === 'pub' ? 'public' : 'private') + ' use · ' + (r.col === 'valve' ? 'flush-valve' : 'flush-tank') + ' curve'],
+          ['Peak demand', fq(r.q, 'liq'), 1, sys === 'si' ? fmt(r.q / 6.30901964e-5) + ' gpm · ' + fmt(r.q * 60000) + ' L/min' : fmt(r.q * 1000) + ' L/s'],
+          ['Main size', r.label, 1, r.M.label + ' · ID ' + fq(r.D, 'dia')],
+          ['Velocity', fq(r.V, 'vpipe'), 0, (r.V <= v.vmax + 1e-9 ? STATUS.pass : STATUS.warn) + ' limit ' + fq(v.vmax, 'vpipe')],
+          ['Friction loss', fq(r.dp, 'press'), 0, 'over ' + fq(v.l, 'len') + ' incl. 50 % fittings (Hazen-Williams C ' + r.M.C + ')']
+        ];
+      },
+      note: 'Fixture units and the demand curve are typical IPC Appendix E values (cold + hot). NPCP / UPC tables differ slightly — confirm with the adopted code. Size branches to fixtures from the code\'s minimum branch sizes.'
+    },
+
     rect: {
       code: 'UTIL / AREA', title: 'Rectangular Duct Dimensions',
       desc: 'Area, perimeter, hydraulic diameter and equivalent round size of a rectangular duct.',
@@ -3625,7 +3903,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   /* ---------- Cards ---------- */
   var grid = $('#card-grid');
   // HVAC sub-groups (a calculator can belong to more than one); these cards also stay under Mechanical.
-  var HVAC_TAGS = { hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
+  var HVAC_TAGS = { chw: ['AC'], pump: ['AC', 'H'], hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
                     oa: ['V'], vbz: ['V'], voz: ['V'], exh: ['V'], mua: ['V'], xfer: ['V'], bal: ['V'], vcmp: ['V'],
                     sdiff: ['GRL'], rgrille: ['GRL'], egrille: ['GRL'], louv: ['GRL'], fvel: ['GRL'], farea: ['GRL'], ndiff: ['GRL'], cfmd: ['GRL'], tsd: ['GRL'],
                     fexh: ['FAN'], fsup: ['FAN'], ffa: ['FAN'], fsp: ['FAN'], ftp: ['FAN'], fpow: ['FAN'], feff: ['FAN'], fop: ['FAN'],
@@ -3633,12 +3911,12 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
                     btu: ['AC'], cool: ['AC'], pcl: ['AC'] };
   var HVAC_NAMES = { H: 'Heating', V: 'Ventilation', AC: 'Air Conditioning', DD: 'Duct Design' };
   // Display order: Mechanical by group (air conditioning, heating, ventilation, duct design, fans), then E, P, F, S.
-  var CARD_ORDER = ['btu', 'cool', 'pcl', 'heat', 'phl', 'hwflow', 'fuel', 'cost',
+  var CARD_ORDER = ['btu', 'cool', 'pcl', 'heat', 'phl', 'hwflow', 'chw', 'pump', 'fuel', 'cost',
     'ach', 'geom', 'oa', 'vbz', 'voz', 'exh', 'mua', 'xfer', 'bal', 'vcmp',
     'duct', 'rdc', 'rcd', 'dvel', 'eqf', 'sreg', 'dfric', 'eqlen', 'fitl', 'tpl', 'dar', 'dins', 'ductd', 'diff',
     'fexh', 'fsup', 'ffa', 'fsp', 'ftp', 'fpow', 'feff', 'fop',
     'sdiff', 'rgrille', 'egrille', 'louv', 'fvel', 'farea', 'ndiff', 'cfmd', 'tsd',
-    'elec', 'vdrop', 'pipe', 'tank', 'sprinkler', 'firepump', 'hazen', 'hydrant', 'drain', 'dfu', 'septic', 'roofdrain'];
+    'elec', 'vdrop', 'cable', 'light', 'pipe', 'tank', 'wsfu', 'sprinkler', 'firepump', 'hazen', 'hydrant', 'drain', 'dfu', 'septic', 'roofdrain'];
   var cardIds = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).sort(function (a, b) {
     var ia = CARD_ORDER.indexOf(a), ib = CARD_ORDER.indexOf(b);
     return DISC_ORDER.indexOf(CALCS[a].disc) - DISC_ORDER.indexOf(CALCS[b].disc) || (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
@@ -3766,6 +4044,11 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     xfer:      ['Opening area = Q / V; D = √(4Q/πV)', 'Continuity; transfer velocities are typical design values.', 'typical'],
     bal:       ['Room net = SA − RA − EA; relief = RA + OA − SA', 'Mass balance; pressurisation targets are typical design practice (ASHRAE Handbook—HVAC Applications).', 'method'],
     vcmp:      ['Designed / required with tolerance bands', 'Your project criteria; required values from ASHRAE 62.1, 62.2 or the local code.', 'method'],
+    chw:       ['Q = P/(ρ·cp·ΔT); Darcy–Weisbach (Swamee–Jain f); smallest size within velocity and friction limits', 'ASHRAE Handbook—Fundamentals Ch. 22 (Pipe Sizing) and HVAC Systems & Equipment (hydronic systems). Pipe IDs: ASME B36.10 Sch. 40, ASTM B88 Type L, PPR PN20.', 'method'],
+    pump:      ['H = Σ losses × (1 + margin); P = Q·Δp/η; motor ≥ 1.15 × shaft', 'ASHRAE Handbook—HVAC Systems & Equipment Ch. 44 (centrifugal pumps); Hydraulic Institute standards.', 'method'],
+    cable:     ['Iz = I_table × Ct × Cg ≥ design current; voltage drop k·I·L·ρ/A', 'NEC Table 310.16, 310.15(B)/(C), 240.4(D), 110.14(C). Metric sizes interpolated — confirm with PEC 2017 Table 3.10.1.16, AS/NZS 3008.1.1 or IEC 60364-5-52.', 'method'],
+    light:     ['N = E·A/(Φ·UF·MF); RI = L·W/(Hm·(L+W))', 'Lumen method — SLL Code for Lighting, IES Lighting Handbook; illuminance targets EN 12464-1. UF values typical for recessed LED panels.', 'typical'],
+    wsfu:      ['Σ WSFU → peak demand (Hunter curve); size by velocity; Hazen-Williams friction', 'IPC Appendix E (Tables E103.3(2), E103.3(3)); UPC Appendix A; NPCP. Values are typical — confirm with the adopted code tables.', 'method'],
     hwflow:    ['ṁ = P / (cp·ΔT); 500-rule in imperial', 'Basic thermodynamics; ASHRAE Handbook—HVAC Systems and Equipment (hydronic systems). Glycol properties typical.', 'method'],
     fuel:      ['Fuel = Load / (η × HHV); CO₂ = input × emission factor', 'Gross heating values typical published data; CO₂ factors consistent with US EPA GHG Emission Factors Hub.', 'typical'],
     cost:      ['Cost = demand / η × fuel price', 'Arithmetic comparison; seasonal efficiencies are typical values.', 'typical'],
@@ -3863,7 +4146,8 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   // Everyday words people search with, on top of each card's title, description, code and categories.
   var KEYWORDS = {
     btu: 'aircon air conditioner ac split unit room size tonnage tr', cool: 'heat gain kw tr tonnage aircon ac', pcl: 'hourly peak solar ashrae rts weather city aircon',
-    heat: 'heating heat loss', phl: 'heating heat loss en 12831 u-value', hwflow: 'boiler pump gpm hydronic chilled water lps',
+    heat: 'heating heat loss', phl: 'heating heat loss en 12831 u-value', hwflow: 'boiler pump gpm hydronic chilled water lps', chw: 'chilled water chw pipe sizing hydronic gpm velocity friction schedule 40 copper ppr', pump: 'pump head duty tdh motor centrifugal npsh chilled water',
+    cable: 'cable wire size ampacity derating thhn awg mm2 breaker conductor', light: 'lighting lux lumen luminaire led illuminance fixtures foot-candle', wsfu: 'water supply fixture units wsfu hunter cold water pipe demand',
     fuel: 'gas lpg oil diesel pellets co2 emissions boiler', cost: 'fuel price electricity heat pump bill',
     ach: 'air changes ach cfm m3/h lps room', geom: 'room volume area m3 ft3 size', oa: 'fresh air outdoor air ashrae 62.1 people ventilation rate',
     vbz: 'ashrae 62.1 breathing zone', voz: 'ashrae 62.1 ez distribution effectiveness', exh: 'exhaust toilet bathroom kitchen hood garage lab laundry cr',
@@ -4841,6 +5125,98 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     el.hidden = false;
   }
   function suggText(items) { return items && items.length ? ['', 'Design suggestion:'].concat(items.map(function (s) { return '- ' + s[0] + ' [' + s[1] + ']'; })) : []; }
+
+  /* Live drawings: chilled water, pump, cable, lighting, water supply. */
+  Object.assign(DRAWS, {
+    chw: function (v) {
+      var r = chwSize(v), sp = clampN(2.2 / Math.max(r.V, 0.2), 0.3, 3), o = '';
+      o += Rc(20, 46, 250, 14, DC.bg, DC.blue, 1.6) + Flow('M24 53H266', DC.blue, sp, 2) + T(24, 40, 'CHWS ' + fmt(7, 0) + ' °C → ' + r.label);
+      o += Rc(20, 116, 250, 14, DC.bg, DC.hot, 1.6) + Flow('M266 123H24', DC.hot, sp, 2) + T(24, 150, 'CHWR ← ' + r.label);
+      o += Rc(270, 40, 46, 96, DC.bg, DC.ink, 1.4) + T(293, 92, 'AHU', 'dd-tag', 'middle') + Ln(270, 53, 278, 53, DC.blue, 2) + Ln(270, 123, 278, 123, DC.hot, 2);
+      var cr = clampN(r.D * 260, 10, 32);
+      o += Ci(370, 88, cr + 4, DC.bg, DC.ink, 1.4) + Ci(370, 88, cr, 'rgba(108,184,255,0.25)', DC.blue, 1) + T(370, 88 + cr + 22, 'ID ' + fq(r.D, 'dia'), 'dd-tag', 'middle');
+      return o + Big(20, 186, fq(r.q, 'liq') + ' · ' + fq(r.V, 'vpipe') + ' · ' + fq(r.dpm, 'fricw')) + T(410, 20, 'Δp loop ' + fq(r.loop, 'press'), 'dd-tag', 'end');
+    },
+    pump: function (v) {
+      var r = pumpCalc(v), x0 = 40, y0 = 170, W = 340, H = 140, qmax = v.q * 1.6, hmax = r.dp * 1.5;
+      var X = function (q) { return x0 + q / qmax * W; }, Y = function (p) { return y0 - p / hmax * H; };
+      var hs = r.stat, k = (r.dp - hs) / (v.q * v.q), sysPts = [], pmpPts = [], i;
+      var h0 = r.dp * 1.25, a = (h0 - r.dp) / (v.q * v.q); // pump curve through the duty point, shut-off at 125 %
+      var sysEnd = [X(0), Y(hs)];
+      for (i = 0; i <= 24; i++) { var q = qmax * i / 24, hsq = hs + k * q * q; if (hsq <= hmax) { sysPts.push(n1(X(q)) + ' ' + n1(Y(hsq))); sysEnd = [X(q), Y(hsq)]; } var hp = h0 - a * q * q; if (hp > 0) pmpPts.push(n1(X(q)) + ' ' + n1(Y(hp))); }
+      var o = Ln(x0, y0, x0 + W, y0, DC.mut, 1) + Ln(x0, y0, x0, y0 - H, DC.mut, 1) + T(x0 + W, y0 + 14, 'Flow', 'dd-tag', 'end') + T(x0 - 4, y0 - H - 4, 'Head', 'dd-tag');
+      o += '<path d="M' + sysPts.join('L') + '" fill="none" stroke="' + DC.blue + '" stroke-width="2"/>' + '<path d="M' + pmpPts.join('L') + '" fill="none" stroke="' + DC.mint + '" stroke-width="2.4"/>';
+      o += Ln(X(v.q), y0, X(v.q), Y(r.dp), DC.mut, 1, '3 3') + Ln(x0, Y(r.dp), X(v.q), Y(r.dp), DC.mut, 1, '3 3') + Ci(X(v.q), Y(r.dp), 5, DC.yel, DC.bg, 1.5, ' class="dz-pulse"');
+      return o + T(sysEnd[0] - 6, sysEnd[1] + 12, 'system', 'dd-tag', 'end') + T(X(v.q * 0.2), Y(h0) - 6, 'pump', 'dd-tag') +
+        Big(x0 + W, 26, fq(v.q, 'liq') + ' @ ' + fq(r.H, 'len'), 'end') + T(x0 + W, 44, 'motor ' + r.motor, 'dd-tag', 'end');
+    },
+    cable: function (v) {
+      var r = cableSize(v), n = v.ph === '3' ? 4 : 2, o = Ci(110, 100, 62, DC.bg, DC.ink, 1.6), cols = [DC.red, DC.yel, DC.blue, DC.mut];
+      for (var i = 0; i < n; i++) { var a = Math.PI * 2 * i / n - Math.PI / 4, cx = 110 + 28 * Math.cos(a), cy = 100 + 28 * Math.sin(a); o += Ci(cx, cy, 18, cols[n === 2 ? i * 2 : i], DC.ink, 1) + Ci(cx, cy, 10, '#C98A4B', 'none', 0); }
+      o += Ci(110, 100, 7, DC.mint, DC.ink, 1);
+      var bar = function (y, label, val, max, ok) { var w = clampN(val / max * 190, 2, 190); return T(200, y - 6, label) + Rc(200, y, 190, 12, 'none', DC.mut, 1) + Rc(200, y, w, 12, ok ? 'rgba(92,224,176,0.55)' : 'rgba(255,90,78,0.6)'); };
+      if (r.sel) {
+        var mx = Math.max(r.iz, r.need) * 1.15;
+        o += bar(70, 'Iz ' + fmt(r.iz, 0) + ' A after derating', r.iz, mx, true) + bar(104, 'Needed ' + fmt(r.need, 0) + ' A', r.need, mx, r.iz >= r.need) + bar(138, 'ΔV ' + fmt(r.vd, 2) + ' % of ' + fmt(v.vdl, 1) + ' %', r.vd, Math.max(v.vdl, r.vd) * 1.15, r.vd <= v.vdl + 1e-9);
+        o += Big(200, 30, r.sel.name + ' ' + (v.mat === 'cu' ? 'Cu' : 'Al'));
+      }
+      return o;
+    },
+    light: function (v) {
+      var r = lightCalc(v), long = Math.max(v.l, v.w), short = Math.min(v.l, v.w), s = Math.min(250 / long, 150 / short), w = long * s, h = short * s, x0 = 20, y0 = 100 - h / 2;
+      var o = Rc(x0, y0, w, h, DC.bg, DC.ink, 1.5);
+      if (r.n <= TILE_LIMIT) for (var i = 0; i < r.nx; i++) for (var j = 0; j < r.ny; j++) {
+        var cx = x0 + w / r.nx * (i + 0.5), cy = y0 + h / r.ny * (j + 0.5), lw = clampN(Math.min(w / r.nx, h / r.ny) * 0.45, 3, 18);
+        o += Ci(cx, cy, lw * 1.3, 'rgba(255,216,77,0.10)', 'none', 0) + Rc(cx - lw / 2, cy - lw / 4, lw, lw / 2, DC.yel, DC.ink, 0.8);
+      } else o += TileGrid('lt', x0, y0, w, h, r.nx, r.ny, function (cw, ch) { var hs = Math.max(0.5, Math.min(cw, ch) * 0.2); return Rc(cw / 2 - hs, ch / 2 - hs / 2, hs * 2, hs, DC.yel); });
+      return o + Big(290, 66, r.n + ' luminaires') + T(290, 84, r.nx + ' × ' + r.ny + ' · ' + fq(r.e, 'lux')) + T(290, 100, fq(r.lpd, 'wpa')) + statusText(290, 126, r.shr <= 1.5 + 1e-9 ? '✓ even spacing' : '⚠ wide spacing');
+    },
+    wsfu: function (v) {
+      var r = wsfuCalc(v), items = [['WC', v.wc], ['UR', v.ur], ['LAV', v.lav], ['SH', v.sh], ['BT', v.bt], ['KS', v.ks], ['CW', v.cw], ['DF', v.df]].filter(function (x) { return x[1] > 0; });
+      var o = Rc(20, 60, 380, 12, DC.bg, DC.blue, 1.6) + Flow('M24 66H396', DC.blue, clampN(2 / Math.max(r.V, 0.2), 0.3, 3), 2) + T(20, 52, 'Cold-water main ' + r.label);
+      items.forEach(function (it, i) {
+        var x = 60 + i * (330 / Math.max(items.length, 1));
+        o += Ln(x, 72, x, 118, DC.blue, 2.4) + Rc(x - 16, 118, 32, 22, DC.bg, DC.ink, 1.2) + T(x, 133, it[0], 'dd-tag', 'middle') + T(x, 156, '× ' + fmt(it[1], 0), 'dd-tag', 'middle');
+      });
+      return o + Big(20, 190, fmt(r.fu, 1) + ' WSFU → ' + fq(r.q, 'liq')) + T(400, 190, fq(r.V, 'vpipe'), 'dd-tag', 'end');
+    }
+  });
+
+  /* Design suggestions for the five calculators. */
+  Object.assign(SUGGEST, {
+    chw: function (v) {
+      var r = chwSize(v), out = [SG('Use ' + r.label + ' (' + r.M.label + ') for ' + fq(r.q, 'liq') + ' — ' + fq(r.V, 'vpipe') + ' and ' + fq(r.dpm, 'fricw') + '.', 'ASHRAE Fundamentals Ch. 22 — velocity ≤ 1.2 m/s to 50 mm, friction ≤ about 400 Pa/m')];
+      out.push(SG('Insulate with ' + (sys === 'si' ? r.ins[0] + ' mm' : r.ins[1]) + ' closed-cell / fire-rated insulation with a continuous vapour barrier.', 'ASHRAE 90.1 Table 6.8.3-2 (typical); condensation control'));
+      out.push(SG('Size the pump for ' + fq(r.q, 'liq') + ' with ' + fq(r.loop, 'press') + ' of pipe loss, plus the coil and valve drops.', 'Pump Head & Selection'));
+      if (v.dt < 5) out.push(SG('A ΔT below 5 K (9 °F) needs more flow and bigger pipes — 5.5–7 K is common for chilled water.', 'ASHRAE HVAC Systems & Equipment'));
+      return out;
+    },
+    pump: function (v) {
+      var r = pumpCalc(v), type = v.q < 5 ? 'an in-line' : 'an end-suction';
+      return [SG('Select ' + type + ' centrifugal pump for ' + fq(v.q, 'liq') + ' at ' + fq(r.H, 'len') + ', with the duty point near best efficiency (70–110 % of BEP flow).', 'Hydraulic Institute / ASHRAE HVAC Systems & Equipment Ch. 44'),
+        SG('Use a ' + r.motor + ' motor (IE3 / NEMA Premium) with a VSD for variable-flow systems; provide a standby pump for critical loops.', 'ASHRAE 90.1 §6.5.4 (hydronic variable flow)'),
+        SG(v.hs > 0 ? 'Open system: check NPSH available exceeds NPSH required by at least 0.6 m (2 ft).' : 'Closed loop: size the expansion tank and set the fill pressure at the pump suction.', 'Hydraulic Institute')];
+    },
+    cable: function (v) {
+      var r = cableSize(v); if (!r.sel) return [SG('Use parallel conductors — the load is beyond a single conductor in the table.', 'Code ampacity tables')];
+      return [SG('Use ' + r.sel.name + ' ' + (v.mat === 'cu' ? 'copper' : 'aluminium') + ' with a ' + (r.brk ? r.brk + ' A' : 'suitable') + ' breaker' + (r.byVd ? ' — upsized from ' + r.byAmp.name + ' to keep voltage drop within ' + fmt(v.vdl, 1) + ' %.' : '.'), r.au ? 'AS/NZS 3000 Cl. 2.5; AS/NZS 3008.1.1' : codeBasis === 'ph' ? 'PEC 2017 Art. 3.10 / 2.40' : 'NEC 310.16, 310.15, 240.4'),
+        SG('Size the equipment grounding conductor from the grounding table for a ' + (r.brk || '') + ' A device, and the conduit by fill.', codeBasis === 'au' ? 'AS/NZS 3000 Table 5.1' : 'NEC 250.122 / Chapter 9 Table 1'),
+        SG(v.ccc > 3 ? 'More than 3 current-carrying conductors share the raceway — split circuits into separate conduits to avoid the ' + fmt(r.cg * 100, 0) + ' % grouping derate.' : 'Keep the run away from heat sources; ambient above 30 °C (86 °F) already derates the cable.', 'NEC 310.15(C)(1)')];
+    },
+    light: function (v) {
+      var r = lightCalc(v);
+      return [SG('Install ' + r.n + ' × ' + fmt(v.lm, 0) + ' lm luminaires in a ' + r.nx + ' × ' + r.ny + ' grid at ' + fq(r.sx, 'len') + ' × ' + fq(r.sy, 'len') + ', half-spacing from the walls.', 'Lumen method — SLL Code for Lighting / IES'),
+        SG('Typical maintained targets: offices 500 lx, corridors 100 lx, toilets 200 lx, retail 300 lx, classrooms 300–500 lx.', 'EN 12464-1'),
+        SG('Lighting power density is ' + fq(r.lpd, 'wpa') + ' — check it against your energy code limit and add occupancy / daylight controls.', codeBasis === 'au' ? 'NCC Section J (Part J7)' : codeBasis === 'ph' ? 'Philippine Green Building Code' : 'ASHRAE 90.1 §9 / IECC')];
+    },
+    wsfu: function (v) {
+      var r = wsfuCalc(v);
+      return [SG('Use ' + r.label + ' (' + r.M.label + ') for the cold-water main (' + fq(r.q, 'liq') + ' at ' + fq(r.V, 'vpipe') + ').', codeBasis === 'ph' ? 'NPCP — confirm with its fixture-unit tables' : codeBasis === 'au' ? 'AS/NZS 3500.1 — confirm with its probable simultaneous demand method' : 'IPC Appendix E / UPC Appendix A'),
+        SG('Check the minimum pressure at the most remote fixture' + (v.fv === 'valve' ? ' — flush valves need the highest pressure' : '') + '; size the booster pump from the Water Demand & Tank calculator.', 'IPC Table 604.3 / NPCP'),
+        SG('Size the hot-water and branch pipes from the code minimum branch sizes, and add water hammer arrestors at quick-closing valves.', 'IPC 604.5 / 604.9')];
+    }
+  });
+  Object.assign(NEXT, { chw: ['pump', 'dins'], pump: ['chw'], cable: ['vdrop', 'elec'], light: ['elec', 'cable'], wsfu: ['pipe', 'tank', 'dfu'] });
 
   /* ---------- Modal ---------- */
   var modal = $('#modal'), mBody = $('#m-body'), current = null, opener = null, lastCopy = '';
@@ -6964,6 +7340,11 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     ffa: function (r) { pjSet('ffa', 'q', r.oaQ); },
     btu: function (r) { pjSet('btu', 'area', roomArea(r)); pjSet('btu', 'h', r.h); pjSet('btu', 'n', r.people); },
     tank: function (r) { pjSet('tank', 'n', r.people); },
+    chw: function (r) { if (r.loadW > 0) pjSet('chw', 'p', r.loadW / 1000); },
+    pump: function (r) { if (r.chw) { pjSet('pump', 'q', r.chw.q); pjSet('pump', 'hp', r.chw.loop); } },
+    cable: function (r) { if (r.el && r.el.I > 0) pjSet('cable', 'i', r.el.I); },
+    light: function (r) { pjSet('light', 'l', Math.max(r.l, r.w)); pjSet('light', 'w', Math.min(r.l, r.w)); pjSet('light', 'hm', Math.max(r.h - 0.8, 1)); },
+    wsfu: function (r) { if (r.fix) ['wc', 'ur', 'lav', 'sh', 'bt', 'ks', 'cw', 'df'].forEach(function (k) { pjSet('wsfu', k, r.fix[k] || 0); }); },
     septic: function (r) { pjSet('septic', 'n', r.people); },
     roofdrain: function (r) { pjSet('roofdrain', 'a', roomArea(r)); }
   };
@@ -6980,6 +7361,11 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     tpl: function (r, v, rows) { r.esp = inSI(rowVal(rows, 'Fan external static pressure'), 'pv'); },
     fsup: function (r, v, rows) { r.motor = rowVal(rows, 'Motor size'); r.supply = v.q; },
     // Electrical, plumbing, sanitary and fire — quantities for the BOQ
+    chw: function (r, v) { var c = chwSize(v); r.chw = { mat: v.mat, row: c.row, l: v.l, q: c.q, loop: c.loop, ins: c.ins }; },
+    pump: function (r, v) { var c = pumpCalc(v); r.pump = { q: v.q, H: c.H, motor: c.motor }; },
+    cable: function (r, v) { var c = cableSize(v); if (c.sel) r.cable = { a: c.sel.a, l: v.l, ph: v.ph, mat: v.mat }; },
+    light: function (r, v) { var c = lightCalc(v); r.lights = { n: c.n, lm: v.lm, w: v.fw }; },
+    wsfu: function (r, v) { var c = wsfuCalc(v); r.wsfu = { mat: v.mat, row: c.row, l: v.l }; },
     elec: function (r, v, rows) { r.el = { I: numIn(rowVal(rows, 'Current (3-phase)')), dem: numIn(rowVal(rows, 'Demand load')), V: v.v }; },
     vdrop: function (r, v) { r.cable = { a: v.a, l: v.l, ph: v.ph, mat: v.mat }; },
     pipe: function (r, v) { r.pipe = { d: v.d, l: v.l }; },
@@ -7321,9 +7707,9 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   var ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
   // Divisions (default numbering: II Electrical, III Plumbing & Sanitary, IV Mechanical, V Fire Protection).
   var BOQ_DIVS = {
-    E: { name: 'ELECTRICAL WORKS', set: 'divE', def: 2, groups: { A: 'Panelboards and Protection', B: 'Wires and Cables', C: 'Conduits and Accessories', Z: 'Others to complete' } },
+    E: { name: 'ELECTRICAL WORKS', set: 'divE', def: 2, groups: { A: 'Panelboards and Protection', B: 'Wires and Cables', C: 'Conduits and Accessories', D: 'Lighting Fixtures', Z: 'Others to complete' } },
     P: { name: 'PLUMBING AND SANITARY WORKS', set: 'divP', def: 3, groups: { A: 'Water Supply', B: 'Plumbing Fixtures', C: 'Sanitary Drainage', D: 'Storm Drainage', E: 'Septic Tank', Z: 'Others to complete' } },
-    M: { name: 'MECHANICAL WORKS', set: 'div', def: 4, groups: { A: 'Air-Conditioning Equipment', B: 'Air Distribution', C: 'Ductwork', D: 'Insulation and Flexible Duct', E: 'Controls, Drains and Testing', Z: 'Others to complete' } },
+    M: { name: 'MECHANICAL WORKS', set: 'div', def: 4, groups: { A: 'Air-Conditioning Equipment', B: 'Air Distribution', C: 'Ductwork', D: 'Insulation and Flexible Duct', E: 'Controls, Drains and Testing', F: 'Chilled Water Piping and Pumps', Z: 'Others to complete' } },
     F: { name: 'FIRE PROTECTION WORKS', set: 'divF', def: 5, groups: { A: 'Sprinkler System', B: 'Fire Pump and Water Storage', Z: 'Others to complete' } }
   };
   function boqSet() {
@@ -7418,6 +7804,19 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       add('M', 'E', 'cond', 'Condensate drain piping with trap and insulation, per unit', units, 'lot', '');
       add('M', 'E', 'tab', 'Testing, adjusting and balancing (TAB) of air systems, with report', 1, 'lot', '');
     }
+    p.rooms.forEach(function (r) {
+      var c = r.chw, pm = r.pump;
+      if (c && c.l > 0) {
+        var lbl = pipeLabel(c.mat, c.row), M = PIPE_MATS[c.mat], th = sys === 'si' ? c.ins[0] + ' mm' : c.ins[1];
+        add('M', 'F', 'chwp|' + lbl + '|' + c.mat, lbl + ' x 6m, ' + M.boq + ' (supply + return)', Math.ceil(2 * c.l * wst / 6), 'length', r.name, fmt(c.l / Q.len[sys][1]) + ' ' + Q.len[sys][0] + ' each way');
+        add('M', 'F', 'gv|' + lbl, lbl + ' gate valve, isolation', 2, 'pcs', r.name);
+        add('M', 'F', 'bv|' + lbl, lbl + ' balancing valve', 1, 'pcs', r.name);
+        add('M', 'F', 'cv|' + lbl, lbl + ' 2-way motorised control valve', 1, 'pcs', r.name);
+        add('M', 'F', 'fit|' + lbl, lbl + ' 90° long-radius elbows, tees, strainers and fittings', 1, 'lot', r.name);
+        add('M', 'F', 'ins|' + lbl, lbl + ' x ' + th + ' THK. x 2m, fire-rated Styropor insulation', Math.ceil(2 * c.l * wst / 2), 'length', r.name);
+      }
+      if (pm && pm.q > 0) add('M', 'F', 'pump|' + r.id, 'Chilled-water pump set, ' + fq(pm.q, 'liq') + ' at ' + fq(pm.H, 'len') + ' head, ' + pm.motor + ' motor, with flexible connectors', 1, 'set', r.name);
+    });
     // ---- II Electrical
     p.rooms.forEach(function (r) {
       var e = r.el, c = r.cable;
@@ -7433,6 +7832,11 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
         add('E', 'C', 'cnd', 'Conduit, IMC / EMT / uPVC per specification, size per conduit fill', c.l * wst, 'len', r.name);
         add('E', 'C', 'box|' + r.id, 'Pull boxes, junction boxes, fittings and supports', 1, 'lot', r.name);
       }
+      var lt = r.lights;
+      if (lt && lt.n > 0) {
+        add('E', 'D', 'lum|' + lt.lm + '|' + lt.w, 'LED luminaire, recessed, ' + fmt(lt.lm, 0) + ' lm, ' + fmt(lt.w, 0) + ' W, complete with driver', lt.n, 'pcs', r.name);
+        add('E', 'D', 'lo|' + r.id, 'Lighting outlets, wiring devices and switches', 1, 'lot', r.name);
+      }
     });
     if (divs.E) add('E', 'Z', 'tc', 'Testing and commissioning (insulation resistance, continuity, polarity)', 1, 'lot', '');
     // ---- III Plumbing and Sanitary
@@ -7441,6 +7845,11 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
         var ps = boqPipe(r.pipe.d);
         add('P', 'A', 'wp|' + ps, ps + ' x 6m, water supply pipe (PPR PN20 / G.I. Sch. 40 per specification)', Math.ceil(r.pipe.l * wst / 6), 'length', r.name, fmt(r.pipe.l / Q.len[sys][1]) + ' ' + Q.len[sys][0] + ' run');
         add('P', 'A', 'wf|' + ps, ps + ' fittings, valves and supports for the water line', 1, 'lot', r.name);
+      }
+      if (r.wsfu && r.wsfu.l > 0) {
+        var wl = pipeLabel(r.wsfu.mat, r.wsfu.row);
+        add('P', 'A', 'cwm|' + wl + '|' + r.wsfu.mat, wl + ' x 6m, cold-water main, ' + PIPE_MATS[r.wsfu.mat].boq, Math.ceil(r.wsfu.l * wst / 6), 'length', r.name, fmt(r.wsfu.l / Q.len[sys][1]) + ' ' + Q.len[sys][0] + ' run');
+        add('P', 'A', 'cwf|' + wl, wl + ' fittings, valves and supports for the cold-water main', 1, 'lot', r.name);
       }
       if (r.tank && r.tank.vol > 0) {
         add('P', 'A', 'tank|' + r.id, 'Water storage tank, ' + fq(r.tank.vol, 'vol') + ' capacity, with overflow, vent and washout', 1, 'set', r.name);
@@ -7482,7 +7891,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
     if (divs.F) add('F', 'Z', 'tc', 'Hydrostatic test, flushing and commissioning', 1, 'lot', '');
     // Hangers / consumables close every division that has items.
     Object.keys(divs).forEach(function (k) { add(k, 'Z', 'hang', 'Hangers and supports', 1, 'lot', ''); add(k, 'Z', 'cons', 'Consumables', 1, 'lot', ''); });
-    var hasOther = p.rooms.some(function (r) { return r.el || r.cable || r.pipe || r.tank || r.fix || r.roof || r.septic || r.spr || r.fpipe || r.fp; });
+    var hasOther = p.rooms.some(function (r) { return r.lights || r.wsfu || r.el || r.cable || r.pipe || r.tank || r.fix || r.roof || r.septic || r.spr || r.fpipe || r.fp; });
     if (!hasOther) warn.push('Electrical, plumbing, sanitary and fire items come from those calculators — open one (e.g. Drainage Fixture Units, Voltage Drop, Sprinkler System Demand) and use Save to room.');
     // Number divisions, groups and items.
     var list = Object.keys(divs).map(function (k) {
