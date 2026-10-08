@@ -9,7 +9,7 @@ export async function openSite(page) {
   const errors = []
   page.on('pageerror', (e) => errors.push(e.message))
   await page.goto(SITE)
-  await expect(page.locator('#card-grid .card')).toHaveCount(66)
+  await expect(page.locator('#card-grid .card')).toHaveCount(68)
   return errors
 }
 

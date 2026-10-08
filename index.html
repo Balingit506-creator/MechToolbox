@@ -272,9 +272,9 @@ svg { display: block; }
 .pj-form-a .err { margin: 0; }
 .pj-hint { color: var(--muted); margin: 0; }
 .pj-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: -4px; }
-.pj-tab { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--muted); font: 500 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: border-color var(--ease), color var(--ease); }
-.pj-tab:hover { color: var(--text); border-color: var(--line-2); }
-.pj-tab[aria-pressed="true"] { border-color: var(--mint); color: var(--text); background: rgba(92,224,176,0.08); }
+.pj-tab, .cv-tab, .es-tab { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--muted); font: 500 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: border-color var(--ease), color var(--ease); }
+.pj-tab:hover, .cv-tab:hover, .es-tab:hover { color: var(--text); border-color: var(--line-2); }
+.pj-tab[aria-pressed="true"], .cv-tab[aria-pressed="true"], .es-tab[aria-pressed="true"] { border-color: var(--mint); color: var(--text); background: rgba(92,224,176,0.08); }
 .pj-tab[aria-pressed="true"] .gd-pill { background: var(--mint); color: var(--deep); }
 .pj-table table { width: 100%; min-width: 940px; border-collapse: collapse; font-size: 14px; }
 .pj-table th, .pj-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
@@ -1026,8 +1026,8 @@ html { scrollbar-color: var(--line-2) var(--deep); }
 .cards.compact .card:hover { transform: translateY(-2px); }
 
 /* Pills, chips, filters, tabs */
-.filters button, .gd-tab, .pj-tab, .min-all { border-radius: 999px; border-color: var(--edge); background: rgba(13, 27, 24, 0.75); }
-.filters button[aria-pressed="true"], .gd-tab[aria-pressed="true"], .pj-tab[aria-pressed="true"] { box-shadow: 0 0 0 1px rgba(92, 224, 176, 0.25), 0 8px 22px -14px rgba(92, 224, 176, 0.8); }
+.filters button, .gd-tab, .pj-tab, .cv-tab, .es-tab, .min-all { border-radius: 999px; border-color: var(--edge); background: rgba(13, 27, 24, 0.75); }
+.filters button[aria-pressed="true"], .gd-tab[aria-pressed="true"], .pj-tab[aria-pressed="true"], .cv-tab[aria-pressed="true"], .es-tab[aria-pressed="true"] { box-shadow: 0 0 0 1px rgba(92, 224, 176, 0.25), 0 8px 22px -14px rgba(92, 224, 176, 0.8); }
 .gd-pill { border-radius: 999px; padding: 2px 7px; }
 .search-chips button { border-color: var(--edge); }
 
@@ -1223,6 +1223,110 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
 .es-adddiv { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .es-adddiv span { font: 500 12px var(--mono); color: var(--muted); margin-right: 4px; }
 .es-comb { font-size: 14px; color: var(--muted); }
+
+/* Floating converter & constants (above the compass) */
+.cv { position: fixed; left: 16px; bottom: 84px; z-index: 41; }
+.cv-btn { width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--edge); border-radius: 50%; background: radial-gradient(circle at 50% 35%, rgba(40, 60, 55, 0.6), rgba(7, 17, 15, 0.92)); color: var(--mint); cursor: pointer; box-shadow: 0 14px 30px -14px rgba(0, 0, 0, 0.9), 0 0 24px -6px rgba(92, 224, 176, 0.45); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); transition: transform 200ms ease, border-color 200ms ease; }
+.cv-btn:hover, .cv.open .cv-btn { border-color: rgba(92, 224, 176, 0.55); transform: translateY(-2px); }
+.cv-btn svg { transition: transform 400ms cubic-bezier(.2, .7, .2, 1); }
+.cv-btn:hover svg, .cv.open .cv-btn svg { transform: rotate(180deg); }
+.cv-panel { position: absolute; left: 0; bottom: 68px; width: min(360px, calc(100vw - 32px)); max-height: calc(100vh - 180px); max-height: calc(100dvh - 180px); overflow: auto; overscroll-behavior: contain; padding: 14px; border: 1px solid var(--edge); border-radius: 16px; background: rgba(13, 27, 24, 0.96); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.95); animation: sheetIn 240ms cubic-bezier(.2, .7, .2, 1); }
+.cv-panel[hidden], .cv-body[hidden] { display: none; }
+.cv-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.cv-tabs { margin: 0; }
+.cv-pi { text-transform: none; font-family: var(--body); font-size: 14px; }
+.cv-x { width: 32px; height: 32px; }
+.cv-cats { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.cv-cat { padding: 5px 10px; border: 1px solid var(--edge); border-radius: 999px; background: rgba(7, 17, 15, 0.6); color: var(--muted); font: 500 11px/1.2 var(--mono); cursor: pointer; transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease; }
+.cv-cat:hover { color: var(--text); border-color: var(--line-2); }
+.cv-cat[aria-pressed="true"] { color: var(--deep); background: var(--grad-mint); border-color: transparent; }
+.cv-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); gap: 8px; align-items: stretch; }
+.cv-val input { font: 600 20px/1.2 var(--mono); padding: 10px 12px; }
+.cv-sel select { font: 500 14px var(--mono); padding: 10px; }
+.cv-out { display: flex; align-items: center; min-width: 0; padding: 10px 12px; border: 1px solid rgba(92, 224, 176, 0.35); border-radius: 10px; background: rgba(92, 224, 176, 0.07); font: 700 20px/1.2 var(--mono); color: var(--mint); overflow-wrap: anywhere; }
+.cv-out.bump { animation: count-pop 0.3s cubic-bezier(.2, .7, .2, 1); }
+.cv-mid { display: flex; justify-content: center; margin: 6px 0; }
+.cv-swap { width: 34px; height: 34px; border: 1px solid var(--edge); border-radius: 50%; background: rgba(7, 17, 15, 0.7); color: var(--mint); font-size: 16px; cursor: pointer; transition: border-color 160ms ease; }
+.cv-swap:hover { border-color: var(--mint); }
+.cv-swap.spin { animation: cvSpin 0.4s cubic-bezier(.2, .7, .2, 1); }
+@keyframes cvSpin { from { transform: rotate(-180deg); } }
+.cv-k { margin: 14px 0 6px; font: 500 10px/1.3 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--mint); }
+.cv-k span { color: var(--muted); text-transform: none; letter-spacing: 0.02em; }
+.cv-all { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.cv-cell { width: 100%; display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 6px 9px; border: 1px solid transparent; border-radius: 8px; background: rgba(7, 17, 15, 0.5); color: var(--text); cursor: pointer; text-align: left; transition: border-color 160ms ease; min-width: 0; }
+.cv-cell b { font: 500 12.5px var(--mono); overflow-wrap: anywhere; }
+.cv-cell span { font: 400 11px var(--mono); color: var(--muted); flex-shrink: 0; }
+.cv-cell:hover, .cv-cell.on { border-color: rgba(92, 224, 176, 0.45); }
+.cv-q { margin-bottom: 10px; }
+.cv-q input { font-size: 14px; }
+.cs-g { margin: 12px 0 6px; font: 500 10px/1.3 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--mint); }
+.cs-g:first-child { margin-top: 0; }
+.cs-ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.cs-ul li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; padding: 8px 10px; border: 1px solid var(--edge); border-radius: 10px; background: rgba(7, 17, 15, 0.45); }
+.cs-n { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; width: 100%; }
+.cs-n b { font-size: 13.5px; font-weight: 600; }
+.cs-n span { font: 400 11px var(--mono); color: var(--muted); text-align: right; }
+.cs-v, .cs-alt { padding: 2px 7px; border: 1px solid transparent; border-radius: 6px; background: rgba(92, 224, 176, 0.08); font: 600 13px var(--mono); color: var(--mint); cursor: pointer; text-align: left; }
+.cs-alt { background: transparent; color: var(--muted); font-weight: 400; font-size: 12px; }
+.cs-v:hover, .cs-alt:hover { border-color: rgba(92, 224, 176, 0.5); }
+.cs-ul small { width: 100%; font-size: 11.5px; color: var(--muted); }
+.cs-none, .cs-note { font-size: 12px; color: var(--muted); }
+.cs-note { margin-top: 10px; }
+.cv-msg { margin-top: 8px; min-height: 1em; font: 500 12px var(--mono); color: var(--mint); }
+.cv-msg:empty { display: none; }
+body.modal-open .cv { visibility: hidden; }
+@media (prefers-reduced-motion: reduce) { .cv-panel, .cv-out.bump, .cv-swap.spin { animation: none; } }
+
+/* Psychrometric chart */
+.psy-fields { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.psy-wrap { margin: 18px 0 6px; padding: 10px; border: 1px solid var(--edge); border-radius: 14px; background: rgba(7, 17, 15, 0.6); }
+.psy-svg { width: 100%; height: auto; touch-action: none; user-select: none; }
+.psy-grid { stroke: rgba(138, 166, 157, 0.10); stroke-width: 1; }
+.psy-tick { font: 500 11px var(--mono); fill: var(--muted); }
+.psy-axis { font: 500 11px var(--mono); fill: var(--muted); letter-spacing: 0.06em; }
+.psy-sat { fill: none; stroke: var(--mint); stroke-width: 2; }
+.psy-rh { fill: none; stroke: rgba(92, 224, 176, 0.32); stroke-width: 1; }
+.psy-rht { font: 500 10px var(--mono); fill: rgba(92, 224, 176, 0.7); }
+.psy-wb { stroke: rgba(108, 196, 255, 0.28); stroke-width: 1; stroke-dasharray: 4 4; }
+.psy-wbt { font: 500 10px var(--mono); fill: rgba(108, 196, 255, 0.8); }
+.psy-comfort { fill: rgba(92, 224, 176, 0.12); stroke: rgba(92, 224, 176, 0.5); stroke-dasharray: 3 3; }
+.psy-cz { font: 600 10px var(--mono); fill: var(--mint); letter-spacing: 0.08em; }
+.psy-mix { stroke: rgba(232, 243, 239, 0.45); stroke-width: 1.4; stroke-dasharray: 5 4; }
+.psy-coil { stroke: #6CC4FF; stroke-width: 2.4; }
+.psy-room { stroke: var(--mint); stroke-width: 2; stroke-dasharray: 6 4; }
+.psy-ext { stroke: rgba(232, 243, 239, 0.4); stroke-width: 1.2; stroke-dasharray: 2 3; }
+.psy-lbl { font: 700 12px var(--mono); paint-order: stroke; stroke: #07110F; stroke-width: 4px; }
+.psy-hit { fill: transparent; }
+.psy-pt.drag { cursor: grab; }
+.psy-pt.drag:active { cursor: grabbing; }
+.psy-pt.drag:hover circle:nth-child(2) { stroke-width: 3.5; }
+.psy-cross { stroke: rgba(232, 243, 239, 0.35); stroke-width: 1; stroke-dasharray: 3 3; pointer-events: none; }
+.psy-hbox { fill: rgba(7, 17, 15, 0.92); stroke: var(--edge); pointer-events: none; }
+.psy-htx { font: 500 12px var(--mono); fill: var(--text); pointer-events: none; }
+.psy-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 6px 4px 0; font: 500 11px var(--mono); color: var(--muted); }
+.psy-legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 50%; background: var(--c); vertical-align: -1px; }
+.psy-table { margin-top: 14px; }
+.psy-table table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 13.5px; }
+.psy-table th, .psy-table td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+.psy-table thead th { font: 500 11px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.psy-table td.num { font-family: var(--mono); }
+
+/* Panel load schedule */
+.pl-top { margin-bottom: 14px; }
+.pl-fields { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-bottom: 14px; }
+.pl-table table { min-width: 1240px; }
+.pl-table td { vertical-align: middle; }
+.pl-table .input-wrap input, .pl-table .input-wrap select { padding: 6px 8px; font-size: 13.5px; }
+.pl-desc { min-width: 220px; }
+.pl-type { width: 130px; }
+.pl-type select, .pl-ph select, .pl-poles select { font-family: var(--body); font-size: 13px; }
+.pl-qty { width: 60px; } .pl-va { width: 84px; } .pl-len { width: 70px; }
+.pl-qty input, .pl-va input, .pl-len input { text-align: right; }
+.pl-poles { width: 66px; } .pl-ph { width: 104px; }
+.pl-phv { color: var(--mint); }
+.pl-wire { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+.pl-acts { white-space: nowrap; }
+.pl-table tfoot td { font-weight: 600; background: var(--panel); }
 </style>
 </head>
 <body>
@@ -1565,6 +1669,41 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
 </footer>
 
 <!-- Floating tools: live compass (left) and feedback (right) -->
+<div class="cv" id="convtool">
+  <button type="button" class="cv-btn" id="cv-btn" aria-expanded="false" aria-controls="cv-panel" aria-label="Unit converter and engineering constants" title="Convert &amp; constants">
+    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path class="cv-a1" d="M4 8h14l-3.5-3.5M20 16H6l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <div class="cv-panel" id="cv-panel" hidden role="dialog" aria-label="Convert and constants">
+    <div class="cv-head">
+      <div class="pj-tabs cv-tabs" role="group" aria-label="Tool">
+        <button type="button" class="cv-tab" data-cvtab="conv" aria-pressed="true">⇄ Convert</button>
+        <button type="button" class="cv-tab" data-cvtab="const" aria-pressed="false"><span class="cv-pi">π</span> Constants</button>
+      </div>
+      <button type="button" class="icon-btn cv-x" id="cv-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="cv-body" id="cv-conv">
+      <div class="cv-cats" id="cv-cats" role="group" aria-label="Quantity"></div>
+      <div class="cv-row">
+        <div class="input-wrap cv-val"><input id="cv-val" type="text" inputmode="decimal" autocomplete="off" value="1" aria-label="Value"></div>
+        <div class="input-wrap cv-sel"><select id="cv-from" aria-label="From unit"></select></div>
+      </div>
+      <div class="cv-mid"><button type="button" class="cv-swap" id="cv-swap" aria-label="Swap units" title="Swap">⇅</button></div>
+      <div class="cv-row">
+        <output class="cv-out" id="cv-out" aria-live="polite">—</output>
+        <div class="input-wrap cv-sel"><select id="cv-to" aria-label="To unit"></select></div>
+      </div>
+      <p class="cv-k">In every unit <span>— click one to copy</span></p>
+      <ul class="cv-all" id="cv-all"></ul>
+    </div>
+    <div class="cv-body" id="cv-const" hidden>
+      <div class="input-wrap search-wrap cv-q"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="cs-q" type="search" autocomplete="off" placeholder="Search — e.g. air density, 1.08, TR" aria-label="Search constants"></div>
+      <div class="cs-list" id="cs-list"></div>
+      <p class="cs-note">Click a value to copy it. Air at 20 °C, 101.325 kPa; water at 20 °C unless noted.</p>
+    </div>
+    <p class="cv-msg" id="cv-msg" aria-live="polite"></p>
+  </div>
+</div>
+
 <div class="cp" id="compass">
   <button type="button" class="cp-btn" id="cp-btn" aria-expanded="false" aria-controls="cp-panel" aria-label="Compass — heading not available">
     <canvas class="gl gl-sm" width="56" height="56" aria-hidden="true"></canvas>
@@ -2125,6 +2264,8 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     pipe: '<path d="M8 38h144M8 58h144" class="ink"/><rect x="44" y="32" width="6" height="32" class="ink"/><rect x="110" y="32" width="6" height="32" class="ink"/>' +
           '<line x1="60" y1="48" x2="100" y2="48" class="ink a-march" marker-end="url(#arr-mini)"/><circle cx="80" cy="17" r="9" class="ink-m"/><path d="M80 26v12" class="ink-m"/><path d="M80 17l5-4" class="ink a-needle" style="stroke-width:1.2"/>' +
           '<text x="8" y="80" class="ink-t">ΔP · Re</text>',
+    pls: '<rect x="44" y="10" width="72" height="72" rx="3" class="ink"/><path d="M80 10v72" class="ink-m"/><path d="M52 22h20M52 32h20M52 42h20M52 52h20M52 62h20M88 22h20M88 32h20M88 42h20M88 52h20M88 62h20" class="ink"/>' +
+      '<rect x="72" y="16" width="16" height="6" class="ink a-flicker"/><text x="122" y="30" class="ink-t">A</text><text x="122" y="48" class="ink-t">B</text><text x="122" y="66" class="ink-t">C</text>',
     elec: '<path d="M96 12L74 48h16l-6 30 26-40H94l8-26z" class="ink a-flicker"/><path d="M26 30h30M26 45h30M26 60h30" class="ink-m a-march"/>' +
           '<text x="8" y="33" class="ink-t">L1</text><text x="8" y="48" class="ink-t">L2</text><text x="8" y="63" class="ink-t">L3</text><text x="152" y="82" text-anchor="end" class="ink-t">3φ</text>',
     geom: '<path d="M44 38h60v36H44z" class="ink a-draw" pathLength="1"/><path d="M44 38l18-16h60l-18 16M104 74l18-16V22" class="ink a-draw" pathLength="1" style="animation-delay:.25s"/>' +
@@ -2150,6 +2291,8 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     cool: '<g class="a-spin"><circle cx="30" cy="24" r="8" class="ink"/><path d="M30 8v5M30 35v5M14 24h5M41 24h5M19 13l3 3M38 32l3 3M19 35l3-3M38 16l3-3" class="ink-m"/></g>' +
           '<path d="M62 78V46l34-22 34 22v32z" class="ink"/><line x1="44" y1="34" x2="66" y2="46" class="ink a-march" marker-end="url(#arr-mini)"/>' +
           '<path d="M96 52v18M88 56l16 10M104 56l-16 10" class="ink-m"/><text x="8" y="84" class="ink-t">kW · TR</text>',
+    psy: '<path d="M18 78H144M144 78V10" class="ink-m"/><path d="M18 77C62 75 104 62 140 12" class="ink"/><path d="M18 77C70 76 110 68 142 44M18 78C76 77 114 72 142 62" class="ink-m" stroke-dasharray="3 3"/>' +
+      '<path d="M110 46L80 60" class="ink"/><circle cx="110" cy="46" r="3.5" class="ink"/><circle cx="80" cy="60" r="3.5" class="ink a-flicker"/><text x="22" y="22" class="ink-t">RH · W · h</text>',
     pcl: '<path d="M14 70A66 56 0 0 1 146 70" class="ink-m" stroke-dasharray="3 3"/><circle cx="108" cy="24" r="6" class="ink a-flicker"/>' +
          '<rect x="30" y="58" width="9" height="16" class="ink a-grow"/><rect x="44" y="50" width="9" height="24" class="ink a-grow" style="animation-delay:.06s"/><rect x="58" y="42" width="9" height="32" class="ink a-grow" style="animation-delay:.12s"/>' +
          '<rect x="72" y="34" width="9" height="40" class="ink a-grow" style="fill:rgba(92,224,176,.25);animation-delay:.18s"/><rect x="86" y="46" width="9" height="28" class="ink a-grow" style="animation-delay:.24s"/>' +
@@ -2745,6 +2888,11 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
       note: 'Water at 20 °C (ρ = 998 kg/m³, μ = 1.0 mPa·s), commercial steel ε = 0.045 mm. Laminar flow uses f = 64 / Re.'
     },
 
+    pls: {
+      code: 'ELEC / 005', title: 'Panel Load Schedule', card: true, disc: 'E', special: true,
+      desc: 'Circuit-by-circuit panelboard schedule — auto phase balancing, breaker and wire per circuit, demand load, main breaker and feeder. PDF and Excel.'
+    },
+
     elec: {
       code: 'ELEC / 008', title: 'Electrical Load Calculator', card: true, disc: 'E',
       desc: 'Connected and demand load with approximate three-phase current.',
@@ -2903,6 +3051,11 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
         ];
       },
       note: 'Construction: poor = no insulation + single glazing, average = some insulation + double glazing, good = well insulated + low-e glazing. Simplified peak method (equivalent temperature differences, typical solar gains). Good for early sizing and checking; use ASHRAE RTS/CLTD or load software for final selection. Use the supply airflow in the Duct CFM Calculator.'
+    },
+
+    psy: {
+      code: 'HVAC / 023', title: 'Psychrometric Chart', card: true, disc: 'M', special: true,
+      desc: 'Plot outdoor, room, mixed and supply air on a live chart — coil load in kW / TR, SHR, apparatus dew point, bypass factor and condensate. Drag the points.'
     },
 
     pcl: {
@@ -4365,7 +4518,7 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
   /* ---------- Cards ---------- */
   var grid = $('#card-grid');
   // HVAC sub-groups (a calculator can belong to more than one); these cards also stay under Mechanical.
-  var HVAC_TAGS = { chw: ['AC'], pump: ['AC', 'H'], hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
+  var HVAC_TAGS = { psy: ['AC'], chw: ['AC'], pump: ['AC', 'H'], hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
                     oa: ['V'], vbz: ['V'], voz: ['V'], exh: ['V'], mua: ['V'], xfer: ['V'], bal: ['V'], vcmp: ['V'],
                     sdiff: ['GRL'], rgrille: ['GRL'], egrille: ['GRL'], louv: ['GRL'], fvel: ['GRL'], farea: ['GRL'], ndiff: ['GRL'], cfmd: ['GRL'], tsd: ['GRL'],
                     fexh: ['FAN'], fsup: ['FAN'], ffa: ['FAN'], fsp: ['FAN'], ftp: ['FAN'], fpow: ['FAN'], feff: ['FAN'], fop: ['FAN'],
@@ -4373,12 +4526,12 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
                     btu: ['AC'], cool: ['AC'], pcl: ['AC'] };
   var HVAC_NAMES = { H: 'Heating', V: 'Ventilation', AC: 'Air Conditioning', DD: 'Duct Design' };
   // Display order: Mechanical by group (air conditioning, heating, ventilation, duct design, fans), then E, P, F, S.
-  var CARD_ORDER = ['btu', 'cool', 'pcl', 'heat', 'phl', 'hwflow', 'chw', 'pump', 'fuel', 'cost',
+  var CARD_ORDER = ['btu', 'cool', 'pcl', 'psy', 'heat', 'phl', 'hwflow', 'chw', 'pump', 'fuel', 'cost',
     'ach', 'geom', 'oa', 'vbz', 'voz', 'exh', 'mua', 'xfer', 'bal', 'vcmp',
     'duct', 'rdc', 'rcd', 'dvel', 'eqf', 'sreg', 'dfric', 'eqlen', 'fitl', 'tpl', 'dar', 'dins', 'ductd', 'diff',
     'fexh', 'fsup', 'ffa', 'fsp', 'ftp', 'fpow', 'feff', 'fop',
     'sdiff', 'rgrille', 'egrille', 'louv', 'fvel', 'farea', 'ndiff', 'cfmd', 'tsd',
-    'elec', 'vdrop', 'cable', 'light', 'pipe', 'tank', 'wsfu', 'sprinkler', 'firepump', 'hazen', 'hydrant', 'drain', 'dfu', 'septic', 'roofdrain'];
+    'elec', 'pls', 'vdrop', 'cable', 'light', 'pipe', 'tank', 'wsfu', 'sprinkler', 'firepump', 'hazen', 'hydrant', 'drain', 'dfu', 'septic', 'roofdrain'];
   var statCalcs = document.getElementById('stat-calcs');
   if (statCalcs) statCalcs.textContent = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).length;
   var cardIds = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).sort(function (a, b) {
@@ -4510,6 +4663,7 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     vcmp:      ['Designed / required with tolerance bands', 'Your project criteria; required values from ASHRAE 62.1, 62.2 or the local code.', 'method'],
     chw:       ['Q = P/(ρ·cp·ΔT); Darcy–Weisbach (Swamee–Jain f); smallest size within velocity and friction limits', 'ASHRAE Handbook—Fundamentals Ch. 22 (Pipe Sizing) and HVAC Systems & Equipment (hydronic systems). Pipe IDs: ASME B36.10 Sch. 40, ASTM B88 Type L, PPR PN20.', 'method'],
     pump:      ['H = Σ losses × (1 + margin); P = Q·Δp/η; motor ≥ 1.15 × shaft', 'ASHRAE Handbook—HVAC Systems & Equipment Ch. 44 (centrifugal pumps); Hydraulic Institute standards.', 'method'],
+    pls:       ['I = VA / V (1-pole, 2-pole) or VA / (√3·V) (3-pole); breaker ≥ 1.25 × I; demand: receptacles 10 kVA + 50 % of the rest, motors + 25 % of the largest', 'PEC 2017 Art. 2.10, 2.15, 2.20 (load calculations), 2.40 (standard ratings), Table 3.10.1.16; NEC 210.19–210.20, 215.2–215.3, 220.42–220.50, 240.6, Table 310.16. Metric conductor ampacities interpolated — confirm with PEC.', 'method'],
     cable:     ['Iz = I_table × Ct × Cg ≥ design current; voltage drop k·I·L·ρ/A', 'NEC Table 310.16, 310.15(B)/(C), 240.4(D), 110.14(C). Metric sizes interpolated — confirm with PEC 2017 Table 3.10.1.16, AS/NZS 3008.1.1 or IEC 60364-5-52.', 'method'],
     light:     ['N = E·A/(Φ·UF·MF); RI = L·W/(Hm·(L+W))', 'Lumen method — SLL Code for Lighting, IES Lighting Handbook; illuminance targets EN 12464-1. UF values typical for recessed LED panels.', 'typical'],
     wsfu:      ['Σ WSFU → peak demand (Hunter curve); size by velocity; Hazen-Williams friction', 'IPC Appendix E (Tables E103.3(2), E103.3(3)); UPC Appendix A; NPCP. Values are typical — confirm with the adopted code tables.', 'method'],
@@ -4519,6 +4673,7 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     geom:      ['A = L·W, V = L·W·H', 'Geometry.', 'method'],
     cool:      ['Simplified peak load: equivalent ΔT, typical solar gain, people/lights/equipment, outdoor air', 'Concepts from ASHRAE Handbook—Fundamentals Ch. 18; people heat gains per Ch. 18 Table 1 (typical).', 'rule'],
     heat:      ['Σ U·A·ΔT + 0.33·ACH·V·ΔT + ventilation', 'Concepts from ASHRAE Handbook—Fundamentals Ch. 18 and EN 12831-1; U-values typical by construction class.', 'typical'],
+    psy:       ['W = 0.622·pw/(p − pw); h = 1.006t + W(2501 + 1.86t); mixing by air fraction; coil Q = ṁ·Δh, ADP where the coil line meets saturation', 'ASHRAE Handbook—Fundamentals Ch. 1 (psychrometrics); saturation pressure by the Magnus form (±0.1 % from 0–50 °C); comfort zone after ASHRAE 55 (summer, approximate).', 'method'],
     pcl:       ['Hourly sol-air + time-lag/decrement conduction, clear-sky solar, RTS-style radiant weighting, psychrometric outdoor air', 'ASHRAE Handbook—Fundamentals Ch. 1 (psychrometrics), Ch. 14 (design conditions, daily-range profile), Ch. 18 (sol-air, radiant fractions, RTS); ASHRAE 62.1 Table 6-1; ASHRAE 90.1 lighting (approx.); EN ISO 6946 surface resistances; CIBSE Guide A (time lag / decrement); clear-sky A, B, C constants from earlier ASHRAE Handbook editions.', 'method'],
     diff:      ['Count = max(spacing grid, airflow ÷ (NC-limited neck velocity × neck area)); throw T50 = (T50/L) × characteristic length (ADPI); return grilles by face velocity', 'ASHRAE Handbook—Fundamentals Ch. 20 (Space Air Diffusion — ADPI and T50/L ratios); ANSI/ASHRAE Standard 55 (occupied-zone air speed); AHRI 885 (estimating NC from catalogue sound data). Velocity limits per NC are typical industry guidance; final selection from manufacturer catalogues.', 'method'],
     ductd:     ['Velocity or equal-friction sizing; Altshul–Tsal friction; Huebscher rectangular equivalent; fitting losses Σ C·Pv + component Δp; insulation by surface-temperature (dew-point) balance. Gauges, velocity ranges and insulation can be replaced by your project standards.', 'ASHRAE Handbook—Fundamentals Ch. 21 (Duct Design; typical fitting coefficients — the ASHRAE Duct Fitting Database gives exact values) and Ch. 23 (Insulation for Mechanical Systems); SMACNA HVAC Duct Construction Standards (gauges and seal classes, simplified); ASHRAE 90.1 Table 6.8.3 (duct insulation R-values); NFPA 96 (kitchen grease ducts); NFPA 90A (fire dampers); NFPA 92 / EN 12101 (smoke control); ASHRAE 62.1 (exhaust rates, intake separation).', 'method'],
@@ -4623,7 +4778,7 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     ductd: 'duct design gauge smacna insulation kitchen exhaust hood grease supply return fresh air', diff: 'diffuser grille throw adpi nc layout ceiling register',
     fexh: 'exhaust fan selection kitchen hood toilet smoke car park', fsup: 'supply fan ahu sfp', ffa: 'fresh air fan', fsp: 'fan static pressure esp', ftp: 'fan total pressure',
     fpow: 'fan power motor hp kw bhp brake horsepower', feff: 'fan efficiency', fop: 'fan curve system curve operating point',
-    elec: 'electrical load amps current demand factor panel', vdrop: 'voltage drop cable wire size conductor',
+    pls: 'panel load schedule panelboard board circuits breaker phase balancing demand feeder', elec: 'electrical load amps current demand factor panel', vdrop: 'voltage drop cable wire size conductor',
     pipe: 'pipe pressure drop water reynolds velocity', tank: 'water tank storage demand pump cistern',
     sprinkler: 'sprinkler nfpa 13 fire heads density', firepump: 'fire pump nfpa 20', hazen: 'hazen williams friction fire pipe',
     hydrant: 'hydrant flow test nfpa 291 water supply', drain: 'drain sewer manning slope pipe capacity', dfu: 'fixture units dfu ipc pipe size toilet',
@@ -7548,13 +7703,376 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     return false;
   }
 
+  /* ---------- Psychrometric chart: states, mixing, coil process, ADP; drag the points ---------- */
+  var psy = { alt: 0, oaDb: 34, oaWb: 27, raDb: 24, raRh: 50, oaPct: 15, q: 1000, saDb: 13, saRh: 95 };
+  try { var psyd = JSON.parse(localStorage.getItem('mechtoolbox-psy') || 'null'); if (psyd) Object.keys(psy).forEach(function (k) { if (typeof psyd[k] === 'number' && isFinite(psyd[k])) psy[k] = psyd[k]; }); } catch (e) {}
+  var PSY_COL = { OA: '#FF9A85', RA: '#5CE0B0', MA: '#FFC857', SA: '#6CC4FF', ADP: '#E8F3EF' };
+  var psyImp = function () { return sys === 'imp'; };
+  var tOut = function (c) { return psyImp() ? c * 9 / 5 + 32 : c; }, tIn = function (x) { return psyImp() ? (x - 32) * 5 / 9 : x; };
+  var tU = function () { return psyImp() ? '°F' : '°C'; };
+  var wTxt = function (W) { return psyImp() ? fmt(W * 7000, 1) + ' gr/lb' : fmt(W * 1000, 2) + ' g/kg'; };
+  var hTxt = function (hh) { return psyImp() ? fmt(hh * 0.429923 + 7.68, 1) + ' BTU/lb' : fmt(hh, 1) + ' kJ/kg'; };
+  var tTxt = function (c) { return fmt(tOut(c), 1) + ' ' + tU(); };
+  function psyP(altM) { return 101325 * Math.pow(1 - 2.25577e-5 * altM, 5.2559); }
+  function psyState(t, W, p) {
+    var pw = W * p / (0.621945 + W), rh = pw / pws(t), a = Math.log(Math.max(pw, 1) / 610.94), dp = 243.04 * a / (17.625 - a);
+    var lo = dp - 1, hi = t;
+    for (var i = 0; i < 40; i++) { var mid = (lo + hi) / 2; if (wFromWB(t, mid, p) > W) hi = mid; else lo = mid; }
+    return { t: t, W: W, rh: rh, h: 1.006 * t + W * (2501 + 1.86 * t), dp: dp, wb: (lo + hi) / 2, v: 287.042 * (t + 273.15) * (1 + 1.607858 * W) / p };
+  }
+  function psyCalc() {
+    var p = psyP(psy.alt), f = Math.max(0, Math.min(100, psy.oaPct)) / 100, err = '';
+    if (psy.oaWb > psy.oaDb) err = 'Outdoor wet bulb cannot be above the dry bulb.';
+    var Woa = Math.max(0, wFromWB(psy.oaDb, psy.oaWb, p)), Wra = wFromRH(psy.raDb, psy.raRh / 100, p);
+    var OA = psyState(psy.oaDb, Woa, p), RA = psyState(psy.raDb, Wra, p);
+    var Wma = f * Woa + (1 - f) * Wra, hma = f * OA.h + (1 - f) * RA.h, tma = (hma - 2501 * Wma) / (1.006 + 1.86 * Wma), MA = psyState(tma, Wma, p);
+    if (!err && psy.saDb >= tma) err = 'The off-coil temperature must be below the mixed-air temperature (' + tTxt(tma) + ') for a cooling coil.';
+    var Wsa0 = wFromRH(psy.saDb, Math.min(100, psy.saRh) / 100, p), dry = Wsa0 >= Wma, SA = psyState(psy.saDb, Math.min(Wsa0, Wma), p);
+    var ADP = null, bf = null;
+    if (!err && !dry) {
+      var m = (Wma - SA.W) / (tma - SA.t), g = function (t) { return SA.W + m * (t - SA.t) - wFromRH(t, 1, p); }, prev = g(SA.t);
+      for (var t = SA.t - 0.05; t > -15; t -= 0.05) {
+        var cur = g(t);
+        if (cur >= 0 && prev < 0) { var a2 = t, b2 = t + 0.05; for (var k = 0; k < 30; k++) { var c2 = (a2 + b2) / 2; if (g(c2) >= 0) a2 = c2; else b2 = c2; } ADP = psyState(a2, wFromRH(a2, 1, p), p); bf = (SA.t - a2) / (tma - a2); break; }
+        prev = cur;
+      }
+    }
+    var mdot = psy.q / 1000 / SA.v, cpa = 1.006 + 1.86 * SA.W;
+    var rs = mdot * cpa * (RA.t - SA.t), rl = mdot * 2501 * (RA.W - SA.W), ct = mdot * (MA.h - SA.h), cs = mdot * cpa * (MA.t - SA.t);
+    return { p: p, err: err, dry: dry, OA: OA, RA: RA, MA: MA, SA: SA, ADP: ADP, bf: bf, mdot: mdot, rs: rs, rl: rl, rshr: rs / (rs + rl), ct: ct, cs: cs, cl: ct - cs, cshr: cs / ct, cond: mdot * (MA.W - SA.W) * 3600 };
+  }
+
+  // Chart geometry (SVG units) and scales; domain grows to fit the points.
+  var PG = { w: 720, h: 430, l: 46, r: 60, t: 18, b: 40 };
+  function psyChart(R) {
+    var p = R.p, imp = psyImp(), pts = [R.OA, R.RA, R.MA, R.SA];
+    var tmin = imp ? tIn(30) : 0, tmax = Math.max(imp ? tIn(120) : 50, Math.max.apply(null, pts.map(function (s) { return s.t; })) + 4);
+    var wmax = Math.max(imp ? 210 / 7000 : 0.030, Math.max.apply(null, pts.map(function (s) { return s.W; })) * 1.15);
+    var X = function (t) { return PG.l + (t - tmin) / (tmax - tmin) * (PG.w - PG.l - PG.r); };
+    var Y = function (W) { return PG.h - PG.b - W / wmax * (PG.h - PG.t - PG.b); };
+    psyChart.inv = function (x, y) { return { t: tmin + (x - PG.l) / (PG.w - PG.l - PG.r) * (tmax - tmin), W: (PG.h - PG.b - y) / (PG.h - PG.t - PG.b) * wmax }; };
+    var curve = function (rh) {
+      var d = '', on = false;
+      for (var t = tmin; t <= tmax + 0.01; t += 0.5) { var W = wFromRH(t, rh, p); if (W > wmax) break; d += (on ? 'L' : 'M') + X(t).toFixed(1) + ' ' + Y(W).toFixed(1); on = true; }
+      return d;
+    };
+    var g = '';
+    // grid and axes
+    var xt = imp ? [30, 40, 50, 60, 70, 80, 90, 100, 110, 120] : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+    xt.forEach(function (v) { var x = X(tIn(v)); if (x > PG.w - PG.r + 1) return; g += '<line x1="' + x + '" y1="' + PG.t + '" x2="' + x + '" y2="' + (PG.h - PG.b) + '" class="psy-grid"/><text x="' + x + '" y="' + (PG.h - PG.b + 16) + '" class="psy-tick" text-anchor="middle">' + v + '</text>'; });
+    var ws = imp ? 20 / 7000 : 0.002;
+    for (var W = 0; W <= wmax + 1e-9; W += ws) { var y = Y(W); g += '<line x1="' + PG.l + '" y1="' + y + '" x2="' + (PG.w - PG.r) + '" y2="' + y + '" class="psy-grid"/><text x="' + (PG.w - PG.r + 6) + '" y="' + (y + 4) + '" class="psy-tick">' + (imp ? Math.round(W * 7000) : Math.round(W * 1000)) + '</text>'; }
+    g += '<text x="' + ((PG.l + PG.w - PG.r) / 2) + '" y="' + (PG.h - 6) + '" class="psy-axis" text-anchor="middle">Dry-bulb temperature, ' + tU() + '</text>';
+    g += '<text transform="translate(' + (PG.w - 12) + ' ' + ((PG.t + PG.h - PG.b) / 2) + ') rotate(90)" class="psy-axis" text-anchor="middle">Humidity ratio, ' + (imp ? 'gr/lb' : 'g/kg') + '</text>';
+    // comfort zone (summer, approx. ASHRAE 55): 23–26 °C, 30–60 % RH
+    var cz = [], tt;
+    for (tt = 23; tt <= 26.01; tt += 0.5) cz.push(X(tt).toFixed(1) + ',' + Y(wFromRH(tt, 0.3, p)).toFixed(1));
+    for (tt = 26; tt >= 22.99; tt -= 0.5) cz.push(X(tt).toFixed(1) + ',' + Y(wFromRH(tt, 0.6, p)).toFixed(1));
+    g += '<polygon points="' + cz.join(' ') + '" class="psy-comfort"/><text x="' + X(24.5) + '" y="' + (Y(wFromRH(24.5, 0.3, p)) + 13) + '" class="psy-cz" text-anchor="middle">comfort</text>';
+    // wet-bulb lines (straight from saturation to W = 0)
+    var wbs = imp ? [40, 50, 60, 70, 80, 90] : [5, 10, 15, 20, 25, 30];
+    wbs.forEach(function (v) {
+      var wb = tIn(v), Ws = wFromRH(wb, 1, p); if (Ws > wmax) return;
+      var t0 = wb + (2501 - 2.326 * wb) * (0.622 * pws(wb) / (p - pws(wb))) / 1.006;
+      g += '<line x1="' + X(wb) + '" y1="' + Y(Ws) + '" x2="' + X(Math.min(t0, tmax)) + '" y2="' + Y(t0 > tmax ? wFromWB(tmax, wb, p) : 0) + '" class="psy-wb"/><text x="' + (X(wb) - 4) + '" y="' + (Y(Ws) - 4) + '" class="psy-wbt" text-anchor="end">' + v + '</text>';
+    });
+    // RH curves and saturation
+    for (var rh = 0.1; rh < 0.95; rh += 0.1) {
+      g += '<path d="' + curve(rh) + '" class="psy-rh"/>';
+      var tl = tmax - 1; while (tl > tmin && wFromRH(tl, rh, p) > wmax * 0.97) tl -= 0.5;
+      g += '<text x="' + (X(tl) - 2) + '" y="' + (Y(wFromRH(tl, rh, p)) - 3) + '" class="psy-rht" text-anchor="end">' + Math.round(rh * 100) + '%</text>';
+    }
+    g += '<path d="' + curve(1) + '" class="psy-sat"/>';
+    // processes
+    var L = function (a, b, cls, mk) { return '<line x1="' + X(a.t) + '" y1="' + Y(a.W) + '" x2="' + X(b.t) + '" y2="' + Y(b.W) + '" class="' + cls + '"' + (mk ? ' marker-end="url(#psy-arr)"' : '') + '/>'; };
+    g += L(R.OA, R.RA, 'psy-mix');
+    if (R.ADP) g += L(R.SA, R.ADP, 'psy-ext');
+    g += L(R.MA, R.SA, 'psy-coil', true) + L(R.SA, R.RA, 'psy-room', true);
+    var dot = function (k, s, drag) {
+      var x = X(s.t), y = Y(s.W), o = { OA: [9, -8], MA: [9, -8], RA: [10, 18], SA: [-10, -9], ADP: [-9, 15] }[k];  // label offsets keep SA / ADP and RA / MA apart
+      return '<g class="psy-pt' + (drag ? ' drag' : '') + '"' + (drag ? ' data-pt="' + k + '"' : '') + '><circle cx="' + x + '" cy="' + y + '" r="' + (drag ? 11 : 0) + '" class="psy-hit"/><circle cx="' + x + '" cy="' + y + '" r="' + (k === 'ADP' ? 4 : 6) + '" fill="' + (k === 'ADP' ? 'none' : PSY_COL[k]) + '" stroke="' + PSY_COL[k] + '" stroke-width="2"/>' +
+        '<text x="' + (x + o[0]) + '" y="' + (y + o[1]) + '" class="psy-lbl" fill="' + PSY_COL[k] + '"' + (o[0] < 0 ? ' text-anchor="end"' : '') + '>' + k + '</text></g>';
+    };
+    if (R.ADP) g += dot('ADP', R.ADP);
+    g += dot('MA', R.MA) + dot('SA', R.SA, true) + dot('RA', R.RA, true) + dot('OA', R.OA, true);
+    g += '<g id="psy-hover" visibility="hidden"><line id="psy-hx" class="psy-cross"/><line id="psy-hy" class="psy-cross"/><rect id="psy-hbox" rx="6" class="psy-hbox"/><text id="psy-htx" class="psy-htx"></text></g>';
+    return g;
+  }
+
+  function psyFields() {
+    var imp = psyImp(), T = tU(), f = function (k, label, val, unit, step) {
+      return '<div class="field"><label for="psy-' + k + '">' + label + '</label><div class="input-wrap"><input id="psy-' + k + '" data-psy="' + k + '" type="text" inputmode="decimal" autocomplete="off" value="' + val + '"><span class="unit">' + unit + '</span></div></div>';
+    };
+    var r1 = function (x) { return String(Math.round(x * 10) / 10); };
+    return '<form class="fields psy-fields" novalidate>' +
+      f('oaDb', 'Outdoor dry bulb', r1(tOut(psy.oaDb)), T) + f('oaWb', 'Outdoor wet bulb', r1(tOut(psy.oaWb)), T) +
+      f('raDb', 'Room dry bulb', r1(tOut(psy.raDb)), T) + f('raRh', 'Room RH', r1(psy.raRh), '%') +
+      f('oaPct', 'Outdoor air', r1(psy.oaPct), '% of supply') + f('q', 'Supply airflow', String(Math.round(imp ? psy.q * 2.118880 : psy.q)), imp ? 'CFM' : 'L/s') +
+      f('saDb', 'Off-coil dry bulb', r1(tOut(psy.saDb)), T) + f('saRh', 'Off-coil RH', r1(psy.saRh), '%') +
+      f('alt', 'Altitude', String(Math.round(imp ? psy.alt / 0.3048 : psy.alt)), imp ? 'ft' : 'm') + '</form>';
+  }
+  function renderPsy() {
+    mBody.innerHTML = '<p class="m-desc">Outdoor and room air on a psychrometric chart: the mixed-air point, the cooling-coil process to the off-coil (supply) state and back to the room. Drag OA, RA or SA on the chart, or type the values. Air at ' + (psyImp() ? 'sea-level pressure unless you set an altitude' : 'the pressure for the altitude you set') + '.</p>' +
+      psyFields() +
+      '<div class="psy-wrap"><svg class="psy-svg" id="psy-svg" viewBox="0 0 ' + PG.w + ' ' + PG.h + '" role="img" aria-label="Psychrometric chart with the outdoor, room, mixed and supply air states"><defs><marker id="psy-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1L10 5L0 9z" fill="#6CC4FF"/></marker></defs><g id="psy-g"></g></svg>' +
+      '<p class="psy-legend"><span style="--c:#FF9A85">OA outdoor</span><span style="--c:#5CE0B0">RA room</span><span style="--c:#FFC857">MA mixed</span><span style="--c:#6CC4FF">SA supply / off-coil</span><span style="--c:#E8F3EF">ADP apparatus dew point</span></p></div>' +
+      '<section class="result" aria-labelledby="r-title">' + copyBlock() +
+      '<div class="result-box"><div aria-live="polite"><dl class="rows" id="r-rows"></dl><p class="err" id="r-err" hidden></p></div></div>' +
+      '<div class="table-wrap psy-table"><table><thead><tr><th>State</th><th>Dry bulb</th><th>Wet bulb</th><th>RH</th><th>Humidity ratio</th><th>Enthalpy</th><th>Dew point</th><th>Specific volume</th></tr></thead><tbody id="psy-rows"></tbody></table></div>' + refLine('psy') + '</section>';
+    $('form', mBody).addEventListener('submit', function (e) { e.preventDefault(); });
+    $('form', mBody).addEventListener('input', function (e) {
+      var k = e.target.dataset.psy, x = num(e.target.value); if (!k || x == null) return;
+      var imp = psyImp();
+      if (/Db$|Wb$/.test(k)) x = tIn(x); else if (k === 'q' && imp) x = x / 2.118880; else if (k === 'alt' && imp) x = x * 0.3048;
+      psy[k] = x; computePsy();
+    });
+    var svg = $('#psy-svg'), dragK = null;
+    var pt = function (e) { var m = svg.getScreenCTM(); if (!m) return null; var q = svg.createSVGPoint(); q.x = e.clientX; q.y = e.clientY; q = q.matrixTransform(m.inverse()); return psyChart.inv(q.x, q.y); };
+    svg.addEventListener('pointerdown', function (e) { var gp = e.target.closest('[data-pt]'); if (!gp) return; dragK = gp.dataset.pt; svg.setPointerCapture(e.pointerId); e.preventDefault(); });
+    svg.addEventListener('pointermove', function (e) {
+      var c = pt(e); if (!c) return;
+      var p = psyP(psy.alt);
+      if (dragK) {
+        var t = Math.max(-5, Math.min(60, c.t)), W = Math.max(0.0005, Math.min(c.W, wFromRH(t, 1, p))), s = psyState(t, W, p);
+        if (dragK === 'OA') { psy.oaDb = t; psy.oaWb = s.wb; } else if (dragK === 'RA') { psy.raDb = t; psy.raRh = Math.min(100, s.rh * 100); } else { psy.saDb = t; psy.saRh = Math.min(100, s.rh * 100); }
+        computePsy(true);
+      }
+      var hv = $('#psy-hover'); if (!hv) return;
+      var x0 = PG.l, x1 = PG.w - PG.r, y0 = PG.t, y1 = PG.h - PG.b, sx = svg.createSVGPoint(), m2 = svg.getScreenCTM();
+      sx.x = e.clientX; sx.y = e.clientY; sx = sx.matrixTransform(m2.inverse());
+      if (sx.x < x0 || sx.x > x1 || sx.y < y0 || sx.y > y1 || c.W < 0) { hv.setAttribute('visibility', 'hidden'); return; }
+      var sat = c.W > wFromRH(c.t, 1, p), st = sat ? null : psyState(c.t, c.W, p);
+      $('#psy-hx').setAttribute('x1', x0); $('#psy-hx').setAttribute('x2', x1); $('#psy-hx').setAttribute('y1', sx.y); $('#psy-hx').setAttribute('y2', sx.y);
+      $('#psy-hy').setAttribute('y1', y0); $('#psy-hy').setAttribute('y2', y1); $('#psy-hy').setAttribute('x1', sx.x); $('#psy-hy').setAttribute('x2', sx.x);
+      var txt = sat ? 'above saturation (fog)' : tTxt(c.t) + ' · ' + Math.round(st.rh * 100) + ' % RH · WB ' + tTxt(st.wb) + ' · ' + hTxt(st.h);
+      var tx = $('#psy-htx'); tx.textContent = txt; tx.setAttribute('x', x0 + 12); tx.setAttribute('y', y0 + 20);
+      var bb = tx.getBBox(), hb = $('#psy-hbox'); hb.setAttribute('x', bb.x - 8); hb.setAttribute('y', bb.y - 5); hb.setAttribute('width', bb.width + 16); hb.setAttribute('height', bb.height + 10);
+      hv.setAttribute('visibility', 'visible');
+    });
+    var stop = function () { if (dragK) { dragK = null; renderPsyFieldsOnly(); } };
+    svg.addEventListener('pointerup', stop); svg.addEventListener('pointercancel', stop);
+    svg.addEventListener('pointerleave', function () { var hv = $('#psy-hover'); if (hv) hv.setAttribute('visibility', 'hidden'); });
+    computePsy();
+  }
+  function renderPsyFieldsOnly() {
+    var form = $('form.psy-fields', mBody); if (!form) return;
+    var tmp = document.createElement('div'); tmp.innerHTML = psyFields();
+    $$('input', tmp).forEach(function (n) { var o = $('#' + n.id, form); if (o && document.activeElement !== o) o.value = n.value; });
+  }
+  function computePsy(dragging) {
+    var R = psyCalc(), rowsEl = $('#r-rows'), err = $('#r-err'), btn = $('#copy-btn');
+    try { localStorage.setItem('mechtoolbox-psy', JSON.stringify(psy)); } catch (e) {}
+    $('#psy-g').innerHTML = psyChart(R);
+    if (dragging) renderPsyFieldsOnly();
+    if (R.err) { rowsEl.innerHTML = ''; err.textContent = R.err; err.hidden = false; btn.disabled = true; lastCopy = ''; $('#psy-rows').innerHTML = ''; return; }
+    err.hidden = true; btn.disabled = false;
+    var imp = psyImp(), kw = function (x) { return imp ? fmt(x * 3412.142, 0) + ' BTU/h' : fmt(x, 2) + ' kW'; };
+    var rows = [
+      ['Mixed air (MA)', tTxt(R.MA.t) + ' DB · ' + Math.round(R.MA.rh * 100) + ' % RH', 0, 'WB ' + tTxt(R.MA.wb) + ' · ' + hTxt(R.MA.h) + ' · ' + fmt(psy.oaPct) + ' % outdoor air'],
+      ['Coil load', kw(R.ct) + ' · ' + fmt(R.ct / 3.51685, 2) + ' TR', 1, 'sensible ' + kw(R.cs) + ' · latent ' + kw(R.cl) + ' · coil SHR ' + fmt(R.cshr, 2)],
+      ['Room capacity of the supply air', kw(R.rs + R.rl), 0, 'sensible ' + kw(R.rs) + ' · latent ' + kw(R.rl) + ' · room SHR ' + fmt(R.rshr, 2)],
+      ['Apparatus dew point', R.ADP ? tTxt(R.ADP.t) : '—', 0, R.ADP ? 'bypass factor ' + fmt(R.bf, 2) + ' (' + (R.bf <= 0.2 ? 'typical for a 4–6 row coil' : R.bf <= 0.35 ? 'typical for a 2–4 row coil' : 'high — a deeper coil or lower ADP is needed') + ')' : (R.dry ? 'the off-coil air holds as much moisture as the mixed air — sensible cooling only' : 'coil line does not meet saturation')],
+      ['Condensate', imp ? fmt(R.cond / 3.785411784, 2) + ' US gal/h' : fmt(R.cond, 1) + ' L/h', 0, 'water removed by the coil — size the drain and trap'],
+      ['Supply air', tTxt(R.SA.t) + ' · ' + Math.round(R.SA.rh * 100) + ' % RH', 0, wTxt(R.SA.W) + ' · ' + (imp ? fmt(psy.q * 2.11888, 0) + ' CFM' : fmt(psy.q, 0) + ' L/s') + ' · ' + fmt(R.mdot, 3) + ' kg/s']
+    ];
+    var ok = R.RA.rh >= 0.3 && R.RA.rh <= 0.6 && R.RA.t >= 23 && R.RA.t <= 26.01, lowRh = R.rshr > 0 && R.rl >= 0;
+    rows.push(['Design check', ok && lowRh ? STATUS.pass : STATUS.warn, 1, ok ? (lowRh ? 'room inside the summer comfort zone (23–26 °C, 30–60 % RH) and the supply air can absorb the room latent load' : 'supply air is wetter than the room — lower the off-coil RH or temperature') : 'room condition is outside the summer comfort zone (23–26 °C / 73–79 °F, 30–60 % RH)']);
+    rowsEl.innerHTML = rows.map(function (r) { return '<div' + (r[2] ? ' class="strong"' : '') + '><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + (r[3] ? '<span class="sub">' + esc(r[3]) + '</span>' : '') + '</dd></div>'; }).join('');
+    var st = [['OA — outdoor', R.OA], ['RA — room', R.RA], ['MA — mixed', R.MA], ['SA — supply', R.SA]].concat(R.ADP ? [['ADP', R.ADP]] : []);
+    $('#psy-rows').innerHTML = st.map(function (s) {
+      var S = s[1];
+      return '<tr><th>' + esc(s[0]) + '</th><td class="num">' + tTxt(S.t) + '</td><td class="num">' + tTxt(S.wb) + '</td><td class="num">' + Math.round(S.rh * 100) + ' %</td><td class="num">' + wTxt(S.W) + '</td><td class="num">' + hTxt(S.h) + '</td><td class="num">' + tTxt(S.dp) + '</td><td class="num">' + (imp ? fmt(S.v * 16.01846, 2) + ' ft³/lb' : fmt(S.v, 3) + ' m³/kg') + '</td></tr>';
+    }).join('');
+    lastCopy = ['Psychrometric Chart (' + CALCS.psy.code + ')'].concat(rows.map(function (r) { return r[0] + ': ' + r[1] + (r[3] ? ' (' + r[3] + ')' : ''); }))
+      .concat(st.map(function (s) { var S = s[1]; return s[0] + ': ' + tTxt(S.t) + ' DB, ' + tTxt(S.wb) + ' WB, ' + Math.round(S.rh * 100) + ' % RH, ' + wTxt(S.W) + ', ' + hTxt(S.h); })).join('\n');
+  }
+
+  /* ---------- Panel load schedule: circuits, auto phase balancing, demand load, main breaker and feeder ---------- */
+  var PL_SYS = {
+    '1p230':  { label: '230 V, 1φ, 2W', LL: 230, LN: null, ph: 1, poles: [2], opts: { 2: ['AB'] } },
+    '3p230d': { label: '230 V, 3φ, 3W delta', LL: 230, LN: null, ph: 3, poles: [2, 3], opts: { 2: ['AB', 'BC', 'CA'], 3: ['ABC'] } },
+    '3p400y': { label: '400/230 V, 3φ, 4W', LL: 400, LN: 230, ph: 3, poles: [1, 2, 3], opts: { 1: ['A', 'B', 'C'], 2: ['AB', 'BC', 'CA'], 3: ['ABC'] } },
+    '1p240':  { label: '120/240 V, 1φ, 3W', LL: 240, LN: 120, ph: 1, poles: [1, 2], opts: { 1: ['A', 'B'], 2: ['AB'] } },
+    '3p208y': { label: '208/120 V, 3φ, 4W', LL: 208, LN: 120, ph: 3, poles: [1, 2, 3], opts: { 1: ['A', 'B', 'C'], 2: ['AB', 'BC', 'CA'], 3: ['ABC'] } },
+    '3p480y': { label: '480/277 V, 3φ, 4W', LL: 480, LN: 277, ph: 3, poles: [1, 2, 3], opts: { 1: ['A', 'B', 'C'], 2: ['AB', 'BC', 'CA'], 3: ['ABC'] } }
+  };
+  var PL_TYPES = ['Lighting', 'Receptacle', 'ACU / motor', 'Heater', 'Equipment', 'Spare'];
+  var PL_KEY = 'mechtoolbox-panels';
+  var plId = function () { return Math.random().toString(36).slice(2, 9); };
+  function plDefault() {
+    var sysK = codeBasis === 'us' ? '3p208y' : codeBasis === 'ph' ? '3p230d' : '3p400y', two = PL_SYS[sysK].LN ? 1 : 2;
+    var c = function (desc, type, qty, va, poles) { return { id: plId(), desc: desc, type: type, qty: qty, va: va, poles: poles, ph: 'auto', len: '' }; };
+    return { id: plId(), name: 'LP-1', loc: '', sys: sysK, feed: 30, circuits: [
+      c('Lighting — ground floor', 'Lighting', 12, 40, two), c('Lighting — second floor', 'Lighting', 12, 40, two),
+      c('Receptacles — office', 'Receptacle', 8, 180, two), c('Receptacles — pantry', 'Receptacle', 4, 180, two),
+      c('ACU-1, 2.0 TR split type', 'ACU / motor', 1, 2200, 2), c('ACU-2, 2.0 TR split type', 'ACU / motor', 1, 2200, 2),
+      c('Water heater', 'Heater', 1, 3000, 2), c('Spare', 'Spare', 1, 0, two)] };
+  }
+  var PL = { active: null, panels: [] };
+  try { var pld = JSON.parse(localStorage.getItem(PL_KEY) || 'null'); if (pld && pld.panels && pld.panels.length) PL = pld; } catch (e) {}
+  if (!PL.panels.length) { var p0 = plDefault(); PL.panels.push(p0); PL.active = p0.id; }
+  var plCur = function () { return PL.panels.filter(function (p) { return p.id === PL.active; })[0] || PL.panels[0]; };
+  var plSave = function () { try { localStorage.setItem(PL_KEY, JSON.stringify(PL)); } catch (e) {} };
+  var plBound = false;
+  var plLen = function () { return sys === 'si' ? 'm' : 'ft'; };
+
+  function plCompute(P) {
+    var S = PL_SYS[P.sys] || PL_SYS['3p400y'], load = { A: 0, B: 0, C: 0 }, phs = S.ph === 3 ? ['A', 'B', 'C'] : ['A', 'B'];
+    var cs = P.circuits.map(function (c) {
+      var poles = S.poles.indexOf(+c.poles) >= 0 ? +c.poles : S.poles[0], va = Math.max(0, esNum(c.qty)) * Math.max(0, esNum(c.va));
+      return { c: c, poles: poles, va: va };
+    });
+    // Fixed phases first, then the rest largest-first onto the arrangement that keeps the heaviest phase lightest.
+    var put = function (x, opt) { var legs = opt.split(''); legs.forEach(function (l) { load[l] += x.va / legs.length; }); x.phase = opt; };
+    cs.forEach(function (x) { var o = S.opts[x.poles]; if (x.c.ph !== 'auto' && o.indexOf(x.c.ph) >= 0) put(x, x.c.ph); });
+    cs.filter(function (x) { return !x.phase; }).sort(function (a, b) { return b.va - a.va; }).forEach(function (x) {
+      var best = null, bestMax = Infinity;
+      S.opts[x.poles].forEach(function (o) {
+        var t = { A: load.A, B: load.B, C: load.C }, legs = o.split(''); legs.forEach(function (l) { t[l] += x.va / legs.length; });
+        var mx = phs.reduce(function (a, k) { return a + t[k] * t[k]; }, 0);   // sum of squares: lowest when the phases are even
+        if (mx < bestMax - 1e-6) { bestMax = mx; best = o; }
+      });
+      put(x, best);
+    });
+    // Per-circuit current, breaker and wire (same rules as Cable Sizing, 75 °C copper, 30 °C, 3 % drop).
+    cs.forEach(function (x, i) {
+      x.no = i + 1;
+      var V = x.poles === 1 ? S.LN : S.LL, I = x.poles === 3 ? x.va / (Math.sqrt(3) * V) : x.va / V;
+      x.V = V; x.I = I;
+      if (x.c.type === 'Spare' || x.va <= 0) { x.brk = nextUp(codeBasis === 'au' ? AU_BRK : codeBasis === 'us' || codeBasis === 'ph' ? PH_BRK : BREAKER_A, 20); x.wire = '—'; return; }
+      var len = esNum(x.c.len) > 0 ? esNum(x.c.len) * (sys === 'si' ? 1 : 0.3048) : 20;
+      var r = cableSize({ i: I, cont: '1', mat: 'cu', tr: '75', amb: 30, ccc: 3, ph: x.poles === 3 ? '3' : '1', l: len, v: V, vdl: 3 });
+      x.brk = r.brk; x.wire = r.sel ? r.sel.name + (codeBasis === 'ph' ? ' THHN' : '') : 'parallel';
+      if (codeBasis === 'ph' && x.c.type === 'Receptacle' && r.sel && r.sel.a < 3.5) { x.wire = '3.5 mm² THHN'; }   // PEC practice: 3.5 mm² minimum for receptacle circuits
+    });
+    // Demand load (PEC Art. 2.20 / NEC 220): receptacles 10 kVA at 100 % + 50 % of the rest; motors + 25 % of the largest.
+    var sum = function (t) { return cs.filter(function (x) { return x.c.type === t; }).reduce(function (a, x) { return a + x.va; }, 0); };
+    var conn = cs.reduce(function (a, x) { return a + x.va; }, 0), rec = sum('Receptacle'), mot = cs.filter(function (x) { return x.c.type === 'ACU / motor'; });
+    var recD = Math.min(rec, 10000) + Math.max(0, rec - 10000) * 0.5, big = mot.reduce(function (a, x) { return Math.max(a, x.va / Math.max(1, esNum(x.c.qty))); }, 0);
+    var demand = conn - rec + recD + 0.25 * big;
+    var Id = S.ph === 3 ? demand / (Math.sqrt(3) * S.LL) : demand / S.LL;
+    var feedL = esNum(P.feed) > 0 ? esNum(P.feed) * (sys === 'si' ? 1 : 0.3048) : 30;
+    var main = cableSize({ i: Id, cont: '1', mat: 'cu', tr: '75', amb: 30, ccc: 3, ph: S.ph === 3 ? '3' : '1', l: feedL, v: S.LL, vdl: 2 });
+    var pl = phs.map(function (k) { return load[k]; }), avg = pl.reduce(function (a, b) { return a + b; }, 0) / pl.length, unb = avg > 0 ? (Math.max.apply(null, pl) - avg) / avg * 100 : 0;
+    return { S: S, cs: cs, load: load, phs: phs, conn: conn, rec: rec, recD: recD, big: big, demand: demand, Id: Id, main: main, unb: unb };
+  }
+
+  function plTableHtml(P, R) {
+    var S = R.S, phCols = R.phs;
+    var sel = function (c, k, opts, cur) { return '<div class="input-wrap pl-' + k + '"><select data-pc="' + c.id + '" data-k="' + k + '" aria-label="' + k + '">' + opts.map(function (o) { var v = o[0], l = o[1]; return '<option value="' + esc(String(v)) + '"' + (String(v) === String(cur) ? ' selected' : '') + '>' + esc(l) + '</option>'; }).join('') + '</select></div>'; };
+    var inp = function (c, k, extra) { return '<div class="input-wrap pl-' + k + '"><input type="text" autocomplete="off" data-pc="' + c.id + '" data-k="' + k + '" value="' + esc(c[k]) + '"' + (extra || '') + '></div>'; };
+    var rows = R.cs.map(function (x, i) {
+      var c = x.c, phOpts = [['auto', 'Auto · ' + x.phase]].concat(S.opts[x.poles].map(function (o) { return [o, o]; }));
+      return '<tr><td class="boq-no">' + x.no + '</td><td>' + inp(c, 'desc', ' placeholder="Description" aria-label="Description, circuit ' + x.no + '"') + '</td>' +
+        '<td>' + sel(c, 'type', PL_TYPES.map(function (t) { return [t, t]; }), c.type) + '</td>' +
+        '<td>' + inp(c, 'qty', ' inputmode="decimal" aria-label="Quantity, circuit ' + x.no + '"') + '</td><td>' + inp(c, 'va', ' inputmode="decimal" aria-label="VA each, circuit ' + x.no + '"') + '</td>' +
+        '<td class="num" data-v="c' + c.id + ':va">' + fmt(x.va, 0) + '</td>' +
+        '<td>' + sel(c, 'poles', S.poles.map(function (p) { return [p, p + 'P']; }), x.poles) + '</td><td>' + sel(c, 'ph', phOpts, c.ph) + '</td>' +
+        phCols.map(function (k) { return '<td class="num pl-phv">' + (x.phase.indexOf(k) >= 0 ? fmt(x.va / x.phase.length, 0) : '') + '</td>'; }).join('') +
+        '<td class="num">' + fmt(x.I, 1) + '</td><td class="num">' + x.brk + ' A ' + x.poles + 'P</td><td class="pl-wire">' + esc(x.wire) + '</td>' +
+        '<td>' + inp(c, 'len', ' inputmode="decimal" placeholder="20" aria-label="Length, circuit ' + x.no + '"') + '</td>' +
+        '<td class="pl-acts">' + ib('pup', '↑', 'Move up', ' data-c="' + c.id + '"' + (i ? '' : ' disabled')) + ib('pdown', '↓', 'Move down', ' data-c="' + c.id + '"' + (i < R.cs.length - 1 ? '' : ' disabled')) + ib('pdel', '✕', 'Delete circuit', ' data-c="' + c.id + '"') + '</td></tr>';
+    }).join('');
+    return '<div class="table-wrap boq-table pl-table"><table><thead><tr><th>Ckt</th><th>Description</th><th>Type</th><th>Qty</th><th>VA each</th><th>Total VA</th><th>Poles</th><th>Phase</th>' +
+      phCols.map(function (k) { return '<th>' + k + ' (VA)</th>'; }).join('') + '<th>Amps</th><th>Breaker</th><th>Wire</th><th>Length (' + plLen() + ')</th><th></th></tr></thead><tbody>' + rows +
+      '<tr class="es-add"><td></td><td colspan="' + (12 + phCols.length) + '"><button type="button" class="es-addbtn" data-act="padd">+ Add circuit</button> <button type="button" class="es-addbtn" data-act="pbal">⚖ Re-balance all (set phases to Auto)</button></td></tr></tbody>' +
+      '<tfoot><tr><td></td><td colspan="4">TOTAL CONNECTED LOAD</td><td class="num">' + fmt(R.conn, 0) + '</td><td></td><td></td>' + phCols.map(function (k) { return '<td class="num">' + fmt(R.load[k], 0) + '</td>'; }).join('') + '<td colspan="5"></td></tr></tfoot></table></div>';
+  }
+  function renderPls() {
+    var P = plCur(), R = plCompute(P), S = R.S;
+    mBody.innerHTML = '<p class="m-desc">List the circuits of a panelboard. Phases balance automatically (largest loads first) unless you fix one; each circuit gets its breaker and wire, and the demand load sizes the main breaker and feeder.</p>' +
+      '<div class="pj-top pl-top"><div class="input-wrap pj-sel"><select id="pl-select" aria-label="Panel">' + PL.panels.map(function (p) { return '<option value="' + p.id + '"' + (p === P ? ' selected' : '') + '>' + esc(p.name || 'Panel') + '</option>'; }).join('') + '</select></div>' +
+      '<div class="pj-tools"><button type="button" class="btn btn-outline btn-sm" data-act="pnew">+ New panel</button><button type="button" class="btn btn-outline btn-sm" data-act="pdup">Duplicate</button><button type="button" class="btn btn-outline btn-sm pj-danger" data-act="pdelp">Delete</button>' +
+      '<button type="button" class="btn btn-solid btn-sm" data-act="ppdf">Schedule PDF</button><button type="button" class="btn btn-outline btn-sm" data-act="pcsv">Excel</button></div></div>' +
+      '<form class="fields pl-fields" novalidate>' +
+      '<div class="field"><label for="pl-name">Panel</label><div class="input-wrap"><input id="pl-name" data-pf="name" type="text" autocomplete="off" value="' + esc(P.name) + '"></div></div>' +
+      '<div class="field"><label for="pl-loc">Location / fed from</label><div class="input-wrap"><input id="pl-loc" data-pf="loc" type="text" autocomplete="off" value="' + esc(P.loc) + '" placeholder="e.g. 2F electrical room, from MDP"></div></div>' +
+      '<div class="field"><label for="pl-sys">System</label><div class="input-wrap"><select id="pl-sys" data-pf="sys">' + Object.keys(PL_SYS).map(function (k) { return '<option value="' + k + '"' + (k === P.sys ? ' selected' : '') + '>' + PL_SYS[k].label + '</option>'; }).join('') + '</select></div></div>' +
+      '<div class="field"><label for="pl-feed">Feeder length</label><div class="input-wrap"><input id="pl-feed" data-pf="feed" type="text" inputmode="decimal" autocomplete="off" value="' + esc(P.feed) + '"><span class="unit">' + plLen() + '</span></div></div></form>' +
+      '<div id="pl-tbl">' + plTableHtml(P, R) + '</div>' +
+      '<section class="result" aria-labelledby="r-title">' + copyBlock() + '<div class="result-box"><div aria-live="polite"><dl class="rows" id="r-rows"></dl><p class="err" id="r-err" hidden></p></div></div>' + refLine('pls') + '</section>';
+    plResults(P, R);
+    var redraw = function (keepId, keepK) {
+      var P2 = plCur(), R2 = plCompute(P2), a = document.activeElement, pos = a && a.selectionStart;
+      $('#pl-tbl').innerHTML = plTableHtml(P2, R2); plResults(P2, R2);
+      if (keepId) { var n = $('#pl-tbl [data-pc="' + keepId + '"][data-k="' + keepK + '"]'); if (n) { n.focus(); if (pos != null && n.setSelectionRange) try { n.setSelectionRange(pos, pos); } catch (e) {} } }
+    };
+    $('form', mBody).addEventListener('submit', function (e) { e.preventDefault(); });
+    $('form', mBody).addEventListener('input', function (e) { var k = e.target.dataset.pf; if (!k) return; plCur()[k] = e.target.value; plSave(); if (k === 'name') { var o = $('#pl-select option:checked'); if (o) o.textContent = e.target.value || 'Panel'; } redraw(); });
+    $('form', mBody).addEventListener('change', function (e) { if (e.target.dataset.pf === 'sys') { plCur().sys = e.target.value; plSave(); redraw(); } });
+    $('#pl-select').addEventListener('change', function (e) { PL.active = e.target.value; plSave(); renderPls(); });
+    var tbl = $('#pl-tbl');
+    tbl.addEventListener('input', function (e) { var t = e.target; if (!t.dataset.pc || t.tagName === 'SELECT') return; var c = plCur().circuits.filter(function (x) { return x.id === t.dataset.pc; })[0]; if (!c) return; c[t.dataset.k] = t.value; plSave(); redraw(t.dataset.pc, t.dataset.k); });
+    tbl.addEventListener('change', function (e) { var t = e.target; if (!t.dataset.pc || t.tagName !== 'SELECT') return; var c = plCur().circuits.filter(function (x) { return x.id === t.dataset.pc; })[0]; if (!c) return; c[t.dataset.k] = t.value; if (t.dataset.k === 'poles') c.ph = 'auto'; plSave(); redraw(t.dataset.pc, t.dataset.k); });
+    if (plBound) return; plBound = true;   // one delegated handler for the panel buttons, however often the modal re-renders
+    mBody.addEventListener('click', function (e) {
+      if (current !== 'pls') return;
+      var t = e.target.closest('button[data-act]'); if (!t || t.disabled || !mBody.contains(t)) return;
+      var P3 = plCur(), act = t.dataset.act, list = P3.circuits, idx = list.findIndex ? list.findIndex(function (x) { return x.id === t.dataset.c; }) : -1;
+      if (act === 'padd') { var S3 = PL_SYS[P3.sys]; list.push({ id: plId(), desc: '', type: 'Receptacle', qty: 1, va: 180, poles: S3.LN ? 1 : 2, ph: 'auto', len: '' }); plSave(); redraw(list[list.length - 1].id, 'desc'); return; }
+      if (act === 'pbal') { list.forEach(function (x) { x.ph = 'auto'; }); plSave(); redraw(); return; }
+      if (act === 'pdel' && idx >= 0) { list.splice(idx, 1); plSave(); redraw(); return; }
+      if ((act === 'pup' || act === 'pdown') && idx >= 0) { var j = idx + (act === 'pup' ? -1 : 1); if (j < 0 || j >= list.length) return; var tmp = list[idx]; list[idx] = list[j]; list[j] = tmp; plSave(); redraw(); return; }
+      if (act === 'pnew') { var np = plDefault(); np.name = 'LP-' + (PL.panels.length + 1); np.circuits = [{ id: plId(), desc: '', type: 'Lighting', qty: 1, va: 0, poles: PL_SYS[np.sys].LN ? 1 : 2, ph: 'auto', len: '' }]; PL.panels.push(np); PL.active = np.id; plSave(); renderPls(); $('#pl-name').focus(); $('#pl-name').select(); return; }
+      if (act === 'pdup') { var cp3 = JSON.parse(JSON.stringify(P3)); cp3.id = plId(); cp3.name = P3.name + ' (copy)'; PL.panels.push(cp3); PL.active = cp3.id; plSave(); renderPls(); return; }
+      if (act === 'pdelp') { if (PL.panels.length < 2) { window.alert('Keep at least one panel — add another before deleting this one.'); return; } if (window.confirm('Delete panel ' + P3.name + '?')) { PL.panels = PL.panels.filter(function (x) { return x !== P3; }); PL.active = PL.panels[0].id; plSave(); renderPls(); } return; }
+      if (act === 'pcsv') { plCsv(); return; }
+      if (act === 'ppdf') { plPdf(); return; }
+    });
+  }
+  function plResults(P, R) {
+    var S = R.S, m = R.main, rowsEl = $('#r-rows'), btn = $('#copy-btn'), V = S.ph === 3 ? S.LL + ' V 3φ' : S.LL + ' V 1φ';
+    var feeder = m.sel ? m.sel.name + (codeBasis === 'ph' ? ' THHN' : '') : 'parallel conductors';
+    var balOk = S.ph !== 3 || R.unb <= 10 + 1e-9;
+    var rows = [
+      ['Connected load', fmt(R.conn / 1000, 2) + ' kVA', 0, R.cs.length + ' circuits on ' + S.label],
+      ['Demand load', fmt(R.demand / 1000, 2) + ' kVA', 1, 'receptacles ' + fmt(R.rec / 1000, 2) + ' → ' + fmt(R.recD / 1000, 2) + ' kVA' + (R.big ? ' · + 25 % of the largest motor (' + fmt(R.big * 0.25, 0) + ' VA)' : '')],
+      ['Demand current', fmt(R.Id, 1) + ' A', 0, V + ' · design 125 % = ' + fmt(R.Id * 1.25, 1) + ' A'],
+      ['Main breaker', (m.brk || '—') + ' AT, ' + (S.ph === 3 ? (S.LN ? '3P' : '3P') : '2P'), 1, 'next standard rating ≥ 1.25 × demand current'],
+      ['Feeder', feeder, 1, 'copper 75 °C, ' + fmt(m.vd, 2) + ' % drop over ' + fmt(esNum(P.feed) || 30) + ' ' + plLen()],
+      ['Phase loads', R.phs.map(function (k) { return k + ' ' + fmt(R.load[k] / 1000, 2); }).join(' · ') + ' kVA', 0, S.ph === 3 ? 'unbalance ' + fmt(R.unb, 1) + ' % (max vs average)' : 'single-phase panel'],
+      ['Design check', balOk ? STATUS.pass : STATUS.warn, 1, S.ph === 3 ? (balOk ? 'phase unbalance within 10 %' : 'phase unbalance above 10 % — fix some circuits to other phases') : 'single-phase panel — no phase balancing']
+    ];
+    rowsEl.innerHTML = rows.map(function (r) { return '<div' + (r[2] ? ' class="strong"' : '') + '><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + (r[3] ? '<span class="sub">' + esc(r[3]) + '</span>' : '') + '</dd></div>'; }).join('');
+    btn.disabled = false;
+    lastCopy = ['Panel Load Schedule — ' + P.name + ' (' + S.label + ')'].concat(R.cs.map(function (x) { return x.no + '. ' + (x.c.desc || x.c.type) + ' — ' + fmt(x.va, 0) + ' VA, ' + x.poles + 'P ' + x.phase + ', ' + fmt(x.I, 1) + ' A, ' + x.brk + ' AT, ' + x.wire; }))
+      .concat(rows.map(function (r) { return r[0] + ': ' + r[1] + (r[3] ? ' (' + r[3] + ')' : ''); })).join('\n');
+  }
+  function plCsv() {
+    var P = plCur(), R = plCompute(P), cell = function (v) { v = v == null ? '' : String(v); return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var L = [['Panel', P.name], ['Location', P.loc], ['System', R.S.label], [], ['CKT', 'DESCRIPTION', 'TYPE', 'QTY', 'VA EACH', 'TOTAL VA', 'POLES', 'PHASE'].concat(R.phs.map(function (k) { return k + ' (VA)'; }), ['AMPS', 'BREAKER (A)', 'WIRE'])];
+    R.cs.forEach(function (x) { L.push([x.no, x.c.desc, x.c.type, esNum(x.c.qty), esNum(x.c.va), Math.round(x.va), x.poles, x.phase].concat(R.phs.map(function (k) { return x.phase.indexOf(k) >= 0 ? Math.round(x.va / x.phase.length) : ''; }), [Number(x.I.toFixed(1)), x.brk, x.wire])); });
+    L.push(['', 'TOTAL CONNECTED LOAD', '', '', '', Math.round(R.conn), '', ''].concat(R.phs.map(function (k) { return Math.round(R.load[k]); })), [], ['Demand load (VA)', Math.round(R.demand)], ['Demand current (A)', Number(R.Id.toFixed(1))], ['Main breaker (AT)', R.main.brk], ['Feeder', R.main.sel ? R.main.sel.name : ''], ['Phase unbalance (%)', Number(R.unb.toFixed(1))]);
+    pjSaveFile((P.name || 'panel').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-') + '-load-schedule.csv', '\ufeff' + L.map(function (r) { return r.map(cell).join(','); }).join('\r\n'), 'text/csv;charset=utf-8');
+  }
+  function plPdf() {
+    var P = plCur(), R = plCompute(P), E = esc, now = new Date(), pad = function (x) { return (x < 10 ? '0' : '') + x; };
+    var refNo = 'MTB-' + now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate()) + '-LS-' + ((P.name || 'PANEL').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10) || 'PANEL');
+    var m = R.main, ph = R.phs;
+    var body = R.cs.map(function (x) { return '<tr><td class="c">' + x.no + '</td><td class="in">' + E(x.c.desc || x.c.type) + '</td><td class="c">' + E(x.c.type) + '</td><td class="n">' + fmt(esNum(x.c.qty)) + '</td><td class="n">' + fmt(esNum(x.c.va), 0) + '</td><td class="n">' + fmt(x.va, 0) + '</td><td class="c">' + x.poles + 'P</td>' +
+      ph.map(function (k) { return '<td class="n">' + (x.phase.indexOf(k) >= 0 ? fmt(x.va / x.phase.length, 0) : '') + '</td>'; }).join('') + '<td class="n">' + fmt(x.I, 1) + '</td><td class="c">' + x.brk + ' AT</td><td class="c">' + E(x.wire) + '</td></tr>'; }).join('');
+    var sumRow = function (l, v) { return '<tr class="sum"><td colspan="' + (8 + ph.length) + '">' + l + '</td><td class="n" colspan="2">' + v + '</td></tr>'; };
+    var table = '<table class="q"><thead><tr><th>CKT</th><th>DESCRIPTION</th><th>TYPE</th><th>QTY</th><th>VA EACH</th><th>TOTAL VA</th><th>POLES</th>' + ph.map(function (k) { return '<th>' + k + '</th>'; }).join('') + '<th>AMPS</th><th>BREAKER</th><th>WIRE</th></tr></thead><tbody class="g">' + body + '</tbody><tbody class="foot">' +
+      '<tr class="sum tot"><td colspan="5">TOTAL CONNECTED LOAD</td><td class="n">' + fmt(R.conn, 0) + '</td><td></td>' + ph.map(function (k) { return '<td class="n">' + fmt(R.load[k], 0) + '</td>'; }).join('') + '<td colspan="3"></td></tr>' +
+      sumRow('DEMAND LOAD', fmt(R.demand, 0) + ' VA') + sumRow('DEMAND CURRENT', fmt(R.Id, 1) + ' A') + sumRow('MAIN BREAKER', (m.brk || '—') + ' AT, ' + (R.S.ph === 3 ? '3P' : '2P')) +
+      sumRow('FEEDER', E(m.sel ? m.sel.name + (codeBasis === 'ph' ? ' THHN' : '') : 'parallel')) + (R.S.ph === 3 ? sumRow('PHASE UNBALANCE', fmt(R.unb, 1) + ' %') : '') + '</tbody></table>';
+    var html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>' + E(refNo + ' — ' + P.name + ' load schedule') + '</title><style>' + qsCss(refNo) + '</style></head><body>' +
+      '<div class="bar"><button type="button" onclick="window.print()">Print / Save as PDF</button><button type="button" class="o" onclick="window.close()">Close</button></div>' +
+      '<div class="page wide"><p class="hdr"><span>Panel</span>: ' + E(P.name) + '<br><span>Location</span>: ' + E(P.loc || '') + '<br><span>System</span>: ' + E(R.S.label) + '</p><h1 class="t">PANEL LOAD SCHEDULE</h1>' + table +
+      '<p class="mt">Breakers at 125 % of the circuit current (continuous loads); copper conductors at 75 °C, 30 °C ambient, 3 % branch / 2 % feeder voltage drop. Demand: receptacles 10 kVA at 100 % + 50 % of the remainder; motors + 25 % of the largest. Verify against PEC 2017 / NEC by a licensed electrical engineer.</p></div>' +
+      '<scr' + 'ipt>window.addEventListener("load",function(){setTimeout(function(){window.print()},350)});<\/scr' + 'ipt></body></html>';
+    rpOpen(html);
+  }
+
   var SPECIAL = {
     diff:  { code: CALCS.diff.code, title: 'Diffuser Selection & Layout', render: renderDF, sys: true },
     ductd: { code: CALCS.ductd.code, title: 'HVAC Duct Designer', render: renderDD, sys: true },
     phl:  { code: CALCS.phl.code, title: 'Precise Heat Load', render: renderHL, sys: true },
     conv: { code: 'UTIL / UNIT', title: 'Unit Converter', render: renderConv, sys: false },
     ref:  { code: 'UTIL / HVAC', title: 'MEP References', render: renderRef, sys: false },
-    pcl:  { code: CALCS.pcl.code, title: 'Precise Cooling Load', render: renderCL, sys: true }
+    pcl:  { code: CALCS.pcl.code, title: 'Precise Cooling Load', render: renderCL, sys: true },
+    psy:  { code: CALCS.psy.code, title: 'Psychrometric Chart', render: renderPsy, sys: true },
+    pls:  { code: CALCS.pls.code, title: 'Panel Load Schedule', render: renderPls, sys: true }
   };
 
   function render(id) {
@@ -7562,7 +8080,7 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     $('#m-code').textContent = d.code;
     $('#m-title').textContent = d.title;
     $('#m-sys').hidden = !!sp && !sp.sys;
-    modal.classList.toggle('wide', id === 'pcl' || id === 'phl' || id === 'ductd' || id === 'diff');
+    modal.classList.toggle('wide', id === 'pcl' || id === 'phl' || id === 'ductd' || id === 'diff' || id === 'psy' || id === 'pls');
     $('#m-close').setAttribute('aria-label', 'Close ' + d.title);
     if (sp) sp.render(); else renderCalc(id);
   }
@@ -9223,7 +9741,7 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
       '<details class="boq-sign"><summary>Signatories</summary><div class="fields es-fields">' + esFld('prepBy', 'Prepared by', d.prepBy) + esFld('prepPos', 'Position', d.prepPos) + esFld('chkBy', 'Checked by', d.chkBy) +
       esFld('chkPos', 'Position', d.chkPos) + esFld('ctrBy', 'Counter checked by', d.ctrBy) + esFld('ctrPos', 'Position', d.ctrPos) + '</div></details></div>';
     var tabs = '<div class="es-bar"><div class="pj-tabs es-tabs" role="group" aria-label="Bill">' +
-      '<button type="button" class="pj-tab" data-estab="boq" aria-pressed="' + (esTab === 'boq') + '">BOQ — priced</button><button type="button" class="pj-tab" data-estab="bom" aria-pressed="' + (esTab === 'bom') + '">BOM — materials</button></div>' +
+      '<button type="button" class="es-tab" data-estab="boq" aria-pressed="' + (esTab === 'boq') + '">BOQ — priced</button><button type="button" class="es-tab" data-estab="bom" aria-pressed="' + (esTab === 'bom') + '">BOM — materials</button></div>' +
       '<div class="boq-exp">' + (esTab === 'boq'
         ? '<button type="button" class="btn btn-solid btn-sm" data-act="boqpdf">BOQ PDF</button><button type="button" class="btn btn-outline btn-sm" data-act="boqcsv">BOQ (Excel)</button>'
         : '<button type="button" class="btn btn-solid btn-sm" data-act="bompdf">BOM PDF</button><button type="button" class="btn btn-outline btn-sm" data-act="bomcsv">BOM (Excel)</button>') + '</div></div>';
@@ -9655,7 +10173,7 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     glKick();
   }
   function glKick() {
-    if (!document.hidden && !glRaf) glRaf = requestAnimationFrame(function (t) { setTimeout(function () { glFrame(t); }, 16); }); // ≈ 30 fps
+    if (!document.hidden && !glRaf) glRaf = requestAnimationFrame(function (t) { setTimeout(function () { glFrame(t); }, cpPanel.hidden ? 70 : 16); }); // ≈ 12 fps for the small button, 30 fps with the panel open
     if (document.hidden) glLast = 0;
   }
   document.addEventListener('visibilitychange', glKick);
@@ -9744,6 +10262,145 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
   document.addEventListener('click', function (e) { if (!cpPanel.hidden && !cp.contains(e.target)) cpToggle(false); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !cpPanel.hidden) { cpToggle(false); cpBtn.focus(); } });
 
+
+  /* ---------- Floating converter & constants (sits above the compass) ---------- */
+  var cvx = $('#convtool'), cvBtn = $('#cv-btn'), cvPanel = $('#cv-panel');
+  // The site converter's units plus a few HVAC quantities.
+  var CV = {};
+  Object.keys(CONV).forEach(function (k) { CV[k] = CONV[k]; });
+  CV.Pressure = { u: Object.assign({}, CONV.Pressure.u, { 'm.wg': 9806.65, 'ft.wg': 2989.067, atm: 101325 }), def: ['kPa', 'psi'] };
+  CV.Density = { u: { 'kg/m³': 1, 'g/cm³': 1000, 'lb/ft³': 16.01846337, 'lb/gal (US)': 119.8264273 }, def: ['kg/m³', 'lb/ft³'] };
+  CV['U-value'] = { u: { 'W/m²·K': 1, 'BTU/h·ft²·°F': 5.678263337 }, def: ['W/m²·K', 'BTU/h·ft²·°F'] };
+  CV['Heat flux'] = { u: { 'W/m²': 1, 'BTU/h·ft²': 3.154590745, 'kW/m²': 1000 }, def: ['W/m²', 'BTU/h·ft²'] };
+  // pressure drop per length: in.wg per 100 ft (air) and ft of water per 100 ft (pipes)
+  CV.Friction = { u: { 'Pa/m': 1, 'kPa/100 m': 10, 'in.wg/100 ft': 249.0889 / 30.48, 'ft.wg/100 ft': 2989.067 / 30.48 }, def: ['Pa/m', 'in.wg/100 ft'] };
+  var cvState = { cat: 'Power', from: 'TR', to: 'kW' };
+  try { var cvs = JSON.parse(localStorage.getItem('mechtoolbox-cv') || 'null'); if (cvs && CV[cvs.cat] && CV[cvs.cat].u[cvs.from] && CV[cvs.cat].u[cvs.to]) cvState = cvs; } catch (e) {}
+  var cvConv = function (cat, from, to, x) { var c = CV[cat]; return c.temp ? tempFromC(to, tempToC(from, x)) : x * c.u[from] / c.u[to]; };
+  function cvFill() {
+    var c = CV[cvState.cat], opts = function (sel) { return Object.keys(c.u).map(function (u) { return '<option' + (u === sel ? ' selected' : '') + '>' + esc(u) + '</option>'; }).join(''); };
+    $('#cv-from').innerHTML = opts(cvState.from); $('#cv-to').innerHTML = opts(cvState.to);
+    $('#cv-cats').innerHTML = Object.keys(CV).map(function (k) { return '<button type="button" class="cv-cat" data-cvcat="' + esc(k) + '" aria-pressed="' + (k === cvState.cat) + '">' + esc(k) + '</button>'; }).join('');
+    cvRun();
+  }
+  function cvRun() {
+    var x = esNum($('#cv-val').value), raw = $('#cv-val').value.trim(), ok = raw !== '' && isFinite(parseFloat(raw.replace(/,/g, '')));
+    var out = $('#cv-out');
+    if (!ok) { out.textContent = '—'; $('#cv-all').innerHTML = ''; return; }
+    out.textContent = fmtS(cvConv(cvState.cat, cvState.from, cvState.to, x));
+    out.classList.remove('bump'); void out.offsetWidth; out.classList.add('bump');
+    $('#cv-all').innerHTML = Object.keys(CV[cvState.cat].u).map(function (u) {
+      var v = fmtS(cvConv(cvState.cat, cvState.from, u, x));
+      return '<li><button type="button" class="cv-cell' + (u === cvState.to ? ' on' : '') + '" data-copy="' + esc(v + ' ' + u) + '"><b>' + esc(v) + '</b> <span>' + esc(u) + '</span></button></li>';
+    }).join('');
+    try { localStorage.setItem('mechtoolbox-cv', JSON.stringify(cvState)); } catch (e) {}
+  }
+
+  // Engineering constants and design factors: [name, symbol / use, SI, imperial, note]
+  var CONSTS = [
+    ['General', [
+      ['Standard gravity', 'g', '9.80665 m/s²', '32.174 ft/s²', 'exact (CGPM)'],
+      ['Standard atmosphere', 'p₀', '101.325 kPa', '14.696 psi', '= 29.92 inHg, 407.2 in.wg'],
+      ['Universal gas constant', 'R̄', '8.314 J/mol·K', '1545.3 ft·lbf/lbmol·°R', ''],
+      ['Stefan–Boltzmann constant', 'σ', '5.670 × 10⁻⁸ W/m²·K⁴', '0.1714 × 10⁻⁸ BTU/h·ft²·°R⁴', 'radiation'],
+      ['Absolute zero', '0 K', '−273.15 °C', '−459.67 °F', ''],
+      ['Square root of 3', '√3', '1.732', '1.732', '3-phase power: P = √3·V·I·pf']
+    ]],
+    ['Air', [
+      ['Gas constant, dry air', 'Rₐ', '287.05 J/kg·K', '53.35 ft·lbf/lb·°R', ''],
+      ['Density, standard air', 'ρ', '1.204 kg/m³', '0.075 lb/ft³', '20 °C, sea level (ASHRAE standard air)'],
+      ['Specific heat', 'cₚ', '1.006 kJ/kg·K', '0.240 BTU/lb·°F', ''],
+      ['Sensible heat factor', 'Q = k·V·ΔT', '1.23 W per L/s·K', '1.08 BTU/h per CFM·°F', 'Q = 1.23 × L/s × ΔT  |  1.08 × CFM × ΔT'],
+      ['Latent heat factor', 'Q = k·V·ΔW', '3010 W per L/s·(kg/kg)', '0.68 BTU/h per CFM·gr/lb', 'Q = 3010 × L/s × ΔW  |  0.68 × CFM × Δgr'],
+      ['Total heat factor', 'Q = k·V·Δh', '1.20 W per L/s·(kJ/kg)', '4.5 BTU/h per CFM·(BTU/lb)', 'Q = 1.2 × L/s × Δh  |  4.5 × CFM × Δh'],
+      ['Velocity pressure', 'pᵥ', '0.602·V² Pa (V in m/s)', '(V / 4005)² in.wg (V in fpm)', 'standard air'],
+      ['Dynamic viscosity', 'μ', '1.81 × 10⁻⁵ Pa·s', '1.22 × 10⁻⁵ lb/ft·s', '20 °C'],
+      ['Speed of sound', 'c', '343 m/s', '1125 ft/s', '20 °C']
+    ]],
+    ['Water', [
+      ['Density', 'ρ', '998.2 kg/m³', '62.32 lb/ft³', '20 °C (1000 / 62.4 at 4 °C)'],
+      ['Specific heat', 'cₚ', '4.186 kJ/kg·K', '1.00 BTU/lb·°F', ''],
+      ['Hydronic heat factor', 'Q = k·V·ΔT', '4.19 kW per L/s·K', '500 BTU/h per gpm·°F', 'Q = 4.19 × L/s × ΔT  |  500 × gpm × ΔT'],
+      ['Specific weight', 'γ', '9.79 kN/m³', '62.3 lbf/ft³', '20 °C'],
+      ['Head of water', 'h', '1 m = 9.807 kPa', '1 ft = 0.433 psi', '1 psi = 2.31 ft of water'],
+      ['Kinematic viscosity', 'ν', '1.004 × 10⁻⁶ m²/s', '1.08 × 10⁻⁵ ft²/s', '20 °C'],
+      ['Latent heat of vaporization', 'h_fg', '2257 kJ/kg', '970 BTU/lb', 'at 100 °C'],
+      ['Latent heat of fusion (ice)', 'h_if', '334 kJ/kg', '144 BTU/lb', '1 TR = 288,000 BTU of ice melted per day'],
+      ['Weight of water', 'm', '1 L ≈ 1 kg', '1 US gal = 8.34 lb', '']
+    ]],
+    ['HVAC & energy', [
+      ['Ton of refrigeration', 'TR', '3.517 kW', '12,000 BTU/h', ''],
+      ['Horsepower', 'hp', '0.7457 kW', '2545 BTU/h', ''],
+      ['kW to BTU/h', 'kW', '1 kW', '3412 BTU/h', ''],
+      ['Therm', 'thm', '105.5 MJ', '100,000 BTU', ''],
+      ['Fan power', 'P = Q·Δp/η', 'kW = m³/s × Pa / (1000 × η)', 'bhp = CFM × in.wg / (6356 × η)', ''],
+      ['Pump power', 'P = Q·H·ρg/η', 'kW = L/s × kPa / (1000 × η)', 'bhp = gpm × ft / (3960 × η)', 'water']
+    ]],
+    ['Electrical', [
+      ['Copper resistivity', 'ρ', '0.0172 Ω·mm²/m', '10.37 Ω·cmil/ft', '20 °C'],
+      ['Aluminium resistivity', 'ρ', '0.0282 Ω·mm²/m', '17.0 Ω·cmil/ft', '20 °C'],
+      ['Copper temperature coefficient', 'α', '0.00393 /K', '0.00218 /°F', ''],
+      ['3-phase current', 'I', 'I = P / (√3 · V · pf)', 'I = P / (1.732 · V · pf)', ''],
+      ['Voltage drop, 3-phase', 'ΔV', '√3 · I · L · (R cosφ + X sinφ)', 'same', 'R, X per unit length']
+    ]],
+    ['Plumbing & fire', [
+      ['Hazen–Williams C, steel', 'C', '120 (100 aged)', '120 (100 aged)', 'NFPA 13: black steel wet pipe 120'],
+      ['Hazen–Williams C, copper', 'C', '140', '140', ''],
+      ['Hazen–Williams C, plastic (PVC, CPVC, PPR)', 'C', '150', '150', ''],
+      ['Sprinkler density, light hazard', 'NFPA 13', '4.1 mm/min over 139 m²', '0.10 gpm/ft² over 1500 ft²', ''],
+      ['Sprinkler density, ordinary hazard 1', 'NFPA 13', '6.1 mm/min over 139 m²', '0.15 gpm/ft² over 1500 ft²', ''],
+      ['Sprinkler density, ordinary hazard 2', 'NFPA 13', '8.1 mm/min over 139 m²', '0.20 gpm/ft² over 1500 ft²', ''],
+      ['Sprinkler K-factor', 'Q = K√p', 'K80 (L/min·bar^½)', 'K5.6 (gpm/psi^½)', 'standard ½ in. head']
+    ]]
+  ];
+  function csRender() {
+    var q = $('#cs-q').value.trim().toLowerCase(), si = sys === 'si', n = 0;
+    var html = CONSTS.map(function (G) {
+      var rows = G[1].filter(function (r) { return !q || (G[0] + ' ' + r.join(' ')).toLowerCase().indexOf(q) >= 0; });
+      n += rows.length;
+      return rows.length ? '<p class="cs-g">' + esc(G[0]) + '</p><ul class="cs-ul">' + rows.map(function (r) {
+        var main = si ? r[2] : r[3], alt = si ? r[3] : r[2];
+        return '<li><div class="cs-n"><b>' + esc(r[0]) + '</b><span>' + esc(r[1]) + '</span></div>' +
+          '<button type="button" class="cs-v" data-copy="' + esc(main) + '" title="Copy">' + esc(main) + '</button>' +
+          (alt !== main ? '<button type="button" class="cs-alt" data-copy="' + esc(alt) + '" title="Copy">' + esc(alt) + '</button>' : '') +
+          (r[4] ? '<small>' + esc(r[4]) + '</small>' : '') + '</li>';
+      }).join('') + '</ul>' : '';
+    }).join('');
+    $('#cs-list').innerHTML = n ? html : '<p class="cs-none">Nothing matches “' + esc(q) + '”.</p>';
+  }
+  function cvCopy(t) {
+    var done = function () { $('#cv-msg').textContent = '✓ Copied ' + t; clearTimeout(cvCopy.tm); cvCopy.tm = setTimeout(function () { $('#cv-msg').textContent = ''; }, 1800); };
+    var legacy = function () { var ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; cvPanel.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} ta.remove(); };
+    done();   // confirm straight away; the clipboard promise can stay pending without focus
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).catch(legacy); else legacy();
+  }
+  function cvToggle(open) {
+    cvPanel.hidden = !open;
+    cvBtn.setAttribute('aria-expanded', String(open));
+    cvx.classList.toggle('open', open);
+    if (open) { if (!cpPanel.hidden) cpToggle(false); cvFill(); csRender(); var f = $('#cv-conv').hidden ? $('#cs-q') : $('#cv-val'); f.focus(); f.select && f.select(); }
+  }
+  cvBtn.addEventListener('click', function () { cvToggle(cvPanel.hidden); });
+  $('#cv-close').addEventListener('click', function () { cvToggle(false); cvBtn.focus(); });
+  cpBtn.addEventListener('click', function () { if (!cvPanel.hidden) cvToggle(false); });
+  cvPanel.addEventListener('click', function (e) {
+    var t = e.target.closest('button'); if (!t) return;
+    if (t.dataset.cvtab) {
+      $$('.cv-tabs .cv-tab', cvPanel).forEach(function (b) { b.setAttribute('aria-pressed', String(b === t)); });
+      $('#cv-conv').hidden = t.dataset.cvtab !== 'conv'; $('#cv-const').hidden = t.dataset.cvtab !== 'const';
+      if (t.dataset.cvtab === 'const') csRender();
+      return;
+    }
+    if (t.dataset.cvcat) { var c = CV[t.dataset.cvcat]; cvState = { cat: t.dataset.cvcat, from: c.def[0], to: c.def[1] }; cvFill(); return; }
+    if (t.id === 'cv-swap') { var a = cvState.from; cvState.from = cvState.to; cvState.to = a; t.classList.remove('spin'); void t.offsetWidth; t.classList.add('spin'); cvFill(); return; }
+    if (t.dataset.copy) cvCopy(t.dataset.copy);
+  });
+  $('#cv-val').addEventListener('input', cvRun);
+  $('#cv-from').addEventListener('change', function (e) { cvState.from = e.target.value; cvRun(); });
+  $('#cv-to').addEventListener('change', function (e) { cvState.to = e.target.value; cvRun(); });
+  $('#cs-q').addEventListener('input', csRender);
+  document.addEventListener('click', function (e) { if (!cvPanel.hidden && e.target.isConnected && !cvx.contains(e.target)) cvToggle(false); }); // chips re-render on click, so a detached target was inside
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !cvPanel.hidden) { cvToggle(false); cvBtn.focus(); } });
 })();
 </script>
 </body>

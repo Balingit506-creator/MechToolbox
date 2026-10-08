@@ -95,3 +95,34 @@ test('design checks flip between Pass and Warning at their limits', async ({ pag
   await openCalc(page, 'xfer')                               // 56 mm undercut by default
   expect((await check()).text).toBe('⚠ Warning')
 })
+
+test('Psychrometric chart — room 24 °C / 50 % and a 6.2 TR coil (ASHRAE values)', async ({ page }) => {
+  await openCalc(page, 'psy')
+  // 24 °C, 50 % RH: W 9.28 g/kg, h 47.8 kJ/kg, WB 17.1 °C, DP 12.9 °C (ASHRAE Fundamentals Ch. 1)
+  await expect(page.locator('#psy-rows tr').nth(1)).toContainText('9.28 g/kg')
+  await expect(page.locator('#psy-rows tr').nth(1)).toContainText('47.8 kJ/kg')
+  await expect(page.locator('#psy-rows tr').nth(1)).toContainText('17.1 °C')
+  expect(await row(page, 'Coil load')).toBe('21.75 kW · 6.18 TR')
+  expect(await row(page, 'Condensate')).toBe('8.7 L/h')
+  // dragging-free check of an input: warmer off-coil air lowers the coil load
+  await page.locator('#psy-saDb').fill('15')
+  expect(await row(page, 'Coil load')).not.toBe('21.75 kW · 6.18 TR')
+  await page.locator('#psy-saDb').fill('30')
+  await expect(page.locator('#r-err')).toContainText('below the mixed-air temperature')
+})
+
+test('Panel load schedule — balances phases, sizes the main breaker and adds one circuit at a time', async ({ page }) => {
+  await openCalc(page, 'pls')
+  // default panel (INTL): 400/230 V 3φ 4W, 10.52 kVA connected, demand + 25 % of the 2.2 kVA ACU
+  expect(await row(page, 'Connected load')).toBe('10.52 kVA')
+  expect(await row(page, 'Demand load')).toBe('11.07 kVA')
+  expect(await row(page, 'Main breaker')).toMatch(/^\d+ AT, 3P$/)
+  expect(await row(page, 'Design check')).toBe('✓ Pass')                 // unbalance ≤ 10 %
+  const n = await page.locator('#pl-tbl tbody tr').count()
+  await page.locator('[data-act="padd"]').click()
+  await expect(page.locator('#pl-tbl tbody tr')).toHaveCount(n + 1)
+  // pin the water heater to A-B: the schedule keeps it there
+  const heater = page.locator('#pl-tbl tbody tr', { hasText: '3,000' })
+  await heater.locator('select[data-k="ph"]').selectOption('AB')
+  await expect(page.locator('#pl-tbl tbody tr', { hasText: '3,000' }).locator('select[data-k="ph"]')).toHaveValue('AB')
+})
