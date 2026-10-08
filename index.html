@@ -1170,6 +1170,59 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
 .fb-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .fb-msg { font: 500 12px/1.4 var(--mono); color: var(--mint); }
 @media (prefers-reduced-motion: reduce) { .cp.live .cp-live, .cp-panel { animation: none; } }
+
+/* Globe compass */
+.cp-btn { padding: 0; overflow: visible; background: radial-gradient(circle at 50% 40%, rgba(40, 60, 55, 0.6), rgba(7, 17, 15, 0.92)); }
+.cp-btn .gl { width: 56px; height: 56px; display: block; border-radius: 50%; }
+.cp-btn { box-shadow: 0 14px 30px -14px rgba(0, 0, 0, 0.9), 0 0 24px -6px rgba(92, 224, 176, 0.45); }
+.cp-panel { width: min(320px, calc(100vw - 32px)); grid-template-columns: minmax(0, 1fr); justify-items: stretch; gap: 10px; }
+.cp-globe { position: relative; justify-self: center; width: 220px; height: 220px; }
+.cp-globe .gl { width: 220px; height: 220px; display: block; cursor: ew-resize; touch-action: pan-y; }
+.cp-globe .gl:active { cursor: grabbing; }
+.cp-center { position: absolute; right: 0; bottom: 4px; width: 30px; height: 30px; border: 1px solid var(--edge); border-radius: 50%; background: rgba(13, 27, 24, 0.9); color: var(--mint); font-size: 15px; line-height: 1; cursor: pointer; }
+.cp-center:hover { border-color: var(--mint); }
+.cp-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.cp-r { text-align: right; }
+.cp-time { font: 600 18px/1.2 var(--mono); color: var(--text); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.cp-info { min-width: 0; }
+@media (max-width: 380px) { .cp-panel { text-align: left; justify-items: stretch; } }
+
+/* Manual estimate (BOQ / BOM) */
+.es-root { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.es-newrow { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: end; }
+@media (min-width: 760px) { .es-newrow { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.2fr) auto; } }
+.es-newact { display: flex; flex-wrap: wrap; gap: 8px; }
+.es-newbox { padding: 16px; border: 1px solid var(--edge); border-radius: 16px; background: var(--surface); }
+.es-newbox[hidden] { display: none; }
+.es-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.es-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.es-table table { min-width: 1380px; }
+.es-bom table { min-width: 720px; }
+.es-table td { vertical-align: middle; }
+.es-table .input-wrap input, .es-table .input-wrap select { padding: 6px 8px; font-size: 14px; }
+.es-desc { min-width: 300px; }
+.es-qty { width: 84px; }
+.es-qty input { text-align: right; }
+.es-unit { width: 80px; }
+.es-kind { width: 132px; }
+.es-kind select { font-family: var(--body); font-size: 13px; }
+.es-rem { flex: 1; min-width: 120px; }
+.es-remcell { display: flex; align-items: center; gap: 6px; }
+.es-hrow { display: flex; align-items: center; gap: 8px; }
+.es-hin { flex: 1; max-width: 520px; background: rgba(7, 17, 15, 0.35); }
+.boq-div .es-hin input { font: 600 13px/1.3 var(--mono); letter-spacing: .08em; color: var(--deep); }
+.boq-div .es-hin { background: rgba(255, 255, 255, 0.35); border-color: transparent; }
+.es-grp .es-hin input { font-weight: 600; color: var(--mint); }
+.es-acts { display: inline-flex; gap: 4px; flex-shrink: 0; }
+.es-ib { width: 26px; height: 26px; font-size: 12px; line-height: 1; }
+.es-ib:disabled { opacity: 0.3; cursor: default; }
+.boq-div .es-ib { color: var(--deep); border-color: rgba(7, 17, 15, 0.35); }
+.es-add td { padding-top: 4px; padding-bottom: 8px; border-bottom: 0; }
+.es-addbtn { padding: 5px 11px; border: 1px dashed var(--line-2); border-radius: 999px; background: transparent; color: var(--muted); font: 500 12px/1.2 var(--mono); letter-spacing: .04em; cursor: pointer; transition: color 160ms ease, border-color 160ms ease; }
+.es-addbtn:hover { color: var(--mint); border-color: var(--mint); }
+.es-adddiv { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.es-adddiv span { font: 500 12px var(--mono); color: var(--muted); margin-right: 4px; }
+.es-comb { font-size: 14px; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -1210,6 +1263,7 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
       <a href="#calculators">Calculators</a>
       <a href="#guide">Guide</a>
       <a href="#projects">Projects</a>
+      <a href="#estimate">Estimate</a>
       <a href="#utilities">Utilities</a>
       <a href="#standards">Standards</a>
       <a href="#about">About</a>
@@ -1231,6 +1285,7 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
       <li><a href="#calculators">Calculators</a></li>
       <li><a href="#guide">Design guide</a></li>
       <li><a href="#projects">Projects</a></li>
+      <li><a href="#estimate">Estimate</a></li>
       <li><a href="#utilities">Utilities</a></li>
       <li><a href="#standards">Standards</a></li>
       <li><a href="#about">About</a></li>
@@ -1419,10 +1474,21 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     </div>
   </section>
 
+  <section class="section" id="estimate" aria-labelledby="es-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">04 — Estimate</p>
+        <h2 id="es-title">Manual BOQ &amp; BOM.</h2>
+        <p>Type any project in yourself — divisions, groups and items with quantities and unit costs. The bill of quantities prices it in the usual QS format; the bill of materials lists the materials to buy. Export both to PDF or Excel.</p>
+      </div>
+      <div class="es-root reveal" id="es-root"></div>
+    </div>
+  </section>
+
   <section class="section" id="utilities" aria-labelledby="util-title">
     <div class="wrap">
       <div class="section-head reveal">
-        <p class="eyebrow">04 — Utilities</p>
+        <p class="eyebrow">05 — Utilities</p>
         <h2 id="util-title">Small tools. Big time savings.</h2>
         <p>Quick converters and references you reach for between calculations.</p>
       </div>
@@ -1438,7 +1504,7 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
   <section class="section" id="standards" aria-labelledby="std-title">
     <div class="wrap">
       <div class="section-head reveal">
-        <p class="eyebrow">05 — Codes &amp; Standards</p>
+        <p class="eyebrow">06 — Codes &amp; Standards</p>
         <h2 id="std-title">Where the numbers come from.</h2>
         <p>Every calculator, the method it uses and the code, standard or published source behind it — so you know what to check before a result goes into a design.</p>
       </div>
@@ -1474,7 +1540,7 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
   <section class="section" id="about" aria-labelledby="about-title">
     <div class="wrap about-grid">
       <div class="section-head reveal">
-        <p class="eyebrow">06 — About the Toolbox</p>
+        <p class="eyebrow">07 — About the Toolbox</p>
         <h2 id="about-title">Built for practical engineering work.</h2>
         <p>MechToolBox is designed as a simple engineering reference and calculator hub for students, designers, technicians, draftsmen, and practicing engineers.</p>
       </div>
@@ -1501,38 +1567,18 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
 <!-- Floating tools: live compass (left) and feedback (right) -->
 <div class="cp" id="compass">
   <button type="button" class="cp-btn" id="cp-btn" aria-expanded="false" aria-controls="cp-panel" aria-label="Compass — heading not available">
-    <svg class="cp-svg" viewBox="0 0 100 100" aria-hidden="true">
-      <circle cx="50" cy="50" r="47" class="cp-ring"/>
-      <g class="cp-dial">
-        <g class="cp-ticks"><line x1="50" y1="6" x2="50" y2="14" transform="rotate(0 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(15 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(30 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(45 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(60 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(75 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="14" transform="rotate(90 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(105 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(120 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(135 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(150 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(165 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="14" transform="rotate(180 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(195 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(210 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(225 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(240 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(255 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="14" transform="rotate(270 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(285 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(300 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(315 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(330 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(345 50 50)" stroke-width="1"/></g>
-        <text x="50" y="26" class="cp-n">N</text>
-        
-        <g class="cp-sun" hidden><circle cx="50" cy="12" r="5"/></g>
-        <path d="M50 30L54 50L50 70L46 50z" class="cp-needle-s"/>
-        <path d="M50 30L54 50H46z" class="cp-needle-n"/>
-      </g>
-      <circle cx="50" cy="50" r="2.4" class="cp-hub"/>
-      <path d="M50 1.5l3 5h-6z" class="cp-lubber"/>
-    </svg>
+    <canvas class="gl gl-sm" width="56" height="56" aria-hidden="true"></canvas>
     <span class="cp-live" aria-hidden="true"></span>
   </button>
   <div class="cp-panel" id="cp-panel" hidden>
-    <div class="cp-big"><svg class="cp-svg" viewBox="0 0 100 100" aria-hidden="true">
-      <circle cx="50" cy="50" r="47" class="cp-ring"/>
-      <g class="cp-dial">
-        <g class="cp-ticks"><line x1="50" y1="6" x2="50" y2="14" transform="rotate(0 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(15 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(30 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(45 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(60 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(75 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="14" transform="rotate(90 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(105 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(120 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(135 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(150 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(165 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="14" transform="rotate(180 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(195 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(210 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(225 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(240 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(255 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="14" transform="rotate(270 50 50)" stroke-width="1.6"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(285 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(300 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="12" transform="rotate(315 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(330 50 50)" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="10" transform="rotate(345 50 50)" stroke-width="1"/></g>
-        <text x="50" y="24" class="cp-n">N</text>
-        <text x="78" y="53.5" class="cp-l">E</text><text x="50" y="82" class="cp-l">S</text><text x="22" y="53.5" class="cp-l">W</text>
-        <g class="cp-sun" hidden><circle cx="50" cy="12" r="4.2"/></g>
-        <path d="M50 30L54 50L50 70L46 50z" class="cp-needle-s"/>
-        <path d="M50 30L54 50H46z" class="cp-needle-n"/>
-      </g>
-      <circle cx="50" cy="50" r="2.4" class="cp-hub"/>
-      <path d="M50 1.5l3 5h-6z" class="cp-lubber"/>
-    </svg></div>
+    <div class="cp-globe">
+      <canvas class="gl gl-big" width="220" height="220" role="img" aria-label="Ball compass: the heading band turns behind a fixed red reading line. Drag it sideways to spin it."></canvas>
+    </div>
     <div class="cp-info">
-      <p class="cp-k">Heading</p>
-      <p class="cp-head" id="cp-head" aria-live="polite">—</p>
+      <div class="cp-row">
+        <div><p class="cp-k">Heading</p><p class="cp-head" id="cp-head" aria-live="polite">—</p></div>
+        <div class="cp-r"><p class="cp-k">Local time</p><p class="cp-time" id="cp-time">—</p></div>
+      </div>
       <p class="cp-status" id="cp-status">Checking for a compass sensor…</p>
       <button type="button" class="btn btn-solid btn-sm" id="cp-enable" hidden>Enable compass</button>
       <p class="cp-k cp-k2">Sun now</p>
@@ -8569,6 +8615,27 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     L.push([], ['Prepared by', s.prepBy, s.prepPos], ['Checked by', s.chkBy, s.chkPos], ['Counter checked by', s.ctrBy, s.ctrPos]);
     pjSaveFile(pjFileBase(p) + (withPrices ? '-BOQ.csv' : '-BOM.csv'), '﻿' + L.map(function (r) { return r.map(cell).join(','); }).join('\r\n'), 'text/csv;charset=utf-8');
   }
+  // Print styles for QS-format bills (A4 landscape, boxed table, grey header bands).
+  function qsCss(refNo) {
+    return rpCss(refNo, 'A4 landscape') + '\n' + [
+      'body{font-family:Arial,Helvetica,sans-serif}.page.wide{max-width:none}',
+      '.hdr{font:700 8.5pt/1.5 Arial,sans-serif;margin:0 0 6px}.hdr span{display:inline-block;width:62px}',
+      'h1.t{font:700 11pt Arial,sans-serif;text-align:center;margin:10px 0 8px;letter-spacing:.02em}',
+      'table.q{width:100%;table-layout:fixed;border-collapse:collapse;font:7.6pt/1.3 Arial,sans-serif;border:1.5px solid #000}',
+      'table.q th,table.q td{border:1px solid #000;padding:2px 4px;vertical-align:middle}',
+      'table.q tbody td{border-top:0;border-bottom:0;padding-top:3px;padding-bottom:3px}table.q tbody tr:not(.sub):not(.divt):not(.div):not(.sum) td{border-left:1px solid #000;border-right:1px solid #000}table.q tbody tr.sub td,table.q tbody tr.divt td,table.q tbody tr.div td{border:1px solid #000}',
+      'table.q thead th{background:#D9D9D9;font-weight:700;text-align:center;font-size:7.4pt}',
+      'table.q .n{text-align:right;white-space:nowrap}table.q .c{text-align:center}table.q .in{padding-left:10px}table.q .b{font-weight:700}',
+      'table.q tr.div td{background:#8EA9DB;font-weight:700}table.q tr.grp td{font-weight:700}',
+      'table.q tr.sub td{background:#D9E1F2}table.q tr.divt td{background:#8EA9DB;font-weight:700}',
+      'table.q tr.sum td{background:#D9D9D9;font-weight:700;font-size:8.2pt;border:1px solid #000;padding:3px 6px}table.q tr.sum.tot td{border-top:2px solid #000}',
+      'table.q .rem{font-size:6.8pt;color:#333}table.q td,table.q th{overflow-wrap:anywhere}',
+      'table.q thead{display:table-header-group}table.q tr{break-inside:avoid}table.q tbody.g,table.q tbody.foot{break-inside:avoid}',
+      '.sigs{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:34px;break-inside:avoid;font:8pt Arial,sans-serif}',
+      '.sigs .k{margin:0 0 26px}.sigs .nm{margin:0;font-weight:700}.sigs .ps{margin:0;color:#333}',
+      '.mt{margin-top:10px;font:7pt Arial,sans-serif;color:#555}'
+    ].join('\n');
+  }
   function boqPdf() {
     var p = pjCur(); if (!p) return;
     var s = boqSet(), C = boqCompute(p, s), b = C.b, m = rpMeta(), E = esc, now = new Date(), pad = function (x) { return (x < 10 ? '0' : '') + x; };
@@ -8588,24 +8655,7 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
       sum('SUPERVISION &amp; PROFIT', n2(C.sp)) + sum('CONTINGENCIES', n2(C.ct)) + sum('VAT', n2(C.vat)) +
       sum('PROJECT COST (LABOR, LIGHT EQUIPMENT AND POWER TOOLS)', n2(C.proj), 'proj') + sum('COST PER ' + BOQ_AREA(), C.psm ? n2(C.psm) : '—');
     var sig = function (k, name, pos) { return '<div><p class="k">' + k + '</p><p class="nm">' + (name ? E(name) : '&nbsp;') + '</p><p class="ps">' + (pos ? E(pos) : '&nbsp;') + '</p></div>'; };
-    var css = rpCss(refNo, 'A4 landscape') + '\n' + [
-      'body{font-family:Arial,Helvetica,sans-serif}.page.wide{max-width:none}',
-      '.hdr{font:700 8.5pt/1.5 Arial,sans-serif;margin:0 0 6px}.hdr span{display:inline-block;width:62px}',
-      'h1.t{font:700 11pt Arial,sans-serif;text-align:center;margin:10px 0 8px;letter-spacing:.02em}',
-      'table.q{width:100%;table-layout:fixed;border-collapse:collapse;font:7.6pt/1.3 Arial,sans-serif;border:1.5px solid #000}',
-      'table.q th,table.q td{border:1px solid #000;padding:2px 4px;vertical-align:middle}',
-      'table.q tbody td{border-top:0;border-bottom:0;padding-top:3px;padding-bottom:3px}table.q tbody tr:not(.sub):not(.divt):not(.div):not(.sum) td{border-left:1px solid #000;border-right:1px solid #000}table.q tbody tr.sub td,table.q tbody tr.divt td,table.q tbody tr.div td{border:1px solid #000}',
-      'table.q thead th{background:#D9D9D9;font-weight:700;text-align:center;font-size:7.4pt}',
-      'table.q .n{text-align:right;white-space:nowrap}table.q .c{text-align:center}table.q .in{padding-left:10px}table.q .b{font-weight:700}',
-      'table.q tr.div td{background:#8EA9DB;font-weight:700}table.q tr.grp td{font-weight:700}',
-      'table.q tr.sub td{background:#D9E1F2}table.q tr.divt td{background:#8EA9DB;font-weight:700}',
-      'table.q tr.sum td{background:#D9D9D9;font-weight:700;font-size:8.2pt;border:1px solid #000;padding:3px 6px}table.q tr.sum.tot td{border-top:2px solid #000}',
-      'table.q .rem{font-size:6.8pt;color:#333}table.q td,table.q th{overflow-wrap:anywhere}',
-      'table.q thead{display:table-header-group}table.q tr{break-inside:avoid}table.q tbody.g,table.q tbody.foot{break-inside:avoid}',
-      '.sigs{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:34px;break-inside:avoid;font:8pt Arial,sans-serif}',
-      '.sigs .k{margin:0 0 26px}.sigs .nm{margin:0;font-weight:700}.sigs .ps{margin:0;color:#333}',
-      '.mt{margin-top:10px;font:7pt Arial,sans-serif;color:#555}'
-    ].join('\n');
+    var css = qsCss(refNo);
     var html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + E(refNo + ' — ' + p.name + ' BOQ') + '</title><style>' + css + '</style></head><body>' +
       '<div class="bar"><button type="button" onclick="window.print()">Print / Save as PDF</button><button type="button" class="o" onclick="window.close()">Close</button></div>' +
       '<div class="page wide"><p class="hdr"><span>Project</span>: ' + E(p.name) + '<br><span>Location</span>: ' + E(m.location || '') + '<br><span>Owner</span>: ' + E(s.owner || '') +
@@ -9062,6 +9112,348 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
   }
 
 
+  /* ---------- Manual estimate: hand-entered BOQ (priced) and BOM (materials) ---------- */
+  var ES_KEY = 'mechtoolbox-estimates', ES_TAB_KEY = 'mechtoolbox-es-tab';
+  var ES = { active: null, docs: [] }, esTab = 'boq', esCombine = false;
+  try { var esd = JSON.parse(localStorage.getItem(ES_KEY) || 'null'); if (esd && esd.docs) ES = esd; } catch (e) {}
+  try { if (localStorage.getItem(ES_TAB_KEY) === 'bom') esTab = 'bom'; } catch (e) {}
+  var esId = function () { return Math.random().toString(36).slice(2, 9); };
+  var esNum = function (v) { var n = parseFloat(String(v == null ? '' : v).replace(/,/g, '')); return isFinite(n) ? n : 0; };
+  function esSave() { try { localStorage.setItem(ES_KEY, JSON.stringify(ES)); } catch (e) {} }
+  function esCur() { return ES.docs.filter(function (d) { return d.id === ES.active; })[0] || null; }
+  var ES_PRESETS = {
+    G: ['GENERAL REQUIREMENTS', ['Mobilization and Demobilization', 'Permits and Clearances', 'Temporary Facilities', 'Others to complete']],
+    E: ['ELECTRICAL WORKS'], P: ['PLUMBING AND SANITARY WORKS'], M: ['MECHANICAL WORKS'], F: ['FIRE PROTECTION WORKS'], X: ['NEW DIVISION', ['Items']]
+  };
+  function esDiv(k) {
+    var p = ES_PRESETS[k], groups = p[1] || Object.keys(BOQ_DIVS[k].groups).sort(function (a, b) { return a === 'Z' ? 1 : b === 'Z' ? -1 : a < b ? -1 : 1; }).map(function (g) { return BOQ_DIVS[k].groups[g]; });
+    return { id: esId(), name: p[0], groups: groups.map(function (t) { return { id: esId(), title: t, items: [] }; }) };
+  }
+  function esNew(name, tpl) {
+    var d = { id: esId(), name: name, location: '', owner: '', area: '', areaU: sys === 'si' ? 'sq.m' : 'sq.ft', cur: BOQ_DEF_CUR[codeBasis] || '', labor: 30, sp: 10, cont: 3, tax: BOQ_DEF_TAX[codeBasis] || 0,
+      prepBy: '', prepPos: '', chkBy: '', chkPos: '', ctrBy: '', ctrPos: '', divs: [] };
+    var keys = tpl === 'mepfs' ? ['E', 'P', 'M', 'F'] : tpl === 'blank' ? ['X'] : [tpl];
+    d.divs = keys.map(esDiv);
+    d.divs.forEach(function (D) { if (D.groups[0]) D.groups[0].items.push(esItem()); });
+    return d;
+  }
+  function esItem() { return { id: esId(), desc: '', qty: '', unit: '', m: '', l: '', kind: 'ml', rem: '' }; }
+
+  // Common items: description → unit (the list only suggests; anything can be typed).
+  var ES_CAT = [
+    ['Panelboard, 3-phase, with main and branch breakers', 'set'], ['Molded-case circuit breaker, 2-pole', 'pcs'], ['THHN / THWN-2 copper wire, 3.5 mm²', 'roll'], ['THHN / THWN-2 copper wire, 5.5 mm²', 'roll'],
+    ['PVC conduit, 20 mm ⌀ x 3 m', 'length'], ['EMT conduit, 20 mm ⌀ x 3 m', 'length'], ['Junction box / utility box', 'pcs'], ['LED panel light, 600 x 600, 40 W', 'set'], ['LED downlight, 12 W', 'set'],
+    ['Convenience outlet, duplex, universal', 'set'], ['Wall switch, 1-gang', 'set'], ['Grounding rod with clamp, 16 mm ⌀ x 3 m', 'set'],
+    ['PPR pipe, PN20, 25 mm ⌀ x 4 m', 'length'], ['PPR fittings (elbows, tees, couplings)', 'lot'], ['Gate valve, bronze, 25 mm ⌀', 'pcs'], ['Water closet, floor-mounted, with flush tank', 'set'], ['Lavatory with faucet and P-trap', 'set'],
+    ['uPVC sanitary pipe, S1000, 100 mm ⌀ x 3 m', 'length'], ['uPVC sanitary pipe, S1000, 50 mm ⌀ x 3 m', 'length'], ['Floor drain, stainless, 100 x 100', 'pcs'], ['Cleanout, 100 mm ⌀', 'pcs'], ['Septic tank, reinforced concrete', 'unit'],
+    ['Split-type air-conditioner, inverter, 2.0 TR', 'set'], ['Ducted split unit, 5.0 TR, with outdoor condensing unit', 'set'], ['VRF outdoor unit', 'set'], ['G.I. sheet, gauge 24, for ductwork', 'sheet'], ['Ceiling diffuser, 4-way, with neck and damper', 'pcs'],
+    ['Return air grille with filter', 'pcs'], ['Flexible duct, insulated, 200 mm ⌀', 'm'], ['Duct insulation, fiberglass, 25 mm, foil-faced', 'sq.m'], ['Copper refrigerant pipe set, insulated', 'm'], ['Condensate drain pipe, uPVC 25 mm ⌀', 'm'],
+    ['Exhaust fan, ceiling-mounted', 'set'], ['Sprinkler head, pendent, K5.6, 68 °C', 'pcs'], ['B.I. pipe, Sch. 40, 25 mm ⌀ x 6 m', 'length'], ['B.I. pipe, Sch. 40, 50 mm ⌀ x 6 m', 'length'], ['Fire pump set with controller', 'set'],
+    ['Jockey pump set', 'set'], ['Fire extinguisher, ABC dry chemical, 10 lb', 'pcs'], ['Fire hose cabinet, complete', 'set'], ['Hangers and supports', 'lot'], ['Consumables', 'lot'], ['Testing and commissioning', 'lot'], ['Mobilization and demobilization', 'lot']
+  ];
+  var ES_UNITS = ['pcs', 'set', 'lot', 'unit', 'm', 'l.m.', 'length', 'roll', 'sheet', 'kg', 'sq.m', 'cu.m', 'gal', 'box', 'pair', 'sq.ft', 'ft'];
+
+  function esCompute(d) {
+    var lp = esNum(d.labor) / 100, all = { m: 0, l: 0, t: 0 };
+    d.divs.forEach(function (D, di) {
+      D.no = di + 1; D.roman = ROMAN[D.no] || String(D.no); D.sum = { m: 0, l: 0, t: 0 };
+      D.title = D.name.toLowerCase().replace(/\b([a-z])/g, function (c) { return c.toUpperCase(); }).replace(/\bAnd\b/g, 'and');
+      D.groups.forEach(function (G, gi) {
+        G.no = D.no + '.' + (gi + 1); G.sum = { m: 0, l: 0, t: 0 };
+        G.items.forEach(function (it, ii) {
+          it.no = G.no + '.' + (ii + 1);
+          var q = esNum(it.qty), mu = it.kind === 'l' ? 0 : esNum(it.m), lAuto = String(it.l).trim() === '';
+          var lu = it.kind === 'm' ? 0 : lAuto ? mu * lp : esNum(it.l);
+          it.c = { q: q, mu: mu, lu: lu, lAuto: lAuto && it.kind !== 'm', uu: mu + lu, tm: q * mu, tl: q * lu, tt: q * (mu + lu) };
+          G.sum.m += it.c.tm; G.sum.l += it.c.tl; G.sum.t += it.c.tt;
+        });
+        D.sum.m += G.sum.m; D.sum.l += G.sum.l; D.sum.t += G.sum.t;
+      });
+      all.m += D.sum.m; all.l += D.sum.l; all.t += D.sum.t;
+    });
+    var tc = all.t, sp = tc * esNum(d.sp) / 100, ct = (tc + sp) * esNum(d.cont) / 100, vat = (tc + sp + ct) * esNum(d.tax) / 100, proj = tc + sp + ct + vat, area = esNum(d.area);
+    return { all: all, tc: tc, sp: sp, ct: ct, vat: vat, proj: proj, area: area, psm: area > 0 ? proj / area : 0 };
+  }
+  // Materials to buy: every item except labour-only, optionally combined by description + unit.
+  function esBom(d) {
+    esCompute(d);
+    if (!esCombine) return d.divs.map(function (D) {
+      return { roman: D.roman, name: D.name, groups: D.groups.map(function (G) { return { no: G.no, title: G.title, items: G.items.filter(function (it) { return it.kind !== 'l' && it.desc.trim(); }) }; }).filter(function (G) { return G.items.length; }) };
+    }).filter(function (D) { return D.groups.length; });
+    var map = {}, list = [];
+    d.divs.forEach(function (D) { D.groups.forEach(function (G) { G.items.forEach(function (it) {
+      if (it.kind === 'l' || !it.desc.trim()) return;
+      var k = it.desc.trim().toLowerCase() + '|' + it.unit.trim().toLowerCase();
+      if (!map[k]) { map[k] = { no: '', desc: it.desc.trim(), unit: it.unit, qty: 0, rem: [] }; list.push(map[k]); }
+      map[k].qty += esNum(it.qty); map[k].rem.push(it.no);
+    }); }); });
+    list.sort(function (a, b) { return a.desc.localeCompare(b.desc); });
+    list.forEach(function (x, i) { x.no = i + 1; x.c = { q: x.qty }; x.rem = 'Items ' + x.rem.join(', '); });
+    return [{ roman: '', name: 'CONSOLIDATED BILL OF MATERIALS', groups: [{ no: '', title: '', items: list }] }];
+  }
+
+  function esFld(k, label, val, opts) {
+    opts = opts || {};
+    if (opts.sel) return '<div class="field"><label for="es-' + k + '">' + label + '</label><div class="input-wrap"><select id="es-' + k + '" data-ef="' + k + '">' + opts.sel.map(function (o) { return '<option' + (o === val ? ' selected' : '') + '>' + o + '</option>'; }).join('') + '</select></div></div>';
+    return '<div class="field"><label for="es-' + k + '">' + label + '</label><div class="input-wrap"><input id="es-' + k + '" data-ef="' + k + '" type="text" autocomplete="off"' + (opts.num ? ' inputmode="decimal"' : '') + ' value="' + esc(val == null ? '' : val) + '"' + (opts.ph ? ' placeholder="' + esc(opts.ph) + '"' : '') + '>' + (opts.unit ? '<span class="unit">' + opts.unit + '</span>' : '') + '</div></div>';
+  }
+  var esTpl = function (id) { return '<div class="field"><label for="' + id + '">Start from</label><div class="input-wrap"><select id="' + id + '"><option value="mepfs">MEPFS — Electrical, Plumbing &amp; Sanitary, Mechanical, Fire</option><option value="M">Mechanical works only</option><option value="E">Electrical works only</option><option value="P">Plumbing &amp; sanitary works only</option><option value="F">Fire protection works only</option><option value="blank">Blank — one empty division</option></select></div></div>'; };
+  var ib = function (act, label, title, extra) { return '<button type="button" class="pj-icon es-ib" data-act="' + act + '"' + (extra || '') + ' title="' + title + '" aria-label="' + title + '">' + label + '</button>'; };
+
+  function esRender() {
+    var root = $('#es-root'); if (!root) return;
+    var d = esCur();
+    var cat = '<datalist id="es-cat">' + ES_CAT.map(function (c) { return '<option value="' + esc(c[0]) + '">'; }).join('') + '</datalist><datalist id="es-units">' + ES_UNITS.map(function (u) { return '<option value="' + u + '">'; }).join('') + '</datalist>';
+    if (!d) {
+      root.innerHTML = '<div class="pj-empty es-empty"><p><strong>No estimate yet.</strong> Name it, pick a starting layout, and fill in the items — or import a file you exported before.</p>' +
+        '<div class="es-newrow"><div class="field"><label for="es-new-name">Estimate name</label><div class="input-wrap"><input id="es-new-name" type="text" autocomplete="off" placeholder="e.g. 3-storey residence, Quezon City"></div></div>' + esTpl('es-new-tpl') +
+        '<div class="es-newact"><button type="button" class="btn btn-solid" data-act="create">Create estimate</button><button type="button" class="btn btn-outline" data-act="import">Import file</button></div></div><p class="err" id="es-err" hidden></p></div>' + cat;
+      return;
+    }
+    var C = esCompute(d), cur = d.cur ? ' (' + esc(d.cur) + ')' : '';
+    var top = '<div class="pj-top es-top"><div class="input-wrap pj-sel"><select id="es-select" aria-label="Estimate">' + ES.docs.map(function (x) { return '<option value="' + x.id + '"' + (x.id === d.id ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('') + '</select></div>' +
+      '<div class="pj-tools"><button type="button" class="btn btn-outline btn-sm" data-act="new">+ New</button><button type="button" class="btn btn-outline btn-sm" data-act="dup">Duplicate</button>' +
+      '<button type="button" class="btn btn-outline btn-sm" data-act="export">Back up file</button><button type="button" class="btn btn-outline btn-sm" data-act="import">Import</button><button type="button" class="btn btn-outline btn-sm pj-danger" data-act="del">Delete</button></div></div>' +
+      '<div class="es-newbox" id="es-newbox" hidden><div class="es-newrow"><div class="field"><label for="es-new-name">New estimate name</label><div class="input-wrap"><input id="es-new-name" type="text" autocomplete="off" placeholder="e.g. Clinic renovation"></div></div>' + esTpl('es-new-tpl') +
+      '<div class="es-newact"><button type="button" class="btn btn-solid btn-sm" data-act="create">Create</button><button type="button" class="btn btn-outline btn-sm" data-act="cancelnew">Cancel</button></div></div><p class="err" id="es-err" hidden></p></div>';
+    var info = '<div class="pj-form es-info"><p class="pj-form-t">Project information</p><div class="fields es-fields">' +
+      esFld('name', 'Project', d.name) + esFld('location', 'Location', d.location, { ph: 'City / site' }) + esFld('owner', 'Owner', d.owner) +
+      esFld('area', 'Floor area', d.area, { num: true, ph: 'optional' }) + esFld('areaU', 'Area unit', d.areaU, { sel: ['sq.m', 'sq.ft'] }) + esFld('cur', 'Currency', d.cur, { ph: '₱, A$, $' }) +
+      esFld('labor', 'Labor (if blank)', d.labor, { num: true, unit: '% of mat.' }) + esFld('sp', 'Supervision &amp; profit', d.sp, { num: true, unit: '%' }) + esFld('cont', 'Contingencies', d.cont, { num: true, unit: '%' }) + esFld('tax', 'VAT / GST', d.tax, { num: true, unit: '%' }) + '</div>' +
+      '<details class="boq-sign"><summary>Signatories</summary><div class="fields es-fields">' + esFld('prepBy', 'Prepared by', d.prepBy) + esFld('prepPos', 'Position', d.prepPos) + esFld('chkBy', 'Checked by', d.chkBy) +
+      esFld('chkPos', 'Position', d.chkPos) + esFld('ctrBy', 'Counter checked by', d.ctrBy) + esFld('ctrPos', 'Position', d.ctrPos) + '</div></details></div>';
+    var tabs = '<div class="es-bar"><div class="pj-tabs es-tabs" role="group" aria-label="Bill">' +
+      '<button type="button" class="pj-tab" data-estab="boq" aria-pressed="' + (esTab === 'boq') + '">BOQ — priced</button><button type="button" class="pj-tab" data-estab="bom" aria-pressed="' + (esTab === 'bom') + '">BOM — materials</button></div>' +
+      '<div class="boq-exp">' + (esTab === 'boq'
+        ? '<button type="button" class="btn btn-solid btn-sm" data-act="boqpdf">BOQ PDF</button><button type="button" class="btn btn-outline btn-sm" data-act="boqcsv">BOQ (Excel)</button>'
+        : '<button type="button" class="btn btn-solid btn-sm" data-act="bompdf">BOM PDF</button><button type="button" class="btn btn-outline btn-sm" data-act="bomcsv">BOM (Excel)</button>') + '</div></div>';
+    var body;
+    if (esTab === 'boq') {
+      var rows = d.divs.map(function (D, di) {
+        return '<tr class="boq-div es-div"><td>' + D.roman + '</td><td colspan="11"><div class="es-hrow"><div class="input-wrap es-hin"><input type="text" value="' + esc(D.name) + '" data-dv="' + D.id + '" aria-label="Division ' + D.roman + ' name"></div>' +
+          '<span class="es-acts">' + ib('dup-up', '↑', 'Move division up', ' data-d="' + D.id + '"' + (di ? '' : ' disabled')) + ib('dup-down', '↓', 'Move division down', ' data-d="' + D.id + '"' + (di < d.divs.length - 1 ? '' : ' disabled')) + ib('ddel', '✕', 'Delete division', ' data-d="' + D.id + '"') + '</span></div></td></tr>' +
+          D.groups.map(function (G, gi) {
+            return '<tr class="boq-grp es-grp"><td>' + G.no + '</td><td colspan="11"><div class="es-hrow"><div class="input-wrap es-hin"><input type="text" value="' + esc(G.title) + '" data-gv="' + G.id + '" aria-label="Group ' + G.no + ' title"></div>' +
+              '<span class="es-acts">' + ib('gup', '↑', 'Move group up', ' data-g="' + G.id + '"' + (gi ? '' : ' disabled')) + ib('gdown', '↓', 'Move group down', ' data-g="' + G.id + '"' + (gi < D.groups.length - 1 ? '' : ' disabled')) + ib('gdel', '✕', 'Delete group', ' data-g="' + G.id + '"') + '</span></div></td></tr>' +
+              G.items.map(function (it, ii) {
+                var c = it.c, inp = function (f, cls, extra) { return '<div class="input-wrap ' + cls + '"><input type="text" autocomplete="off" data-iv="' + it.id + '" data-k="' + f + '" value="' + esc(it[f]) + '"' + (extra || '') + '></div>'; };
+                return '<tr class="es-item" data-row="' + it.id + '"><td class="boq-no">' + it.no + '</td><td>' + inp('desc', 'es-desc', ' list="es-cat" placeholder="Item description" aria-label="Description, item ' + it.no + '"') + '</td>' +
+                  '<td>' + inp('qty', 'es-qty', ' inputmode="decimal" placeholder="0" aria-label="Quantity, item ' + it.no + '"') + '</td><td>' + inp('unit', 'es-unit', ' list="es-units" placeholder="pcs" aria-label="Unit, item ' + it.no + '"') + '</td>' +
+                  '<td><div class="input-wrap es-kind"><select data-iv="' + it.id + '" data-k="kind" aria-label="Type, item ' + it.no + '"><option value="ml"' + (it.kind === 'ml' ? ' selected' : '') + '>Mat. + labor</option><option value="m"' + (it.kind === 'm' ? ' selected' : '') + '>Material only</option><option value="l"' + (it.kind === 'l' ? ' selected' : '') + '>Labor only</option></select></div></td>' +
+                  '<td>' + (it.kind === 'l' ? '<span class="pj-dash">—</span>' : inp('m', 'boq-rate', ' inputmode="decimal" placeholder="0.00" aria-label="Material unit cost, item ' + it.no + '"')) + '</td>' +
+                  '<td>' + (it.kind === 'm' ? '<span class="pj-dash">—</span>' : inp('l', 'boq-rate', ' inputmode="decimal" data-ph="' + it.id + '" placeholder="' + n2(c.lAuto ? c.lu : 0) + '" aria-label="Labor unit cost, item ' + it.no + '"')) + '</td>' +
+                  '<td class="num" data-v="i' + it.id + ':uu">' + n2(c.uu) + '</td><td class="num" data-v="i' + it.id + ':tm">' + n2(c.tm) + '</td><td class="num" data-v="i' + it.id + ':tl">' + n2(c.tl) + '</td><td class="num" data-v="i' + it.id + ':tt">' + n2(c.tt) + '</td>' +
+                  '<td><div class="es-remcell">' + inp('rem', 'es-rem', ' placeholder="Remarks" aria-label="Remarks, item ' + it.no + '"') + '<span class="es-acts">' + ib('iup', '↑', 'Move item up', ' data-i="' + it.id + '"' + (ii ? '' : ' disabled')) + ib('idown', '↓', 'Move item down', ' data-i="' + it.id + '"' + (ii < G.items.length - 1 ? '' : ' disabled')) + ib('idel', '✕', 'Delete item', ' data-i="' + it.id + '"') + '</span></div></td></tr>';
+              }).join('') +
+              '<tr class="es-add"><td></td><td colspan="11"><button type="button" class="es-addbtn" data-act="iadd" data-g="' + G.id + '">+ Add item to ' + G.no + '</button></td></tr>' +
+              '<tr class="boq-subt"><td></td><td colspan="6">Subtotal Cost:</td><td class="num" data-v="g' + G.id + ':m">' + n2(G.sum.m) + '</td><td class="num" data-v="g' + G.id + ':l">' + n2(G.sum.l) + '</td><td class="num" data-v="g' + G.id + ':t">' + n2(G.sum.t) + '</td><td></td><td></td></tr>';
+          }).join('') +
+          '<tr class="es-add"><td></td><td colspan="11"><button type="button" class="es-addbtn" data-act="gadd" data-d="' + D.id + '">+ Add group to ' + D.roman + '</button></td></tr>' +
+          '<tr class="boq-divt"><td></td><td colspan="6">Total Cost ' + D.roman + ' - ' + esc(D.title) + ':</td><td class="num" data-v="d' + D.id + ':m">' + n2(D.sum.m) + '</td><td class="num" data-v="d' + D.id + ':l">' + n2(D.sum.l) + '</td><td class="num" data-v="d' + D.id + ':t">' + n2(D.sum.t) + '</td><td></td><td></td></tr>';
+      }).join('');
+      var sum = function (label, key, v, cls) { return '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td colspan="10">' + label + '</td><td class="num" data-v="' + key + '">' + v + '</td><td></td></tr>'; };
+      body = '<div class="table-wrap boq-table es-table"><table><thead><tr><th rowspan="2">Item no.</th><th rowspan="2">Scope of work / item description</th><th rowspan="2">Qty</th><th rowspan="2">UOM</th><th rowspan="2">Type</th><th colspan="3" class="c">Unit cost' + cur + '</th>' +
+        '<th rowspan="2">Total material cost</th><th rowspan="2">Total labor cost</th><th rowspan="2">Total material &amp; labor cost</th><th rowspan="2">Remarks</th></tr><tr><th>Material</th><th>Labor</th><th>Total</th></tr></thead><tbody>' + rows +
+        '<tr class="es-add"><td></td><td colspan="11"><div class="es-adddiv"><span>+ Add division:</span>' + ['E', 'P', 'M', 'F', 'G', 'X'].map(function (k) { return '<button type="button" class="es-addbtn" data-act="dadd" data-k="' + k + '">' + (k === 'X' ? 'Custom' : ES_PRESETS[k][0].replace(/ WORKS$/, '').replace('AND', '&amp;').toLowerCase().replace(/\b([a-z])/g, function (c) { return c.toUpperCase(); }).replace('&Amp;', '&amp;')) + '</button>'; }).join('') + '</div></td></tr></tbody>' +
+        '<tfoot><tr><td colspan="8">TOTAL COST</td><td class="num" data-v="all:m">' + n2(C.all.m) + '</td><td class="num" data-v="all:l">' + n2(C.all.l) + '</td><td class="num" data-v="sum:tc">' + n2(C.tc) + '</td><td></td></tr>' +
+        sum('SUPERVISION &amp; PROFIT (<span data-pct="sp">' + fmt(esNum(d.sp)) + '</span> %)', 'sum:sp', n2(C.sp)) + sum('CONTINGENCIES (<span data-pct="cont">' + fmt(esNum(d.cont)) + '</span> %)', 'sum:ct', n2(C.ct)) +
+        sum('VAT (<span data-pct="tax">' + fmt(esNum(d.tax)) + '</span> %)', 'sum:vat', n2(C.vat)) + sum('PROJECT COST (LABOR, LIGHT EQUIPMENT AND POWER TOOLS)', 'sum:proj', n2(C.proj), 'boq-grand') +
+        sum('COST PER <span data-pct="areaU">' + esc(d.areaU.toUpperCase()) + '</span>', 'sum:psm', C.psm ? n2(C.psm) : '—') + '</tfoot></table></div>' +
+        '<p class="pj-hint boq-note">Type quantities and unit costs — every amount updates as you type. Leave labor blank to use the labor %. <strong>Material only</strong> items carry no labor; <strong>labor only</strong> items stay off the BOM. Contingencies apply to total + supervision &amp; profit, and VAT to all three. Saved on this device — use <em>Back up file</em> to keep a copy.</p>';
+    } else {
+      var B = esBom(d), any = B.some(function (D) { return D.groups.some(function (G) { return G.items.length; }); });
+      body = '<label class="fb-check es-comb"><input type="checkbox" id="es-combine"' + (esCombine ? ' checked' : '') + '> Combine identical items across divisions (purchasing list)</label>' +
+        (any ? '<div class="table-wrap boq-table es-table es-bom"><table><thead><tr><th>Item no.</th><th>Description</th><th>Qty</th><th>UOM</th><th>Remarks</th></tr></thead><tbody>' +
+          B.map(function (D) {
+            return (D.roman || D.name ? '<tr class="boq-div"><td>' + D.roman + '</td><td colspan="4">' + esc(D.name) + '</td></tr>' : '') + D.groups.map(function (G) {
+              return (G.title ? '<tr class="boq-grp"><td>' + G.no + '</td><td colspan="4">' + esc(G.title) + '</td></tr>' : '') + G.items.map(function (it) {
+                return '<tr><td class="boq-no">' + it.no + '</td><td>' + esc(it.desc) + '</td><td class="num">' + fmt(it.c.q) + '</td><td>' + esc(it.unit) + '</td><td class="boq-rem">' + esc(it.rem) + '</td></tr>';
+              }).join('');
+            }).join('');
+          }).join('') + '</tbody></table></div>' : '<p class="pj-hint">No materials yet — add items on the BOQ tab. Everything except <em>labor only</em> items appears here.</p>') +
+        '<p class="pj-hint boq-note">The BOM is built from the BOQ items, without prices — the list to send to suppliers. Edit items on the BOQ tab.</p>';
+    }
+    root.innerHTML = top + info + tabs + body + cat;
+  }
+
+  // Refresh every amount in place while typing (keeps focus).
+  function esRecalc() {
+    var d = esCur(); if (!d) return;
+    var C = esCompute(d), set = function (k, v) { var el = $('#es-root [data-v="' + k + '"]'); if (el) el.textContent = typeof v === 'string' ? v : n2(v); };
+    d.divs.forEach(function (D) {
+      D.groups.forEach(function (G) {
+        G.items.forEach(function (it) { ['uu', 'tm', 'tl', 'tt'].forEach(function (k) { set('i' + it.id + ':' + k, it.c[k]); }); var ph = $('#es-root [data-ph="' + it.id + '"]'); if (ph) ph.placeholder = n2(it.c.lAuto ? it.c.lu : 0); });
+        set('g' + G.id + ':m', G.sum.m); set('g' + G.id + ':l', G.sum.l); set('g' + G.id + ':t', G.sum.t);
+      });
+      set('d' + D.id + ':m', D.sum.m); set('d' + D.id + ':l', D.sum.l); set('d' + D.id + ':t', D.sum.t);
+    });
+    set('all:m', C.all.m); set('all:l', C.all.l); set('sum:tc', C.tc); set('sum:sp', C.sp); set('sum:ct', C.ct); set('sum:vat', C.vat); set('sum:proj', C.proj); set('sum:psm', C.psm ? n2(C.psm) : '—');
+    $$('#es-root [data-pct]').forEach(function (s) { var k = s.dataset.pct; s.textContent = k === 'areaU' ? d.areaU.toUpperCase() : fmt(esNum(d[k])); });
+  }
+  function esFind(d, id) {
+    for (var a = 0; a < d.divs.length; a++) {
+      var D = d.divs[a]; if (D.id === id) return { list: d.divs, i: a, o: D };
+      for (var b = 0; b < D.groups.length; b++) {
+        var G = D.groups[b]; if (G.id === id) return { list: D.groups, i: b, o: G, D: D };
+        for (var c = 0; c < G.items.length; c++) if (G.items[c].id === id) return { list: G.items, i: c, o: G.items[c], G: G };
+      }
+    }
+    return null;
+  }
+  function esMove(d, id, dir) { var f = esFind(d, id); if (!f) return; var j = f.i + dir; if (j < 0 || j >= f.list.length) return; var t = f.list[f.i]; f.list[f.i] = f.list[j]; f.list[j] = t; }
+  var esFile = function (d) { return (d.name || 'estimate').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-') || 'estimate'; };
+
+  function esCsv(priced) {
+    var d = esCur(); if (!d) return;
+    var C = esCompute(d), r2 = function (x) { return Number((x || 0).toFixed(2)); };
+    var cell = function (v) { v = v == null ? '' : String(v); return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var L = [['Project', d.name], ['Location', d.location], ['Owner', d.owner], ['Area', d.area ? d.area + ' ' + d.areaU : ''], [], [priced ? 'BILL OF QUANTITIES' : 'BILL OF MATERIALS'], []];
+    if (priced) {
+      L.push(['ITEM NO.', 'SCOPE OF WORK / ITEM DESCRIPTION', 'QTY', 'UOM', 'UNIT COST - MATERIAL', 'UNIT COST - LABOR', 'UNIT COST - TOTAL', 'TOTAL MATERIAL COST', 'TOTAL LABOR COST', 'TOTAL MATERIAL & LABOR COST', 'REMARKS']);
+      d.divs.forEach(function (D) {
+        L.push([D.roman, D.name]);
+        D.groups.forEach(function (G) {
+          L.push([G.no, G.title]);
+          G.items.forEach(function (it) { L.push([it.no, it.desc, it.c.q, it.unit, r2(it.c.mu), r2(it.c.lu), r2(it.c.uu), r2(it.c.tm), r2(it.c.tl), r2(it.c.tt), it.rem]); });
+          L.push(['', 'Subtotal Cost:', '', '', '', '', '', r2(G.sum.m), r2(G.sum.l), r2(G.sum.t)]);
+        });
+        L.push(['', 'Total Cost ' + D.roman + ' - ' + D.title + ':', '', '', '', '', '', r2(D.sum.m), r2(D.sum.l), r2(D.sum.t)], []);
+      });
+      L.push(['TOTAL COST', '', '', '', '', '', '', r2(C.all.m), r2(C.all.l), r2(C.tc)], ['SUPERVISION & PROFIT (' + esNum(d.sp) + '%)', '', '', '', '', '', '', '', '', r2(C.sp)],
+        ['CONTINGENCIES (' + esNum(d.cont) + '%)', '', '', '', '', '', '', '', '', r2(C.ct)], ['VAT (' + esNum(d.tax) + '%)', '', '', '', '', '', '', '', '', r2(C.vat)],
+        ['PROJECT COST (LABOR, LIGHT EQUIPMENT AND POWER TOOLS)', '', '', '', '', '', '', '', '', r2(C.proj)], ['COST PER ' + d.areaU.toUpperCase(), '', '', '', '', '', '', '', '', C.psm ? r2(C.psm) : '']);
+    } else {
+      L.push(['ITEM NO.', 'DESCRIPTION', 'QTY', 'UOM', 'REMARKS']);
+      esBom(d).forEach(function (D) {
+        if (D.roman || D.name) L.push([D.roman, D.name]);
+        D.groups.forEach(function (G) { if (G.title) L.push([G.no, G.title]); G.items.forEach(function (it) { L.push([it.no, it.desc, it.c.q, it.unit, it.rem]); }); });
+        L.push([]);
+      });
+    }
+    L.push([], ['Prepared by', d.prepBy, d.prepPos], ['Checked by', d.chkBy, d.chkPos], ['Counter checked by', d.ctrBy, d.ctrPos]);
+    pjSaveFile(esFile(d) + (priced ? '-BOQ.csv' : '-BOM.csv'), '\ufeff' + L.map(function (r) { return r.map(cell).join(','); }).join('\r\n'), 'text/csv;charset=utf-8');
+  }
+  function esPdf(priced) {
+    var d = esCur(); if (!d) return;
+    var C = esCompute(d), E = esc, now = new Date(), pad = function (x) { return (x < 10 ? '0' : '') + x; };
+    var dateTxt = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+    var refNo = 'MTB-' + dateTxt.replace(/-/g, '') + (priced ? '-BOQ-' : '-BOM-') + (esFile(d).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12) || 'ESTIMATE');
+    var table;
+    if (priced) {
+      var blanks = new Array(10).join('<td></td>');
+      var body = d.divs.map(function (D) {
+        return '<tbody><tr class="div"><td>' + D.roman + '</td><td colspan="10">' + E(D.name) + '</td></tr></tbody>' + D.groups.map(function (G) {
+          return '<tbody class="g"><tr class="grp"><td>' + G.no + '</td><td class="b">' + E(G.title) + '</td>' + blanks + '</tr>' + G.items.map(function (it) {
+            var c = it.c;
+            return '<tr><td class="in">' + it.no + '</td><td class="in">' + E(it.desc) + '</td><td class="n">' + fmt(c.q) + '</td><td class="c">' + E(it.unit) + '</td><td class="n">' + n2(c.mu) + '</td><td class="n">' + n2(c.lu) + '</td><td class="n">' + n2(c.uu) + '</td>' +
+              '<td class="n">' + n2(c.tm) + '</td><td class="n">' + n2(c.tl) + '</td><td class="n">' + n2(c.tt) + '</td><td class="rem">' + E(it.rem) + '</td></tr>';
+          }).join('') + '<tr class="sub"><td></td><td colspan="6" class="c">Subtotal Cost:</td><td class="n">' + n2(G.sum.m) + '</td><td class="n">' + n2(G.sum.l) + '</td><td class="n">' + n2(G.sum.t) + '</td><td></td></tr></tbody>';
+        }).join('') + '<tbody><tr class="divt"><td></td><td colspan="6" class="c">Total Cost ' + D.roman + ' - ' + E(D.title) + ':</td><td class="n">' + n2(D.sum.m) + '</td><td class="n">' + n2(D.sum.l) + '</td><td class="n">' + n2(D.sum.t) + '</td><td></td></tr></tbody>';
+      }).join('');
+      var sum = function (label, v, cls) { return '<tr class="sum' + (cls ? ' ' + cls : '') + '"><td colspan="9">' + label + '</td><td class="n">' + v + '</td><td></td></tr>'; };
+      var foot = '<tr class="sum tot"><td colspan="7">TOTAL COST</td><td class="n">' + n2(C.all.m) + '</td><td class="n">' + n2(C.all.l) + '</td><td class="n">' + n2(C.tc) + '</td><td></td></tr>' +
+        sum('SUPERVISION &amp; PROFIT', n2(C.sp)) + sum('CONTINGENCIES', n2(C.ct)) + sum('VAT', n2(C.vat)) + sum('PROJECT COST (LABOR, LIGHT EQUIPMENT AND POWER TOOLS)', n2(C.proj), 'proj') + sum('COST PER ' + E(d.areaU.toUpperCase()), C.psm ? n2(C.psm) : '—');
+      table = '<table class="q"><colgroup><col style="width:5%"><col style="width:26%"><col style="width:5%"><col style="width:4.5%"><col style="width:7.5%"><col style="width:7%"><col style="width:7.5%"><col style="width:8.5%"><col style="width:8%"><col style="width:9%"><col style="width:12%"></colgroup>' +
+        '<thead><tr><th rowspan="2">ITEM NO.</th><th rowspan="2">SCOPE OF WORK / ITEM DESCRIPTION</th><th rowspan="2">QTY</th><th rowspan="2">UOM</th><th colspan="3">UNIT COST</th><th rowspan="2">TOTAL<br>MATERIAL COST</th><th rowspan="2">TOTAL LABOR<br>COST</th><th rowspan="2">TOTAL MATERIAL<br>&amp; LABOR COST</th><th rowspan="2">REMARKS</th></tr>' +
+        '<tr><th>MATERIAL</th><th>LABOR</th><th>TOTAL</th></tr></thead>' + body + '<tbody class="foot">' + foot + '</tbody></table>' +
+        '<p class="mt">Amounts in ' + E(d.cur || 'local currency') + '. Supervision &amp; profit ' + fmt(esNum(d.sp)) + ' % of total cost; contingencies ' + fmt(esNum(d.cont)) + ' % of total + S&amp;P; VAT ' + fmt(esNum(d.tax)) + ' % of total + S&amp;P + contingencies.</p>';
+    } else {
+      table = '<table class="q"><colgroup><col style="width:8%"><col style="width:52%"><col style="width:10%"><col style="width:8%"><col style="width:22%"></colgroup><thead><tr><th>ITEM NO.</th><th>DESCRIPTION</th><th>QTY</th><th>UOM</th><th>REMARKS</th></tr></thead>' +
+        esBom(d).map(function (D) {
+          return (D.roman || D.name ? '<tbody><tr class="div"><td>' + D.roman + '</td><td colspan="4">' + E(D.name) + '</td></tr></tbody>' : '') + D.groups.map(function (G) {
+            return '<tbody class="g">' + (G.title ? '<tr class="grp"><td>' + G.no + '</td><td class="b" colspan="4">' + E(G.title) + '</td></tr>' : '') + G.items.map(function (it) {
+              return '<tr><td class="in">' + it.no + '</td><td class="in">' + E(it.desc) + '</td><td class="n">' + fmt(it.c.q) + '</td><td class="c">' + E(it.unit) + '</td><td class="rem">' + E(it.rem) + '</td></tr>';
+            }).join('') + '</tbody>';
+          }).join('');
+        }).join('') + '</table><p class="mt">Quantities as entered in the bill of quantities; labor-only items are excluded.</p>';
+    }
+    var sig = function (k, name, pos) { return '<div><p class="k">' + k + '</p><p class="nm">' + (name ? E(name) : '&nbsp;') + '</p><p class="ps">' + (pos ? E(pos) : '&nbsp;') + '</p></div>'; };
+    var html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + E(refNo + ' — ' + d.name + (priced ? ' BOQ' : ' BOM')) + '</title><style>' + qsCss(refNo) + '</style></head><body>' +
+      '<div class="bar"><button type="button" onclick="window.print()">Print / Save as PDF</button><button type="button" class="o" onclick="window.close()">Close</button></div>' +
+      '<div class="page wide"><p class="hdr"><span>Project</span>: ' + E(d.name) + '<br><span>Location</span>: ' + E(d.location) + '<br><span>Owner</span>: ' + E(d.owner) + '<br><span>Area</span>: ' + (d.area ? E(d.area) + ' ' + E(d.areaU) : '___') + '</p>' +
+      '<h1 class="t">' + (priced ? 'BILL OF QUANTITIES' : 'BILL OF MATERIALS') + '</h1>' + table +
+      '<div class="sigs">' + sig('Prepared by:', d.prepBy, d.prepPos) + sig('Checked by:', d.chkBy, d.chkPos) + sig('Counter Checked by:', d.ctrBy, d.ctrPos) + '</div></div>' +
+      '<scr' + 'ipt>window.addEventListener("load",function(){setTimeout(function(){window.print()},350)});<\/scr' + 'ipt></body></html>';
+    rpOpen(html);
+  }
+  function esImport() {
+    var inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = '.json,application/json';
+    inp.addEventListener('change', function () {
+      var f = inp.files && inp.files[0]; if (!f) return;
+      var r = new FileReader();
+      r.onload = function () {
+        try {
+          var x = JSON.parse(r.result), doc = x && x.mechtoolboxEstimate;
+          if (!doc || !Array.isArray(doc.divs)) throw new Error('not an estimate');
+          doc.id = esId(); if (ES.docs.some(function (o) { return o.name === doc.name; })) doc.name += ' (imported)';
+          ES.docs.push(doc); ES.active = doc.id; esSave(); esRender();
+        } catch (e) { window.alert('That file is not a MechToolBox estimate backup.'); }
+      };
+      r.readAsText(f);
+    });
+    inp.click();
+  }
+
+  var esRoot = $('#es-root');
+  if (esRoot) {
+    esRoot.addEventListener('input', function (e) {
+      var t = e.target, d = esCur(); if (!d) return;
+      if (t.dataset.ef) { d[t.dataset.ef] = t.value; esSave(); esRecalc(); return; }
+      if (t.dataset.dv || t.dataset.gv) { var f = esFind(d, t.dataset.dv || t.dataset.gv); if (f) { f.o[t.dataset.dv ? 'name' : 'title'] = t.value; esSave(); } return; }
+      if (t.dataset.iv && t.tagName !== 'SELECT') {
+        var it = esFind(d, t.dataset.iv); if (!it) return;
+        it.o[t.dataset.k] = t.value;
+        if (t.dataset.k === 'desc' && !it.o.unit) { var hit = ES_CAT.filter(function (c) { return c[0] === t.value; })[0]; if (hit) { it.o.unit = hit[1]; var u = $('#es-root [data-iv="' + it.o.id + '"][data-k="unit"]'); if (u) u.value = hit[1]; } }
+        esSave(); esRecalc();
+      }
+    });
+    esRoot.addEventListener('change', function (e) {
+      var t = e.target, d = esCur();
+      if (t.id === 'es-select') { ES.active = t.value; esSave(); esRender(); return; }
+      if (t.id === 'es-combine') { esCombine = t.checked; esRender(); return; }
+      if (!d) return;
+      if (t.dataset.ef === 'name') { esRender(); var n = $('#es-name'); if (n) n.focus(); return; }
+      if (t.dataset.iv && t.dataset.k === 'kind') { var f = esFind(d, t.dataset.iv); if (f) { f.o.kind = t.value; esSave(); esRender(); } }
+      if (t.dataset.ef === 'areaU') esRecalc();
+    });
+    esRoot.addEventListener('click', function (e) {
+      var t = e.target.closest('button'); if (!t || t.disabled) return;
+      var d = esCur(), act = t.dataset.act, f;
+      if (t.dataset.estab) { esTab = t.dataset.estab; try { localStorage.setItem(ES_TAB_KEY, esTab); } catch (er) {} esRender(); var tb = $('#es-root [data-estab="' + esTab + '"]'); if (tb) tb.focus(); return; }
+      if (act === 'create') {
+        var nm = $('#es-new-name').value.trim(), er2 = $('#es-err');
+        if (!nm) { er2.textContent = 'Give the estimate a name.'; er2.hidden = false; $('#es-new-name').focus(); return; }
+        var nd = esNew(nm, $('#es-new-tpl').value); ES.docs.push(nd); ES.active = nd.id; esSave(); esRender(); return;
+      }
+      if (act === 'import') { esImport(); return; }
+      if (act === 'new') { $('#es-newbox').hidden = false; $('#es-new-name').focus(); return; }
+      if (act === 'cancelnew') { $('#es-newbox').hidden = true; return; }
+      if (!d) return;
+      if (act === 'dup') { var cp2 = JSON.parse(JSON.stringify(d)); cp2.id = esId(); cp2.name = d.name + ' (copy)'; ES.docs.push(cp2); ES.active = cp2.id; esSave(); esRender(); return; }
+      if (act === 'del') { if (window.confirm('Delete estimate "' + d.name + '"? This cannot be undone — back it up first if you need a copy.')) { ES.docs = ES.docs.filter(function (x) { return x !== d; }); ES.active = ES.docs.length ? ES.docs[0].id : null; esSave(); esRender(); } return; }
+      if (act === 'export') { pjSaveFile(esFile(d) + '.estimate.json', JSON.stringify({ mechtoolboxEstimate: d, version: 1 }, null, 2), 'application/json'); return; }
+      if (act === 'boqcsv' || act === 'bomcsv') { esCsv(act === 'boqcsv'); return; }
+      if (act === 'boqpdf' || act === 'bompdf') { esPdf(act === 'boqpdf'); return; }
+      var focusNew = null;
+      if (act === 'iadd') { f = esFind(d, t.dataset.g); if (f) { var ni = esItem(); f.o.items.push(ni); focusNew = ni.id; } }
+      else if (act === 'gadd') { f = esFind(d, t.dataset.d); if (f) f.o.groups.push({ id: esId(), title: 'New group', items: [esItem()] }); }
+      else if (act === 'dadd') { d.divs.push(esDiv(t.dataset.k)); }
+      else if (act === 'idel' || act === 'gdel' || act === 'ddel') {
+        f = esFind(d, t.dataset.i || t.dataset.g || t.dataset.d); if (!f) return;
+        var what = act === 'idel' ? 'item ' + f.o.no : act === 'gdel' ? 'group ' + f.o.no + ' and its ' + f.o.items.length + ' item(s)' : 'division ' + f.o.roman + ' and everything in it';
+        if (act !== 'idel' || f.o.desc || f.o.qty) { if (!window.confirm('Delete ' + what + '?')) return; }
+        f.list.splice(f.i, 1);
+      }
+      else if (act === 'iup' || act === 'gup' || act === 'dup-up') esMove(d, t.dataset.i || t.dataset.g || t.dataset.d, -1);
+      else if (act === 'idown' || act === 'gdown' || act === 'dup-down') esMove(d, t.dataset.i || t.dataset.g || t.dataset.d, 1);
+      else return;
+      esSave(); esRender();
+      if (focusNew) { var nf = $('#es-root [data-iv="' + focusNew + '"][data-k="desc"]'); if (nf) nf.focus(); }
+    });
+    esRender();
+  }
+
   /* ---------- Feedback ---------- */
   // Where feedback goes: set FEEDBACK_TO to your email and/or FEEDBACK_FORM to a Google Form / Tally link.
   var APP_VERSION = 'v0.9';
@@ -9140,19 +9532,148 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     ta.remove();
   }
 
-  /* ---------- Compass: device heading (phones) + live sun position ---------- */
+  /* ---------- Ball compass: a floating dashboard compass; the heading band turns about the vertical axis ---------- */
   var cp = $('#compass'), cpBtn = $('#cp-btn'), cpPanel = $('#cp-panel');
-  var cpDials = $$('.cp-dial', cp), cpSuns = $$('.cp-sun', cp);
-  var cpHeading = null, cpShown = 0, cpRaf = 0, cpGotEvent = false;
+  var cpHeading = null, cpGotEvent = false;
   var CP_PTS = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
   var cardinal = function (deg) { return CP_PTS[Math.round(((deg % 360) + 360) % 360 / 22.5) % 16]; };
-  function cpDraw() {
-    var target = cpHeading == null ? 0 : cpHeading;
-    var diff = ((target - cpShown + 540) % 360) - 180;          // shortest way round
-    cpShown = (cpShown + diff * (reduceMotion.matches ? 1 : 0.18) + 360) % 360;
-    cpDials.forEach(function (d) { d.setAttribute('transform', 'rotate(' + (-cpShown).toFixed(2) + ' 50 50)'); });
-    cpRaf = Math.abs(diff) > 0.05 ? requestAnimationFrame(cpDraw) : 0;
+  var RAD = Math.PI / 180;
+
+  // Sun azimuth / altitude at a place (NOAA low-precision formulas, about ±1°).
+  function sunPos(date, lat, lon) {
+    var d = date.getTime() / 86400000 + 2440587.5 - 2451545.0;
+    var g = (357.529 + 0.98560028 * d) * RAD, q = 280.459 + 0.98564736 * d;
+    var L = (q + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * RAD, e = (23.439 - 0.00000036 * d) * RAD;
+    var ra = Math.atan2(Math.cos(e) * Math.sin(L), Math.cos(L)), dec = Math.asin(Math.sin(e) * Math.sin(L));
+    var gmst = ((18.697374558 + 24.06570982441908 * d) % 24 + 24) % 24;
+    var H = (gmst * 15 + lon) * RAD - ra, la = lat * RAD;
+    var alt = Math.asin(Math.sin(la) * Math.sin(dec) + Math.cos(la) * Math.cos(dec) * Math.cos(H));
+    var az = Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(la) - Math.tan(dec) * Math.cos(la)) / RAD + 180;
+    return { az: (az + 360) % 360, alt: alt / RAD };
   }
+  var CP_CITIES = { intl: ['Manila', 14.5995, 120.9842, 'Asia/Manila'], ph: ['Manila', 14.5995, 120.9842, 'Asia/Manila'], au: ['Sydney', -33.8688, 151.2093, 'Australia/Sydney'], us: ['Washington, DC', 38.9072, -77.0369, 'America/New_York'] };
+  var cpLoc = null;
+  try { cpLoc = JSON.parse(localStorage.getItem('mechtoolbox-loc') || 'null'); } catch (e) {}
+  var place = function () { return cpLoc || CP_CITIES[codeBasis] || CP_CITIES.intl; };
+
+  // Card: what is printed on the ball's band. Rows sit at these latitudes on the sphere.
+  var BALL_LABELS = [];
+  [['N', 0], ['NE', 45], ['E', 90], ['SE', 135], ['S', 180], ['SW', 225], ['W', 270], ['NW', 315]].forEach(function (k) { BALL_LABELS.push({ a: k[1], t: k[0], big: k[1] % 90 === 0 }); });
+  for (var bd = 30; bd < 360; bd += 30) if (bd % 90) BALL_LABELS.push({ a: bd, t: String(bd / 10), num: true });
+
+  // Ball state: shown heading, swing velocity, tilt wobble; damped like a compass card in liquid.
+  var ball = { a: 0, v: 0, tilt: 16, tv: 0 }, ballDrag = null, ballT = 0;
+  function drawBall(cv, big) {
+    var ctx = cv.getContext('2d'), dpr = Math.min(window.devicePixelRatio || 1, 2), W = big ? 220 : 56;
+    if (cv.width !== W * dpr) { cv.width = W * dpr; cv.height = W * dpr; }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, W);
+    var cx = W / 2, cy = W / 2 - (big ? 8 : 0), R = big ? 84 : 25, t = ball.tilt * RAD, st = Math.sin(t), ct = Math.cos(t);
+    if (big) {                                                     // clear stem and base under the ball
+      var sg = ctx.createLinearGradient(cx - 14, 0, cx + 14, 0);
+      sg.addColorStop(0, 'rgba(138,166,157,0.10)'); sg.addColorStop(0.5, 'rgba(232,243,239,0.30)'); sg.addColorStop(1, 'rgba(138,166,157,0.10)');
+      ctx.fillStyle = sg; ctx.fillRect(cx - 12, cy + R - 6, 24, 28);
+      ctx.fillStyle = 'rgba(232,243,239,0.18)'; ctx.beginPath(); ctx.ellipse(cx, cy + R + 22, 26, 5, 0, 0, Math.PI * 2); ctx.fill();
+    }
+    // ball body: glossy black
+    var gb = ctx.createRadialGradient(cx - R * 0.35, cy - R * 0.45, R * 0.05, cx, cy, R);
+    gb.addColorStop(0, '#3A4442'); gb.addColorStop(0.35, '#121716'); gb.addColorStop(0.85, '#050707'); gb.addColorStop(1, '#000');
+    ctx.fillStyle = gb; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+    // point on the sphere: azimuth on the card relative to the front, latitude on the ball
+    var P = function (az, lat) {
+      var th = (ball.a - az) * RAD, ph = lat * RAD;           // azimuth increases to the left, as on a real ball compass
+      var X = Math.cos(ph) * Math.sin(th), Y = Math.sin(ph), Z = Math.cos(ph) * Math.cos(th);
+      return { x: cx + R * X, y: cy - R * (Y * ct - Z * st), z: Y * st + Z * ct, th: th };
+    };
+    ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.clip();
+    // band rule lines and ticks
+    var rule = function (lat, w, col) {
+      ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); var on = false;
+      for (var az = 0; az <= 360; az += 3) { var p = P(az, lat); if (p.z > 0.02) { if (on) ctx.lineTo(p.x, p.y); else { ctx.moveTo(p.x, p.y); on = true; } } else on = false; }
+      ctx.stroke();
+    };
+    rule(-1, big ? 1.2 : 0.8, 'rgba(232,243,239,0.85)');
+    for (var az = 0; az < 360; az += big ? 5 : 10) {
+      var len = az % 30 === 0 ? 9 : az % 10 === 0 ? 6 : 3.5, p1 = P(az, -1), p2 = P(az, -1 - len * (big ? 1 : 1.4));
+      if (p1.z <= 0.05) continue;
+      ctx.strokeStyle = 'rgba(232,243,239,' + (0.35 + 0.6 * p1.z).toFixed(2) + ')'; ctx.lineWidth = az % 30 === 0 ? 1.4 : 1;
+      ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+    }
+    // printed labels, squeezed by the curvature
+    BALL_LABELS.forEach(function (L) {
+      if (!big && L.num) return;
+      var lat = L.num ? 9 : L.big ? 24 : 22, p = P(L.a, lat);
+      if (p.z <= 0.12) return;
+      var size = big ? (L.big ? 30 : L.num ? 15 : 19) : (L.big ? 13 : 8);
+      var pr = P(L.a - 2, lat), ang = Math.atan2(pr.y - p.y, pr.x - p.x);
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(ang); ctx.scale(Math.max(0.15, Math.cos(p.th)), 0.92 + 0.08 * p.z);
+      ctx.globalAlpha = Math.min(1, 0.25 + p.z);
+      ctx.font = (L.big ? '700 ' : '600 ') + size + 'px "Space Grotesk", system-ui, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = L.big ? '#2FC27F' : '#F2F6F4';
+      ctx.fillText(L.t, 0, 0);
+      ctx.restore();
+    });
+    // green cross on the top of the ball (turns with the card)
+    if (big) {
+      var top = P(0, 62), back = P(180, 62), mid = P(0, 90);
+      ctx.strokeStyle = 'rgba(47,194,127,0.95)'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(back.x, back.y); ctx.lineTo(top.x, top.y); ctx.stroke();
+      var l = P(90, 62), r = P(270, 62);
+      ctx.beginPath(); ctx.moveTo(l.x, l.y); ctx.lineTo(r.x, r.y); ctx.stroke();
+      ctx.fillStyle = 'rgba(232,243,239,0.9)'; ctx.beginPath(); ctx.arc(mid.x, mid.y, 2.2, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+    // glass highlights and rim
+    var hl = ctx.createRadialGradient(cx - R * 0.38, cy - R * 0.5, 0, cx - R * 0.38, cy - R * 0.5, R * 0.55);
+    hl.addColorStop(0, 'rgba(255,255,255,0.32)'); hl.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = hl; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.10)'; ctx.beginPath(); ctx.ellipse(cx + R * 0.45, cy + R * 0.55, R * 0.22, R * 0.08, -0.6, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(92,224,176,0.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, R - 0.5, 0, Math.PI * 2); ctx.stroke();
+    // fixed lubber line in front: read the heading here
+    ctx.strokeStyle = '#FF9A85'; ctx.lineWidth = big ? 2 : 1.4; ctx.lineCap = 'round';
+    var f1 = cy - R * (Math.sin(6 * RAD) * ct - Math.cos(6 * RAD) * st), f2 = cy - R * (Math.sin(-17 * RAD) * ct - Math.cos(-17 * RAD) * st); // across the tick band only, so the letters stay readable
+    ctx.beginPath(); ctx.moveTo(cx, f1); ctx.lineTo(cx, f2); ctx.stroke();
+  }
+
+  var glSm = $('.gl-sm', cp), glBig = $('.gl-big', cp), glRaf = 0, glLast = 0;
+  function glFrame(t) {
+    glRaf = 0;
+    var dt = glLast ? Math.min(0.05, (t - glLast) / 1000) : 0;
+    glLast = t; ballT += dt;
+    if (!ballDrag) {
+      // on a PC there is no heading: let it settle on north with a gentle float, like a compass on a moving dashboard
+      var target = cpHeading != null ? cpHeading : (reduceMotion.matches ? 0 : 7 * Math.sin(ballT * 0.55) + 3 * Math.sin(ballT * 1.37));
+      var diff = ((target - ball.a + 540) % 360) - 180;
+      if (reduceMotion.matches) { ball.a = target; ball.v = 0; }
+      else { ball.v += (diff * 6 - ball.v * 2.6) * dt; ball.a = (ball.a + ball.v * dt + 360) % 360; }
+    }
+    var tt = 16 + (reduceMotion.matches ? 0 : Math.max(-6, Math.min(6, -ball.v * 0.03)) + 1.2 * Math.sin(ballT * 0.9));
+    ball.tilt += (tt - ball.tilt) * Math.min(1, dt * 4);
+    drawBall(glSm, false);
+    if (!cpPanel.hidden) drawBall(glBig, true);
+    glKick();
+  }
+  function glKick() {
+    if (!document.hidden && !glRaf) glRaf = requestAnimationFrame(function (t) { setTimeout(function () { glFrame(t); }, 16); }); // ≈ 30 fps
+    if (document.hidden) glLast = 0;
+  }
+  document.addEventListener('visibilitychange', glKick);
+  glKick();
+
+  // Flick the ball: drag sideways to turn the card; it swings back to the heading when you let go.
+  glBig.addEventListener('pointerdown', function (e) { ballDrag = { x: e.clientX, a: ball.a, lastX: e.clientX, lastT: performance.now(), v: 0 }; glBig.setPointerCapture(e.pointerId); });
+  glBig.addEventListener('pointermove', function (e) {
+    if (!ballDrag) return;
+    var now = performance.now(), dts = Math.max(1, now - ballDrag.lastT) / 1000;
+    ball.a = (ballDrag.a - (e.clientX - ballDrag.x) * 0.9 + 720) % 360;
+    ballDrag.v = -(e.clientX - ballDrag.lastX) * 0.9 / dts; ballDrag.lastX = e.clientX; ballDrag.lastT = now;
+  });
+  var ballRelease = function () { if (ballDrag) { ball.v = Math.max(-900, Math.min(900, ballDrag.v)); ballDrag = null; } };
+  glBig.addEventListener('pointerup', ballRelease);
+  glBig.addEventListener('pointercancel', ballRelease);
+
+  // Device heading (phones over https): turns the ball.
   function cpSet(deg) {
     cpHeading = (deg + 360) % 360;
     cp.classList.add('live');
@@ -9161,7 +9682,6 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     cpBtn.setAttribute('aria-label', 'Compass — heading ' + txt);
     $('#cp-status').textContent = 'Live from your device compass. Hold the phone flat; wave it in a figure-8 to calibrate.';
     $('#cp-enable').hidden = true;
-    if (!cpRaf) cpRaf = requestAnimationFrame(cpDraw);
   }
   function screenAngle() { return (screen.orientation && screen.orientation.angle) || window.orientation || 0; }
   function onOrient(e) {
@@ -9173,9 +9693,9 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     window.addEventListener('deviceorientation', onOrient);
     setTimeout(function () {
       if (cpGotEvent) return;
-      if (!window.isSecureContext) $('#cp-status').textContent = 'The compass needs a secure (https) link. Sun position below is live.';
-      else if (needsPerm && !cpAsked) { $('#cp-enable').hidden = false; $('#cp-status').textContent = 'Tap Enable compass to use your phone’s heading.'; }
-      else $('#cp-status').textContent = 'No compass sensor on this device — north is shown up. Open the site on your phone for a live heading.';
+      if (!window.isSecureContext) $('#cp-status').textContent = 'Heading needs a secure (https) link on phones. Sun position and time below are live.';
+      else if (needsPerm && !cpAsked && (navigator.maxTouchPoints > 0 || 'ontouchstart' in window)) { $('#cp-enable').hidden = false; $('#cp-status').textContent = 'Tap Enable compass to use your phone’s heading.'; }
+      else $('#cp-status').textContent = 'No compass sensor on this computer — the ball floats on north. Flick it sideways; open the site on your phone for a live heading.';
     }, 1500);
   }
   // iOS needs a tap to allow the sensor; other browsers send readings straight away (some also expose requestPermission).
@@ -9189,50 +9709,41 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
     }).catch(function () { $('#cp-status').textContent = 'Could not ask for compass permission (https needed).'; });
   });
 
-  // Sun azimuth / altitude (NOAA low-precision formulas, about ±1°).
-  var CP_CITIES = { intl: ['Manila', 14.5995, 120.9842], ph: ['Manila', 14.5995, 120.9842], au: ['Sydney', -33.8688, 151.2093], us: ['Washington, DC', 38.9072, -77.0369] };
-  var cpLoc = null;
-  try { cpLoc = JSON.parse(localStorage.getItem('mechtoolbox-loc') || 'null'); } catch (e) {}
-  function sunPos(date, lat, lon) {
-    var rad = Math.PI / 180, d = date.getTime() / 86400000 + 2440587.5 - 2451545.0;
-    var g = (357.529 + 0.98560028 * d) * rad, q = 280.459 + 0.98564736 * d;
-    var L = (q + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * rad, e = (23.439 - 0.00000036 * d) * rad;
-    var ra = Math.atan2(Math.cos(e) * Math.sin(L), Math.cos(L)), dec = Math.asin(Math.sin(e) * Math.sin(L));
-    var gmst = (18.697374558 + 24.06570982441908 * d) % 24;
-    var H = (gmst * 15 + lon) * rad - ra, la = lat * rad;
-    var alt = Math.asin(Math.sin(la) * Math.sin(dec) + Math.cos(la) * Math.cos(dec) * Math.cos(H));
-    var az = Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(la) - Math.tan(dec) * Math.cos(la)) / rad + 180;
-    return { az: (az + 360) % 360, alt: alt / rad };
-  }
+  // Sun text, day / night and the local clock.
   function cpSun() {
-    var c = cpLoc || CP_CITIES[codeBasis] || CP_CITIES.intl, s = sunPos(new Date(), c[1], c[2]);
-    var up = s.alt > -0.8;
-    cpSuns.forEach(function (g) { g.hidden = !up; g.setAttribute('transform', 'rotate(' + s.az.toFixed(1) + ' 50 50)'); });
-    $('#cp-sun').textContent = up
+    var c = place(), now = new Date(), s = sunPos(now, c[1], c[2]);
+    $('#cp-sun').textContent = s.alt > -0.8
       ? '☀ ' + Math.round(s.az) + '° ' + cardinal(s.az) + ' · ' + Math.round(s.alt) + '° above the horizon'
       : '☾ Sun below the horizon (' + Math.round(s.az) + '° ' + cardinal(s.az) + ')';
     $('#cp-loc').textContent = cpLoc ? 'Your location (' + c[1].toFixed(2) + ', ' + c[2].toFixed(2) + ')' : c[0] + ' — approximate';
   }
-  cpSun();
+  function cpClock() {
+    var c = place(), opt = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+    if (!cpLoc && c[3]) opt.timeZone = c[3];
+    try { $('#cp-time').textContent = new Date().toLocaleTimeString('en-GB', opt); } catch (e) { $('#cp-time').textContent = new Date().toLocaleTimeString(); }
+  }
+  cpSun(); cpClock();
   setInterval(cpSun, 30000);
+  setInterval(function () { if (!cpPanel.hidden) cpClock(); }, 1000);
   $('#cp-myloc').addEventListener('click', function () {
     if (!navigator.geolocation) { $('#cp-loc').textContent = 'Location not available in this browser'; return; }
     $('#cp-loc').textContent = 'Locating…';
     navigator.geolocation.getCurrentPosition(function (p) {
       cpLoc = ['You', p.coords.latitude, p.coords.longitude];
       try { localStorage.setItem('mechtoolbox-loc', JSON.stringify(cpLoc)); } catch (e) {}
-      cpSun();
+      cpSun(); cpClock();
     }, function () { $('#cp-loc').textContent = 'Location blocked — using ' + (CP_CITIES[codeBasis] || CP_CITIES.intl)[0]; }, { maximumAge: 600000, timeout: 10000 });
   });
   function cpToggle(open) {
     cpPanel.hidden = !open;
     cpBtn.setAttribute('aria-expanded', String(open));
     cp.classList.toggle('open', open);
-    if (open) cpSun();
+    if (open) { cpSun(); cpClock(); }
   }
   cpBtn.addEventListener('click', function () { cpToggle(cpPanel.hidden); });
   document.addEventListener('click', function (e) { if (!cpPanel.hidden && !cp.contains(e.target)) cpToggle(false); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !cpPanel.hidden) { cpToggle(false); cpBtn.focus(); } });
+
 })();
 </script>
 </body>
