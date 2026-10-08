@@ -1327,6 +1327,32 @@ body.modal-open .cv { visibility: hidden; }
 .pl-wire { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
 .pl-acts { white-space: nowrap; }
 .pl-table tfoot td { font-weight: 600; background: var(--panel); }
+
+/* Price list, revisions */
+.es-msg { margin: 8px 0 0; min-height: 0; font: 500 12px/1.4 var(--mono); color: var(--mint); }
+.es-msg:empty { display: none; }
+.es-msg.pop { animation: suggIn .3s ease both; }
+.pr-q { max-width: 420px; margin: 4px 0 10px; }
+.pr-table table { min-width: 760px; }
+.es-rev { padding: 14px 16px; border: 1px solid var(--edge); border-radius: 16px; background: var(--surface); }
+.es-rev-h { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.es-rev-h .pj-form-t { margin: 0; }
+.es-revs { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.es-revs li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 8px 10px; border-radius: 10px; background: rgba(7, 17, 15, 0.45); font-size: 14px; }
+.es-revn { font: 700 13px var(--mono); color: var(--mint); }
+.es-revd { color: var(--muted); flex: 1 1 200px; }
+.es-revt { font-family: var(--mono); }
+.es-revt em { font-style: normal; font-size: 12px; color: var(--muted); }
+.es-revt em.up { color: var(--danger); } .es-revt em.down { color: var(--mint); }
+.es-reva { display: inline-flex; gap: 6px; }
+.es-reva [aria-pressed="true"] { color: var(--mint); border-color: var(--mint); }
+.es-cmp { margin-top: 10px; }
+.es-cmp table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 13.5px; }
+.es-cmp th, .es-cmp td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+.es-cmp thead th { font: 500 11px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.es-cmp td.num { text-align: right; font-family: var(--mono); white-space: nowrap; }
+.es-cmp tfoot td { font-weight: 600; }
+.es-c-added td:first-child { color: var(--mint); } .es-c-removed td:first-child { color: var(--danger); } .es-c-changed td:first-child { color: #FFC857; }
 </style>
 </head>
 <body>
@@ -2264,6 +2290,15 @@ body.modal-open .cv { visibility: hidden; }
     pipe: '<path d="M8 38h144M8 58h144" class="ink"/><rect x="44" y="32" width="6" height="32" class="ink"/><rect x="110" y="32" width="6" height="32" class="ink"/>' +
           '<line x1="60" y1="48" x2="100" y2="48" class="ink a-march" marker-end="url(#arr-mini)"/><circle cx="80" cy="17" r="9" class="ink-m"/><path d="M80 26v12" class="ink-m"/><path d="M80 17l5-4" class="ink a-needle" style="stroke-width:1.2"/>' +
           '<text x="8" y="80" class="ink-t">ΔP · Re</text>',
+    refpipe: '<rect x="14" y="30" width="34" height="30" rx="3" class="ink"/><rect x="112" y="24" width="34" height="42" rx="3" class="ink"/><circle cx="129" cy="45" r="11" class="ink-m"/>' +
+      '<path d="M48 38H112M48 52H112" class="ink a-march"/><text x="56" y="32" class="ink-t">⌀ gas</text><text x="56" y="66" class="ink-t">⌀ liquid</text>',
+    gen: '<rect x="20" y="30" width="62" height="36" rx="4" class="ink"/><circle cx="40" cy="48" r="9" class="ink a-flicker"/><path d="M58 40h16M58 48h16M58 56h16" class="ink-m"/>' +
+      '<path d="M98 30h40v36h-40z" class="ink"/><path d="M106 40c6 0 6 8 12 8s6-8 12-8M106 52c6 0 6 8 12 8s6-8 12-8" class="ink-m"/><path d="M82 48h16" class="ink a-march"/>',
+    pfc: '<path d="M22 70L62 70L62 30z" class="ink"/><path d="M62 70L62 46" class="ink-m" stroke-dasharray="3 3"/><text x="28" y="82" class="ink-t">kW</text><text x="66" y="40" class="ink-t">kVAR</text>' +
+      '<path d="M104 30v40M116 30v40M92 50h12M116 50h12" class="ink a-flicker"/>',
+    hwheat: '<rect x="54" y="12" width="44" height="66" rx="20" class="ink"/><path d="M66 60c0-8 8-10 8-18 0 8 8 10 8 18a8 8 0 0 1-16 0z" class="ink a-flicker"/><path d="M98 26h30M24 64h30" class="ink-m a-march"/><text x="110" y="20" class="ink-t">60 °C</text>',
+    booster: '<circle cx="50" cy="50" r="16" class="ink"/><path d="M50 50l9-9" class="ink a-flicker"/><path d="M14 50h20M66 50h30v-30h30" class="ink-m a-march"/><rect x="96" y="46" width="34" height="32" rx="12" class="ink"/><text x="100" y="66" class="ink-t">kPa</text>',
+    sprhyd: '<path d="M16 26H144M40 26v12M72 26v12M104 26v12M136 26v12" class="ink"/><path d="M34 46l-5 8M40 46v10M46 46l5 8M66 46l-5 8M72 46v10M78 46l5 8" class="ink-m a-flicker"/><path d="M16 26v52" class="ink a-march"/><text x="98" y="74" class="ink-t">Q · p</text>',
     pls: '<rect x="44" y="10" width="72" height="72" rx="3" class="ink"/><path d="M80 10v72" class="ink-m"/><path d="M52 22h20M52 32h20M52 42h20M52 52h20M52 62h20M88 22h20M88 32h20M88 42h20M88 52h20M88 62h20" class="ink"/>' +
       '<rect x="72" y="16" width="16" height="6" class="ink a-flicker"/><text x="122" y="30" class="ink-t">A</text><text x="122" y="48" class="ink-t">B</text><text x="122" y="66" class="ink-t">C</text>',
     elec: '<path d="M96 12L74 48h16l-6 30 26-40H94l8-26z" class="ink a-flicker"/><path d="M26 30h30M26 45h30M26 60h30" class="ink-m a-march"/>' +
@@ -2893,6 +2928,108 @@ body.modal-open .cv { visibility: hidden; }
       desc: 'Circuit-by-circuit panelboard schedule — auto phase balancing, breaker and wire per circuit, demand load, main breaker and feeder. PDF and Excel.'
     },
 
+    refpipe: {
+      code: 'HVAC / 010', title: 'Refrigerant Pipe Sizing', card: true, disc: 'M',
+      desc: 'Liquid and suction line sizes for split and VRF systems, extra refrigerant charge, length and height limits, oil traps and insulation.',
+      fields: [
+        { k: 't', label: 'System', opts: [['split', 'Split / ducted split (one indoor unit)'], ['vrf', 'VRF — main pipe from the outdoor unit']], def: ['split', 'split'] },
+        { k: 'q', label: 'Cooling capacity', q: 'power', def: [7.1, 24000] },
+        { k: 'r', label: 'Refrigerant', opts: [['410', 'R410A'], ['32', 'R32']], def: ['410', '410'] },
+        { k: 'l', label: 'Pipe length, one way', q: 'len', def: [15, 50] },
+        { k: 'h', label: 'Height difference', q: 'len', def: [5, 16], zero: true },
+        { k: 'pos', label: 'Outdoor unit is', opts: [['above', 'Above the indoor unit'], ['below', 'Below the indoor unit']], def: ['above', 'above'] },
+        { k: 'pre', label: 'Pre-charged pipe length', q: 'len', def: [7.5, 25], zero: true, show: function (s) { return s.t === 'split'; } }
+      ],
+      formula: function () { return ['Line sizes from typical manufacturer tables by capacity', 'Extra charge = (L − pre-charged length) × g/m of the liquid line', 'Oil trap at the foot of a suction riser and about every 6 m (20 ft) of rise']; },
+      calc: function (v) {
+        var IN = { '1/4': 6.35, '3/8': 9.52, '1/2': 12.7, '5/8': 15.88, '3/4': 19.05, '7/8': 22.22, '1-1/8': 28.58, '1-3/8': 34.92, '1-5/8': 41.28 };
+        var SPLIT = [[2.9, '1/4', '3/8'], [4.2, '1/4', '3/8'], [5.6, '1/4', '1/2'], [7.3, '1/4', '5/8'], [10.6, '3/8', '5/8'], [14.2, '3/8', '5/8'], [17.6, '3/8', '3/4']];
+        var VRF = [[15, '3/8', '5/8'], [22.4, '3/8', '3/4'], [29, '3/8', '7/8'], [42, '1/2', '1-1/8'], [64, '5/8', '1-1/8'], [92, '3/4', '1-3/8'], [1e9, '3/4', '1-5/8']];
+        var CHG = v.r === '32' ? { '1/4': 0.020, '3/8': 0.040, '1/2': 0.080, '5/8': 0.13, '3/4': 0.19 } : { '1/4': 0.022, '3/8': 0.054, '1/2': 0.11, '5/8': 0.17, '3/4': 0.26 };
+        var kw = v.q, tbl = v.t === 'split' && kw <= 17.6 ? SPLIT : VRF, row = tbl.filter(function (r) { return kw <= r[0]; })[0] || tbl[tbl.length - 1];
+        var liq = row[1], gas = row[2], pipe = function (s) { return s + ' in (' + fmt(IN[s], 2) + ' mm OD)'; };
+        var extraL = Math.max(0, v.l - (v.t === 'split' ? v.pre : 0)), charge = extraL * (CHG[liq] || 0.054);
+        var maxL = v.t === 'split' ? (kw <= 4.2 ? 20 : 30) : 165, maxH = v.t === 'split' ? (kw <= 4.2 ? 10 : 15) : 50;
+        var traps = v.pos === 'above' && v.h > 0 ? 1 + Math.floor(v.h / 6) : 0, ok = v.l <= maxL + 1e-9 && v.h <= maxH + 1e-9;
+        var kg = function (x) { return sys === 'si' ? fmt(x, 2) + ' kg' : fmt(x * 35.274, 1) + ' oz'; };
+        return [
+          ['Liquid line', pipe(liq), 1],
+          ['Gas (suction) line', pipe(gas), 1, v.t === 'split' && kw > 17.6 ? 'above 17.6 kW (5 TR) — sized as a VRF / large split main pipe' : ''],
+          ['Extra refrigerant charge', kg(charge), 0, fq(extraL, 'len') + ' × ' + (sys === 'si' ? fmt((CHG[liq] || 0.054) * 1000, 0) + ' g/m' : fmt((CHG[liq] || 0.054) * 10.7521, 2) + ' oz/ft') + ' (' + liq + ' in liquid)' + (v.t === 'vrf' ? ' — add the branch pipes too' : '')],
+          ['Oil traps (suction riser)', traps ? fmt(traps, 0) : 'none needed', 0, traps ? 'at the foot of the riser and about every 6 m (20 ft) of rise' : (v.pos === 'below' ? 'outdoor unit below — suction flows down to it' : '')],
+          ['Insulation', 'gas 19 mm (¾ in), liquid 13 mm (½ in)', 0, 'closed-cell, vapour-tight — humid climates'],
+          ['Design check', ok ? STATUS.pass : STATUS.warn, 1, ok ? 'within typical limits: ' + fq(maxL, 'len') + ' length, ' + fq(maxH, 'len') + ' height' : 'beyond typical limits (' + fq(maxL, 'len') + ' length, ' + fq(maxH, 'len') + ' height) — check the manufacturer\'s data']
+        ];
+      },
+      note: 'Typical sizes and charge rates for R410A / R32 equipment (Daikin, Mitsubishi, Carrier tables). Always confirm against the installation manual of the selected unit — some models use 3/8 in liquid from 7 kW, and VRF branch and header sizes follow the branch-kit tables.'
+    },
+
+    gen: {
+      code: 'ELEC / 012', title: 'Generator & Transformer Sizing', card: true, disc: 'E',
+      desc: 'Transformer and standby generator kVA from the demand load, future growth and the largest motor start.',
+      fields: [
+        { k: 'p', label: 'Demand load', unit: 'kW', def: [150, 150] },
+        { k: 'pf', label: 'Power factor', unit: '0–1', def: [0.85, 0.85], max: 1, maxMsg: 'Power factor must be between 0 and 1.' },
+        { k: 'm', label: 'Largest motor', q: 'kwhp', def: [22, 30], zero: true },
+        { k: 'st', label: 'Motor starting', opts: [['6', 'Direct on line (≈ 6 × kVA)'], ['3', 'Star-delta / soft starter (≈ 3 ×)'], ['1.5', 'VFD (≈ 1.5 ×)']], def: ['6', '6'] },
+        { k: 'fut', label: 'Future allowance', unit: '%', def: [20, 20], zero: true },
+        { k: 'tl', label: 'Transformer max loading', unit: '%', def: [80, 80], max: 100, maxMsg: 'Loading must be 100 % or less.' },
+        { k: 'v', label: 'Secondary voltage (line)', unit: 'V', def: [400, 480], reg: { ph: 230, au: 400, us: 480 } }
+      ],
+      formula: function () { return ['S = P / pf × (1 + future)', 'Transformer ≥ S / loading limit', 'Generator ≥ S / 0.8 and ≥ (S − S_motor + S_start) / 1.5']; },
+      calc: function (v) {
+        var S = v.p / v.pf * (1 + v.fut / 100), mRun = v.m / (0.9 * 0.85), mStart = mRun * +v.st;
+        var TX = codeBasis === 'us' || codeBasis === 'ph' ? [45, 75, 112.5, 150, 225, 300, 500, 750, 1000, 1500, 2000, 2500, 3000, 3750] : [50, 100, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150];
+        var GEN = [20, 30, 40, 50, 60, 80, 100, 125, 150, 200, 250, 300, 350, 400, 500, 600, 750, 800, 1000, 1250, 1500, 2000, 2500, 3000];
+        var tx = nextUp(TX, S / (v.tl / 100)), needRun = S / 0.8, needStart = (S - mRun + mStart) / 1.5, gen = nextUp(GEN, Math.max(needRun, needStart));
+        var I = function (kva) { return kva * 1000 / (Math.sqrt(3) * v.v); };
+        var brk = gen ? nextUp(codeBasis === 'au' ? AU_BRK : codeBasis === 'us' || codeBasis === 'ph' ? PH_BRK : BREAKER_A, I(gen) * 1.25) : null;
+        var startGov = needStart > needRun;
+        return [
+          ['Design load', fmt(S, 1) + ' kVA', 0, fmt(v.p, 1) + ' kW at pf ' + fmt(v.pf, 2) + (v.fut ? ' + ' + fmt(v.fut) + ' % future' : '')],
+          ['Transformer', tx ? fmt(tx) + ' kVA' : fmt(S, 0) + ' kVA — split into several units', 1, tx ? 'loaded ' + fmt(S / tx * 100, 0) + ' % · secondary ' + fmt(I(tx), 0) + ' A at ' + fmt(v.v, 0) + ' V' : ''],
+          ['Standby generator', gen ? fmt(gen) + ' kVA · ' + fmt(gen * 0.8, 0) + ' kW' : 'above 3,000 kVA — parallel sets', 1, startGov ? 'set by the motor start (' + fmt(mStart, 0) + ' kVA starting)' : 'set by the running load at ≤ 80 %'],
+          ['Generator breaker', brk ? brk + ' A' : '—', 0, 'output ' + (gen ? fmt(I(gen), 0) : '—') + ' A × 1.25'],
+          ['Largest motor start', fmt(mStart, 0) + ' kVA', 0, fmt(mRun, 1) + ' kVA running × ' + v.st],
+          ['Design check', tx && gen ? STATUS.pass : STATUS.warn, 1, tx && gen ? 'transformer ≤ ' + fmt(v.tl, 0) + ' % loaded; generator covers running load and largest motor start' : 'load beyond the largest standard unit']
+        ];
+      },
+      note: 'Preliminary sizing. The motor-start check assumes the set can pick up about 1.5 × its rating with roughly a 20 % voltage dip (AVR-controlled set) — confirm with the manufacturer\'s sizing software, especially for many motors or non-linear (UPS, VFD) loads. Transformer sizes: ANSI / PH or IEC preferred ratings by code basis.'
+    },
+
+    pfc: {
+      code: 'ELEC / 013', title: 'Power Factor Correction', card: true, disc: 'E',
+      desc: 'Capacitor bank kVAR to raise the power factor, current and loss reduction, capacitor breaker and monthly savings.',
+      fields: [
+        { k: 'p', label: 'Real power (P)', unit: 'kW', def: [200, 200] },
+        { k: 'pf1', label: 'Existing power factor', unit: '0–1', def: [0.78, 0.78], max: 1, maxMsg: 'Power factor must be between 0 and 1.' },
+        { k: 'pf2', label: 'Target power factor', unit: '0–1', def: [0.95, 0.95], max: 1, maxMsg: 'Power factor must be between 0 and 1.' },
+        { k: 'v', label: 'Voltage (line)', unit: 'V', def: [400, 480], reg: { ph: 230, au: 400, us: 480 } },
+        { k: 'c', label: 'Demand charge (optional)', unit: '/kVA·month', def: [0, 0], zero: true }
+      ],
+      formula: function () { return ['Q = P · (tan φ₁ − tan φ₂)', 'I ∝ 1 / pf; losses ∝ I²', 'Capacitor conductors and breaker ≥ 1.35 × rated current (NEC 460.8 / PEC 4.60.1.8)']; },
+      calc: function (v) {
+        if (v.pf2 <= v.pf1) return [['Correction', 'Not needed — target is not above the existing power factor', 1]];
+        var t = function (pf) { return Math.tan(Math.acos(pf)); }, q = v.p * (t(v.pf1) - t(v.pf2));
+        var STEP = [5, 7.5, 10, 12.5, 15, 20, 25, 30, 40, 50, 60, 75, 100, 125, 150, 175, 200, 250, 300, 350, 400, 500, 600, 750, 1000];
+        var bank = nextUp(STEP, q) || Math.ceil(q / 50) * 50, s1 = v.p / v.pf1, s2 = v.p / v.pf2, ic = bank * 1000 / (Math.sqrt(3) * v.v);
+        var brk = nextUp(codeBasis === 'au' ? AU_BRK : codeBasis === 'us' || codeBasis === 'ph' ? PH_BRK : BREAKER_A, ic * 1.35);
+        var pfNew = v.p / Math.sqrt(v.p * v.p + Math.pow(v.p * t(v.pf1) - bank, 2));
+        var rows = [
+          ['Capacitor bank needed', fmt(q, 1) + ' kVAR', 1],
+          ['Standard bank', fmt(bank) + ' kVAR', 1, 'gives pf ' + fmt(pfNew, 3) + ' — use an automatic bank in steps for varying loads'],
+          ['Apparent power', fmt(s1, 1) + ' → ' + fmt(s2, 1) + ' kVA', 0, '−' + fmt(s1 - s2, 1) + ' kVA released on the transformer'],
+          ['Line current', fmt(s1 * 1000 / (Math.sqrt(3) * v.v), 1) + ' → ' + fmt(s2 * 1000 / (Math.sqrt(3) * v.v), 1) + ' A', 0, '−' + fmt((1 - v.pf1 / v.pf2) * 100, 0) + ' %'],
+          ['Cable losses', '−' + fmt((1 - Math.pow(v.pf1 / v.pf2, 2)) * 100, 0) + ' %', 0, 'I²R losses fall with the square of the current'],
+          ['Capacitor breaker', (brk || '—') + ' A', 0, 'rated current ' + fmt(ic, 1) + ' A × 1.35']
+        ];
+        if (v.c > 0) rows.push(['Monthly saving', fmt((s1 - s2) * v.c, 0) + ' / month', 1, fmt(s1 - s2, 1) + ' kVA × ' + fmt(v.c) + ' per kVA']);
+        rows.push(['Design check', pfNew <= 0.99 ? STATUS.pass : STATUS.warn, 1, pfNew <= 0.99 ? 'no over-correction at full load' : 'close to unity — risk of leading pf at light load; use an automatic bank']);
+        return rows;
+      },
+      note: 'Fixed banks suit steady loads (motors); use automatic stepped banks for varying loads, and detuned reactors where VFDs or other harmonic sources are present. Check the utility tariff — some bill kVA demand or charge a low power-factor penalty.'
+    },
+
     elec: {
       code: 'ELEC / 008', title: 'Electrical Load Calculator', card: true, disc: 'E',
       desc: 'Connected and demand load with approximate three-phase current.',
@@ -3218,6 +3355,47 @@ body.modal-open .cv { visibility: hidden; }
       note: 'n ≈ 0.009 – 0.011 for PVC, 0.012 – 0.013 for cast iron or concrete. ¼ in/ft ≈ 2.08 %, ⅛ in/ft ≈ 1.04 %. Size stacks and branches by fixture units per your plumbing code.'
     },
 
+    sprhyd: {
+      code: 'FIRE / 016', title: 'Sprinkler Hydraulic Calculation', card: true, disc: 'F',
+      desc: 'Tree-system hydraulics for the most remote design area — head by head along the branch, cross main and riser, with hose allowance.',
+      fields: [
+        { k: 'hz', label: 'Hazard (NFPA 13)', opts: [['lh', 'Light — 4.1 mm/min over 139 m²'], ['oh1', 'Ordinary 1 — 6.1 mm/min over 139 m²'], ['oh2', 'Ordinary 2 — 8.1 mm/min over 139 m²'], ['eh1', 'Extra 1 — 12.2 mm/min over 232 m²'], ['eh2', 'Extra 2 — 16.3 mm/min over 232 m²']], def: ['oh1', 'oh1'] },
+        { k: 'cov', label: 'Coverage per head', q: 'area', def: [12, 130] },
+        { k: 'k', label: 'K-factor', q: 'kf', def: [80, 5.6] },
+        { k: 'pmin', label: 'Minimum head pressure', q: 'pbar', def: [0.5, 7] },
+        { k: 's', label: 'Head spacing on the branch', q: 'len', def: [3.6, 12] },
+        { k: 'b', label: 'Branch line spacing', q: 'len', def: [3.3, 11] },
+        { k: 'bd', label: 'Branch line size', opts: [['26.6', '25 mm (1 in)'], ['35.1', '32 mm (1¼ in)'], ['40.9', '40 mm (1½ in)'], ['52.5', '50 mm (2 in)']], def: ['35.1', '35.1'] },
+        { k: 'cd', label: 'Cross main size', opts: [['52.5', '50 mm (2 in)'], ['62.7', '65 mm (2½ in)'], ['77.9', '80 mm (3 in)'], ['102.3', '100 mm (4 in)']], def: ['77.9', '77.9'] },
+        { k: 'sd', label: 'Riser / feed main size', opts: [['77.9', '80 mm (3 in)'], ['102.3', '100 mm (4 in)'], ['154.1', '150 mm (6 in)']], def: ['102.3', '102.3'] },
+        { k: 'sl', label: 'Feed main length to the cross main', q: 'len', def: [30, 100], zero: true },
+        { k: 'z', label: 'Height, riser base to sprinklers', q: 'len', def: [10, 33], zero: true },
+        { k: 'hose', label: 'Hose stream allowance', q: 'lpm', def: [950, 250], zero: true }
+      ],
+      formula: function () { return ['q = K·√p at each head, end head q ≥ density × coverage', 'Hazen–Williams: p_f = 6.05×10⁵ · Q^1.85 / (C^1.85 · d^4.87) bar/m, C = 120', 'Heads on the branch = 1.2·√A / S (NFPA 13)', 'Fittings: +20 % on pipe lengths']; },
+      calc: function (v) {
+        var HZ = { lh: [4.1, 139, 'light'], oh1: [6.1, 139, 'ordinary 1'], oh2: [8.1, 139, 'ordinary 2'], eh1: [12.2, 232, 'extra 1'], eh2: [16.3, 232, 'extra 2'] }[v.hz];
+        var dens = HZ[0], A = HZ[1], K = v.k, fr = function (Q, d, L) { return 6.05e5 * Math.pow(Q, 1.85) / (Math.pow(120, 1.85) * Math.pow(d, 4.87)) * L * 1.2; }; // L/min, mm, m → bar
+        var n = Math.ceil(A / v.cov - 1e-9), nb = Math.max(1, Math.ceil(1.2 * Math.sqrt(A) / v.s - 1e-9)), nbr = Math.ceil(n / nb - 1e-9);
+        var q1 = Math.max(dens * v.cov, K * Math.sqrt(v.pmin)), p = Math.pow(q1 / K, 2), Q = q1;
+        for (var i = 1; i < nb; i++) { p += fr(Q, +v.bd, v.s); Q += K * Math.sqrt(p); }
+        p += fr(Q, +v.bd, v.s);                                                 // last head to the cross main
+        var Kb = Q / Math.sqrt(p), Qt = Q, pEnd = p, pB = p;
+        for (var j = 1; j < nbr; j++) { p += fr(Qt, +v.cd, v.b); Qt += Kb * Math.sqrt(p); }
+        p += fr(Qt, +v.sd, v.sl) + v.z * BAR_PER_M;
+        var vel = function (Qlpm, d) { return Qlpm / 60000 / (Math.PI * Math.pow(d / 1000, 2) / 4); }, vmax = Math.max(vel(Qt, +v.cd), vel(Qt, +v.sd));
+        return [
+          ['Sprinkler demand', fq(Qt, 'lpm') + ' at ' + fq(p, 'pbar'), 1, 'at the riser base · ' + fmt(nbr * nb, 0) + ' heads (' + fmt(nbr, 0) + ' branches × ' + fmt(nb, 0) + ')'],
+          ['With hose allowance', fq(Qt + v.hose, 'lpm') + ' at ' + fq(p, 'pbar'), 1, 'fire pump / water supply must meet this point'],
+          ['Most remote head', fq(q1, 'lpm') + ' at ' + fq(Math.pow(q1 / K, 2), 'pbar'), 0, (sys === 'si' ? fmt(dens) + ' mm/min' : fmt(dens / 40.746, 2) + ' gpm/ft²') + ' × ' + fq(v.cov, 'area') + ' (' + HZ[2] + ' hazard)'],
+          ['Branch line', fq(Q, 'lpm') + ' at ' + fq(pB, 'pbar'), 0, 'equivalent K ' + fq(Kb, 'kf') + ' at the cross main'],
+          ['Design area', fq(A, 'area'), 0, 'average density ' + (sys === 'si' ? fmt(Qt / (nbr * nb * v.cov), 2) + ' mm/min' : fmt(Qt / (nbr * nb * v.cov) / 40.746, 3) + ' gpm/ft²') + ' over the operating heads'],
+          ['Design check', vmax <= 6 ? STATUS.pass : STATUS.warn, 1, 'highest main velocity ' + fq(vmax, 'vpipe') + (vmax <= 6 ? ' — within 6 m/s (20 ft/s)' : ' — above 6 m/s (20 ft/s); upsize the cross main or riser')]
+        ];
+      },
+      note: 'Simplified tree calculation for checking and pump selection: identical branches, 20 % fitting allowance, C = 120 (black steel, wet). The final design needs a full hydraulic calculation (node by node, actual fittings and elevations) per NFPA 13 Chapter 27 / 28 and the water supply test.'
+    },
+
     firepump: {
       code: 'FIRE / 014', title: 'Fire Pump Sizing', card: true, disc: 'F',
       desc: 'Required pump pressure, head and power, next NFPA 20 rating and performance test points.',
@@ -3382,21 +3560,26 @@ body.modal-open .cv { visibility: hidden; }
       desc: 'Design rainwater flow from a roof or paved area and the number of drains needed.',
       fields: [
         { k: 'a', label: 'Catchment area (A)', q: 'area', def: [500, 5400] },
-        { k: 'i', label: 'Rainfall intensity (i)', q: 'rain', def: [100, 4] },
+        { k: 'src', label: 'Rainfall from', opts: [['i', 'Intensity (mm/h or in/h)'], ['ridf', 'PAGASA RIDF depth and duration']], def: ['i', 'i'], reg: { ph: 'ridf' } },
+        { k: 'i', label: 'Rainfall intensity (i)', q: 'rain', def: [100, 4], show: function (s) { return s.src !== 'ridf'; } },
+        { k: 'dep', label: 'RIDF rainfall depth', unit: 'mm', def: [20, 20], show: function (s) { return s.src === 'ridf'; } },
+        { k: 'dur', label: 'Duration of that depth', unit: 'min', def: [5, 5], show: function (s) { return s.src === 'ridf'; } },
         { k: 'c', label: 'Runoff coefficient (C)', unit: '0–1', def: [1, 1], max: 1, maxMsg: 'Runoff coefficient must be between 0 and 1.' },
         { k: 'cap', label: 'Capacity per drain', q: 'liq', def: [6.3, 100] }
       ],
       formula: function () { return ['Q = C · i · A', 'Drains = Q / capacity per drain (rounded up)']; },
       calc: function (v) {
-        var q = v.c * (v.i / 3.6e6) * v.a, n = Math.max(1, Math.ceil(q / v.cap - 1e-9));
+        var ii = v.src === 'ridf' ? v.dep / Math.max(v.dur, 1) * 60 : v.i;   // mm/h from a PAGASA RIDF depth over its duration
+        var q = v.c * (ii / 3.6e6) * v.a, n = Math.max(1, Math.ceil(q / v.cap - 1e-9));
         return [
+          ['Rainfall intensity', fq(ii, 'rain'), 0, v.src === 'ridf' ? fmt(v.dep) + ' mm in ' + fmt(v.dur) + ' min (PAGASA RIDF)' : ''],
           ['Design flow', fq(q, 'liq'), 1],
           ['Drains required', fmt(n, 0), 1],
           ['Flow per drain', fq(q / n, 'liq')],
           ['Area per drain', fq(v.a / n, 'area')]
         ];
       },
-      note: 'Use the local 1-hour, 100-year rainfall (IPC Figure 1106.1 in the US). C: roofs 0.9 – 1.0, paving 0.7 – 0.95, lawns 0.1 – 0.35. A 4 in (DN 100) leader carries about 100 gpm (6.3 L/s). Provide secondary/overflow drains.'
+      note: 'Philippines: take the depth for the nearest PAGASA station from its Rainfall Intensity-Duration-Frequency (RIDF) table — typically the 5- or 10-minute depth at a 10-year return period for gutters and a 25- to 50-year return for drains and overflows. US: use the local 1-hour, 100-year rainfall (IPC Figure 1106.1). C: roofs 0.9 – 1.0, paving 0.7 – 0.95, lawns 0.1 – 0.35. A 4 in (DN 100) leader carries about 100 gpm (6.3 L/s). Provide secondary/overflow drains.'
     },
 
     oa: {
@@ -4406,6 +4589,64 @@ body.modal-open .cv { visibility: hidden; }
       note: 'UF estimated for recessed LED panels with ceiling / wall / floor reflectances of about 70 / 50 / 20 % — use the manufacturer\'s UF table for the actual luminaire. MF 0.8 suits clean offices with LED.'
     },
 
+    hwheat: {
+      code: 'PLMB / 018', title: 'Water Heater Sizing', card: true, disc: 'P',
+      desc: 'Hot-water storage and heater power from occupants, daily use and the peak hour.',
+      fields: [
+        { k: 'n', label: 'Occupants', unit: 'people', def: [20, 20] },
+        { k: 'c', label: 'Hot water per person', q: 'lpd', def: [40, 10.5] },
+        { k: 'pk', label: 'Peak hour share of the day', unit: '%', def: [25, 25], max: 100, maxMsg: 'Must be 100 % or less.' },
+        { k: 'sf', label: 'Storage (share of peak hour)', unit: '%', def: [60, 60], zero: true },
+        { k: 'th', label: 'Storage temperature', q: 'tc', def: [60, 140] },
+        { k: 'tw', label: 'Cold-water temperature', q: 'tc', def: [27, 60] },
+        { k: 'eff', label: 'Heater efficiency', unit: '%', def: [95, 95], max: 100, maxMsg: 'Efficiency must be 100 % or less.' }
+      ],
+      formula: function () { return ['Peak hour = n × use × peak share', 'Usable storage = 70 % of the tank', 'Recovery = peak hour − usable storage (per hour)', 'Power = recovery × 4.186 × ΔT / 3600 / η']; },
+      calc: function (v) {
+        if (v.th <= v.tw) return [['Water heater', 'Storage must be hotter than the cold water', 1]];
+        var day = v.n * v.c, peak = day * v.pk / 100, store = peak * v.sf / 100, rec = Math.max(peak - 0.7 * store, peak * 0.2);
+        var kw = rec * 4.186 * (v.th - v.tw) / 3600 / (v.eff / 100), TANK = [50, 80, 100, 120, 150, 200, 250, 300, 400, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000, 5000];
+        var tank = nextUp(TANK, store) || Math.ceil(store / 500) * 500, L = function (x) { return sys === 'si' ? fmt(x, 0) + ' L' : fmt(x / 3.785411784, 0) + ' gal'; };
+        return [
+          ['Daily hot water', L(day), 0, 'at ' + (sys === 'si' ? fmt(v.th, 0) + ' °C' : fmt(v.th * 9 / 5 + 32, 0) + ' °F')],
+          ['Peak-hour demand', L(peak) + ' / h', 0],
+          ['Storage tank', L(tank), 1, 'needed ' + L(store) + ' — next standard size'],
+          ['Heater power', (sys === 'si' ? fmt(kw, 1) + ' kW' : fmt(kw * 3412.14, 0) + ' BTU/h') + ' input', 1, 'recovers ' + L(rec) + ' / h through ' + fq(v.th - v.tw, 'dT')],
+          ['Design check', v.th >= 60 ? STATUS.pass : STATUS.warn, 1, v.th >= 60 ? 'storage at 60 °C (140 °F) or more limits Legionella; fit tempering valves at fixtures' : 'store at 60 °C (140 °F) or more to control Legionella']
+        ];
+      },
+      note: 'Typical hot-water use at 60 °C: homes 40–60 L (10–15 gal), offices 4–5 L (1–1.5 gal), hotels 75–100 L (20–25 gal) per person per day. More storage means a smaller heater, and the reverse. Use manufacturer recovery data for the final selection.'
+    },
+
+    booster: {
+      code: 'PLMB / 019', title: 'Booster Pump & Pressure Tank', card: true, disc: 'P',
+      desc: 'Booster pump pressure, head and motor, and the hydro-pneumatic (bladder) tank for a set of pressure-switch settings.',
+      fields: [
+        { k: 'q', label: 'Peak flow', q: 'liq', def: [2.5, 40] },
+        { k: 'z', label: 'Height to the highest fixture', q: 'len', def: [15, 50], zero: true },
+        { k: 'f', label: 'Pipe friction loss', q: 'press', def: [50, 7], zero: true },
+        { k: 'pm', label: 'Pressure at the highest fixture', q: 'press', def: [105, 15] },
+        { k: 'dp', label: 'Pressure-switch differential', q: 'press', def: [140, 20] },
+        { k: 't', label: 'Minimum pump run time', unit: 'min', def: [1, 1] },
+        { k: 'eta', label: 'Pump efficiency', unit: '%', def: [60, 60], max: 100, maxMsg: 'Efficiency must be 100 % or less.' }
+      ],
+      formula: function () { return ['Cut-in = ρ·g·z + friction + fixture pressure', 'Cut-out = cut-in + differential', 'Drawdown = Q × run time', 'Tank = drawdown / [(P_out − P_in) / (P_out + p_atm)]']; },
+      calc: function (v) {
+        var pin = v.z * 9806.65 + v.f + v.pm, pout = pin + v.dp, af = (pout - pin) / (pout + 101325);
+        var draw = v.q * v.t * 60, tank = draw / af, shaft = v.q * pout / (v.eta / 100) / 1000;
+        var motor = sys === 'si' ? nextUp([0.37, 0.55, 0.75, 1.1, 1.5, 2.2, 3, 4, 5.5, 7.5, 11, 15, 18.5, 22, 30], shaft * 1.15) + ' kW' : nextUp([0.5, 0.75, 1, 1.5, 2, 3, 5, 7.5, 10, 15, 20, 25, 30, 40], shaft * 1.15 / 0.7457) + ' hp';
+        var V = function (m3) { return sys === 'si' ? fmt(m3 * 1000, 0) + ' L' : fmt(m3 * 264.172, 0) + ' gal'; };
+        return [
+          ['Cut-in pressure', fq(pin, 'press'), 1, 'pump duty: ' + fq(v.q, 'liq') + ' at ' + fq(pin / 9806.65, 'len') + ' head'],
+          ['Cut-out pressure', fq(pout, 'press'), 0, 'tank pre-charge ' + fq(Math.max(0, pin - 14000), 'press') + ' (cut-in − 14 kPa / 2 psi)'],
+          ['Pump motor', motor || 'large — use multiple pumps', 1, 'shaft ' + (sys === 'si' ? fmt(shaft, 2) + ' kW' : fmt(shaft / 0.7457, 2) + ' hp') + ' at cut-out × 1.15'],
+          ['Pressure tank (total)', V(tank), 1, 'drawdown ' + V(draw) + ' · acceptance factor ' + fmt(af, 2)],
+          ['Design check', pout <= 550000 ? STATUS.pass : STATUS.warn, 1, pout <= 550000 ? 'cut-out within 550 kPa (80 psi) — no pressure-reducing valves needed at fixtures' : 'cut-out above 550 kPa (80 psi) — zone the building or add pressure-reducing valves']
+        ];
+      },
+      note: 'For variable-speed booster sets the tank can be much smaller (about 10–20 % of this). Fixture minimums: flush tank about 55 kPa (8 psi), flush valve 105–170 kPa (15–25 psi); maximum about 550 kPa (80 psi) — check NPCP / IPC.'
+    },
+
     wsfu: {
       code: 'PIPE / 000', title: 'Water Supply Fixture Units', card: true, disc: 'P',
       desc: 'Peak water demand from fixture units (Hunter\'s curve), then the cold-water main size by velocity, with friction loss.',
@@ -4518,7 +4759,7 @@ body.modal-open .cv { visibility: hidden; }
   /* ---------- Cards ---------- */
   var grid = $('#card-grid');
   // HVAC sub-groups (a calculator can belong to more than one); these cards also stay under Mechanical.
-  var HVAC_TAGS = { psy: ['AC'], chw: ['AC'], pump: ['AC', 'H'], hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
+  var HVAC_TAGS = { psy: ['AC'], refpipe: ['AC'], chw: ['AC'], pump: ['AC', 'H'], hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
                     oa: ['V'], vbz: ['V'], voz: ['V'], exh: ['V'], mua: ['V'], xfer: ['V'], bal: ['V'], vcmp: ['V'],
                     sdiff: ['GRL'], rgrille: ['GRL'], egrille: ['GRL'], louv: ['GRL'], fvel: ['GRL'], farea: ['GRL'], ndiff: ['GRL'], cfmd: ['GRL'], tsd: ['GRL'],
                     fexh: ['FAN'], fsup: ['FAN'], ffa: ['FAN'], fsp: ['FAN'], ftp: ['FAN'], fpow: ['FAN'], feff: ['FAN'], fop: ['FAN'],
@@ -4526,12 +4767,12 @@ body.modal-open .cv { visibility: hidden; }
                     btu: ['AC'], cool: ['AC'], pcl: ['AC'] };
   var HVAC_NAMES = { H: 'Heating', V: 'Ventilation', AC: 'Air Conditioning', DD: 'Duct Design' };
   // Display order: Mechanical by group (air conditioning, heating, ventilation, duct design, fans), then E, P, F, S.
-  var CARD_ORDER = ['btu', 'cool', 'pcl', 'psy', 'heat', 'phl', 'hwflow', 'chw', 'pump', 'fuel', 'cost',
+  var CARD_ORDER = ['btu', 'cool', 'pcl', 'psy', 'heat', 'phl', 'hwflow', 'chw', 'pump', 'refpipe', 'fuel', 'cost',
     'ach', 'geom', 'oa', 'vbz', 'voz', 'exh', 'mua', 'xfer', 'bal', 'vcmp',
     'duct', 'rdc', 'rcd', 'dvel', 'eqf', 'sreg', 'dfric', 'eqlen', 'fitl', 'tpl', 'dar', 'dins', 'ductd', 'diff',
     'fexh', 'fsup', 'ffa', 'fsp', 'ftp', 'fpow', 'feff', 'fop',
     'sdiff', 'rgrille', 'egrille', 'louv', 'fvel', 'farea', 'ndiff', 'cfmd', 'tsd',
-    'elec', 'pls', 'vdrop', 'cable', 'light', 'pipe', 'tank', 'wsfu', 'sprinkler', 'firepump', 'hazen', 'hydrant', 'drain', 'dfu', 'septic', 'roofdrain'];
+    'elec', 'pls', 'vdrop', 'cable', 'gen', 'pfc', 'light', 'pipe', 'tank', 'hwheat', 'booster', 'wsfu', 'sprinkler', 'sprhyd', 'firepump', 'hazen', 'hydrant', 'drain', 'dfu', 'septic', 'roofdrain'];
   var statCalcs = document.getElementById('stat-calcs');
   if (statCalcs) statCalcs.textContent = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).length;
   var cardIds = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).sort(function (a, b) {
@@ -4663,6 +4904,12 @@ body.modal-open .cv { visibility: hidden; }
     vcmp:      ['Designed / required with tolerance bands', 'Your project criteria; required values from ASHRAE 62.1, 62.2 or the local code.', 'method'],
     chw:       ['Q = P/(ρ·cp·ΔT); Darcy–Weisbach (Swamee–Jain f); smallest size within velocity and friction limits', 'ASHRAE Handbook—Fundamentals Ch. 22 (Pipe Sizing) and HVAC Systems & Equipment (hydronic systems). Pipe IDs: ASME B36.10 Sch. 40, ASTM B88 Type L, PPR PN20.', 'method'],
     pump:      ['H = Σ losses × (1 + margin); P = Q·Δp/η; motor ≥ 1.15 × shaft', 'ASHRAE Handbook—HVAC Systems & Equipment Ch. 44 (centrifugal pumps); Hydraulic Institute standards.', 'method'],
+    refpipe:   ['Line sizes from typical manufacturer tables; extra charge by liquid-line length; traps every ~6 m of suction rise', 'Manufacturer installation manuals (Daikin, Mitsubishi Electric, Carrier) for R410A / R32; ASHRAE Handbook—Refrigeration Ch. 1 (refrigerant piping, oil return).', 'typical'],
+    gen:       ['S = P/pf × (1 + future); transformer ≥ S / loading; generator ≥ S/0.8 and ≥ motor-start kVA / 1.5', 'IEEE 446 (emergency and standby power), NFPA 110; IEC 60076 / ANSI C57 preferred ratings; PEC 2017 Art. 7.0 (emergency systems). Motor-start pick-up typical.', 'typical'],
+    pfc:       ['Q = P (tan φ₁ − tan φ₂); conductors and breaker 135 % of capacitor current', 'NEC 460.8 / PEC 2017 Art. 4.60 (capacitors); IEEE 18; IEC 60831.', 'method'],
+    hwheat:    ['Peak-hour demand vs 70 % usable storage + recovery; P = recovery × cp × ΔT / η', 'ASHRAE Handbook—HVAC Applications Ch. 51 (service water heating); CIBSE Guide G; Legionella control per ASHRAE 188.', 'method'],
+    booster:   ['Cut-in = static + friction + fixture minimum; tank = drawdown / acceptance factor', 'ASPE Plumbing Engineering Design Handbook Vol. 2 (booster systems); IPC 604 / NPCP fixture pressures; Hydraulic Institute.', 'method'],
+    sprhyd:    ['q = K√p head by head; Hazen–Williams C = 120; 1.2√A heads per branch; +20 % fittings', 'NFPA 13 (2022) Ch. 19 (design approaches), Ch. 28 (hydraulic calculations); Hazen–Williams per NFPA 13 §28.2.2.', 'method'],
     pls:       ['I = VA / V (1-pole, 2-pole) or VA / (√3·V) (3-pole); breaker ≥ 1.25 × I; demand: receptacles 10 kVA + 50 % of the rest, motors + 25 % of the largest', 'PEC 2017 Art. 2.10, 2.15, 2.20 (load calculations), 2.40 (standard ratings), Table 3.10.1.16; NEC 210.19–210.20, 215.2–215.3, 220.42–220.50, 240.6, Table 310.16. Metric conductor ampacities interpolated — confirm with PEC.', 'method'],
     cable:     ['Iz = I_table × Ct × Cg ≥ design current; voltage drop k·I·L·ρ/A', 'NEC Table 310.16, 310.15(B)/(C), 240.4(D), 110.14(C). Metric sizes interpolated — confirm with PEC 2017 Table 3.10.1.16, AS/NZS 3008.1.1 or IEC 60364-5-52.', 'method'],
     light:     ['N = E·A/(Φ·UF·MF); RI = L·W/(Hm·(L+W))', 'Lumen method — SLL Code for Lighting, IES Lighting Handbook; illuminance targets EN 12464-1. UF values typical for recessed LED panels.', 'typical'],
@@ -4778,7 +5025,7 @@ body.modal-open .cv { visibility: hidden; }
     ductd: 'duct design gauge smacna insulation kitchen exhaust hood grease supply return fresh air', diff: 'diffuser grille throw adpi nc layout ceiling register',
     fexh: 'exhaust fan selection kitchen hood toilet smoke car park', fsup: 'supply fan ahu sfp', ffa: 'fresh air fan', fsp: 'fan static pressure esp', ftp: 'fan total pressure',
     fpow: 'fan power motor hp kw bhp brake horsepower', feff: 'fan efficiency', fop: 'fan curve system curve operating point',
-    pls: 'panel load schedule panelboard board circuits breaker phase balancing demand feeder', elec: 'electrical load amps current demand factor panel', vdrop: 'voltage drop cable wire size conductor',
+    refpipe: 'refrigerant pipe size liquid suction gas line copper vrf split charge', gen: 'generator genset transformer kva standby motor start', pfc: 'power factor correction capacitor kvar bank', hwheat: 'water heater hot water storage tank recovery', booster: 'booster pump pressure tank hydropneumatic bladder', sprhyd: 'sprinkler hydraulic calculation remote area hazen williams',     pls: 'panel load schedule panelboard board circuits breaker phase balancing demand feeder', elec: 'electrical load amps current demand factor panel', vdrop: 'voltage drop cable wire size conductor',
     pipe: 'pipe pressure drop water reynolds velocity', tank: 'water tank storage demand pump cistern',
     sprinkler: 'sprinkler nfpa 13 fire heads density', firepump: 'fire pump nfpa 20', hazen: 'hazen williams friction fire pipe',
     hydrant: 'hydrant flow test nfpa 291 water supply', drain: 'drain sewer manning slope pipe capacity', dfu: 'fixture units dfu ipc pipe size toilet',
@@ -8578,7 +8825,7 @@ body.modal-open .cv { visibility: hidden; }
     pjEl.innerHTML =
       '<div class="pj-top"><div class="input-wrap pj-sel"><label class="sr-only" for="pj-select">Project</label><select id="pj-select">' +
       PJ.projects.map(function (x) { return '<option value="' + x.id + '"' + (x.id === p.id ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('') + '<option value="__new">+ New project…</option></select></div>' +
-      '<div class="pj-tools"><button type="button" class="btn btn-outline btn-sm' + (pjBoqOpen ? ' is-on' : '') + '" id="pj-boq-btn" aria-expanded="' + pjBoqOpen + '" aria-controls="pj-boq">BOQ / BOM</button><button type="button" class="btn btn-solid btn-sm" id="pj-pdf" title="Room schedule, totals and every saved calculation — print or Save as PDF">Project PDF</button>' +
+      '<div class="pj-tools"><button type="button" class="btn btn-outline btn-sm' + (pjBoqOpen ? ' is-on' : '') + '" id="pj-boq-btn" aria-expanded="' + pjBoqOpen + '" aria-controls="pj-boq">BOQ / BOM</button><button type="button" class="btn btn-solid btn-sm" id="pj-pdf" title="Room schedule, totals and every saved calculation — print or Save as PDF">Project PDF</button><button type="button" class="btn btn-outline btn-sm" id="pj-dbr" title="Codes, design criteria and a project summary — edit any value, then print or Save as PDF">Design basis</button>' +
       '<button type="button" class="btn btn-outline btn-sm" id="pj-csv" title="Room schedule for Excel / Google Sheets">Room schedule (Excel)</button>' +
       '<button type="button" class="btn btn-outline btn-sm" id="pj-export" title="Full backup to re-import later">Backup (.json)</button>' +
       '<button type="button" class="btn btn-outline btn-sm" id="pj-import-btn">Import</button><button type="button" class="btn btn-outline btn-sm" id="pj-rename">Rename</button>' +
@@ -8634,8 +8881,10 @@ body.modal-open .cv { visibility: hidden; }
       if (t.id === 'pj-delete') { if (window.confirm('Delete project "' + p.name + '" and its ' + p.rooms.length + ' room(s)? This cannot be undone — export it first if you need a copy.')) { PJ.projects = PJ.projects.filter(function (x) { return x !== p; }); PJ.active = PJ.projects.length ? PJ.projects[0].id : null; pjSave(); renderProjects(); } return; }
       if (t.id === 'pj-export') { pjDownload(); return; }
       if (t.id === 'pj-csv') { pjCsv(); return; }
+      if (t.id === 'pj-dbr') { pjDbr(); return; }
       if (t.id === 'pj-pdf') { pjReport(); return; }
       if (t.id === 'pj-boq-btn') { pjBoqOpen = !pjBoqOpen; renderProjects(); var bq = $('#pj-boq'); if (bq) bq.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+      if (t.id === 'boq-prfill') { var nb = boqPrFill(); renderProjects(); window.setTimeout(function () { window.alert(nb ? 'Filled ' + nb + ' rate(s) from the price list.' : 'No blank rates matched the price list — add prices with the same descriptions in Estimate → Price list.'); }, 30); return; }
       if (t.id === 'boq-pdf') { boqPdf(); return; }
       if (t.id === 'boq-csv') { boqCsv(true); return; }
       if (t.id === 'bom-csv') { boqCsv(false); return; }
@@ -8712,6 +8961,65 @@ body.modal-open .cv { visibility: hidden; }
     var t = { w: 0, q: 0, oa: 0, esp: 0, area: 0, people: 0, diff: 0 };
     p.rooms.forEach(function (r) { t.w += r.loadW || 0; t.q += r.supply || 0; t.oa += r.oaQ || 0; t.esp = Math.max(t.esp, r.esp || 0); t.area += roomArea(r); t.people += r.people || 0; t.diff += r.nDiff || 0; });
     return t;
+  }
+  // Design basis report: codes, design criteria by discipline (editable in the report) and the project summary.
+  function pjDbr() {
+    var p = pjCur(); if (!p) return;
+    var E = esc, m = rpMeta(), cb = codeBasis, si = sys === 'si', now = new Date(), pad = function (x) { return (x < 10 ? '0' : '') + x; };
+    var dateTxt = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+    var refNo = 'MTB-' + dateTxt.replace(/-/g, '') + '-DBR-' + (pjFileBase(p).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12) || 'PROJECT');
+    var T = function (c) { return si ? fmt(c, 1) + ' °C' : fmt(c * 9 / 5 + 32, 0) + ' °F'; };
+    var OUT = { intl: [35, 26, 'site climatic data, ASHRAE 0.4 % cooling'], ph: [34, 27, 'Manila, ASHRAE 0.4 % cooling — confirm for the site'], au: [32, 23, 'Sydney, AIRAH / ASHRAE 0.4 % cooling — confirm for the site'], us: [34, 24, 'Washington DC, ASHRAE 0.4 % cooling — confirm for the site'] }[cb];
+    var SUP = { intl: '400/230 V, 3φ 4W, 50 Hz', ph: '230 V 3φ 3W and 230 V 1φ, 60 Hz (400/230 V where the utility supplies it)', au: '400/230 V, 3φ 4W, 50 Hz', us: '480/277 V and 208/120 V, 3φ 4W, 60 Hz' }[cb];
+    var CODES = REG[cb] ? REG[cb].sources : [['ASHRAE Handbook—Fundamentals', 'Load calculation, psychrometrics and duct design'], ['ANSI/ASHRAE 62.1 and 55', 'Ventilation and thermal comfort'], ['ANSI/ASHRAE/IES 90.1', 'Energy efficiency'], ['SMACNA HVAC Duct Construction Standards', 'Ductwork construction and pressure classes'], ['IEC 60364', 'Low-voltage electrical installations'], ['EN 12464-1', 'Lighting of indoor workplaces'], ['International Plumbing Code (IPC)', 'Water supply, sanitary and storm drainage'], ['NFPA 13, 14, 20', 'Sprinklers, standpipes and fire pumps']];
+    var crit = [
+      ['HVAC', 'Outdoor design condition', T(OUT[0]) + ' DB / ' + T(OUT[1]) + ' WB', OUT[2]],
+      ['HVAC', 'Indoor design condition', T(24) + ' DB, 50 % RH (± 10 %)', 'ASHRAE 55 comfort zone'],
+      ['HVAC', 'Ventilation (offices)', cb === 'au' ? '10 L/s per person' : si ? '2.5 L/s per person + 0.3 L/s·m²' : '5 CFM per person + 0.06 CFM/ft²', cb === 'au' ? 'AS 1668.2 (NCC Part F6)' : 'ASHRAE 62.1 Table 6-1' + (cb === 'ph' ? ' / PMEC' : cb === 'us' ? ' / IMC 403' : '')],
+      ['HVAC', 'Duct design', si ? 'Equal friction 0.8–1.0 Pa/m; velocity to NC 35' : 'Equal friction 0.08–0.1 in.wg/100 ft; velocity to NC 35', 'ASHRAE Fundamentals Ch. 21; SMACNA'],
+      ['HVAC', 'Equipment', 'Inverter / high-efficiency units; N+1 for critical areas', cb === 'ph' ? 'Philippine Green Building Code' : cb === 'au' ? 'NCC Section J' : 'ASHRAE 90.1'],
+      ['Electrical', 'Supply system', SUP, 'Utility service'],
+      ['Electrical', 'Voltage drop', '3 % branch circuits, 5 % feeder + branch', cb === 'ph' ? 'PEC 2017 Sec. 2.10.2.19 FPN' : cb === 'au' ? 'AS/NZS 3000 (5 % total)' : 'NEC 210.19 / 215.2 informational notes'],
+      ['Electrical', 'Load calculation', 'Connected load × demand factors; continuous loads at 125 %', cb === 'ph' ? 'PEC 2017 Art. 2.20, 2.10, 2.15' : cb === 'au' ? 'AS/NZS 3000 Appendix C' : 'NEC Art. 220'],
+      ['Electrical', 'Lighting levels', si ? 'Offices 500 lx · corridors 100 lx · toilets 200 lx' : 'Offices 46 fc · corridors 9 fc · toilets 19 fc', 'EN 12464-1 / IES'],
+      ['Plumbing', 'Water demand', si ? 'Residential 150–200 L, office 45 L per person per day' : 'Residential 40–50 gal, office 12 gal per person per day', cb === 'ph' ? 'NPCP; Code on Sanitation' : 'IPC / local water authority'],
+      ['Plumbing', 'Pipe sizing', 'Fixture-unit method; velocity ≤ 2.4 m/s (8 ft/s); minimum fixture pressure 105 kPa (15 psi)', cb === 'ph' ? 'NPCP' : cb === 'au' ? 'AS/NZS 3500.1' : 'IPC Ch. 6'],
+      ['Sanitary', 'Drainage', 'Fixture units; slope 2 % (1 % for 100 mm / 4 in and larger)', cb === 'ph' ? 'NPCP' : cb === 'au' ? 'AS/NZS 3500.2' : 'IPC Ch. 7'],
+      ['Sanitary', 'Storm drainage', cb === 'ph' ? 'PAGASA RIDF — 10-year return, 5–10 min duration for gutters; 25–50-year for drains' : 'Local 1-hour, 100-year rainfall', cb === 'ph' ? 'NPCP; PAGASA' : cb === 'au' ? 'AS/NZS 3500.3' : 'IPC Ch. 11'],
+      ['Fire', 'Hazard classification', 'Offices: light hazard · parking, mechanical rooms: ordinary hazard 1', 'NFPA 13 Ch. 4'],
+      ['Fire', 'Sprinkler design', si ? 'Light 4.1 mm/min over 139 m² · OH1 6.1 mm/min over 139 m²' : 'Light 0.10 gpm/ft² over 1,500 ft² · OH1 0.15 gpm/ft² over 1,500 ft²', 'NFPA 13 Ch. 19' + (cb === 'ph' ? ' (RA 9514 RIRR)' : cb === 'au' ? ' / AS 2118.1' : '')],
+      ['Fire', 'Water supply', 'Light hazard 30 min, ordinary hazard 60–90 min, plus hose allowance', 'NFPA 13 Table 19.3.3.1.2'],
+      ['Fire', 'Fire pump', 'Listed pump; 150 % flow at ≥ 65 % of rated pressure', 'NFPA 20']
+    ];
+    var t = pjTotals(p), dem = p.rooms.reduce(function (a, r) { return a + (r.el && r.el.dem > 0 ? r.el.dem : 0); }, 0);
+    var sum = [['Rooms', fmt(p.rooms.length, 0)], ['Floor area', fq(t.area, 'area')], ['Occupants', fmt(t.people, 0)]];
+    if (t.w > 0) sum.push(['Cooling load', fmt(t.w / 1000, 1) + ' kW · ' + fmt(t.w / 3516.85, 2) + ' TR'], ['Supply air', fq(t.q, 'air')]);
+    if (t.oa > 0) sum.push(['Outdoor air', fq(t.oa, 'air')]);
+    if (dem > 0) sum.push(['Electrical demand (rooms)', fmt(dem, 1) + ' kW']);
+    var disc = '';
+    var sec = function (n, title, body) { return '<h2><span>' + n + '</span>' + title + '</h2>' + body; };
+    var rows = p.rooms.map(function (r) { return '<tr><td>' + E(r.name) + '</td><td class="n">' + fq(roomArea(r), 'area') + '</td><td class="n">' + (r.people || 0) + '</td><td class="n">' + (r.loadW > 0 ? fmt(r.loadW / 1000, 2) + ' kW' : '—') + '</td><td class="n">' + (r.supply > 0 ? fq(r.supply, 'air') : '—') + '</td></tr>'; }).join('');
+    var css = rpCss(refNo, 'A4') + '\n' + [
+      '.ed{outline:1px dashed transparent;border-radius:3px;cursor:text}.ed:hover{outline-color:#9aa}.ed:focus{outline:2px solid #2FA47C;background:#f4fffb}',
+      '@media print{.ed,.ed:hover,.ed:focus{outline:0;background:none}.tip{display:none}}',
+      '.tip{margin:0 0 12px;padding:8px 12px;border-left:3px solid #2FA47C;background:#f2fbf7;font:9pt Arial,sans-serif}',
+      'table.dbr{width:100%;border-collapse:collapse;font:8.6pt/1.4 Arial,sans-serif;margin:6px 0 14px}table.dbr th,table.dbr td{border:1px solid #999;padding:4px 6px;vertical-align:top;text-align:left}',
+      'table.dbr thead th{background:#e8eeec}table.dbr td.d{font-weight:700;white-space:nowrap}table.dbr td.n{text-align:right;white-space:nowrap}'
+    ].join('\n');
+    var html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + E(refNo + ' — ' + p.name + ' design basis') + '</title><style>' + css + '</style></head><body>' +
+      '<div class="bar"><button type="button" onclick="window.print()">Print / Save as PDF</button><button type="button" class="o" onclick="window.close()">Close</button></div>' +
+      '<div class="page"><p class="tip">Click any value with a dotted outline to edit it before printing — the edits are for this printout only.</p>' +
+      '<h1>Design Basis Report</h1><p class="ref">' + E(refNo) + ' · ' + E(dateTxt) + '</p>' +
+      '<table class="dbr"><tbody><tr><td class="d">Project</td><td class="ed" contenteditable="true">' + E(p.name) + '</td><td class="d">Location</td><td class="ed" contenteditable="true">' + E(m.location || '') + '</td></tr>' +
+      '<tr><td class="d">Prepared by</td><td class="ed" contenteditable="true">' + E(m.prepared || '') + '</td><td class="d">Checked by</td><td class="ed" contenteditable="true">' + E(m.checked || '') + '</td></tr>' +
+      '<tr><td class="d">Code basis</td><td>' + E(REG[cb] ? REG[cb].name : 'International (ASHRAE / IEC / IPC / NFPA)') + '</td><td class="d">Units</td><td>' + (si ? 'SI (metric)' : 'Imperial (IP)') + '</td></tr></tbody></table>' +
+      sec('01', 'Codes and standards', '<table class="dbr"><thead><tr><th>Code / standard</th><th>Applies to</th></tr></thead><tbody>' + CODES.map(function (c) { return '<tr><td class="d">' + E(c[0]) + '</td><td class="ed" contenteditable="true">' + E(c[1]) + '</td></tr>'; }).join('') + '</tbody></table>') +
+      sec('02', 'Design criteria', '<table class="dbr"><thead><tr><th>Discipline</th><th>Item</th><th>Design value</th><th>Basis</th></tr></thead><tbody>' + crit.map(function (c) { return '<tr><td class="d">' + E(c[0]) + '</td><td>' + E(c[1]) + '</td><td class="ed" contenteditable="true">' + E(c[2]) + '</td><td class="ed" contenteditable="true">' + E(c[3]) + '</td></tr>'; }).join('') + '</tbody></table>') +
+      sec('03', 'Project summary', '<table class="dbr"><tbody>' + sum.map(function (s) { return '<tr><td class="d">' + E(s[0]) + '</td><td>' + E(s[1]) + '</td></tr>'; }).join('') + '</tbody></table>' +
+        (rows ? '<table class="dbr"><thead><tr><th>Room</th><th>Area</th><th>People</th><th>Cooling load</th><th>Supply air</th></tr></thead><tbody>' + rows + '</tbody></table>' : '')) +
+      sec('04', 'Assumptions and notes', '<p class="ed" contenteditable="true">Values are design criteria for the preliminary design stage, generated by MechToolBox from its code basis and the project rooms. Final design values must be confirmed against the codes in force, the authority having jurisdiction and manufacturer data, and signed by the licensed engineer of record.</p>') +
+      disc + '</div></body></html>';
+    rpOpen(html);
   }
   function pjFileBase(p) { return (p.name || 'project').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-') || 'project'; }
   function pjSaveFile(name, text, type) {
@@ -9066,7 +9374,7 @@ body.modal-open .cv { visibility: hidden; }
       }).join('') + '<tr class="boq-divt"><td></td><td colspan="6">Total Cost ' + D.roman + ' - ' + esc(D.title) + ':</td><td class="num" data-v="d' + D.no + ':m">' + n2(D.sum.m) + '</td><td class="num" data-v="d' + D.no + ':l">' + n2(D.sum.l) + '</td><td class="num" data-v="d' + D.no + ':t">' + n2(D.sum.t) + '</td><td></td></tr>';
     }).join('');
     return '<div class="boq" id="pj-boq"><div class="boq-head"><p class="pj-form-t">Bill of quantities — ' + b.divs.map(function (D) { return D.roman + ' ' + D.title; }).join(' · ') + '</p>' +
-      '<div class="boq-exp"><button type="button" class="btn btn-solid btn-sm" id="boq-pdf">BOQ PDF</button><button type="button" class="btn btn-outline btn-sm" id="boq-csv">BOQ (Excel)</button><button type="button" class="btn btn-outline btn-sm" id="bom-csv">BOM (Excel)</button></div></div>' +
+      '<div class="boq-exp"><button type="button" class="btn btn-outline btn-sm" id="boq-prfill" title="Fill blank rates from the shared price list (Estimate section)">Fill from price list</button><button type="button" class="btn btn-solid btn-sm" id="boq-pdf">BOQ PDF</button><button type="button" class="btn btn-outline btn-sm" id="boq-csv">BOQ (Excel)</button><button type="button" class="btn btn-outline btn-sm" id="bom-csv">BOM (Excel)</button></div></div>' +
       '<div class="fields boq-set">' + fld('cur', 'Currency', s.cur, '', true) + fld('labor', 'Labor (if blank)', s.labor, '% of mat.') + fld('sp', 'Supervision & profit', s.sp, '%') +
       fld('cont', 'Contingencies', s.cont, '%') + fld('tax', 'VAT / GST', s.tax, '%') + fld('waste', 'Pipe / wire waste', s.waste, '%') + fld('allow', 'Duct fittings allowance', s.allow, '%') +
       fld('flex', 'Flex duct per diffuser', roundU(s.flex / Q.len[sys][1]), Q.len[sys][0]) + fld('owner', 'Owner', s.owner, '', true) + '</div>' +
@@ -9634,7 +9942,93 @@ body.modal-open .cv { visibility: hidden; }
   var ES_KEY = 'mechtoolbox-estimates', ES_TAB_KEY = 'mechtoolbox-es-tab';
   var ES = { active: null, docs: [] }, esTab = 'boq', esCombine = false;
   try { var esd = JSON.parse(localStorage.getItem(ES_KEY) || 'null'); if (esd && esd.docs) ES = esd; } catch (e) {}
-  try { if (localStorage.getItem(ES_TAB_KEY) === 'bom') esTab = 'bom'; } catch (e) {}
+  try { var est0 = localStorage.getItem(ES_TAB_KEY); if (est0 === 'bom' || est0 === 'prices') esTab = est0; } catch (e) {}
+  // Shared price list: one set of rates for every estimate and the project BOQ (matched by description).
+  var PR_KEY = 'mechtoolbox-prices', PR = [], esCmp = null;
+  try { var prd = JSON.parse(localStorage.getItem(PR_KEY) || 'null'); if (Array.isArray(prd)) PR = prd; } catch (e) {}
+  function prSave() { try { localStorage.setItem(PR_KEY, JSON.stringify(PR)); } catch (e) {} }
+  var prKey = function (s) { return String(s || '').trim().toLowerCase().replace(/\s+/g, ' '); };
+  function prFind(desc) { var k = prKey(desc); if (!k) return null; for (var i = 0; i < PR.length; i++) if (prKey(PR[i].desc) === k) return PR[i]; return null; }
+  function esToast(t) { var el = $('#es-msg'); if (!el) return; el.textContent = t; el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); clearTimeout(esToast.tm); esToast.tm = setTimeout(function () { el.textContent = ''; }, 4000); }
+  // Fill blank unit costs of an estimate from the price list.
+  function prFillEstimate(d) {
+    var n = 0;
+    d.divs.forEach(function (D) { D.groups.forEach(function (G) { G.items.forEach(function (it) {
+      var p = prFind(it.desc); if (!p) return;
+      var hit = false;
+      if (!String(it.unit).trim() && p.unit) { it.unit = p.unit; hit = true; }
+      if (!String(it.m).trim() && String(p.m).trim() !== '' && it.kind !== 'l') { it.m = String(p.m); hit = true; }
+      if (!String(it.l).trim() && String(p.l).trim() !== '' && it.kind !== 'm') { it.l = String(p.l); hit = true; }
+      if (hit) n++;
+    }); }); });
+    return n;
+  }
+  // Add or update price-list rows from the priced items of an estimate.
+  function prTakeEstimate(d) {
+    var n = 0;
+    d.divs.forEach(function (D) { D.groups.forEach(function (G) { G.items.forEach(function (it) {
+      if (!it.desc.trim() || (String(it.m).trim() === '' && String(it.l).trim() === '')) return;
+      var p = prFind(it.desc);
+      if (!p) { p = { id: esId(), desc: it.desc.trim(), unit: it.unit, m: '', l: '' }; PR.push(p); }
+      if (String(it.m).trim() !== '') p.m = String(it.m); if (String(it.l).trim() !== '') p.l = String(it.l); if (it.unit) p.unit = it.unit;
+      n++;
+    }); }); });
+    prSave(); return n;
+  }
+  // Project BOQ: fill blank rates from the price list.
+  function boqPrFill() {
+    var p = pjCur(); if (!p) return 0;
+    var s = boqSet(), C = boqCompute(p, s), n = 0;
+    C.b.divs.forEach(function (D) { D.secs.forEach(function (S) { S.items.forEach(function (it) {
+      var pr = prFind(it.desc); if (!pr) return;
+      var key = boqRateKey(it), r = s.rates[key] || {}, hit = false;
+      if (!(+r.m) && String(pr.m).trim() !== '') { r.m = esNum(pr.m); hit = true; }
+      if (r.l == null && String(pr.l).trim() !== '') { r.l = esNum(pr.l); hit = true; }
+      if (hit) { s.rates[key] = r; n++; }
+    }); }); });
+    boqStore(s); return n;
+  }
+  function prCsvOut() {
+    var cell = function (v) { v = v == null ? '' : String(v); return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var L = [['Description', 'Unit', 'Material unit cost', 'Labor unit cost']].concat(PR.map(function (p) { return [p.desc, p.unit, p.m, p.l]; }));
+    pjSaveFile('MechToolBox-price-list.csv', '\ufeff' + L.map(function (r) { return r.map(cell).join(','); }).join('\r\n'), 'text/csv;charset=utf-8');
+  }
+  function prCsvIn() {
+    var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,text/csv';
+    inp.addEventListener('change', function () {
+      var f = inp.files && inp.files[0]; if (!f) return;
+      var r = new FileReader();
+      r.onload = function () {
+        var rows = [], cur = [], fld = '', q = false, s = String(r.result).replace(/^\ufeff/, '');
+        for (var i = 0; i < s.length; i++) {
+          var ch = s[i];
+          if (q) { if (ch === '"' && s[i + 1] === '"') { fld += '"'; i++; } else if (ch === '"') q = false; else fld += ch; continue; }
+          if (ch === '"') q = true; else if (ch === ',') { cur.push(fld); fld = ''; } else if (ch === '\n' || ch === '\r') { if (ch === '\r' && s[i + 1] === '\n') i++; cur.push(fld); rows.push(cur); cur = []; fld = ''; } else fld += ch;
+        }
+        if (fld || cur.length) { cur.push(fld); rows.push(cur); }
+        var n = 0;
+        rows.forEach(function (c, i) {
+          if (!c[0] || !c[0].trim() || (i === 0 && /desc/i.test(c[0]))) return;
+          var p = prFind(c[0]); if (!p) { p = { id: esId(), desc: c[0].trim() }; PR.push(p); }
+          p.unit = (c[1] || '').trim(); p.m = (c[2] || '').replace(/[^\d.\-]/g, ''); p.l = (c[3] || '').replace(/[^\d.\-]/g, ''); n++;
+        });
+        prSave(); esTab = 'prices'; esRender(); esToast('✓ ' + n + ' price(s) imported');
+      };
+      r.readAsText(f);
+    });
+    inp.click();
+  }
+  function prTabHtml() {
+    return '<div class="input-wrap search-wrap pr-q"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="pr-q" type="search" autocomplete="off" placeholder="Search the price list" aria-label="Search the price list"></div>' +
+      '<div class="table-wrap boq-table es-table pr-table"><table><thead><tr><th>Description</th><th>Unit</th><th>Material unit cost</th><th>Labor unit cost</th><th></th></tr></thead><tbody>' +
+      PR.map(function (p) {
+        var inp = function (k, cls, extra) { return '<div class="input-wrap ' + cls + '"><input type="text" autocomplete="off" data-pr="' + p.id + '" data-k="' + k + '" value="' + esc(p[k] == null ? '' : p[k]) + '"' + (extra || '') + '></div>'; };
+        return '<tr data-prrow="' + esc(prKey(p.desc)) + '"><td>' + inp('desc', 'es-desc', ' aria-label="Description"') + '</td><td>' + inp('unit', 'es-unit', ' list="es-units" aria-label="Unit"') + '</td><td>' + inp('m', 'boq-rate', ' inputmode="decimal" placeholder="0.00" aria-label="Material unit cost"') + '</td><td>' + inp('l', 'boq-rate', ' inputmode="decimal" placeholder="—" aria-label="Labor unit cost"') + '</td>' +
+          '<td>' + ib('prdel', '✕', 'Delete price', ' data-p="' + p.id + '"') + '</td></tr>';
+      }).join('') + '<tr class="es-add"><td colspan="5"><button type="button" class="es-addbtn" data-act="pradd">+ Add price</button></td></tr></tbody></table></div>' +
+      '<p class="pj-hint boq-note">' + PR.length + ' price(s), shared by every estimate and the project BOQ on this device. Typing a description that is on this list fills its unit and costs; <strong>Fill from price list</strong> fills blank costs in one go. Labor left blank here uses each bill\'s labor %.</p>';
+  }
+
   var esId = function () { return Math.random().toString(36).slice(2, 9); };
   var esNum = function (v) { var n = parseFloat(String(v == null ? '' : v).replace(/,/g, '')); return isFinite(n) ? n : 0; };
   function esSave() { try { localStorage.setItem(ES_KEY, JSON.stringify(ES)); } catch (e) {} }
@@ -9671,6 +10065,37 @@ body.modal-open .cv { visibility: hidden; }
   ];
   var ES_UNITS = ['pcs', 'set', 'lot', 'unit', 'm', 'l.m.', 'length', 'roll', 'sheet', 'kg', 'sq.m', 'cu.m', 'gal', 'box', 'pair', 'sq.ft', 'ft'];
 
+  // Revisions: saved snapshots (Rev 0, 1, …) with a comparison against the current bill.
+  function esRevHtml(d) {
+    var revs = d.revs || [], C = esCompute(d), cur = d.cur ? esc(d.cur) + ' ' : '';
+    var head = '<div class="es-rev"><div class="es-rev-h"><p class="pj-form-t">Revisions</p><button type="button" class="btn btn-outline btn-sm" data-act="revsave">Save revision' + (revs.length ? ' (Rev ' + revs.length + ')' : ' (Rev 0)') + '</button></div>';
+    if (!revs.length) return head + '<p class="pj-hint">No revisions yet. Save Rev 0 when you issue the estimate; later revisions can be compared with it.</p></div>';
+    var list = '<ul class="es-revs">' + revs.slice().reverse().map(function (r) {
+      var diff = C.proj - r.total;
+      return '<li><span class="es-revn">Rev ' + r.n + '</span><span class="es-revd">' + esc(r.date) + (r.note ? ' · ' + esc(r.note) : '') + '</span><span class="es-revt">' + cur + n2(r.total) + (Math.abs(diff) > 0.005 ? ' <em class="' + (diff > 0 ? 'up' : 'down') + '">' + (diff > 0 ? '+' : '−') + n2(Math.abs(diff)) + ' now</em>' : ' <em>= now</em>') + '</span>' +
+        '<span class="es-reva"><button type="button" class="es-addbtn" data-act="revcmp" data-n="' + r.n + '" aria-pressed="' + (esCmp === r.n) + '">' + (esCmp === r.n ? 'Hide changes' : 'Compare') + '</button><button type="button" class="es-addbtn" data-act="revrestore" data-n="' + r.n + '">Restore</button></span></li>';
+    }).join('') + '</ul>';
+    return head + list + (esCmp != null && revs[esCmp] ? esCmpHtml(d, revs[esCmp]) : '') + '</div>';
+  }
+  function esCmpHtml(d, rv) {
+    var flat = function (doc) { var out = {}; esCompute(doc); doc.divs.forEach(function (D) { D.groups.forEach(function (G) { G.items.forEach(function (it) { out[it.id] = { no: it.no, desc: it.desc, qty: esNum(it.qty), unit: it.unit, tt: it.c.tt, m: esNum(it.m), l: it.l }; }); }); }); return out; };
+    var old = JSON.parse(JSON.stringify(rv.snap)), A = flat(old), B = flat(JSON.parse(JSON.stringify(d))), rows = [];
+    Object.keys(B).forEach(function (k) {
+      var b = B[k], a = A[k];
+      if (!a) { if (b.desc || b.qty) rows.push(['Added', b.no, b.desc, '—', fmt(b.qty) + ' ' + b.unit, b.tt]); return; }
+      var ch = [];
+      if (a.desc !== b.desc) ch.push('description');
+      if (a.qty !== b.qty || a.unit !== b.unit) ch.push('qty ' + fmt(a.qty) + ' → ' + fmt(b.qty));
+      if (a.m !== b.m) ch.push('material ' + n2(a.m) + ' → ' + n2(b.m));
+      if (String(a.l) !== String(b.l)) ch.push('labor');
+      if (ch.length || Math.abs(a.tt - b.tt) > 0.005) rows.push(['Changed', b.no, b.desc, ch.join(', ') || 'rates', n2(a.tt) + ' → ' + n2(b.tt), b.tt - a.tt]);
+    });
+    Object.keys(A).forEach(function (k) { if (!B[k] && (A[k].desc || A[k].qty)) rows.push(['Removed', A[k].no, A[k].desc, '—', fmt(A[k].qty) + ' ' + A[k].unit, -A[k].tt]); });
+    var tot = esCompute(d).proj - rv.total;
+    return '<div class="table-wrap es-cmp"><table><thead><tr><th>Change since Rev ' + rv.n + '</th><th>Item</th><th>Description</th><th>What changed</th><th>Qty / amount</th><th>Δ amount</th></tr></thead><tbody>' +
+      (rows.length ? rows.map(function (r) { return '<tr class="es-c-' + r[0].toLowerCase() + '"><td>' + r[0] + '</td><td class="boq-no">' + esc(r[1]) + '</td><td>' + esc(r[2]) + '</td><td>' + esc(r[3]) + '</td><td class="num">' + (r[0] === 'Changed' ? esc(r[4]) : esc(r[4])) + '</td><td class="num">' + (r[0] === 'Added' ? '+' + n2(r[5]) : (r[5] >= 0 ? '+' : '−') + n2(Math.abs(r[5]))) + '</td></tr>'; }).join('') : '<tr><td colspan="6">No item changes — only settings (percentages, area) if the total moved.</td></tr>') +
+      '</tbody><tfoot><tr><td colspan="5">PROJECT COST: Rev ' + rv.n + ' ' + n2(rv.total) + ' → now ' + n2(esCompute(d).proj) + '</td><td class="num">' + (tot >= 0 ? '+' : '−') + n2(Math.abs(tot)) + '</td></tr></tfoot></table></div>';
+  }
   function esCompute(d) {
     var lp = esNum(d.labor) / 100, all = { m: 0, l: 0, t: 0 };
     d.divs.forEach(function (D, di) {
@@ -9721,7 +10146,7 @@ body.modal-open .cv { visibility: hidden; }
   function esRender() {
     var root = $('#es-root'); if (!root) return;
     var d = esCur();
-    var cat = '<datalist id="es-cat">' + ES_CAT.map(function (c) { return '<option value="' + esc(c[0]) + '">'; }).join('') + '</datalist><datalist id="es-units">' + ES_UNITS.map(function (u) { return '<option value="' + u + '">'; }).join('') + '</datalist>';
+    var cat = '<datalist id="es-cat">' + PR.map(function (p) { return '<option value="' + esc(p.desc) + '">'; }).join('') + ES_CAT.map(function (c) { return '<option value="' + esc(c[0]) + '">'; }).join('') + '</datalist><datalist id="es-units">' + ES_UNITS.map(function (u) { return '<option value="' + u + '">'; }).join('') + '</datalist>';
     if (!d) {
       root.innerHTML = '<div class="pj-empty es-empty"><p><strong>No estimate yet.</strong> Name it, pick a starting layout, and fill in the items — or import a file you exported before.</p>' +
         '<div class="es-newrow"><div class="field"><label for="es-new-name">Estimate name</label><div class="input-wrap"><input id="es-new-name" type="text" autocomplete="off" placeholder="e.g. 3-storey residence, Quezon City"></div></div>' + esTpl('es-new-tpl') +
@@ -9741,9 +10166,11 @@ body.modal-open .cv { visibility: hidden; }
       '<details class="boq-sign"><summary>Signatories</summary><div class="fields es-fields">' + esFld('prepBy', 'Prepared by', d.prepBy) + esFld('prepPos', 'Position', d.prepPos) + esFld('chkBy', 'Checked by', d.chkBy) +
       esFld('chkPos', 'Position', d.chkPos) + esFld('ctrBy', 'Counter checked by', d.ctrBy) + esFld('ctrPos', 'Position', d.ctrPos) + '</div></details></div>';
     var tabs = '<div class="es-bar"><div class="pj-tabs es-tabs" role="group" aria-label="Bill">' +
-      '<button type="button" class="es-tab" data-estab="boq" aria-pressed="' + (esTab === 'boq') + '">BOQ — priced</button><button type="button" class="es-tab" data-estab="bom" aria-pressed="' + (esTab === 'bom') + '">BOM — materials</button></div>' +
-      '<div class="boq-exp">' + (esTab === 'boq'
-        ? '<button type="button" class="btn btn-solid btn-sm" data-act="boqpdf">BOQ PDF</button><button type="button" class="btn btn-outline btn-sm" data-act="boqcsv">BOQ (Excel)</button>'
+      '<button type="button" class="es-tab" data-estab="boq" aria-pressed="' + (esTab === 'boq') + '">BOQ — priced</button><button type="button" class="es-tab" data-estab="bom" aria-pressed="' + (esTab === 'bom') + '">BOM — materials</button><button type="button" class="es-tab" data-estab="prices" aria-pressed="' + (esTab === 'prices') + '">Price list</button></div>' +
+      '<div class="boq-exp">' + (esTab === 'prices'
+        ? '<button type="button" class="btn btn-solid btn-sm" data-act="prfill">Fill this estimate</button><button type="button" class="btn btn-outline btn-sm" data-act="prtake">Add priced items</button><button type="button" class="btn btn-outline btn-sm" data-act="primp">Import CSV</button><button type="button" class="btn btn-outline btn-sm" data-act="prexp">Export CSV</button>'
+        : esTab === 'boq'
+        ? '<button type="button" class="btn btn-outline btn-sm" data-act="prfill">Fill from price list</button><button type="button" class="btn btn-solid btn-sm" data-act="boqpdf">BOQ PDF</button><button type="button" class="btn btn-outline btn-sm" data-act="boqcsv">BOQ (Excel)</button>'
         : '<button type="button" class="btn btn-solid btn-sm" data-act="bompdf">BOM PDF</button><button type="button" class="btn btn-outline btn-sm" data-act="bomcsv">BOM (Excel)</button>') + '</div></div>';
     var body;
     if (esTab === 'boq') {
@@ -9778,6 +10205,8 @@ body.modal-open .cv { visibility: hidden; }
         sum('VAT (<span data-pct="tax">' + fmt(esNum(d.tax)) + '</span> %)', 'sum:vat', n2(C.vat)) + sum('PROJECT COST (LABOR, LIGHT EQUIPMENT AND POWER TOOLS)', 'sum:proj', n2(C.proj), 'boq-grand') +
         sum('COST PER <span data-pct="areaU">' + esc(d.areaU.toUpperCase()) + '</span>', 'sum:psm', C.psm ? n2(C.psm) : '—') + '</tfoot></table></div>' +
         '<p class="pj-hint boq-note">Type quantities and unit costs — every amount updates as you type. Leave labor blank to use the labor %. <strong>Material only</strong> items carry no labor; <strong>labor only</strong> items stay off the BOM. Contingencies apply to total + supervision &amp; profit, and VAT to all three. Saved on this device — use <em>Back up file</em> to keep a copy.</p>';
+    } else if (esTab === 'prices') {
+      body = prTabHtml();
     } else {
       var B = esBom(d), any = B.some(function (D) { return D.groups.some(function (G) { return G.items.length; }); });
       body = '<label class="fb-check es-comb"><input type="checkbox" id="es-combine"' + (esCombine ? ' checked' : '') + '> Combine identical items across divisions (purchasing list)</label>' +
@@ -9791,7 +10220,7 @@ body.modal-open .cv { visibility: hidden; }
           }).join('') + '</tbody></table></div>' : '<p class="pj-hint">No materials yet — add items on the BOQ tab. Everything except <em>labor only</em> items appears here.</p>') +
         '<p class="pj-hint boq-note">The BOM is built from the BOQ items, without prices — the list to send to suppliers. Edit items on the BOQ tab.</p>';
     }
-    root.innerHTML = top + info + tabs + body + cat;
+    root.innerHTML = top + info + esRevHtml(d) + tabs + '<p class="es-msg" id="es-msg" aria-live="polite"></p>' + body + cat;
   }
 
   // Refresh every amount in place while typing (keeps focus).
@@ -9888,7 +10317,7 @@ body.modal-open .cv { visibility: hidden; }
     var sig = function (k, name, pos) { return '<div><p class="k">' + k + '</p><p class="nm">' + (name ? E(name) : '&nbsp;') + '</p><p class="ps">' + (pos ? E(pos) : '&nbsp;') + '</p></div>'; };
     var html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + E(refNo + ' — ' + d.name + (priced ? ' BOQ' : ' BOM')) + '</title><style>' + qsCss(refNo) + '</style></head><body>' +
       '<div class="bar"><button type="button" onclick="window.print()">Print / Save as PDF</button><button type="button" class="o" onclick="window.close()">Close</button></div>' +
-      '<div class="page wide"><p class="hdr"><span>Project</span>: ' + E(d.name) + '<br><span>Location</span>: ' + E(d.location) + '<br><span>Owner</span>: ' + E(d.owner) + '<br><span>Area</span>: ' + (d.area ? E(d.area) + ' ' + E(d.areaU) : '___') + '</p>' +
+      '<div class="page wide"><p class="hdr"><span>Project</span>: ' + E(d.name) + '<br><span>Location</span>: ' + E(d.location) + '<br><span>Owner</span>: ' + E(d.owner) + '<br><span>Area</span>: ' + (d.area ? E(d.area) + ' ' + E(d.areaU) : '___') + (d.revs && d.revs.length ? '<br><span>Revision</span>: Rev ' + d.revs[d.revs.length - 1].n + ' (' + E(d.revs[d.revs.length - 1].date) + ')' + (Math.abs(C.proj - d.revs[d.revs.length - 1].total) > 0.005 ? ' + changes' : '') : '') + '</p>' +
       '<h1 class="t">' + (priced ? 'BILL OF QUANTITIES' : 'BILL OF MATERIALS') + '</h1>' + table +
       '<div class="sigs">' + sig('Prepared by:', d.prepBy, d.prepPos) + sig('Checked by:', d.chkBy, d.chkPos) + sig('Counter Checked by:', d.ctrBy, d.ctrPos) + '</div></div>' +
       '<scr' + 'ipt>window.addEventListener("load",function(){setTimeout(function(){window.print()},350)});<\/scr' + 'ipt></body></html>';
@@ -9916,13 +10345,20 @@ body.modal-open .cv { visibility: hidden; }
   var esRoot = $('#es-root');
   if (esRoot) {
     esRoot.addEventListener('input', function (e) {
-      var t = e.target, d = esCur(); if (!d) return;
+      var t = e.target, d = esCur();
+      if (t.id === 'pr-q') { var qq = prKey(t.value); $$('#es-root [data-prrow]').forEach(function (r) { r.hidden = !!qq && r.dataset.prrow.indexOf(qq) < 0; }); return; }
+      if (t.dataset.pr) { var pp = PR.filter(function (x) { return x.id === t.dataset.pr; })[0]; if (pp) { pp[t.dataset.k] = t.value; if (t.dataset.k === 'desc') { var row = t.closest('tr'); if (row) row.dataset.prrow = prKey(t.value); } prSave(); } return; }
+      if (!d) return;
       if (t.dataset.ef) { d[t.dataset.ef] = t.value; esSave(); esRecalc(); return; }
       if (t.dataset.dv || t.dataset.gv) { var f = esFind(d, t.dataset.dv || t.dataset.gv); if (f) { f.o[t.dataset.dv ? 'name' : 'title'] = t.value; esSave(); } return; }
       if (t.dataset.iv && t.tagName !== 'SELECT') {
         var it = esFind(d, t.dataset.iv); if (!it) return;
         it.o[t.dataset.k] = t.value;
         if (t.dataset.k === 'desc' && !it.o.unit) { var hit = ES_CAT.filter(function (c) { return c[0] === t.value; })[0]; if (hit) { it.o.unit = hit[1]; var u = $('#es-root [data-iv="' + it.o.id + '"][data-k="unit"]'); if (u) u.value = hit[1]; } }
+        if (t.dataset.k === 'desc') {
+          var pr = prFind(t.value), o = it.o, setv = function (k, v) { o[k] = v; var n = $('#es-root [data-iv="' + o.id + '"][data-k="' + k + '"]'); if (n) n.value = v; };
+          if (pr) { if (!String(o.unit).trim() && pr.unit) setv('unit', pr.unit); if (!String(o.m).trim() && String(pr.m).trim() !== '' && o.kind !== 'l') setv('m', String(pr.m)); if (!String(o.l).trim() && String(pr.l).trim() !== '' && o.kind !== 'm') setv('l', String(pr.l)); }
+        }
         esSave(); esRecalc();
       }
     });
@@ -9948,8 +10384,29 @@ body.modal-open .cv { visibility: hidden; }
       if (act === 'new') { $('#es-newbox').hidden = false; $('#es-new-name').focus(); return; }
       if (act === 'cancelnew') { $('#es-newbox').hidden = true; return; }
       if (!d) return;
-      if (act === 'dup') { var cp2 = JSON.parse(JSON.stringify(d)); cp2.id = esId(); cp2.name = d.name + ' (copy)'; ES.docs.push(cp2); ES.active = cp2.id; esSave(); esRender(); return; }
+      if (act === 'dup') { var cp2 = JSON.parse(JSON.stringify(d)); cp2.id = esId(); cp2.name = d.name + ' (copy)'; cp2.revs = []; ES.docs.push(cp2); ES.active = cp2.id; esSave(); esRender(); return; }
       if (act === 'del') { if (window.confirm('Delete estimate "' + d.name + '"? This cannot be undone — back it up first if you need a copy.')) { ES.docs = ES.docs.filter(function (x) { return x !== d; }); ES.active = ES.docs.length ? ES.docs[0].id : null; esSave(); esRender(); } return; }
+      if (act === 'pradd') { var np2 = { id: esId(), desc: '', unit: '', m: '', l: '' }; PR.push(np2); prSave(); esRender(); var nf2 = $('#es-root [data-pr="' + np2.id + '"][data-k="desc"]'); if (nf2) nf2.focus(); return; }
+      if (act === 'prdel') { PR = PR.filter(function (x) { return x.id !== t.dataset.p; }); prSave(); esRender(); return; }
+      if (act === 'prexp') { prCsvOut(); return; }
+      if (act === 'primp') { prCsvIn(); return; }
+      if (act === 'prfill') { var nn = prFillEstimate(d); esSave(); esRender(); esToast(nn ? '✓ Filled ' + nn + ' item(s) from the price list' : 'No blank costs matched the price list — descriptions must match exactly'); return; }
+      if (act === 'prtake') { var nt = prTakeEstimate(d); esRender(); esToast(nt ? '✓ ' + nt + ' priced item(s) saved to the price list' : 'No priced items to add yet'); return; }
+      if (act === 'revsave') {
+        var note = window.prompt('Revision note (optional) — e.g. "Issued for tender"', ''); if (note === null) return;
+        d.revs = d.revs || [];
+        var snap = JSON.parse(JSON.stringify(d)); delete snap.revs;
+        d.revs.push({ n: d.revs.length, date: new Date().toISOString().slice(0, 10), note: note.trim(), total: esCompute(d).proj, snap: snap });
+        esSave(); esRender(); esToast('✓ Saved Rev ' + (d.revs.length - 1)); return;
+      }
+      if (act === 'revcmp') { esCmp = esCmp === +t.dataset.n ? null : +t.dataset.n; esRender(); return; }
+      if (act === 'revrestore') {
+        var rv = (d.revs || [])[+t.dataset.n]; if (!rv) return;
+        if (!window.confirm('Restore Rev ' + rv.n + '? The current items and settings are replaced (save a revision first to keep them).')) return;
+        var keep = { id: d.id, revs: d.revs }, src = JSON.parse(JSON.stringify(rv.snap));
+        Object.keys(d).forEach(function (k) { delete d[k]; }); Object.keys(src).forEach(function (k) { d[k] = src[k]; }); d.id = keep.id; d.revs = keep.revs;
+        esCmp = null; esSave(); esRender(); esToast('✓ Restored Rev ' + rv.n); return;
+      }
       if (act === 'export') { pjSaveFile(esFile(d) + '.estimate.json', JSON.stringify({ mechtoolboxEstimate: d, version: 1 }, null, 2), 'application/json'); return; }
       if (act === 'boqcsv' || act === 'bomcsv') { esCsv(act === 'boqcsv'); return; }
       if (act === 'boqpdf' || act === 'bompdf') { esPdf(act === 'boqpdf'); return; }
