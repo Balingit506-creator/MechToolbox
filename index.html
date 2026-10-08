@@ -5287,6 +5287,52 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
   });
   Object.assign(NEXT, { chw: ['pump', 'dins'], pump: ['chw'], cable: ['vdrop', 'elec'], light: ['elec', 'cable'], wsfu: ['pipe', 'tank', 'dfu'] });
 
+  /* ---------- Design checks: a ✓ Pass / ⚠ Warning row for calculators with a recognised limit ---------- */
+  // Each returns [ok, reason]. Calculators that only work out a requirement (outdoor air, areas, conversions…) have none.
+  var rowSub = function (rows, label) { for (var i = 0; i < rows.length; i++) if (rows[i][0] === label) return rows[i][3] || ''; return ''; };
+  var dens = function (w, a) { return sys === 'si' ? fmt(w / a, 0) + ' W/m²' : fmt(w / a * 0.316998, 1) + ' BTU/h·ft²'; };
+  var sfpOk = function (txt) { var m = /SFP (\d)/.exec(txt || ''); return m ? [+m[1] <= 3, 'SFP ' + m[1] + (+m[1] <= 3 ? ' — within' : ' — above') + ' the SFP 3 benchmark (EN 16798-3)'] : null; };
+  var CHECKS = {
+    btu: function (v, rows) { var w = numIn(rowVal(rows, 'Cooling load')) / 3.41214, d = w / v.area; return [d >= 80 && d <= 250, 'load density ' + dens(w, v.area) + (d >= 80 && d <= 250 ? ' — typical range' : ' — outside the typical 80–250 W/m² (25–80 BTU/h·ft²); confirm with a load calculation')]; },
+    cool: function (v) { var r = coolLoad(v), d = r.total / v.area; return [d >= 80 && d <= 250, 'load density ' + dens(r.total, v.area) + (d >= 80 && d <= 250 ? ' — typical range' : ' — outside the typical 80–250 W/m²; check glazing, people and equipment inputs')]; },
+    heat: function (v) { var w = heatLoad(v).total, d = w / v.area; return [d <= 120, 'heat loss ' + dens(w, v.area) + (d <= 120 ? ' — reasonable' : ' — high; improve insulation or reduce infiltration')]; },
+    hwflow: function (v) { return [v.dt >= 5 && v.dt <= 30, 'ΔT ' + fq(v.dt, 'dT') + (v.dt >= 5 && v.dt <= 30 ? ' — within the usual 5–30 K (10–55 °F)' : ' — outside the usual 5–30 K; check the boiler and emitter design')]; },
+    pump: function (v) { return [v.eta >= 55, 'pump efficiency ' + fmt(v.eta, 0) + ' %' + (v.eta >= 55 ? ' — acceptable' : ' — low; pick a pump closer to its best-efficiency point')]; },
+    fuel: function (v) { return [v.eff >= 85, 'boiler efficiency ' + fmt(v.eff, 0) + ' %' + (v.eff >= 85 ? ' — meets typical code minimums' : ' — below typical minimums (≈ 85 %); consider a condensing boiler')]; },
+    ach: function (v, rows) { var a = numIn(rowVal(rows, 'Air changes')); return [a >= 4 && a <= 15, fmt(a, 1) + ' ACH' + (a >= 4 && a <= 15 ? ' — within the usual 4–15 ACH' : a < 4 ? ' — below 4 ACH; check mixing and outdoor air' : ' — above 15 ACH; check draughts')]; },
+    xfer: function (v, rows) { var u = inSI(rowVal(rows, 'Door undercut'), 'dia'); return [u <= 0.025 + 1e-9, 'door undercut ' + fq(u, 'dia') + (u <= 0.025 + 1e-9 ? ' — within 25 mm (1 in)' : ' — over 25 mm (1 in); use the transfer grille')]; },
+    duct: function (v) { var D = Math.sqrt(4 * v.q / (Math.PI * v.v)), fr = dFric(D, v.v, 0.09), ok = v.v <= 8 + 1e-9 && fr <= 1.2 + 1e-9;
+      return [ok, velTxt(v.v) + ' · ' + fricTxt(fr) + (ok ? ' — within 8 m/s (1,600 fpm) and 1.2 Pa/m (0.15 in.wg/100 ft)' : ' — above the low-pressure limits of 8 m/s and 1.2 Pa/m')]; },
+    rdc: function (v, rows) { var V = inSI(rowVal(rows, 'Velocity'), 'vduct'), fr = inSI(rowVal(rows, 'Friction rate'), 'fricq'), ok = V <= 8 + 1e-9 && fr <= 1.2 + 1e-9;
+      return [ok, ok ? 'within 8 m/s and 1.2 Pa/m (low-pressure duct)' : (V > 8 ? 'velocity above 8 m/s (1,600 fpm)' : 'friction above 1.2 Pa/m (0.15 in.wg/100 ft)') + ' — consider a larger duct']; },
+    rcd: function (v, rows) { var V = inSI(rowVal(rows, 'Velocity'), 'vduct'), fr = inSI(rowVal(rows, 'Friction rate'), 'fricq'), ar = Math.max(v.w, v.h) / Math.min(v.w, v.h), ok = V <= 8 + 1e-9 && fr <= 1.2 + 1e-9 && ar <= 4 + 1e-9;
+      return [ok, ok ? 'within 8 m/s, 1.2 Pa/m and a 4 : 1 aspect ratio' : (ar > 4 ? 'aspect ratio ' + fmt(ar, 1) + ' : 1 — above 4 : 1 (SMACNA)' : V > 8 ? 'velocity above 8 m/s (1,600 fpm)' : 'friction above 1.2 Pa/m') + '']; },
+    sreg: function (v, rows) { var ok = !/Cannot/.test(rowVal(rows, 'Downstream duct')); return [ok, ok ? 'the velocity drop regains the friction to the next take-off' : 'cannot fully regain — shorten the run or raise the upstream velocity']; },
+    dfric: function (v, rows) { var V = inSI(rowVal(rows, 'Velocity'), 'vduct'), fr = inSI(rowVal(rows, 'Friction rate'), 'fricq'), ok = V <= 8 + 1e-9 && fr <= 1.2 + 1e-9;
+      return [ok, ok ? 'within 8 m/s and 1.2 Pa/m (low-pressure duct)' : (V > 8 ? 'velocity above 8 m/s (1,600 fpm)' : 'friction above 1.2 Pa/m (0.15 in.wg/100 ft)') + ' — consider a larger duct']; },
+    eqlen: function (v) { return [!(v.e90m > 0), v.e90m > 0 ? fmt(v.e90m, 0) + ' mitred elbow(s) without vanes — use vanes or radius elbows' : 'no high-loss mitred elbows']; },
+    fitl: function (v) { var bad = v.e90m > 0 || v.exit > 0; return [!bad, bad ? (v.e90m > 0 ? 'mitred elbows without vanes' : 'abrupt free discharge') + ' — high-loss fitting, see the suggestion' : 'no high-loss fittings']; },
+    tpl: function (v, rows) { var p = inSI(rowVal(rows, 'Fan external static pressure'), 'pv'); return [p <= 750 + 1e-9, 'external static ' + paTxt(p) + (p <= 750 + 1e-9 ? ' — within a typical 750 Pa (3 in.wg)' : ' — high; check the index run, fittings and filters')]; },
+    dins: function (v, rows) { var c = rowVal(rows, 'Condensation'), bad = /cannot/i.test(c); return [!bad, bad ? 'surroundings near saturation — condensation cannot be fully prevented; dehumidify the space' : /sweat/i.test(c) ? 'bare duct would sweat — the insulation shown keeps the surface above the dew point' : 'no condensation risk']; },
+    fexh: function (v, rows) { var sh = inSI(rowVal(rows, 'Shaft power'), 'kwhp') * 1000, q = v.q, sfp = sh / 0.9 / q; return [sfp <= 1250, 'about ' + fmt(sfp / 1000, 2) + ' kW/(m³/s) input' + (sfp <= 1250 ? ' — within the SFP 3 benchmark (EN 16798-3)' : ' — above SFP 3; lower the pressure or pick a more efficient fan')]; },
+    fsup: function (v, rows) { return sfpOk(rowSub(rows, 'Specific fan power')); },
+    ffa: function (v, rows) { return sfpOk(rowSub(rows, 'Specific fan power')); },
+    louv: function () { return [true, 'free-area velocity within the AMCA 500-L rain-penetration limit by design']; },
+    ndiff: function (v, rows) {
+      var n = numIn(rowVal(rows, 'Diffusers')), q = v.q / Math.max(n, 1), ck = SPEC_SDIFF({ q: q, t: 'sq4', nc: '35' }), ok = q <= v.qmax * 1.001 && /^✓/.test(ck[1][3] || '');
+      return [ok, ok ? 'airflow and area per diffuser within the limits; neck velocity within NC 35' : 'neck velocity above the NC 35 limit — add diffusers or use larger necks'];
+    },
+    pipe: function (v, rows) { var V = inSI(rowVal(rows, 'Velocity'), 'vpipe'); return [V <= 2.4 + 1e-9, fq(V, 'vpipe') + (V <= 2.4 + 1e-9 ? ' — within 2.4 m/s (8 ft/s)' : ' — above 2.4 m/s (8 ft/s); noise and water hammer risk')]; },
+    sprinkler: function (v) { return [v.cov <= 20.9 + 1e-9, fq(v.cov, 'area') + ' per head' + (v.cov <= 20.9 + 1e-9 ? (v.cov <= 12.1 + 1e-9 ? ' — within NFPA 13 limits for light and ordinary hazard' : ' — within the light-hazard limit (20.9 m² / 225 ft²); too large for ordinary hazard (12.1 m²)') : ' — above the NFPA 13 maximum of 20.9 m² (225 ft²) per standard spray head')]; },
+    hazen: function (v, rows) { var V = inSI(rowVal(rows, 'Velocity'), 'vpipe'); return [V <= 6 + 1e-9, fq(V, 'vpipe') + (V <= 6 + 1e-9 ? ' — within 6 m/s (20 ft/s)' : ' — above 6 m/s (20 ft/s); upsize the pipe')]; },
+    dfu: function (v, rows) { var ok = !/Beyond/.test(rowVal(rows, 'Building drain / sewer')); return [ok, ok ? 'all sizes found in the IPC tables (3 in minimum with water closets)' : 'load beyond the table — split the drainage']; }
+  };
+  function withCheck(id, v, rows) {
+    var f = CHECKS[id], r = null;
+    try { r = f && f(v, rows); } catch (e) { r = null; }
+    return r ? rows.concat([['Design check', r[0] ? STATUS.pass : STATUS.warn, 1, r[1]]]) : rows;
+  }
+
   /* ---------- Modal ---------- */
   var modal = $('#modal'), mBody = $('#m-body'), current = null, opener = null, lastCopy = '';
 
@@ -5377,7 +5423,7 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       showSugg(null);
       return;
     }
-    var rows = d.calc(v), sug = suggestFor(id, v, rows);
+    var rows = withCheck(id, v, d.calc(v)), sug = suggestFor(id, v, rows);
     showSugg(sug, NEXT[id]);
     if (dz) dz.innerHTML = drawWrap(DRAWS[id](v, rows), d.title + ' — live drawing');
     err.hidden = true; btn.disabled = false;
@@ -5898,7 +5944,8 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       ['Cooling load (+' + fmt(CL.sf, 0) + ' %)', pw(total), 1, pwOther(total)],
       ['Refrigeration', fmt(total * 3.41214 / 12000, 2) + ' TR', 1],
       ['Load density', density(total / CL.area)],
-      ['Supply airflow', fq(supply, 'air'), 1, 'at ' + tdisp(CL.ts) + ' supply']
+      ['Supply airflow', fq(supply, 'air'), 1, 'at ' + tdisp(CL.ts) + ' supply'],
+      (function () { var d = total / CL.area, ok = d >= 80 && d <= 250; return ['Design check', ok ? STATUS.pass : STATUS.warn, 1, 'load density ' + density(d) + (ok ? ' — typical range' : ' — outside the typical 80–250 W/m² (25–80 BTU/h·ft²); check glazing, roof and internal gains')]; })()
     ];
     err.hidden = true; btn.disabled = false;
     paintRows(rowsEl, rows, function (r) { return r[2]; });
@@ -6206,7 +6253,8 @@ dialog.modal.closing::backdrop { animation: fade-out 0.16s ease forwards; }
       ['Heat loss coefficient', sys === 'si' ? fmt(r.H, 1) + ' W/K' : fmt(r.H * 1.8956, 1) + ' BTU/h·°F'],
       ['Design heat load (+' + fmt(S.sf, 0) + ' %)', pw(total), 1, pwOther(total)],
       ['Load density', density(total / S.area)],
-      ['Boiler water flow', fq(flow, 'liq'), 1, sys === 'si' ? 'at 20 K flow – return ΔT' : 'at 36 °F flow – return ΔT']
+      ['Boiler water flow', fq(flow, 'liq'), 1, sys === 'si' ? 'at 20 K flow – return ΔT' : 'at 36 °F flow – return ΔT'],
+      (function () { var d = total / S.area, ok = d <= 120; return ['Design check', ok ? STATUS.pass : STATUS.warn, 1, 'heat loss ' + density(d) + (ok ? ' — reasonable' : ' — high (over 120 W/m²); improve insulation, glazing or airtightness')]; })()
     ];
     err.hidden = true; btn.disabled = false;
     paintRows(rowsEl, rows, function (x) { return x[2]; });

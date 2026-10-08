@@ -73,3 +73,25 @@ test('Sprinkler demand and fire pump rating', async ({ page }) => {
   await openCalc(page, 'firepump')
   expect(await row(page, 'Next standard rating')).toBe('500 gpm')
 })
+
+test('design checks flip between Pass and Warning at their limits', async ({ page }) => {
+  const check = async () => (await rows(page)).find((r) => r.label === 'Design check')
+  await openCalc(page, 'ach')
+  expect((await check()).text).toBe('✓ Pass')
+  await setField(page, 'ach', 'ach', '20')                  // above 15 ACH
+  expect((await check()).text).toBe('⚠ Warning')
+  expect((await check()).sub).toContain('draughts')
+  await page.evaluate(() => document.getElementById('modal').close())
+  await openCalc(page, 'sprinkler')
+  expect((await check()).text).toBe('✓ Pass')
+  await setField(page, 'sprinkler', 'cov', '25')            // above 20.9 m² per head
+  expect((await check()).text).toBe('⚠ Warning')
+  expect((await check()).sub).toContain('NFPA 13 maximum')
+  await page.evaluate(() => document.getElementById('modal').close())
+  await openCalc(page, 'duct')
+  await setField(page, 'duct', 'v', '10')                   // above 8 m/s
+  expect((await check()).text).toBe('⚠ Warning')
+  await page.evaluate(() => document.getElementById('modal').close())
+  await openCalc(page, 'xfer')                               // 56 mm undercut by default
+  expect((await check()).text).toBe('⚠ Warning')
+})
