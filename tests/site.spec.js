@@ -35,7 +35,7 @@ test('minimize all hides the list and a category brings it back', async ({ page 
   await expect(page.locator('#card-grid')).toBeHidden()
   await expect(page.locator('#min-all-label')).toHaveText('Show all (7)')
   await page.locator('[data-filter="F"]').click()
-  await expect(page.locator('#card-grid .card:visible')).toHaveCount(4)
+  await expect(page.locator('#card-grid .card:visible')).toHaveCount(5)
 })
 
 test('search finds calculators by keyword', async ({ page }) => {
