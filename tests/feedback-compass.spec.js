@@ -89,3 +89,18 @@ test('altimeter falls back to ground elevation and feeds the psychrometric chart
   await expect(page.locator('#psy-alt')).toHaveValue('1500')
   expect(errors).toEqual([])
 })
+
+test('the converter and compass hide into the side and come back, remembered after reload', async ({ page }) => {
+  const errors = await openSite(page)
+  await expect(page.locator('#cv-btn')).toBeVisible()
+  await page.locator('#dock-tab').click()
+  await expect(page.locator('body')).toHaveClass(/dock-hidden/)
+  await expect(page.locator('#dock-tab')).toHaveAttribute('aria-expanded', 'false')
+  await page.reload()
+  await expect(page.locator('body')).toHaveClass(/dock-hidden/)
+  await page.locator('#dock-tab').click()
+  await expect(page.locator('body')).not.toHaveClass(/dock-hidden/)
+  await page.locator('#cv-btn').click()
+  await expect(page.locator('#cv-panel')).toBeVisible()
+  expect(errors).toEqual([])
+})

@@ -211,7 +211,9 @@ test('chilled water take-off — 100 TR, 10 °F, 50 m: pipe, lengths, insulation
   expect(await row(page, 'Chilled-water flow')).toBe('15.1 L/s')
   expect(await row(page, 'Hangers (max spacing)')).toMatch(/^\d+ \([\d.]+ m\)$/)
   expect(await row(page, 'Insulation area')).toMatch(/ m²$/)
-  console.log(await page.locator('#r-rows').innerText())
+  expect(await row(page, 'Estimated cost')).toBe('enter prices for pipe, insulation, hangers and labor')
+  await page.locator('#f-chw-pp').fill('5000')                  // 19 lengths × 5,000 = 95,000 + 30 % fittings
+  expect(await row(page, 'Estimated cost')).toBe('₱ 123,500.00')
   expect(errors).toEqual([])
 })
 
@@ -229,5 +231,51 @@ test('chilled water insulation — 5 in, 50 m, supply + return: 55 tubes, 76.5 m
   expect(await row(page, 'Cladding area')).toBe('Not needed')
   await page.locator('#f-chwins-pt').fill('300')
   expect(await row(page, 'Estimated cost')).toBe('₱ 16,500.00')
+  expect(errors).toEqual([])
+})
+
+test('lighting power density — 12 × 36 W over 100 m² open office: 4.32 W/m² vs 6.57 allowed', async ({ page }) => {
+  const errors = await openSite(page)
+  await openCalc(page, 'lpd')
+  expect(await row(page, 'Lighting power density')).toBe('4.32 W/m²')
+  expect(await row(page, 'Allowed LPD')).toBe('6.57 W/m²')
+  expect(await row(page, 'Design check')).toBe('✓ Pass')
+  await page.locator('#f-lpd-w1').fill('80')                    // 960 W → 9.6 W/m²
+  expect(await row(page, 'Design check')).toBe('⚠ Warning')
+  await page.locator('#f-lpd-lim').fill('10')                   // custom code limit
+  expect(await row(page, 'Design check')).toBe('✓ Pass')
+  expect(errors).toEqual([])
+})
+
+test('chilled water hangers — 5 in, 50 m, shared trapeze: matches the reference take-off', async ({ page }) => {
+  const errors = await openSite(page)
+  await openCalc(page, 'chhang')
+  expect(await row(page, 'Trapeze supports')).toBe('15')
+  expect(await row(page, 'Maximum spacing')).toBe('4.3 m')
+  expect(await row(page, 'Filled pipe weight')).toBe('36.2 kg/m')
+  expect(await row(page, 'Load on each rod')).toBe('234 kg')
+  expect(await row(page, 'Threaded rod size')).toBe('16 mm × 30 rods')
+  expect(await row(page, 'Rod needed (3 m lengths)')).toBe('10 pcs')
+  expect(await row(page, 'Trapeze angle bar')).toBe('65 × 65 × 6 mm, 0.7106 m × 2 bar(s) of 6 m')
+  expect(await row(page, 'Insulation saddles')).toBe('30 pcs')
+  expect(await row(page, 'Nuts and washers')).toBe('60 nuts / 60 washers')
+  await expect(page.locator('#m-body svg').first()).toBeVisible()            // live drawing
+  expect(errors).toEqual([])
+})
+
+test('refrigeration — superheat / subcooling pass, R410A pressures, cooling tower flow', async ({ page }) => {
+  const errors = await openSite(page)
+  await openCalc(page, 'shsc')
+  expect(await row(page, 'Superheat')).toBe('5.1 K')
+  expect(await row(page, 'Subcooling')).toBe('4.6 K')
+  expect(await row(page, 'Design check')).toBe('✓ Pass')
+  await page.locator('#f-shsc-ts').fill('20')                          // starved evaporator
+  expect(await row(page, 'Design check')).toBe('⚠ Warning')
+  await page.evaluate(() => document.getElementById('modal').close())
+  await openCalc(page, 'refcycle')
+  expect(await row(page, 'Evaporating pressure')).toBe('9.33 bar abs')
+  await page.evaluate(() => document.getElementById('modal').close())
+  await openCalc(page, 'coldroom')
+  expect(await row(page, 'Equipment capacity')).toMatch(/ kW$/)
   expect(errors).toEqual([])
 })
