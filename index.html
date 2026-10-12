@@ -3109,6 +3109,15 @@ body.modal-open .dock-tab { visibility: hidden; }
     motor: '<rect x="40" y="26" width="64" height="40" rx="6" class="ink"/><path d="M104 46h28" class="ink a-march"/><circle cx="72" cy="46" r="10" class="ink-m a-flicker"/><text x="44" y="82" class="ink-t">FLC · OL</text>',
     ups: '<rect x="40" y="18" width="80" height="56" rx="4" class="ink"/><rect x="52" y="30" width="40" height="18" class="ink-m"/><path d="M54 32h20v14H54z" class="ink a-flicker"/><text x="52" y="66" class="ink-t">UPS</text>',
     evc: '<rect x="30" y="16" width="34" height="58" rx="4" class="ink"/><path d="M64 40c18 0 18 24 36 24h30" class="ink a-march"/><path d="M44 30l-4 10h8l-4 10" class="ink a-flicker"/>',
+    lpg: '<rect x="20" y="24" width="26" height="50" rx="10" class="ink"/><path d="M46 40h70v20" class="ink a-march"/><path d="M106 60h24v16h-24z" class="ink-m"/><path d="M114 56c2-6 6-6 8 0" class="ink a-flicker"/>',
+    exloop: '<path d="M14 60h40v-36h40v36h52" class="ink"/><path d="M50 60l8 0M98 60l8 0" class="ink-m a-flicker"/><text x="60" y="80" class="ink-t">ΔL = αLΔT</text>',
+    greasetrap: '<rect x="30" y="30" width="100" height="44" rx="2" class="ink"/><path d="M30 42h100" class="ink-m a-flicker"/><path d="M60 30v34M100 30v34" class="ink-m"/><path d="M10 50h20M130 60h20" class="ink a-march"/>',
+    rainwater: '<path d="M20 34l40-20 40 20" class="ink"/><path d="M100 34v12h12" class="ink-m"/><rect x="108" y="46" width="34" height="34" rx="4" class="ink"/><path d="M110 64h30" class="ink-m a-flicker"/><path d="M40 10v6M60 6v6M80 10v6" class="ink-m a-march"/>',
+    fext: '<rect x="66" y="26" width="28" height="54" rx="10" class="ink"/><path d="M74 26v-8h16l10 6" class="ink-m"/><text x="70" y="58" class="ink-t">ABC</text><path d="M100 24c8 0 14 6 14 14" class="ink a-flicker"/>',
+    standpipe: '<path d="M60 84V10" class="ink"/><path d="M60 22h16M60 44h16M60 66h16" class="ink-m"/><circle cx="80" cy="22" r="4" class="ink a-flicker"/><circle cx="80" cy="44" r="4" class="ink-m"/><circle cx="80" cy="66" r="4" class="ink-m"/>',
+    firetank: '<rect x="40" y="20" width="80" height="58" rx="2" class="ink"/><path d="M42 40h76" class="ink-m a-flicker"/><path d="M120 66h28" class="ink a-march"/><text x="50" y="62" class="ink-t">FIRE</text>',
+    smoke: '<path d="M20 80V30l60-20 60 20v50" class="ink"/><path d="M60 80c0-14 20-14 20-28s20-14 20-28" class="ink-m a-flicker"/><path d="M30 36h100" class="ink-m"/><path d="M80 8v-6" class="ink a-march"/>',
+    payback: '<path d="M20 74h120" class="ink-m"/><path d="M28 74V40M48 74V48M68 74V56M88 74V30M108 74V22M128 74V14" class="ink"/><path d="M28 40L128 14" class="ink a-march"/>',
     lpd: '<rect x="20" y="16" width="120" height="58" rx="3" class="ink-m"/><path d="M40 16v8M80 16v8M120 16v8" class="ink"/><path d="M34 24h12M74 24h12M114 24h12" class="ink a-flicker"/>' +
       '<text x="44" y="58" class="ink-t">W ÷ m² ≤ limit</text>',
     light: art5('<rect x="16" y="10" width="128" height="66" class="ink-m"/><g class="a-flicker"><rect x="34" y="24" width="20" height="10" class="ink"/><rect x="70" y="24" width="20" height="10" class="ink"/><rect x="106" y="24" width="20" height="10" class="ink"/><rect x="34" y="52" width="20" height="10" class="ink"/><rect x="70" y="52" width="20" height="10" class="ink"/><rect x="106" y="52" width="20" height="10" class="ink"/></g>', 'lux · N'),
@@ -3824,6 +3833,35 @@ body.modal-open .dock-tab { visibility: hidden; }
       note: 'NEC Art. 625 / IEC 61851 and IEC 60364-7-722: a dedicated circuit per charger, sized at 125 %, with RCD protection (Type B, or Type A with 6 mA DC detection). Diversity below 100 % should be backed by load management. Check the Philippine EVIDA (RA 11697) rules for buildings.'
     },
 
+    payback: {
+      code: 'ELEC / 027', title: 'Equipment Replacement Payback', card: true, disc: 'E',
+      desc: 'Replace an old unit with an efficient one — energy and money saved a year, payback, 10-year saving and CO₂ avoided.',
+      fields: [
+        { k: 'old', label: 'Old equipment power', unit: 'kW', def: [2.5, 2.5] },
+        { k: 'new', label: 'New equipment power', unit: 'kW', def: [1.4, 1.4] },
+        { k: 'hd', label: 'Hours per day', unit: 'h', def: [8, 8] },
+        { k: 'dy', label: 'Days per year', unit: 'days', def: [300, 300] },
+        { k: 'cur', label: 'Currency', opts: [['₱', '₱  Philippine peso (PHP)'], ['$', '$  US dollar (USD)'], ['€', '€  Euro (EUR)'], ['£', '£  British pound (GBP)'], ['A$', 'A$  Australian dollar (AUD)'], ['C$', 'C$  Canadian dollar (CAD)'], ['S$', 'S$  Singapore dollar (SGD)'], ['¥', '¥  Japanese yen (JPY)'], ['CN¥', '¥  Chinese yuan (CNY)'], ['₩', '₩  Korean won (KRW)'], ['₹', '₹  Indian rupee (INR)'], ['RM', 'RM  Malaysian ringgit (MYR)'], ['Rp', 'Rp  Indonesian rupiah (IDR)'], ['฿', '฿  Thai baht (THB)'], ['₫', '₫  Vietnamese dong (VND)'], ['AED', 'AED  UAE dirham'], ['SAR', 'SAR  Saudi riyal'], ['QAR', 'QAR  Qatari riyal']], def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
+        { k: 'rate', label: 'Electricity rate', unit: 'per kWh', def: [12, 0.15], zero: true },
+        { k: 'cost', label: 'New equipment installed cost', unit: 'total', def: [45000, 3000], zero: true },
+        { k: 'ef', label: 'Grid emission factor', unit: 'kg CO₂/kWh', def: [0.71, 0.39], reg: { ph: 0.71, au: 0.68, us: 0.39 } }
+      ],
+      check: function (v) { return v.new < v.old ? '' : 'The new equipment must use less power than the old one.'; },
+      formula: function () { return ['kWh saved = (old − new) × hours × days', 'Saving = kWh × rate;  payback = cost ÷ saving', 'CO₂ = kWh × grid emission factor']; },
+      calc: function (v) {
+        var kwh = (v.old - v.new) * v.hd * v.dy, save = kwh * v.rate, c = v.cur ? v.cur + ' ' : '', pb = save > 0 && v.cost > 0 ? v.cost / save : null;
+        return [
+          ['Energy saved', fmt(kwh, 0) + ' kWh / year', 0, fmt((1 - v.new / v.old) * 100, 0) + ' % less power'],
+          ['Money saved', save > 0 ? c + n2(save) + ' / year' : 'enter the electricity rate', 1, save > 0 ? c + n2(save / 12) + ' per month' : ''],
+          ['Simple payback', pb ? fmt(pb, 1) + ' years' : 'enter the cost', 1, pb ? 'installed cost ' + c + n2(v.cost) : ''],
+          ['10-year saving', save > 0 ? c + n2(save * 10 - v.cost) : '—', 0, 'savings less the cost, no inflation'],
+          ['CO₂ avoided', fmt(kwh * v.ef / 1000, 2) + ' t / year', 0, fmt(v.ef) + ' kg per kWh grid factor'],
+          ['Design check', pb == null || pb <= 5 ? STATUS.pass : STATUS.warn, 1, pb == null ? 'add the cost to check the payback' : pb <= 5 ? 'pays back within 5 years' : 'over 5 years — check run hours and prices']
+        ];
+      },
+      note: 'Simple payback, no discounting. Emission factors: Philippines about 0.71 kg/kWh (DOE grid factor), Australia about 0.68 (NGA), US about 0.39 (EPA eGRID average) — use the latest local value. Good candidates: old non-inverter aircons, T8 lighting, old motors and pumps.'
+    },
+
     vdrop: {
       code: 'ELEC / 009', title: 'Voltage Drop Calculator', card: true, disc: 'E',
       desc: 'Cable voltage drop and percentage loss for single- and three-phase circuits.',
@@ -3967,6 +4005,108 @@ body.modal-open .dock-tab { visibility: hidden; }
       note: 'Simplified tree calculation for checking and pump selection: identical branches, 20 % fitting allowance, C = 120 (black steel, wet). The final design needs a full hydraulic calculation (node by node, actual fittings and elevations) per NFPA 13 Chapter 27 / 28 and the water supply test.'
     },
 
+    fext: {
+      code: 'FIRE / 017', title: 'Fire Extinguisher Count', card: true, disc: 'F',
+      desc: 'Portable extinguishers by floor area and hazard (NFPA 10) — number, rating, travel distance and cost.',
+      fields: [
+        { k: 'a', label: 'Floor area', q: 'area', def: [1000, 10800] },
+        { k: 'hz', label: 'Hazard', opts: [['l', 'Light (offices, classrooms)'], ['o', 'Ordinary (shops, workshops, parking)'], ['e', 'Extra (kitchens, warehouses, flammables)']], def: ['l', 'l'] },
+        { k: 'r', label: 'Extinguisher Class A rating', opts: [['2', '2-A (about 5 lb / 2.3 kg ABC)'], ['3', '3-A'], ['4', '4-A (about 10 lb / 4.5 kg ABC)'], ['6', '6-A'], ['10', '10-A (about 20 lb / 9 kg ABC)']], def: ['4', '4'] },
+        { k: 'fl', label: 'Floors', unit: 'floors', def: [1, 1] },
+        { k: 'cur', label: 'Currency', opts: [['₱', '₱  Philippine peso (PHP)'], ['$', '$  US dollar (USD)'], ['€', '€  Euro (EUR)'], ['£', '£  British pound (GBP)'], ['A$', 'A$  Australian dollar (AUD)'], ['C$', 'C$  Canadian dollar (CAD)'], ['S$', 'S$  Singapore dollar (SGD)'], ['¥', '¥  Japanese yen (JPY)'], ['CN¥', '¥  Chinese yuan (CNY)'], ['₩', '₩  Korean won (KRW)'], ['₹', '₹  Indian rupee (INR)'], ['RM', 'RM  Malaysian ringgit (MYR)'], ['Rp', 'Rp  Indonesian rupiah (IDR)'], ['฿', '฿  Thai baht (THB)'], ['₫', '₫  Vietnamese dong (VND)'], ['AED', 'AED  UAE dirham'], ['SAR', 'SAR  Saudi riyal'], ['QAR', 'QAR  Qatari riyal']], def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
+        { k: 'pe', label: 'Price per extinguisher', unit: 'each', def: [0, 0], zero: true }
+      ],
+      formula: function () { return ['Area per extinguisher = rating × area per A (light 3,000, ordinary 1,500, extra 1,000 ft²), max 11,250 ft² (1,045 m²)', 'Count = area ÷ area per extinguisher, at least one per floor', 'Travel distance to an extinguisher ≤ 75 ft (22.9 m)']; },
+      calc: function (v) {
+        var perA = { l: 3000, o: 1500, e: 1000 }[v.hz], minR = { l: 2, o: 2, e: 4 }[v.hz], ft2 = v.a / 0.09290304, cover = Math.min(+v.r * perA, 11250);
+        var perFloor = Math.max(1, Math.ceil(ft2 / cover - 1e-9)), n = perFloor * v.fl, ok = +v.r >= minR, c = v.cur ? v.cur + ' ' : '';
+        return [
+          ['Extinguishers', fmt(n, 0), 1, fmt(perFloor, 0) + ' per floor × ' + fmt(v.fl, 0) + ' floor(s)'],
+          ['Area per extinguisher', fq(cover * 0.09290304, 'area'), 0, v.r + '-A × ' + fmt(perA, 0) + ' ft² per A' + (cover >= 11250 ? ' (capped at 11,250 ft²)' : '')],
+          ['Travel distance', 'max ' + fq(22.86, 'len'), 0, 'place them so no point is farther than this'],
+          ['Mounting height', 'top ≤ ' + fq(1.53, 'len'), 0, 'for units up to 18 kg (40 lb); bottom ≥ 100 mm (4 in) above the floor'],
+          ['Cost', v.pe > 0 ? c + n2(n * v.pe) : 'enter a price', 0, v.pe > 0 ? fmt(n, 0) + ' × ' + c + n2(v.pe) : ''],
+          ['Design check', ok ? STATUS.pass : STATUS.warn, 1, ok ? 'rating meets the NFPA 10 minimum for ' + { l: 'light', o: 'ordinary', e: 'extra' }[v.hz] + ' hazard' : 'NFPA 10 needs at least ' + minR + '-A for this hazard']
+        ];
+      },
+      note: 'NFPA 10 Table 6.2.1.1 (Class A). Add Class B units for flammable liquids and Class K (wet chemical) within 9 m (30 ft) of commercial cooking. The Fire Code of the Philippines (RA 9514 RIRR) adopts NFPA 10; the BFP checks placement and annual servicing.'
+    },
+
+    standpipe: {
+      code: 'FIRE / 018', title: 'Standpipe & Hose System', card: true, disc: 'F',
+      desc: 'Standpipe flow and pressure by NFPA 14 — system demand, pump pressure, riser size and 30-minute water volume.',
+      fields: [
+        { k: 'cls', label: 'Standpipe class', opts: [['I', 'Class I — 65 mm (2½") fire-department outlets'], ['II', 'Class II — 40 mm (1½") occupant hose'], ['III', 'Class III — both']], def: ['I', 'I'] },
+        { k: 'n', label: 'Number of standpipes (risers)', unit: 'risers', def: [2, 2] },
+        { k: 'spr', label: 'Building fully sprinklered', opts: [['y', 'Yes'], ['n', 'No']], def: ['y', 'y'] },
+        { k: 'z', label: 'Height to the topmost outlet', q: 'len', def: [40, 130] },
+        { k: 'f', label: 'Pipe friction to the top outlet', q: 'pbar', def: [0.7, 10], zero: true }
+      ],
+      formula: function () { return ['Class I / III: 500 gpm (1,893 L/min) for the first riser + 250 gpm each extra, max 1,000 gpm sprinklered / 1,250 not', 'Class II: 100 gpm (379 L/min)', 'Residual at the top outlet: 100 psi (6.9 bar) Class I / III, 65 psi (4.5 bar) Class II', 'Pump pressure = residual + height + friction']; },
+      calc: function (v) {
+        var two = v.cls !== 'II', gpm = two ? Math.min(500 + 250 * Math.max(v.n - 1, 0), v.spr === 'y' ? 1000 : 1250) : 100, lpm = gpm * 3.785411784;
+        var res = two ? 6.895 : 4.482, p = res + v.z * BAR_PER_M + v.f, riser = two ? (v.z > 30.5 ? '150 mm (6")' : '100 mm (4")') : (v.z > 15.2 ? '65 mm (2½")' : '50 mm (2")');
+        var vol = lpm * 30 / 1000;
+        return [
+          ['System demand', fq(lpm, 'lpm'), 1, fmt(gpm, 0) + ' gpm — Class ' + v.cls + ', ' + fmt(v.n, 0) + ' riser(s)'],
+          ['Pump pressure', fq(p, 'pbar'), 1, 'residual ' + fq(res, 'pbar') + ' + height ' + fq(v.z * BAR_PER_M, 'pbar') + ' + friction'],
+          ['Riser size (minimum)', riser, 0, 'NFPA 14 §8.6'],
+          ['Water for 30 minutes', sys === 'si' ? fmt(vol, 1) + ' m³' : fmt(vol * 264.172, 0) + ' gal', 0, 'NFPA 14 §9.2 — add the sprinkler demand where combined'],
+          ['Design check', p <= 12 ? STATUS.pass : STATUS.warn, 1, p <= 12 ? 'pump pressure under 12 bar (175 psi)' : 'above 12 bar (175 psi) at the outlets — zone the risers or add pressure-reducing valves']
+        ];
+      },
+      note: 'NFPA 14 (2019) §7.10 flow and §7.8 pressure. The Fire Code of the Philippines requires standpipes in buildings over about 15 m (RA 9514 RIRR). Outlets with more than 100 psi (6.9 bar) static at 1½" hose need pressure-regulating devices.'
+    },
+
+    firetank: {
+      code: 'FIRE / 019', title: 'Fire Water Storage Tank', card: true, disc: 'F',
+      desc: 'Fire reserve from the sprinkler and hose demand and the required duration — volume, footprint and refill time.',
+      fields: [
+        { k: 'q', label: 'Sprinkler demand', q: 'lpm', def: [1100, 290] },
+        { k: 'hose', label: 'Hose stream allowance', q: 'lpm', def: [950, 250], zero: true },
+        { k: 't', label: 'Duration', opts: [['30', '30 min — light hazard'], ['60', '60 min — ordinary hazard (lower)'], ['90', '90 min — ordinary hazard (upper)'], ['120', '120 min — extra hazard']], def: ['60', '60'] },
+        { k: 'dv', label: 'Dead volume and freeboard', unit: '%', def: [10, 10], zero: true },
+        { k: 'hh', label: 'Usable water depth', q: 'len', def: [3, 10] },
+        { k: 'rf', label: 'Refill flow from the mains', q: 'lpm', def: [300, 80] }
+      ],
+      formula: function () { return ['Volume = (sprinkler + hose) × duration × (1 + dead volume)', 'Footprint = volume ÷ water depth', 'Refill time = volume ÷ refill flow (NFPA 22: within 8 h)']; },
+      calc: function (v) {
+        var net = (v.q + v.hose) * +v.t / 1000, vol = net * (1 + v.dv / 100), area = vol / v.hh, refill = vol * 1000 / v.rf / 60;
+        return [
+          ['Fire reserve volume', fq(vol, 'vol'), 1, (sys === 'si' ? fmt(vol * 1000, 0) + ' L' : fmt(vol * 264.172, 0) + ' gal') + ' incl. ' + fmt(v.dv) + ' % dead volume'],
+          ['Net fire water', fq(net, 'vol'), 0, fq(v.q + v.hose, 'lpm') + ' for ' + v.t + ' min'],
+          ['Tank footprint', fq(area, 'area'), 0, 'at ' + fq(v.hh, 'len') + ' usable depth — e.g. ' + fq(Math.sqrt(area), 'len') + ' square'],
+          ['Refill time', fmt(refill, 1) + ' h', 0, 'from the mains at ' + fq(v.rf, 'lpm')],
+          ['Design check', refill <= 8 ? STATUS.pass : STATUS.warn, 1, refill <= 8 ? 'refills within 8 hours (NFPA 22)' : 'refill longer than 8 h — enlarge the inlet or add a second supply']
+        ];
+      },
+      note: 'Durations from NFPA 13 Table 19.3.3.1.2 (light 30, ordinary 60–90, extra 90–120 min). Keep the fire reserve separate from domestic water (or below the domestic draw-off level). NFPA 22 for tank construction; the Fire Code of the Philippines may set larger reserves.'
+    },
+
+    smoke: {
+      code: 'FIRE / 020', title: 'Atrium Smoke Exhaust', card: true, disc: 'F',
+      desc: 'Smoke exhaust to hold the smoke layer above the clear height — NFPA 92 axisymmetric plume mass flow, smoke temperature and exhaust volume.',
+      fields: [
+        { k: 'qf', label: 'Design fire size', unit: 'kW', def: [5000, 5000] },
+        { k: 'z', label: 'Clear height to the smoke layer', q: 'len', def: [10, 33] },
+        { k: 'ta', label: 'Ambient temperature', q: 'tc', def: [30, 86] },
+        { k: 'cf', label: 'Convective fraction', unit: '0–1', def: [0.7, 0.7], max: 1, maxMsg: 'Use a fraction between 0 and 1.' }
+      ],
+      formula: function () { return ['Flame height z_l = 0.166 Q_c^(2/5)', 'Plume mass flow m = 0.071 Q_c^(1/3) z^(5/3) + 0.0018 Q_c  (z > z_l)', 'Smoke temperature T_s = T₀ + Q_c / (m · c_p);  exhaust V = m / ρ_s']; },
+      calc: function (v) {
+        var Qc = v.qf * v.cf, zl = 0.166 * Math.pow(Qc, 0.4), m = v.z > zl ? 0.071 * Math.pow(Qc, 1 / 3) * Math.pow(v.z, 5 / 3) + 0.0018 * Qc : 0.032 * Math.pow(Qc, 3 / 5) * v.z;
+        var T0 = v.ta + 273.15, Ts = T0 + Qc / (m * 1.005), rho = 352.8 / Ts, V = m / rho;
+        return [
+          ['Smoke exhaust', fq(V, 'air'), 1, fmt(V, 1) + ' m³/s at the smoke temperature'],
+          ['Plume mass flow', fmt(m, 1) + ' kg/s', 0, 'convective ' + fmt(Qc, 0) + ' kW, clear height ' + fq(v.z, 'len')],
+          ['Smoke temperature', sys === 'si' ? fmt(Ts - 273.15, 0) + ' °C' : fmt((Ts - 273.15) * 1.8 + 32, 0) + ' °F', 0, 'size fans for this temperature'],
+          ['Make-up air', fq(V * 0.85 * rho / 1.16, 'air'), 0, 'about 85 % of the exhaust mass, at low velocity (≤ 1 m/s, 200 fpm)'],
+          ['Design check', v.z > zl ? STATUS.pass : STATUS.warn, 1, v.z > zl ? 'smoke layer above the flame height (' + fq(zl, 'len') + ')' : 'clear height is within the flame — raise the layer or use a smaller design fire']
+        ];
+      },
+      note: 'NFPA 92 (2021) §5.5.1.1 axisymmetric plume, steady fire. Typical design fires: 1–2.5 MW for sprinklered retail / offices, 5 MW for unsprinklered or large fuel loads. Check plugholing (number of exhaust inlets) and use CFD for complex spaces.'
+    },
+
     firepump: {
       code: 'FIRE / 014', title: 'Fire Pump Sizing', card: true, disc: 'F',
       desc: 'Required pump pressure, head and power, next NFPA 20 rating and performance test points.',
@@ -4097,6 +4237,57 @@ body.modal-open .dock-tab { visibility: hidden; }
         ];
       },
       note: 'Based on IPC Tables 709.1 and 710.1(1)/(2), public-use values. A pipe carrying a water closet is at least 3 in (DN 80). UPC and local codes differ — verify, and size vents separately.'
+    },
+
+    greasetrap: {
+      code: 'SAN / 021', title: 'Grease Interceptor Sizing', card: true, disc: 'S',
+      desc: 'Gravity grease interceptor for a kitchen by meals served (UPC), and the hydromechanical unit for a sink by drain-down flow (PDI).',
+      fields: [
+        { k: 'meals', label: 'Meals served at the peak hour', unit: 'meals/h', def: [100, 100] },
+        { k: 'wf', label: 'Kitchen type', opts: [['6', 'With dishwasher — 6 gal / 23 L per meal'], ['5', 'Without dishwasher — 5 gal / 19 L'], ['2', 'Single-service — 2 gal / 7.6 L'], ['1', 'Food-waste grinder only — 1 gal / 3.8 L']], def: ['5', '5'] },
+        { k: 'hrs', label: 'Hours open', opts: [['1', '8 hours — storage factor 1'], ['1.5', '12 hours — 1.5'], ['2', '16 hours — 2'], ['3', '24 hours — 3']], def: ['1.5', '1.5'] },
+        { k: 'sv', label: 'Sink volume drained at once (hydromechanical)', unit: 'L', def: [120, 120], zero: true }
+      ],
+      formula: function () { return ['Gravity volume = meals × waste flow × 2.5 h retention × storage factor (UPC 1014.3.6)', 'Hydromechanical flow = sink volume × 75 % fill ÷ 1-minute drain (PDI G101)']; },
+      calc: function (v) {
+        var gal = v.meals * +v.wf * 2.5 * +v.hrs, L = gal * 3.785411784, STD = [500, 750, 1000, 1500, 2000, 3000, 4000, 5000, 6000, 8000, 10000, 15000, 20000];
+        var std = nextUp(STD, L), lpm = v.sv * 0.75, gpm = lpm / 3.785411784, PDI = [4, 7, 10, 15, 20, 25, 35, 50, 75, 100], hm = nextUp(PDI, gpm);
+        return [
+          ['Gravity interceptor', std ? (sys === 'si' ? fmt(std, 0) + ' L' : fmt(std / 3.785, 0) + ' gal') : fmt(L, 0) + ' L — use several units', 1, 'needed ' + (sys === 'si' ? fmt(L, 0) + ' L' : fmt(gal, 0) + ' gal') + ' for ' + fmt(v.meals, 0) + ' meals/h'],
+          ['Hydromechanical unit (sink)', v.sv > 0 ? (hm ? hm + ' gpm (' + fmt(hm * 3.785, 0) + ' L/min)' : 'over 100 gpm') : '—', 0, v.sv > 0 ? 'drain-down ' + fmt(lpm, 0) + ' L/min from a ' + fmt(v.sv, 0) + ' L sink' : 'enter the sink volume'],
+          ['Grease capacity (PDI)', v.sv > 0 && hm ? fmt(hm * 2, 0) + ' lb (' + fmt(hm * 2 * 0.4536, 0) + ' kg)' : '—', 0, 'about 2 lb of grease per gpm rating'],
+          ['Design check', STATUS.pass, 1, 'locate outside the kitchen with access for pumping; pump out when grease and solids reach 25 % of the depth']
+        ];
+      },
+      note: 'UPC 1014 (gravity interceptors) and PDI G101 / ASME A112.14.3 (hydromechanical). Check the local sanitation code — in the Philippines the Code on Sanitation (PD 856) and the NPCP; many LGUs require a grease trap before the septic tank or sewer.'
+    },
+
+    rainwater: {
+      code: 'SAN / 022', title: 'Rainwater Harvesting Tank', card: true, disc: 'S',
+      desc: 'Rain collected from a roof, the storage tank for your dry-spell days, share of the demand covered, first-flush volume and water saved.',
+      fields: [
+        { k: 'a', label: 'Roof catchment area', q: 'area', def: [200, 2150] },
+        { k: 'r', label: 'Annual rainfall', unit: 'mm/yr', def: [2000, 2000] },
+        { k: 'c', label: 'Runoff coefficient', unit: '0–1', def: [0.85, 0.85], max: 1, maxMsg: 'Runoff coefficient must be between 0 and 1.' },
+        { k: 'd', label: 'Non-potable demand', q: 'lpd', def: [600, 160] },
+        { k: 'dry', label: 'Days of storage (dry spell)', unit: 'days', def: [20, 20] },
+        { k: 'cur', label: 'Currency', opts: [['₱', '₱  Philippine peso (PHP)'], ['$', '$  US dollar (USD)'], ['€', '€  Euro (EUR)'], ['£', '£  British pound (GBP)'], ['A$', 'A$  Australian dollar (AUD)'], ['C$', 'C$  Canadian dollar (CAD)'], ['S$', 'S$  Singapore dollar (SGD)'], ['¥', '¥  Japanese yen (JPY)'], ['CN¥', '¥  Chinese yuan (CNY)'], ['₩', '₩  Korean won (KRW)'], ['₹', '₹  Indian rupee (INR)'], ['RM', 'RM  Malaysian ringgit (MYR)'], ['Rp', 'Rp  Indonesian rupiah (IDR)'], ['฿', '฿  Thai baht (THB)'], ['₫', '₫  Vietnamese dong (VND)'], ['AED', 'AED  UAE dirham'], ['SAR', 'SAR  Saudi riyal'], ['QAR', 'QAR  Qatari riyal']], def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
+        { k: 'wr', label: 'Water rate', unit: 'per m³', def: [40, 3], zero: true }
+      ],
+      formula: function () { return ['Harvest = area × rainfall × runoff coefficient', 'Tank = daily demand × days of storage (capped at what the roof can supply)', 'First flush ≈ 1 L per m² of roof']; },
+      calc: function (v) {
+        var yr = v.a * v.r / 1000 * v.c, day = yr / 365 * 1000, dem = v.d, cover = Math.min(1, day / Math.max(dem, 1e-9)), tank = Math.min(dem * v.dry, yr * 1000 * 0.25);
+        var L = function (x) { return sys === 'si' ? fmt(x, 0) + ' L' : fmt(x / 3.785411784, 0) + ' gal'; }, c = v.cur ? v.cur + ' ' : '', used = Math.min(yr, dem * 365 / 1000);
+        return [
+          ['Rain collected', sys === 'si' ? fmt(yr, 1) + ' m³ / year' : fmt(yr * 264.172, 0) + ' gal / year', 1, 'about ' + L(day) + ' a day on average'],
+          ['Storage tank', L(tank), 1, fmt(v.dry, 0) + ' days of ' + L(dem) + '/day'],
+          ['Demand covered', fmt(cover * 100, 0) + ' %', 0, cover >= 1 ? 'the roof supplies more than the demand on average' : 'top up from the mains in the dry season'],
+          ['First-flush diverter', L(v.a), 0, 'about 1 L per m² of roof, discarded'],
+          ['Water saved', v.wr > 0 ? c + n2(used * v.wr) + ' / year' : 'enter the water rate', 0, fmt(used, 0) + ' m³ used a year'],
+          ['Design check', cover >= 0.5 ? STATUS.pass : STATUS.warn, 1, cover >= 0.5 ? 'worthwhile — covers half the demand or more' : 'roof too small for the demand — reduce the use or add catchment']
+        ];
+      },
+      note: 'Average-year estimate; size against monthly rainfall for a firmer answer. Metro Manila averages about 2,000 mm a year (PAGASA), with a dry season from about December to May. RA 6716 requires rainwater collectors for new buildings in some LGUs; treat or filter before any potable use.'
     },
 
     septic: {
@@ -5745,6 +5936,55 @@ body.modal-open .dock-tab { visibility: hidden; }
       note: 'For variable-speed booster sets the tank can be much smaller (about 10–20 % of this). Fixture minimums: flush tank about 55 kPa (8 psi), flush valve 105–170 kPa (15–25 psi); maximum about 550 kPa (80 psi) — check NPCP / IPC.'
     },
 
+    lpg: {
+      code: 'PLMB / 020', title: 'LPG / Gas Pipe Sizing', card: true, disc: 'P',
+      desc: 'Low-pressure gas pipe for the connected appliances — gas flow, required diameter by the IFGC equation and the Schedule 40 size.',
+      fields: [
+        { k: 'g', label: 'Gas', opts: [['lpg', 'LPG / propane'], ['ng', 'Natural gas']], def: ['lpg', 'lpg'] },
+        { k: 'q', label: 'Connected appliance load', q: 'power', def: [60, 200000] },
+        { k: 'l', label: 'Longest run (developed length)', q: 'len', def: [20, 65] },
+        { k: 'dp', label: 'Allowed pressure drop', q: 'pv', def: [125, 0.5] }
+      ],
+      formula: function () { return ['Flow = load ÷ heating value (LPG 2,516 / NG 1,000 BTU per ft³)', 'D = Q^0.381 / (19.17 × (ΔH / (Cr × L))^0.206)   (IFGC Eq. 4-1, low pressure)', 'Cr = 1.2462 propane, 0.6094 natural gas']; },
+      calc: function (v) {
+        var btuh = v.q * 3412.14, hv = v.g === 'lpg' ? 2516 : 1000, cfh = btuh / hv, cr = v.g === 'lpg' ? 1.2462 : 0.6094, dH = v.dp / 249.0889, Lft = v.l / 0.3048;
+        var D = Math.pow(cfh, 0.381) / (19.17 * Math.pow(dH / (cr * Lft), 0.206));
+        var SZ = [['½"', 15, 0.622], ['¾"', 20, 0.824], ['1"', 25, 1.049], ['1¼"', 32, 1.38], ['1½"', 40, 1.61], ['2"', 50, 2.067], ['2½"', 65, 2.469], ['3"', 80, 3.068], ['4"', 100, 4.026]];
+        var p = SZ.filter(function (s) { return s[2] >= D - 1e-9; })[0];
+        return [
+          ['Pipe size (Sch. 40)', p ? (sys === 'si' ? 'DN ' + p[1] + ' (' + p[0] + ')' : p[0]) : 'above 4" — split the load or raise the pressure', 1, 'required ID ' + (sys === 'si' ? fmt(D * 25.4, 1) + ' mm' : fmt(D, 3) + ' in')],
+          ['Gas flow', sys === 'si' ? fmt(cfh * 0.0283168, 2) + ' m³/h' : fmt(cfh, 0) + ' ft³/h', 0, (v.g === 'lpg' ? 'propane vapour' : 'natural gas') + ' · ' + fmt(btuh, 0) + ' BTU/h'],
+          ['LPG use at full load', v.g === 'lpg' ? fmt(v.q / 13.8, 2) + ' kg/h' : '—', 0, v.g === 'lpg' ? 'a 50 kg cylinder lasts about ' + fmt(50 / (v.q / 13.8), 0) + ' h of full-load running' : ''],
+          ['Design check', p ? STATUS.pass : STATUS.warn, 1, p ? 'within the allowed ' + fq(v.dp, 'pv') + ' drop over ' + fq(v.l, 'len') : 'too much load for low-pressure pipe']
+        ];
+      },
+      note: 'IFGC / NFPA 54 low-pressure method (under 1.5 psi), the same basis as the IFGC sizing tables. Size each branch with the longest run to the farthest appliance. In the Philippines follow the Fire Code (RA 9514 RIRR) and PNS / DOE rules for LPG installations; keep cylinders outdoors with leak detection.'
+    },
+
+    exloop: {
+      code: 'PLMB / 021', title: 'Pipe Thermal Expansion & Loop', card: true, disc: 'P',
+      desc: 'How much a straight pipe run grows with temperature, and the L-bend leg or U-loop needed to absorb it.',
+      fields: [
+        { k: 'm', label: 'Pipe material', opts: [['st', 'Steel'], ['cu', 'Copper'], ['ppr', 'PPR'], ['pvc', 'PVC / CPVC'], ['pex', 'PEX']], def: ['ppr', 'ppr'] },
+        { k: 'l', label: 'Straight run between anchors', q: 'len', def: [20, 65] },
+        { k: 't1', label: 'Installation temperature', q: 'tc', def: [25, 77] },
+        { k: 't2', label: 'Operating temperature', q: 'tc', def: [60, 140] },
+        { k: 'od', label: 'Pipe outside diameter', q: 'dia', def: [50, 2] }
+      ],
+      formula: function () { return ['ΔL = α × L × ΔT', 'L-bend leg L_B = K × √(OD × ΔL)   (K: steel 93, copper 94, PPR / PEX 20, PVC 33)', 'U-loop: two legs of about L_B / 2 and a width of about L_B / 4']; },
+      calc: function (v) {
+        var M = { st: [11.7e-6, 93, 'steel'], cu: [16.8e-6, 94, 'copper'], ppr: [150e-6, 20, 'PPR'], pvc: [70e-6, 33, 'PVC'], pex: [180e-6, 20, 'PEX'] }[v.m];
+        var dT = Math.abs(v.t2 - v.t1), dL = M[0] * v.l * dT, LB = M[1] * Math.sqrt(v.od * dL), mm = function (x) { return fq(x, 'dia'); };
+        return [
+          ['Expansion', mm(dL), 1, fq(v.l, 'len') + ' of ' + M[2] + ' over ' + fmt(sys === 'si' ? dT : dT * 1.8, 0) + (sys === 'si' ? ' K' : ' °F')],
+          ['L-bend / offset leg', fq(LB, 'len'), 1, 'flexible leg at a change of direction'],
+          ['U-loop', 'legs ' + fq(LB / 2, 'len') + ' · width ' + fq(LB / 4, 'len'), 0, 'centre the loop between two anchors'],
+          ['Design check', dL <= 0.025 || LB <= v.l / 2 ? STATUS.pass : STATUS.warn, 1, dL <= 0.025 ? 'small movement — a change of direction usually takes it' : 'add a loop or expansion joint and anchors at both ends']
+        ];
+      },
+      note: 'Guided-cantilever method for metal pipe (E and allowable stress typical) and manufacturer K-factors for plastics (PPR / PEX about 20, PVC about 33). Place anchors so each loop takes only its own run, and guide the pipe near the loop. Confirm with the pipe maker\'s design guide.'
+    },
+
     wsfu: {
       code: 'PIPE / 000', title: 'Water Supply Fixture Units', card: true, disc: 'P',
       desc: 'Peak water demand from fixture units (Hunter\'s curve), then the cold-water main size by velocity, with friction loss.',
@@ -5870,7 +6110,7 @@ body.modal-open .dock-tab { visibility: hidden; }
     'duct', 'rdc', 'rcd', 'dvel', 'eqf', 'sreg', 'dfric', 'eqlen', 'fitl', 'tpl', 'dar', 'dsheet', 'insul', 'hanger', 'leak', 'dins', 'ductd', 'diff',
     'fexh', 'fsup', 'ffa', 'fsp', 'ftp', 'fpow', 'feff', 'fop',
     'sdiff', 'rgrille', 'egrille', 'louv', 'fvel', 'farea', 'ndiff', 'cfmd', 'tsd',
-    'elec', 'pls', 'ecost', 'vdrop', 'cable', 'sccur', 'conduit', 'egc', 'motor', 'gen', 'ups', 'pfc', 'solar', 'evc', 'light', 'lpd', 'pipe', 'tank', 'hwheat', 'booster', 'wsfu', 'sprinkler', 'sprhyd', 'firepump', 'hazen', 'hydrant', 'drain', 'dfu', 'septic', 'roofdrain'];
+    'elec', 'pls', 'ecost', 'vdrop', 'cable', 'sccur', 'conduit', 'egc', 'motor', 'gen', 'ups', 'pfc', 'solar', 'evc', 'payback', 'light', 'lpd', 'pipe', 'tank', 'hwheat', 'booster', 'lpg', 'exloop', 'wsfu', 'sprinkler', 'sprhyd', 'firepump', 'hazen', 'hydrant', 'fext', 'standpipe', 'firetank', 'smoke', 'drain', 'dfu', 'septic', 'greasetrap', 'rainwater', 'roofdrain'];
   var statCalcs = document.getElementById('stat-calcs');
   if (statCalcs) statCalcs.textContent = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).length;
   var cardIds = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).sort(function (a, b) {
@@ -6034,6 +6274,15 @@ body.modal-open .dock-tab { visibility: hidden; }
     motor:     ['FLC = P / (√3 V η pf); 125 % conductor; breaker ≤ 250 %; overload 115–125 %', 'NEC Art. 430 (430.22, 430.32, 430.52, Tables 430.248 / 430.250); PEC 2017 Art. 4.30.', 'standard'],
     ups:       ['Runtime = V·Ah·strings·DoD·0.8·η / load', 'IEEE 485 / IEEE 1184 (battery sizing, ageing factor); manufacturer constant-power tables.', 'method'],
     evc:       ['I = kW / V; 125 % breaker and wire; feeder = n × kW × diversity', 'NEC Art. 625 (625.41, 625.42); IEC 61851; IEC 60364-7-722; RA 11697 (EVIDA).', 'standard'],
+    lpg:       ['D = Q^0.381 / (19.17 (ΔH / (Cr L))^0.206)', 'IFGC (2021) Eq. 4-1 / NFPA 54 Annex; Cr 1.2462 propane, 0.6094 natural gas.', 'standard'],
+    exloop:    ['ΔL = α L ΔT; L_B = K √(OD ΔL)', 'Guided-cantilever method (ASME B31.9 practice); PPR / PEX / PVC manufacturer design guides.', 'typical'],
+    greasetrap:['UPC: meals × flow × 2.5 h × storage factor; PDI: sink × 75 % ÷ 1 min', 'UPC 1014.3.6; PDI G101; ASME A112.14.3; PD 856 / NPCP.', 'standard'],
+    rainwater: ['Harvest = A × R × C; tank = demand × dry days', 'ARCSA / ASPE 63 (rainwater catchment); PAGASA rainfall normals; RA 6716.', 'method'],
+    fext:      ['Area per unit = A-rating × area per A (≤ 11,250 ft²); travel ≤ 75 ft', 'NFPA 10 (2022) Table 6.2.1.1; RA 9514 RIRR.', 'standard'],
+    standpipe: ['Flow 500 + 250 gpm per riser (max 1,000 / 1,250); 100 psi / 65 psi residual', 'NFPA 14 (2019) §7.8, §7.10, §8.6, §9.2; RA 9514 RIRR.', 'standard'],
+    firetank:  ['V = (sprinkler + hose) × duration × (1 + dead volume)', 'NFPA 13 Table 19.3.3.1.2 (durations); NFPA 22 (water tanks).', 'standard'],
+    smoke:     ['m = 0.071 Qc^(1/3) z^(5/3) + 0.0018 Qc; Ts = T₀ + Qc / (m cp); V = m / ρ', 'NFPA 92 (2021) §5.5 (axisymmetric plume, steady fire).', 'method'],
+    payback:   ['kWh = Δkw × h × days; payback = cost / (kWh × rate); CO₂ = kWh × EF', 'Simple payback; grid emission factors DOE (PH), NGA (AU), EPA eGRID (US).', 'method'],
     lpd:       ['LPD = Σ(n × W) / area ≤ allowed LPD for the space type', 'ANSI/ASHRAE/IES 90.1-2019 §9.6 and Table 9.6.1 (space-by-space method); IECC 2021 C405.3; NCC 2022 Section J7; Philippine Green Building Code.', 'standard'],
     light:     ['N = E·A/(Φ·UF·MF); RI = L·W/(Hm·(L+W))', 'Lumen method — SLL Code for Lighting, IES Lighting Handbook; illuminance targets EN 12464-1. UF values typical for recessed LED panels.', 'typical'],
     wsfu:      ['Σ WSFU → peak demand (Hunter curve); size by velocity; Hazen-Williams friction', 'IPC Appendix E (Tables E103.3(2), E103.3(3)); UPC Appendix A; NPCP. Values are typical — confirm with the adopted code tables.', 'method'],
@@ -7372,6 +7621,60 @@ body.modal-open .dock-tab { visibility: hidden; }
       var n = clampN(v.n, 1, 8), o = Rc(20, 80, 40, 60, DC.bg, DC.ink, 1.4) + T(40, 154, 'panel', 'dd-tag', 'middle');
       for (var i = 0; i < n; i++) { var x = 90 + i * 40; o += Ln(60, 100, x + 10, 100, DC.yel, 1.5) + Rc(x, 90, 20, 36, DC.bg, DC.ink, 1.2) + Rc(x - 6, 140, 32, 16, i < Math.round(n * v.div / 100) ? 'rgba(127,217,98,0.5)' : 'none', DC.ink, 1, ' rx="4"'); }
       return o + Big(20, 40, rowVal(rows, 'Feeder load') + ' feeder') + T(20, 60, rowVal(rows, 'Current per charger') + ' each · breaker ' + rowVal(rows, 'Breaker per charger')) + T(20, 190, 'green = charging at once (' + fmt(v.div, 0) + ' % diversity)');
+    }
+  });
+  Object.assign(DRAWS, {
+    lpg: function (v, rows) {
+      var o = Rc(30, 60, 40, 90, 'rgba(255,176,0,0.12)', DC.ink, 1.6, ' rx="16"') + T(50, 168, v.g === 'lpg' ? 'LPG' : 'gas meter', 'dd-tag', 'middle');
+      o += Flow('M70 80H300V120', DC.yel, 1.2, 3) + Rc(290, 120, 40, 30, DC.bg, DC.ink, 1.4) + '<path d="M300 116c3-8 7-8 10 0M314 116c3-8 7-8 10 0" fill="none" stroke="' + DC.red + '" stroke-width="1.6" class="a-flicker"/>';
+      return o + DimH(70, 300, 64, fq(v.l, 'len')) + Big(410, 40, rowVal(rows, 'Pipe size (Sch. 40)'), 'end') + T(410, 190, rowVal(rows, 'Gas flow'), 'dd-tag', 'end');
+    },
+    exloop: function (v, rows) {
+      var o = Ln(30, 140, 150, 140, DC.blue, 4) + '<path d="M150 140V60H230V140" fill="none" stroke="' + DC.blue + '" stroke-width="4"/>' + Ln(230, 140, 360, 140, DC.blue, 4);
+      o += Rc(24, 130, 8, 20, DC.ink) + Rc(358, 130, 8, 20, DC.ink) + T(30, 166, 'anchor') + T(362, 166, 'anchor', 'dd-tag', 'end') + Arrow(100, 124, 140, 124, DC.red, 1.6) + Arrow(290, 124, 250, 124, DC.red, 1.6);
+      return o + DimV(140, 60, 140, '') + Big(20, 40, 'ΔL ' + rowVal(rows, 'Expansion')) + T(250, 56, 'U-loop ' + rowVal(rows, 'U-loop')) + T(20, 190, 'L-bend leg ' + rowVal(rows, 'L-bend / offset leg'));
+    },
+    greasetrap: function (v, rows) {
+      var o = Rc(100, 60, 220, 90, DC.bg, DC.ink, 1.6) + Rc(102, 62, 216, 22, 'rgba(255,200,87,0.35)', 'none') + T(210, 76, 'grease layer', 'dd-tag', 'middle') + Rc(102, 84, 216, 64, 'rgba(108,184,255,0.18)', 'none');
+      o += Ln(170, 60, 170, 130, DC.ink, 2) + Ln(250, 60, 250, 130, DC.ink, 2) + Flow('M20 100H100', DC.blue, 1.4, 3) + Flow('M320 120H400', DC.blue, 1.4, 3) + T(20, 92, 'from kitchen') + T(400, 112, 'to sewer', 'dd-tag', 'end');
+      return o + Big(20, 36, rowVal(rows, 'Gravity interceptor')) + T(20, 186, 'sink unit ' + rowVal(rows, 'Hydromechanical unit (sink)'));
+    },
+    rainwater: function (v, rows) {
+      var o = '<path d="M30 80L120 30L210 80Z" fill="rgba(255,176,0,0.06)" stroke="' + DC.ink + '"/>' + Rc(40, 80, 160, 90, 'none', DC.mut, 1);
+      for (var i = 0; i < 8; i++) o += Ln(50 + i * 20, 6, 46 + i * 20, 18, DC.blue, 1.2, '2 3');
+      o += Flow('M210 80H250V120', DC.blue, 1.2, 2.4) + Rc(240, 120, 70, 60, DC.bg, DC.ink, 1.4, ' rx="6"') + Rc(242, 140, 66, 38, 'rgba(108,184,255,0.35)', 'none', 0, ' rx="4"');
+      return o + Big(320, 60, rowVal(rows, 'Storage tank')) + T(320, 80, rowVal(rows, 'Rain collected').split(' /')[0] + ' a year') + T(320, 100, rowVal(rows, 'Demand covered') + ' of demand');
+    },
+    fext: function (v, rows) {
+      var n = Math.min(numIn(rowVal(rows, 'Extinguishers')) / Math.max(v.fl, 1), 12), s = Math.sqrt(v.a), o = Rc(30, 30, 240, 150, DC.bg, DC.ink, 1.4);
+      var cols = Math.ceil(Math.sqrt(n * 240 / 150)), rws = Math.ceil(n / cols), k = 0;
+      for (var j = 0; j < rws; j++) for (var i = 0; i < cols && k < n; i++, k++) { var x = 30 + 240 * (i + 0.5) / cols, y = 30 + 150 * (j + 0.5) / rws; o += Ci(x, y, 30, 'rgba(255,107,91,0.08)', DC.red, 0.8, ' stroke-dasharray="3 3"') + Rc(x - 4, y - 8, 8, 16, DC.red, DC.ink, 0.8, ' rx="3"'); }
+      return o + Big(410, 40, rowVal(rows, 'Extinguishers') + ' units', 'end') + T(410, 60, v.r + '-A each', 'dd-tag', 'end') + T(410, 190, 'travel ' + rowVal(rows, 'Travel distance'), 'dd-tag', 'end');
+    },
+    standpipe: function (v, rows) {
+      var fl = 6, o = Rc(120, 20, 160, 160, DC.bg, DC.mut, 1);
+      for (var i = 0; i < fl; i++) { var y = 30 + i * 25; o += Ln(120, y + 22, 280, y + 22, DC.mut, 1) + Ci(200, y + 12, 5, i === 0 ? DC.red : 'none', DC.red, 1.4); }
+      o += Ln(200, 180, 200, 40, DC.red, 3) + Flow('M200 190V40', DC.red, 0.8, 2) + Ci(60, 175, 14, DC.bg, DC.ink, 1.4) + Ln(74, 175, 200, 175, DC.red, 3) + T(60, 198, 'fire pump', 'dd-tag', 'middle');
+      return o + DimV(300, 42, 180, fq(v.z, 'len')) + Big(410, 40, rowVal(rows, 'System demand'), 'end') + T(410, 60, rowVal(rows, 'Pump pressure'), 'dd-tag', 'end') + T(20, 40, 'top outlet (red)');
+    },
+    firetank: function (v, rows) {
+      var o = Rc(60, 40, 200, 140, DC.bg, DC.ink, 1.6) + Rc(62, 70, 196, 108, 'rgba(255,107,91,0.22)', 'none') + Ln(62, 70, 258, 70, DC.red, 1.4, '5 3') + T(160, 130, 'FIRE RESERVE', 'dd-tag', 'middle');
+      o += Flow('M260 160H330', DC.red, 1, 3) + Ci(344, 160, 14, DC.bg, DC.ink, 1.4) + Flow('M20 50H60', DC.blue, 1.4, 2) + T(20, 42, 'refill');
+      return o + Big(410, 40, rowVal(rows, 'Fire reserve volume'), 'end') + T(410, 60, rowVal(rows, 'Tank footprint') + ' footprint', 'dd-tag', 'end') + T(410, 80, 'refill ' + rowVal(rows, 'Refill time'), 'dd-tag', 'end');
+    },
+    smoke: function (v, rows) {
+      var o = '<path d="M40 180V40L160 14L280 40V180" fill="none" stroke="' + DC.ink + '" stroke-width="1.6"/>' + Rc(42, 42, 236, 50, 'rgba(160,160,160,0.25)', 'none') + Ln(42, 92, 278, 92, DC.mut, 1.4, '5 3');
+      o += '<path d="M150 180c-6-30 -30-50 -40-88M170 180c6-30 30-50 40-88" fill="none" stroke="' + DC.mut + '" stroke-dasharray="4 3"/>' + '<path d="M152 180c4-14 12-14 16 0" fill="' + DC.red + '" class="a-flicker"/>';
+      o += Flow('M160 30V0', DC.mut, 1, 3) + DimV(300, 92, 180, fq(v.z, 'len'));
+      return o + T(160, 66, 'smoke layer', 'dd-tag', 'middle') + Big(410, 40, rowVal(rows, 'Smoke exhaust'), 'end') + T(410, 60, rowVal(rows, 'Smoke temperature') + ' smoke', 'dd-tag', 'end') + T(410, 80, fmt(v.qf / 1000, 1) + ' MW fire', 'dd-tag', 'end');
+    },
+    payback: function (v, rows) {
+      var save = numIn(rowVal(rows, 'Money saved')), cost = v.cost, yrs = 10, mx = Math.max(cost, save * yrs) || 1, o = Ln(40, 170, 400, 170, DC.mut, 1) + Ln(40, 170, 40, 30, DC.mut, 1);
+      var X = function (y) { return 40 + y / yrs * 360; }, Y = function (m) { return 170 - (m + cost) / (mx + cost) * 140; };
+      o += Ln(40, Y(0), 400, Y(0), DC.mut, 1, '3 3') + '<path d="M' + X(0) + ' ' + Y(-cost) + 'L' + X(yrs) + ' ' + Y(save * yrs - cost) + '" fill="none" stroke="' + DC.mint + '" stroke-width="2.4"/>';
+      var pb = save > 0 ? cost / save : null;
+      if (pb && pb <= yrs) o += Ci(X(pb), Y(0), 5, DC.yel, DC.bg, 1.5, ' class="dz-pulse"') + T(X(pb), Y(0) - 10, 'payback', 'dd-tag', 'middle');
+      return o + T(400, 186, '10 years', 'dd-tag', 'end') + Big(40, 24, rowVal(rows, 'Money saved')) + T(400, 24, rowVal(rows, 'Simple payback'), 'dd-tag', 'end');
     }
   });
   var NPS_LBL = function (dn) { return ({ 15: '½"', 20: '¾"', 25: '1"', 32: '1¼"', 40: '1½"', 50: '2"', 65: '2½"', 80: '3"', 100: '4"', 125: '5"', 150: '6"', 200: '8"', 250: '10"', 300: '12"' })[dn] || dn + ' mm'; };
