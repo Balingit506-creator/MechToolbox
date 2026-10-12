@@ -3102,6 +3102,13 @@ body.modal-open .dock-tab { visibility: hidden; }
     chw: art5('<path d="M14 30h132M14 54h132" class="ink"/><path d="M22 30h120M140 54H24" class="ink-m a-march"/><circle cx="128" cy="42" r="10" class="ink"/><path d="M123 42h10" class="ink-m"/>', 'CHWS / CHWR'),
     pump: art5('<circle cx="70" cy="42" r="22" class="ink"/><path d="M70 20v-8h50M48 42H14" class="ink"/><path d="M70 42l14-10" class="ink-m a-spin"/>', 'Duty · head'),
     cable: art5('<circle cx="80" cy="42" r="28" class="ink"/><circle cx="68" cy="34" r="8" class="ink-m"/><circle cx="92" cy="34" r="8" class="ink-m"/><circle cx="68" cy="52" r="8" class="ink-m"/><circle cx="92" cy="52" r="8" class="ink-m a-flicker"/>', 'Iz · derating'),
+    solar: '<path d="M20 70l20-44h80l20 44z" class="ink"/><path d="M60 26l-8 44M100 26l8 44M30 48h100" class="ink-m"/><circle cx="132" cy="16" r="8" class="ink a-flicker"/>',
+    sccur: '<path d="M20 40h40M100 40h40" class="ink"/><path d="M60 40l10-16 10 32 10-16" class="ink a-flicker"/><circle cx="140" cy="40" r="6" class="ink-m"/><text x="40" y="76" class="ink-t">I_sc · kA</text>',
+    conduit: '<circle cx="80" cy="45" r="32" class="ink"/><circle cx="68" cy="38" r="9" class="ink-m"/><circle cx="90" cy="36" r="9" class="ink-m"/><circle cx="72" cy="58" r="9" class="ink-m"/><circle cx="94" cy="57" r="9" class="ink a-flicker"/>',
+    egc: '<path d="M80 14v40" class="ink"/><path d="M58 54h44M64 62h32M70 70h20M76 78h8" class="ink a-flicker"/><text x="104" y="28" class="ink-t">EGC</text>',
+    motor: '<rect x="40" y="26" width="64" height="40" rx="6" class="ink"/><path d="M104 46h28" class="ink a-march"/><circle cx="72" cy="46" r="10" class="ink-m a-flicker"/><text x="44" y="82" class="ink-t">FLC · OL</text>',
+    ups: '<rect x="40" y="18" width="80" height="56" rx="4" class="ink"/><rect x="52" y="30" width="40" height="18" class="ink-m"/><path d="M54 32h20v14H54z" class="ink a-flicker"/><text x="52" y="66" class="ink-t">UPS</text>',
+    evc: '<rect x="30" y="16" width="34" height="58" rx="4" class="ink"/><path d="M64 40c18 0 18 24 36 24h30" class="ink a-march"/><path d="M44 30l-4 10h8l-4 10" class="ink a-flicker"/>',
     lpd: '<rect x="20" y="16" width="120" height="58" rx="3" class="ink-m"/><path d="M40 16v8M80 16v8M120 16v8" class="ink"/><path d="M34 24h12M74 24h12M114 24h12" class="ink a-flicker"/>' +
       '<text x="44" y="58" class="ink-t">W ÷ m² ≤ limit</text>',
     light: art5('<rect x="16" y="10" width="128" height="66" class="ink-m"/><g class="a-flicker"><rect x="34" y="24" width="20" height="10" class="ink"/><rect x="70" y="24" width="20" height="10" class="ink"/><rect x="106" y="24" width="20" height="10" class="ink"/><rect x="34" y="52" width="20" height="10" class="ink"/><rect x="70" y="52" width="20" height="10" class="ink"/><rect x="106" y="52" width="20" height="10" class="ink"/></g>', 'lux · N'),
@@ -3126,6 +3133,15 @@ body.modal-open .dock-tab { visibility: hidden; }
   function refPsat(k, tC) { var f = refFit(k); return Math.exp(f.A - f.B / (tC + 273.15)); }          // bar abs
   function refTsat(k, pAbs) { var f = refFit(k); return f.B / (f.A - Math.log(pAbs)) - 273.15; }       // °C
   var REFRIG_OPTS = Object.keys(REFRIG).map(function (k) { return [k, REFRIG[k][0]]; });
+  // Conductor sizes: [label, AWG equivalent, THHN area in² (NEC Ch. 9 Table 5)]; PH mm² mapped to the next AWG area.
+  var WIRE_AWG = [['14 AWG', 0.0097], ['12 AWG', 0.0133], ['10 AWG', 0.0211], ['8 AWG', 0.0366], ['6 AWG', 0.0507], ['4 AWG', 0.0824], ['3 AWG', 0.0973], ['2 AWG', 0.1158], ['1 AWG', 0.1562],
+    ['1/0 AWG', 0.1855], ['2/0 AWG', 0.2223], ['3/0 AWG', 0.2679], ['4/0 AWG', 0.3237], ['250 kcmil', 0.3970], ['300 kcmil', 0.4608], ['350 kcmil', 0.5242], ['500 kcmil', 0.7073]];
+  var WIRE_PH = { '2.0': 0, '3.5': 1, '5.5': 2, '8.0': 3, '14': 4, '22': 5, '30': 7, '38': 8, '50': 9, '60': 10, '80': 11, '100': 12, '125': 13, '150': 14 };
+  var WIRE_OPTS = function () { return Object.keys(WIRE_PH).map(function (k) { return ['ph' + k, k + ' mm² THHN (≈ ' + WIRE_AWG[WIRE_PH[k]][0] + ')']; }).concat(WIRE_AWG.map(function (w, i) { return ['a' + i, w[0] + ' THHN']; })); };
+  var wireIdx = function (k) { return k.charAt(0) === 'a' ? +k.slice(1) : WIRE_PH[k.slice(2)]; };
+  // Conduit internal area, in² (NEC Ch. 9 Table 4): trade size → [EMT, PVC Sch. 40]
+  var CONDUIT = [['½"', '16 mm', 0.304, 0.285], ['¾"', '21 mm', 0.533, 0.508], ['1"', '27 mm', 0.864, 0.832], ['1¼"', '35 mm', 1.496, 1.453], ['1½"', '41 mm', 2.036, 1.986],
+    ['2"', '53 mm', 3.356, 3.291], ['2½"', '63 mm', 5.858, 4.695], ['3"', '78 mm', 8.846, 7.268], ['3½"', '91 mm', 11.545, 9.737], ['4"', '103 mm', 14.753, 12.554]];
   var CALCS = {
     btu: {
       code: 'HVAC / 001', title: 'HVAC BTU Calculator', card: true, disc: 'M',
@@ -3602,6 +3618,210 @@ body.modal-open .dock-tab { visibility: hidden; }
         ];
       },
       note: 'Allowed values are ASHRAE 90.1-2019 space-by-space LPDs (Table 9.6.1), typical of the values also used by IECC 2021 (C405.3). Philippines: check the Philippine Green Building Code and the DOE Guidelines on Energy Conserving Design of Buildings; Australia: NCC 2022 Section J7 (illumination power density) — enter those limits as a custom value. Exempt lighting (task, display, emergency-only) is excluded from the total.'
+    },
+
+    solar: {
+      code: 'ELEC / 020', title: 'Solar PV System Sizing', card: true, disc: 'E',
+      desc: 'Rooftop PV from your monthly consumption — kWp, panels, roof area, inverter, optional battery, yearly energy, savings and payback in any currency.',
+      fields: [
+        { k: 'kwh', label: 'Monthly consumption', unit: 'kWh/month', def: [600, 600] },
+        { k: 'off', label: 'Share to cover with solar', unit: '%', def: [80, 80], max: 100, maxMsg: 'Use 100 % or less.' },
+        { k: 'psh', label: 'Peak sun hours', unit: 'h/day', def: [4.5, 4.5], reg: { au: 5, us: 4.5 } },
+        { k: 'loss', label: 'System losses (heat, wiring, inverter, dirt)', unit: '%', def: [20, 20], max: 60, maxMsg: 'Use 60 % or less.' },
+        { k: 'pw', label: 'Panel rating', unit: 'W', def: [550, 550] },
+        { k: 'bk', label: 'Battery backup energy (0 = grid-tie only)', unit: 'kWh', def: [0, 0], zero: true },
+        { k: 'cur', label: 'Currency', opts: [['₱', '₱  Philippine peso (PHP)'], ['$', '$  US dollar (USD)'], ['€', '€  Euro (EUR)'], ['£', '£  British pound (GBP)'], ['A$', 'A$  Australian dollar (AUD)'], ['C$', 'C$  Canadian dollar (CAD)'], ['S$', 'S$  Singapore dollar (SGD)'], ['¥', '¥  Japanese yen (JPY)'], ['CN¥', '¥  Chinese yuan (CNY)'], ['₩', '₩  Korean won (KRW)'], ['₹', '₹  Indian rupee (INR)'], ['RM', 'RM  Malaysian ringgit (MYR)'], ['Rp', 'Rp  Indonesian rupiah (IDR)'], ['฿', '฿  Thai baht (THB)'], ['₫', '₫  Vietnamese dong (VND)'], ['AED', 'AED  UAE dirham'], ['SAR', 'SAR  Saudi riyal'], ['QAR', 'QAR  Qatari riyal']], def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
+        { k: 'rate', label: 'Electricity rate', unit: 'per kWh', def: [12, 0.15], zero: true },
+        { k: 'cpk', label: 'Installed cost per kWp', unit: 'per kWp', def: [0, 0], zero: true },
+        { k: 'cb', label: 'Battery cost per kWh', unit: 'per kWh', def: [0, 0], zero: true }
+      ],
+      formula: function () { return ['kWp = monthly kWh × share ÷ (sun hours × 30 × (1 − losses))', 'Panels = kWp × 1000 ÷ panel W;  roof ≈ 2.6 m² per 550 W panel × 1.15', 'Inverter ≈ kWp ÷ 1.2 (DC/AC ratio);  battery = backup kWh ÷ 0.8 depth of discharge']; },
+      calc: function (v) {
+        var kwp = v.kwh * v.off / 100 / (v.psh * 30 * (1 - v.loss / 100)), n = Math.ceil(kwp * 1000 / v.pw - 1e-9), kwpA = n * v.pw / 1000;
+        var area = n * 2.58 * v.pw / 550 * 1.15, inv = nextUp([1.5, 3, 3.6, 5, 6, 8, 10, 12, 15, 20, 25, 30, 36, 40, 50, 60, 80, 100, 110, 125], kwpA / 1.2) || Math.ceil(kwpA / 1.2);
+        var yr = kwpA * v.psh * 365 * (1 - v.loss / 100), batt = v.bk / 0.8, save = yr * v.rate, cost = kwpA * v.cpk + batt * v.cb, c = v.cur ? v.cur + ' ' : '', pb = save > 0 && cost > 0 ? cost / save : null;
+        return [
+          ['PV system size', fmt(kwpA, 2) + ' kWp', 1, fmt(n, 0) + ' × ' + fmt(v.pw, 0) + ' W panels (needed ' + fmt(kwp, 2) + ' kWp)'],
+          ['Roof area', fq(area, 'area'), 0, 'panels plus about 15 % for spacing and access'],
+          ['Inverter', fmt(inv) + ' kW', 0, 'DC/AC ratio ' + fmt(kwpA / inv, 2) + (v.bk > 0 ? ' — hybrid inverter for the battery' : ' — grid-tie')],
+          ['Battery', v.bk > 0 ? fmt(batt, 1) + ' kWh' : 'none (grid-tie)', 0, v.bk > 0 ? fmt(v.bk) + ' kWh usable at 80 % depth of discharge' : ''],
+          ['Energy per year', fmt(yr, 0) + ' kWh', 0, fmt(yr / 12, 0) + ' kWh per month on average'],
+          ['Money saved', save > 0 ? c + n2(save) + ' / year' : 'enter the electricity rate', 1, save > 0 ? c + n2(save / 12) + ' per month' : ''],
+          ['Simple payback', pb ? fmt(pb, 1) + ' years' : 'enter the installed cost', 1, pb ? 'installed cost ' + c + n2(cost) : ''],
+          ['Design check', pb == null || pb <= 8 ? STATUS.pass : STATUS.warn, 1, pb == null ? 'add costs to check the payback' : pb <= 8 ? 'payback within 8 years' : 'payback over 8 years — check prices, the rate and the sun hours']
+        ];
+      },
+      note: 'Peak sun hours: Metro Manila about 4.5, Visayas / Mindanao 4.5–5.5 (PAGASA / NREL data). Net-metering in the Philippines (RA 9513, ERC rules) covers systems up to 100 kW. Check the roof structure, and use the panel and inverter datasheets for string design.'
+    },
+
+    sccur: {
+      code: 'ELEC / 021', title: 'Short-Circuit (Fault) Current', card: true, disc: 'E',
+      desc: 'Three-phase fault current at the transformer and at a panel down a cable — the breaker interrupting rating (kA) to specify.',
+      fields: [
+        { k: 'kva', label: 'Transformer rating', unit: 'kVA', def: [500, 500] },
+        { k: 'z', label: 'Transformer impedance', unit: '%', def: [5, 5.75] },
+        { k: 'v', label: 'Secondary voltage (line)', unit: 'V', def: [400, 480], reg: { ph: 230, au: 400, us: 480 } },
+        { k: 'mva', label: 'Utility fault level (0 = infinite bus)', unit: 'MVA', def: [250, 250], zero: true },
+        { k: 'l', label: 'Cable length to the panel', q: 'len', def: [30, 100], zero: true },
+        { k: 'a', label: 'Cable size per phase', q: 'csa', def: [150, 300] },
+        { k: 'par', label: 'Parallel cables per phase', unit: 'sets', def: [1, 1] }
+      ],
+      formula: function () { return ['Z_utility = V² / MVA;  Z_tx = %Z × V² / kVA', 'Cable: R = 0.0225 Ω·mm²/m × L / (A × sets), X ≈ 0.08 mΩ/m', 'I_sc = V / (√3 × |Z|)']; },
+      calc: function (v) {
+        var V = v.v, Zu = v.mva > 0 ? V * V / (v.mva * 1e6) : 0, Zt = v.z / 100 * V * V / (v.kva * 1000);
+        var Xu = Zu * 0.995, Ru = Zu * 0.1, Xt = Zt * 0.98, Rt = Zt * 0.2, Rc = 0.0225 * v.l / (v.a * v.par), Xc = 0.00008 * v.l / v.par;
+        var I1 = V / (Math.sqrt(3) * Math.hypot(Ru + Rt, Xu + Xt)), I2 = V / (Math.sqrt(3) * Math.hypot(Ru + Rt + Rc, Xu + Xt + Xc)), Ifl = v.kva * 1000 / (Math.sqrt(3) * V);
+        var KA = [10, 14, 18, 22, 25, 35, 42, 50, 65, 85, 100, 125, 150, 200], k1 = nextUp(KA, I1 / 1000), k2 = nextUp(KA, I2 / 1000);
+        return [
+          ['Fault current at the transformer', fmt(I1 / 1000, 1) + ' kA', 1, 'full-load ' + fmt(Ifl, 0) + ' A · ' + fmt(I1 / Ifl, 1) + ' × FLC'],
+          ['Fault current at the panel', fmt(I2 / 1000, 1) + ' kA', 1, fq(v.l, 'len') + ' of ' + fq(v.a, 'csa') + (v.par > 1 ? ' × ' + fmt(v.par, 0) : '')],
+          ['Main breaker rating', (k1 || '> 200') + ' kA', 0, 'interrupting rating at the transformer'],
+          ['Panel breaker rating', (k2 || '> 200') + ' kA', 1, 'minimum kAIC for breakers in this panel'],
+          ['Design check', STATUS.pass, 1, 'specify breakers at or above these ratings, or a tested series-rated combination']
+        ];
+      },
+      note: 'Point-to-point estimate of the symmetrical three-phase fault, ignoring motor contribution (add about 4 × the running motor current) and arc resistance. Copper cable at 20 °C. Confirm with a full short-circuit study (IEEE 551 / IEC 60909) for the protection coordination.'
+    },
+
+    conduit: {
+      code: 'ELEC / 022', title: 'Conduit Fill', card: true, disc: 'E',
+      desc: 'Smallest EMT or PVC conduit for a set of THHN wires within the NEC fill limits — fill %, and how many wires that size can take.',
+      fields: [
+        { k: 'w', label: 'Wire size', opts: WIRE_OPTS(), def: ['ph3.5', 'a1'] },
+        { k: 'n', label: 'Number of wires (incl. ground)', unit: 'wires', def: [4, 4] },
+        { k: 't', label: 'Conduit type', opts: [['emt', 'EMT (steel)'], ['pvc', 'PVC Schedule 40']], def: ['emt', 'emt'] }
+      ],
+      formula: function () { return ['Wire area × number ≤ conduit area × fill limit', 'Fill limit: 1 wire 53 %, 2 wires 31 %, 3 or more 40 % (NEC Ch. 9 Table 1)']; },
+      calc: function (v) {
+        var W = WIRE_AWG[wireIdx(v.w)], tot = W[1] * v.n, lim = v.n === 1 ? 0.53 : v.n === 2 ? 0.31 : 0.40, col = v.t === 'emt' ? 2 : 3;
+        var pick = CONDUIT.filter(function (c) { return tot <= c[col] * lim + 1e-9; })[0], maxN = pick ? Math.floor(pick[col] * 0.40 / W[1]) : 0;
+        var name = function (c) { return c[0] + ' (' + c[1] + ')'; };
+        return [
+          ['Conduit size', pick ? name(pick) + ' ' + (v.t === 'emt' ? 'EMT' : 'PVC') : 'above 4" — split into two conduits', 1, fmt(v.n, 0) + ' × ' + W[0] + ' THHN'],
+          ['Fill', pick ? fmt(tot / pick[col] * 100, 1) + ' %' : '—', 0, 'limit ' + fmt(lim * 100, 0) + ' %'],
+          ['Wire area', sys === 'si' ? fmt(tot * 645.16, 0) + ' mm²' : fmt(tot, 3) + ' in²', 0, (sys === 'si' ? fmt(W[1] * 645.16, 1) + ' mm²' : fmt(W[1], 4) + ' in²') + ' each with insulation'],
+          ['Wires this size can take', pick ? fmt(maxN, 0) + ' × ' + W[0] : '—', 0, 'at 40 % fill'],
+          ['Design check', pick ? STATUS.pass : STATUS.warn, 1, pick ? 'within the NEC Chapter 9 fill limit — derate ampacity for more than 3 current-carrying wires' : 'too many wires for one 4" conduit']
+        ];
+      },
+      note: 'THHN / THWN-2 areas from NEC Chapter 9 Table 5; conduit areas Table 4. PEC 2017 Chapter 9 uses the same method. Philippine mm² sizes are mapped to the next AWG size up. More than three current-carrying wires need ampacity adjustment (NEC 310.15(C)(1)).'
+    },
+
+    egc: {
+      code: 'ELEC / 023', title: 'Grounding Conductor (EGC / GEC)', card: true, disc: 'E',
+      desc: 'Equipment grounding conductor from the breaker rating, increased when the phase wires are upsized, and the grounding electrode conductor for the service.',
+      fields: [
+        { k: 'oc', label: 'Breaker / fuse rating', unit: 'A', def: [100, 100] },
+        { k: 'up', label: 'Phase wires upsized for voltage drop by', unit: '% area', def: [0, 0], zero: true },
+        { k: 'svc', label: 'Largest service-entrance conductor', opts: WIRE_OPTS(), def: ['ph38', 'a8'] }
+      ],
+      formula: function () { return ['EGC from NEC Table 250.122 / PEC Table 2.50.6.13 by the breaker rating', 'Upsized phase wires → EGC area × (1 + upsizing)  (NEC 250.122(B))', 'GEC from NEC Table 250.66 by the service conductor']; },
+      calc: function (v) {
+        var T = [[15, 0], [20, 1], [60, 2], [100, 3], [200, 4], [300, 5], [400, 6], [500, 7], [600, 8], [800, 9], [1000, 10], [1200, 11], [1600, 12], [2000, 13], [2500, 15], [3000, 15], [4000, 16]];
+        var row = T.filter(function (r) { return v.oc <= r[0]; })[0] || T[T.length - 1], idx = row[1];
+        var AREA = [2.08, 3.31, 5.26, 8.37, 13.3, 21.2, 26.7, 33.6, 42.4, 53.5, 67.4, 85.0, 107, 127, 152, 177, 253], need = AREA[idx] * (1 + v.up / 100);
+        var eIdx = AREA.findIndex ? AREA.findIndex(function (a) { return a >= need - 0.01; }) : idx; if (eIdx < 0) eIdx = AREA.length - 1;
+        var phMm = { 0: '2.0', 1: '3.5', 2: '5.5', 3: '8.0', 4: '14', 5: '22', 6: '30', 7: '30', 8: '38', 9: '50', 10: '60', 11: '80', 12: '100', 13: '125', 14: '150', 15: '200', 16: '250' };
+        var lbl = function (i) { return codeBasis === 'us' || sys === 'imp' ? WIRE_AWG[i][0] : phMm[i] + ' mm² (≈ ' + WIRE_AWG[i][0] + ')'; };
+        var s = wireIdx(v.svc), g = s <= 7 ? 3 : s <= 9 ? 4 : s <= 11 ? 5 : s <= 14 ? 7 : 9;
+        return [
+          ['Equipment grounding conductor', lbl(eIdx) + ' copper', 1, 'for a ' + fmt(v.oc, 0) + ' A breaker' + (v.up > 0 ? ', increased ' + fmt(v.up) + ' % with the phase wires' : '')],
+          ['Grounding electrode conductor', lbl(g) + ' copper', 1, 'service conductor ' + WIRE_AWG[s][0] + ' — NEC Table 250.66'],
+          ['Ground rod resistance target', '25 Ω or less', 0, 'add a second rod at least 1.8 m (6 ft) away if higher (NEC 250.53)'],
+          ['Design check', STATUS.pass, 1, 'size never smaller than the table; run the EGC with the circuit conductors']
+        ];
+      },
+      note: 'NEC 250.122 / 250.66 and PEC 2017 Art. 2.50 (Tables 2.50.6.13 and 2.50.3.17). Metric sizes are the next Philippine size at or above the AWG area. Lightning protection and telecom bonding follow their own standards (NFPA 780, TIA-607).'
+    },
+
+    motor: {
+      code: 'ELEC / 024', title: 'Motor Full-Load Current & Protection', card: true, disc: 'E',
+      desc: 'Motor full-load current, branch conductor, short-circuit breaker, overload setting and starting current.',
+      fields: [
+        { k: 'p', label: 'Motor rating', q: 'kwhp', def: [11, 15] },
+        { k: 'v', label: 'Voltage (line)', unit: 'V', def: [400, 460], reg: { ph: 230, au: 400, us: 460 } },
+        { k: 'ph', label: 'Phases', opts: [['3', 'Three-phase'], ['1', 'Single-phase']], def: ['3', '3'] },
+        { k: 'sf', label: 'Service factor', opts: [['1.15', '1.15 (overload 125 %)'], ['1.0', '1.0 (overload 115 %)']], def: ['1.15', '1.15'] },
+        { k: 'st', label: 'Starting', opts: [['6.5', 'Direct on line (≈ 6.5 × FLC)'], ['2.5', 'Star-delta (≈ 2.5 ×)'], ['3', 'Soft starter (≈ 3 ×)'], ['1.2', 'VFD (≈ 1.2 ×)']], def: ['6.5', '6.5'] },
+        { k: 'l', label: 'Cable length', q: 'len', def: [30, 100] }
+      ],
+      formula: function () { return ['FLC = P / (√3 · V · η · pf)  or  P / (V · η · pf) single-phase', 'Branch conductor ≥ 125 % FLC (NEC 430.22)', 'Inverse-time breaker ≤ 250 % FLC (NEC 430.52);  overload 115–125 % FLC (430.32)']; },
+      calc: function (v) {
+        var kw = v.p, E = kw <= 1.1 ? [0.78, 0.78] : kw <= 4 ? [0.84, 0.82] : kw <= 15 ? [0.89, 0.85] : kw <= 55 ? [0.92, 0.87] : [0.94, 0.88];
+        var flc = kw * 1000 / ((v.ph === '3' ? Math.sqrt(3) : 1) * v.v * E[0] * E[1]), ol = flc * (v.sf === '1.15' ? 1.25 : 1.15);
+        var list = codeBasis === 'au' ? AU_BRK : codeBasis === 'us' || codeBasis === 'ph' ? PH_BRK : BREAKER_A, brk = list.filter(function (b) { return b <= flc * 2.5 + 1e-9; }).pop() || list[0];
+        var cab = cableSize({ i: flc, cont: '1', mat: 'cu', tr: '75', amb: 30, ccc: 3, ph: v.ph, l: v.l, v: v.v, vdl: 3 });
+        var Ist = flc * +v.st, kvaSt = Ist * v.v * (v.ph === '3' ? Math.sqrt(3) : 1) / 1000;
+        return [
+          ['Full-load current', fmt(flc, 1) + ' A', 1, 'η ' + fmt(E[0] * 100, 0) + ' %, pf ' + fmt(E[1], 2) + ' (typical) — use the nameplate if known'],
+          ['Branch conductor', cab.sel ? cab.sel.name + (codeBasis === 'ph' ? ' THHN' : '') : 'parallel', 1, 'for ' + fmt(flc * 1.25, 1) + ' A (125 %), ' + fmt(cab.vd, 1) + ' % drop'],
+          ['Short-circuit breaker', brk + ' A', 1, 'inverse-time, largest standard size ≤ 250 % FLC (' + fmt(flc * 2.5, 0) + ' A)'],
+          ['Overload setting', fmt(ol, 1) + ' A', 0, (v.sf === '1.15' ? '125 %' : '115 %') + ' of FLC'],
+          ['Starting current', fmt(Ist, 0) + ' A', 0, fmt(kvaSt, 0) + ' kVA at start'],
+          ['Design check', +v.st <= 3 || kw <= 7.5 ? STATUS.pass : STATUS.warn, 1, +v.st <= 3 || kw <= 7.5 ? 'starting current acceptable' : 'direct-on-line start above 7.5 kW — check the voltage dip; consider star-delta, soft starter or VFD']
+        ];
+      },
+      note: 'Typical IE2/IE3 efficiencies and power factors. In the US, NEC 430.6 requires the FLC from Tables 430.248 / 430.250 for conductor and breaker sizing, not the nameplate. PEC 2017 Art. 4.30 follows the same rules. Check the utility\'s limit on direct-on-line starting.'
+    },
+
+    ups: {
+      code: 'ELEC / 025', title: 'UPS Battery Backup Time', card: true, disc: 'E',
+      desc: 'Runtime of a UPS battery bank on your load, the amp-hours needed for a target time and the UPS size.',
+      fields: [
+        { k: 'kw', label: 'Load', unit: 'kW', def: [8, 8] },
+        { k: 'pf', label: 'Load power factor', unit: '0–1', def: [0.9, 0.9], max: 1, maxMsg: 'Power factor must be between 0 and 1.' },
+        { k: 'vdc', label: 'Battery bank voltage', unit: 'V DC', def: [192, 192] },
+        { k: 'ah', label: 'Battery capacity', unit: 'Ah', def: [100, 100] },
+        { k: 'str', label: 'Parallel strings', unit: 'strings', def: [1, 1] },
+        { k: 'eff', label: 'Inverter efficiency', unit: '%', def: [92, 92], max: 100, maxMsg: 'Efficiency must be 100 % or less.' },
+        { k: 'dod', label: 'Usable depth of discharge', unit: '%', def: [80, 80], max: 100, maxMsg: 'Use 100 % or less.' },
+        { k: 'tgt', label: 'Target backup time', unit: 'min', def: [30, 30] }
+      ],
+      formula: function () { return ['Runtime = V × Ah × strings × DoD × 0.8 ageing × η ÷ load', 'Ah needed = load × time ÷ (V × DoD × 0.8 × η)', 'UPS ≥ load ÷ pf × 1.25']; },
+      calc: function (v) {
+        var e = v.vdc * v.ah * v.str * v.dod / 100 * 0.8 * v.eff / 100, hrs = e / (v.kw * 1000), need = v.kw * 1000 * v.tgt / 60 / (v.vdc * v.dod / 100 * 0.8 * v.eff / 100);
+        var kva = nextUp([1, 2, 3, 6, 10, 15, 20, 30, 40, 60, 80, 100, 120, 160, 200, 250, 300, 400, 500, 600, 800], v.kw / v.pf * 1.25);
+        var hm = function (x) { var m = Math.round(x * 60); return m >= 60 ? Math.floor(m / 60) + ' h ' + (m % 60) + ' min' : m + ' min'; };
+        return [
+          ['Backup time', hm(hrs), 1, fmt(e / 1000, 1) + ' kWh usable at ' + fmt(v.kw) + ' kW'],
+          ['Battery for the target', fmt(Math.ceil(need), 0) + ' Ah', 1, 'at ' + fmt(v.vdc, 0) + ' V DC for ' + fmt(v.tgt, 0) + ' min (' + fmt(Math.ceil(need / v.ah), 0) + ' string(s) of ' + fmt(v.ah, 0) + ' Ah)'],
+          ['UPS rating', kva ? kva + ' kVA' : 'over 800 kVA — parallel units', 0, 'load ÷ pf × 1.25 growth'],
+          ['Design check', hrs * 60 >= v.tgt ? STATUS.pass : STATUS.warn, 1, hrs * 60 >= v.tgt ? 'meets the ' + fmt(v.tgt, 0) + '-minute target' : 'short of the target — add strings or larger batteries']
+        ];
+      },
+      note: 'Estimate with a 0.8 ageing factor (end-of-life capacity, IEEE 485). Lead-acid capacity drops at high discharge rates (Peukert) — for runtimes under about 30 min use the battery maker\'s constant-power tables. Lithium-ion allows a deeper discharge (90 %+).'
+    },
+
+    evc: {
+      code: 'ELEC / 026', title: 'EV Charger Load', card: true, disc: 'E',
+      desc: 'Electric-vehicle chargers — current per charger, breaker and wire at 125 %, the feeder with diversity, daily energy and monthly cost.',
+      fields: [
+        { k: 'n', label: 'Number of chargers', unit: 'chargers', def: [4, 4] },
+        { k: 'kw', label: 'Charger rating', opts: [['3.7', '3.7 kW — 1φ 16 A'], ['7.4', '7.4 kW — 1φ 32 A (Level 2)'], ['11', '11 kW — 3φ 16 A'], ['22', '22 kW — 3φ 32 A'], ['50', '50 kW DC fast charger']], def: ['7.4', '7.4'] },
+        { k: 'v', label: 'Supply voltage (line)', unit: 'V', def: [230, 240], reg: { ph: 230, au: 230, us: 240 } },
+        { k: 'div', label: 'Diversity (share charging at once)', unit: '%', def: [70, 70], max: 100, maxMsg: 'Use 100 % or less.' },
+        { k: 'hr', label: 'Charging hours per day, each', unit: 'h', def: [4, 4] },
+        { k: 'cur', label: 'Currency', opts: [['₱', '₱  Philippine peso (PHP)'], ['$', '$  US dollar (USD)'], ['€', '€  Euro (EUR)'], ['£', '£  British pound (GBP)'], ['A$', 'A$  Australian dollar (AUD)'], ['C$', 'C$  Canadian dollar (CAD)'], ['S$', 'S$  Singapore dollar (SGD)'], ['¥', '¥  Japanese yen (JPY)'], ['CN¥', '¥  Chinese yuan (CNY)'], ['₩', '₩  Korean won (KRW)'], ['₹', '₹  Indian rupee (INR)'], ['RM', 'RM  Malaysian ringgit (MYR)'], ['Rp', 'Rp  Indonesian rupiah (IDR)'], ['฿', '฿  Thai baht (THB)'], ['₫', '₫  Vietnamese dong (VND)'], ['AED', 'AED  UAE dirham'], ['SAR', 'SAR  Saudi riyal'], ['QAR', 'QAR  Qatari riyal']], def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
+        { k: 'rate', label: 'Electricity rate', unit: 'per kWh', def: [12, 0.15], zero: true }
+      ],
+      formula: function () { return ['I = kW / V (1φ) or kW / (√3 × V_LL) (3φ)', 'Breaker and wire at 125 % (NEC 625.41 continuous load)', 'Feeder = chargers × kW × diversity']; },
+      calc: function (v) {
+        var kw = +v.kw, three = kw >= 11, VLL = three ? (v.v < 300 ? v.v * Math.sqrt(3) : v.v) : v.v, I = three ? kw * 1000 / (Math.sqrt(3) * VLL) : kw * 1000 / v.v;
+        var list = codeBasis === 'au' ? AU_BRK : codeBasis === 'us' || codeBasis === 'ph' ? PH_BRK : BREAKER_A, brk = nextUp(list, I * 1.25);
+        var cab = cableSize({ i: I, cont: '1', mat: 'cu', tr: '75', amb: 30, ccc: 3, ph: three ? '3' : '1', l: 30, v: three ? VLL : v.v, vdl: 3 });
+        var feedKw = v.n * kw * v.div / 100, feedI = feedKw * 1000 / (Math.sqrt(3) * (three ? VLL : (v.v < 300 ? v.v * Math.sqrt(3) : v.v)));
+        var day = v.n * kw * v.hr, c = v.cur ? v.cur + ' ' : '';
+        return [
+          ['Current per charger', fmt(I, 1) + ' A', 1, three ? 'three-phase ' + fmt(VLL, 0) + ' V' : 'single-phase ' + fmt(v.v, 0) + ' V'],
+          ['Breaker per charger', (brk || '—') + ' A', 1, '125 % of ' + fmt(I, 1) + ' A · with 30 mA Type A / B RCD'],
+          ['Wire per charger', cab.sel ? cab.sel.name + (codeBasis === 'ph' ? ' THHN' : '') : 'parallel', 0, 'copper 75 °C, 30 m run'],
+          ['Feeder load', fmt(feedKw, 1) + ' kW', 1, fmt(feedI, 0) + ' A on a three-phase feeder at ' + fmt(v.div, 0) + ' % diversity'],
+          ['Energy per day', fmt(day, 0) + ' kWh', 0, fmt(day * 30, 0) + ' kWh per month'],
+          ['Monthly cost', v.rate > 0 ? c + n2(day * 30 * v.rate) : 'enter the electricity rate', 0, ''],
+          ['Design check', v.div >= 50 || v.n <= 2 ? STATUS.pass : STATUS.warn, 1, v.div >= 50 || v.n <= 2 ? 'feeder sized with realistic diversity' : 'diversity below 50 % needs an energy-management system (NEC 625.42)']
+        ];
+      },
+      note: 'NEC Art. 625 / IEC 61851 and IEC 60364-7-722: a dedicated circuit per charger, sized at 125 %, with RCD protection (Type B, or Type A with 6 mA DC detection). Diversity below 100 % should be backed by load management. Check the Philippine EVIDA (RA 11697) rules for buildings.'
     },
 
     vdrop: {
@@ -5650,7 +5870,7 @@ body.modal-open .dock-tab { visibility: hidden; }
     'duct', 'rdc', 'rcd', 'dvel', 'eqf', 'sreg', 'dfric', 'eqlen', 'fitl', 'tpl', 'dar', 'dsheet', 'insul', 'hanger', 'leak', 'dins', 'ductd', 'diff',
     'fexh', 'fsup', 'ffa', 'fsp', 'ftp', 'fpow', 'feff', 'fop',
     'sdiff', 'rgrille', 'egrille', 'louv', 'fvel', 'farea', 'ndiff', 'cfmd', 'tsd',
-    'elec', 'pls', 'ecost', 'vdrop', 'cable', 'gen', 'pfc', 'light', 'lpd', 'pipe', 'tank', 'hwheat', 'booster', 'wsfu', 'sprinkler', 'sprhyd', 'firepump', 'hazen', 'hydrant', 'drain', 'dfu', 'septic', 'roofdrain'];
+    'elec', 'pls', 'ecost', 'vdrop', 'cable', 'sccur', 'conduit', 'egc', 'motor', 'gen', 'ups', 'pfc', 'solar', 'evc', 'light', 'lpd', 'pipe', 'tank', 'hwheat', 'booster', 'wsfu', 'sprinkler', 'sprhyd', 'firepump', 'hazen', 'hydrant', 'drain', 'dfu', 'septic', 'roofdrain'];
   var statCalcs = document.getElementById('stat-calcs');
   if (statCalcs) statCalcs.textContent = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).length;
   var cardIds = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).sort(function (a, b) {
@@ -5807,6 +6027,13 @@ body.modal-open .dock-tab { visibility: hidden; }
     ecost:     ['kWh/day = W × hours × units / 1000; cost = kWh × rate; month = 30 days; year = 12 months', 'Arithmetic estimate; appliance wattages are typical nameplate / measured values — use the label or a plug-in meter for your unit. Inverter units vary with load.', 'typical'],
     pls:       ['I = VA / V (1-pole, 2-pole) or VA / (√3·V) (3-pole); breaker ≥ 1.25 × I; demand: receptacles 10 kVA + 50 % of the rest, motors + 25 % of the largest', 'PEC 2017 Art. 2.10, 2.15, 2.20 (load calculations), 2.40 (standard ratings), Table 3.10.1.16; NEC 210.19–210.20, 215.2–215.3, 220.42–220.50, 240.6, Table 310.16. Metric conductor ampacities interpolated — confirm with PEC.', 'method'],
     cable:     ['Iz = I_table × Ct × Cg ≥ design current; voltage drop k·I·L·ρ/A', 'NEC Table 310.16, 310.15(B)/(C), 240.4(D), 110.14(C). Metric sizes interpolated — confirm with PEC 2017 Table 3.10.1.16, AS/NZS 3008.1.1 or IEC 60364-5-52.', 'method'],
+    solar:     ['kWp = kWh × share / (PSH × 30 × (1 − losses)); panels, inverter, battery, payback', 'NREL PVWatts method (simplified); PEC 2017 Art. 6.90 / NEC 690 (PV systems); RA 9513 net-metering (ERC).', 'typical'],
+    sccur:     ['I_sc = V / (√3 |Z_utility + Z_tx + Z_cable|)', 'IEEE 551 (Violet Book) / IEC 60909 point-to-point method; NEC 110.9 / 110.10 interrupting ratings.', 'method'],
+    conduit:   ['Σ wire area ≤ conduit area × 53 / 31 / 40 %', 'NEC Chapter 9 Tables 1, 4, 5; PEC 2017 Chapter 9.', 'standard'],
+    egc:       ['EGC by OCPD rating (250.122), increased with upsized phases; GEC by service size (250.66)', 'NEC Art. 250; PEC 2017 Art. 2.50 (Tables 2.50.6.13, 2.50.3.17).', 'standard'],
+    motor:     ['FLC = P / (√3 V η pf); 125 % conductor; breaker ≤ 250 %; overload 115–125 %', 'NEC Art. 430 (430.22, 430.32, 430.52, Tables 430.248 / 430.250); PEC 2017 Art. 4.30.', 'standard'],
+    ups:       ['Runtime = V·Ah·strings·DoD·0.8·η / load', 'IEEE 485 / IEEE 1184 (battery sizing, ageing factor); manufacturer constant-power tables.', 'method'],
+    evc:       ['I = kW / V; 125 % breaker and wire; feeder = n × kW × diversity', 'NEC Art. 625 (625.41, 625.42); IEC 61851; IEC 60364-7-722; RA 11697 (EVIDA).', 'standard'],
     lpd:       ['LPD = Σ(n × W) / area ≤ allowed LPD for the space type', 'ANSI/ASHRAE/IES 90.1-2019 §9.6 and Table 9.6.1 (space-by-space method); IECC 2021 C405.3; NCC 2022 Section J7; Philippine Green Building Code.', 'standard'],
     light:     ['N = E·A/(Φ·UF·MF); RI = L·W/(Hm·(L+W))', 'Lumen method — SLL Code for Lighting, IES Lighting Handbook; illuminance targets EN 12464-1. UF values typical for recessed LED panels.', 'typical'],
     wsfu:      ['Σ WSFU → peak demand (Hunter curve); size by velocity; Hazen-Williams friction', 'IPC Appendix E (Tables E103.3(2), E103.3(3)); UPC Appendix A; NPCP. Values are typical — confirm with the adopted code tables.', 'method'],
@@ -7102,6 +7329,49 @@ body.modal-open .dock-tab { visibility: hidden; }
       o += Flow('M90 40v-16', DC.red, 1.2, 1.4) + Flow('M220 80v16', DC.red, 1.2, 1.4) + Ci(320, 60, 16, DC.bg, DC.ink, 1.2) + T(320, 92, fq(v.p, 'pv'), 'dd-tag', 'middle');
       var bar = function (y, label, x, col) { return T(40, y - 6, label) + Rc(40, y, 340, 14, 'none', DC.mut, 1) + Rc(40, y, clampN(x / mx, 0, 1) * 340, 14, col); };
       return o + bar(130, 'Allowed ' + rowVal(rows, 'Allowed leakage'), allow, 'rgba(255,176,0,0.5)') + (v.m > 0 ? bar(170, 'Measured ' + rowVal(rows, 'Measured leakage'), v.m, v.m <= allow ? 'rgba(127,217,98,0.6)' : 'rgba(255,107,91,0.6)') : T(40, 176, 'enter the measured leakage'));
+    }
+  });
+  Object.assign(DRAWS, {
+    solar: function (v, rows) {
+      var n = clampN(Math.round(numIn(rowVal(rows, 'PV system size')) * 1000 / v.pw), 1, 40), cols = Math.min(n, 10), rws = Math.ceil(n / cols), o = '';
+      o += '<path d="M20 160L80 60H300L360 160Z" fill="rgba(255,176,0,0.05)" stroke="' + DC.ink + '"/>';
+      for (var i = 0; i < n; i++) { var c = i % cols, r = Math.floor(i / cols), x = 92 + c * 20 - r * 6, y = 70 + r * 22; o += Rc(x, y, 17, 19, 'rgba(56,189,248,0.35)', DC.blue, 0.8); }
+      o += Ci(390, 30, 14, 'rgba(255,200,87,0.4)', DC.yel, 1.5, ' class="dz-pulse"') + Ln(360, 160, 400, 160, DC.yel, 2) + Rc(370, 140, 30, 20, DC.bg, DC.ink, 1) + T(385, 176, 'inverter', 'dd-tag', 'middle');
+      return o + Big(20, 30, rowVal(rows, 'PV system size')) + T(20, 190, rowVal(rows, 'Energy per year') + ' a year · ' + rowVal(rows, 'Money saved'));
+    },
+    sccur: function (v, rows) {
+      var o = Ci(40, 90, 18, DC.bg, DC.ink, 1.4) + T(40, 124, 'utility', 'dd-tag', 'middle') + Ln(58, 90, 100, 90, DC.yel, 2);
+      o += Ci(116, 90, 14, 'none', DC.ink, 1.4) + Ci(136, 90, 14, 'none', DC.ink, 1.4) + T(126, 124, fmt(v.kva, 0) + ' kVA', 'dd-tag', 'middle') + Ln(150, 90, 190, 90, DC.yel, 3);
+      o += Flow('M190 90H330', DC.yel, 0.6, 3) + T(260, 80, fq(v.l, 'len') + ' cable', 'dd-tag', 'middle') + Rc(330, 60, 50, 60, DC.bg, DC.ink, 1.4) + T(355, 136, 'panel', 'dd-tag', 'middle');
+      o += '<path d="M180 50l8 14-10 2 10 16" fill="none" stroke="' + DC.red + '" stroke-width="2" class="a-flicker"/><path d="M370 34l8 14-10 2 10 16" fill="none" stroke="' + DC.red + '" stroke-width="2" class="a-flicker"/>';
+      return o + T(190, 40, rowVal(rows, 'Fault current at the transformer'), 'dd-tag', 'middle') + Big(410, 26, rowVal(rows, 'Fault current at the panel'), 'end') + T(410, 186, 'specify ' + rowVal(rows, 'Panel breaker rating') + ' breakers', 'dd-tag', 'end');
+    },
+    conduit: function (v, rows) {
+      var W = WIRE_AWG[wireIdx(v.w)], n = Math.min(v.n, 40), R = 70, fill = clampN(numIn(rowVal(rows, 'Fill')) / 100, 0.05, 1), rw = R * Math.sqrt(fill / n), o = Ci(110, 100, R, DC.bg, DC.ink, 2);
+      var cols = [DC.red, DC.yel, DC.blue, DC.mint, DC.vio];
+      for (var i = 0; i < n; i++) { var a = i * 2.39996, rr = R * 0.8 * Math.sqrt((i + 0.5) / n); o += Ci(110 + rr * Math.cos(a), 100 + rr * Math.sin(a), rw, cols[i % cols.length], DC.bg, 1); }
+      return o + Big(220, 70, rowVal(rows, 'Conduit size')) + T(220, 92, rowVal(rows, 'Fill') + ' fill (limit ' + (v.n === 1 ? 53 : v.n === 2 ? 31 : 40) + ' %)') + T(220, 112, fmt(v.n, 0) + ' × ' + W[0]);
+    },
+    egc: function (v, rows) {
+      var o = Rc(40, 30, 70, 90, DC.bg, DC.ink, 1.4) + T(75, 140, 'panel', 'dd-tag', 'middle') + Ln(110, 50, 300, 50, DC.red, 2) + Ln(110, 64, 300, 64, DC.yel, 2) + Ln(110, 78, 300, 78, DC.blue, 2) + Ln(110, 96, 300, 96, DC.mint, 3) + Rc(300, 40, 60, 66, DC.bg, DC.ink, 1.2) + T(330, 122, 'load', 'dd-tag', 'middle');
+      o += Ln(75, 120, 75, 160, DC.mint, 3) + Ln(55, 160, 95, 160, DC.mint, 2) + Ln(61, 167, 89, 167, DC.mint, 2) + Ln(67, 174, 83, 174, DC.mint, 2) + T(120, 170, 'electrode (GEC)');
+      return o + T(200, 110, 'EGC', 'dd-tag', 'middle') + Big(410, 26, rowVal(rows, 'Equipment grounding conductor'), 'end') + T(410, 190, 'GEC ' + rowVal(rows, 'Grounding electrode conductor'), 'dd-tag', 'end');
+    },
+    motor: function (v, rows) {
+      var o = Rc(30, 70, 60, 50, DC.bg, DC.ink, 1.4) + T(60, 100, 'breaker', 'dd-tag', 'middle') + Ln(90, 95, 140, 95, DC.yel, 2) + Rc(140, 70, 60, 50, DC.bg, DC.ink, 1.4) + T(170, 100, 'starter', 'dd-tag', 'middle');
+      o += Flow('M200 95H260', DC.yel, 0.8, 2.4) + Rc(260, 66, 90, 58, 'rgba(255,176,0,0.08)', DC.ink, 1.6, ' rx="8"') + Ci(305, 95, 18, 'none', DC.mint, 1.6) + '<path d="M305 77v36M287 95h36" stroke="' + DC.mint + '" stroke-width="1.4" class="dz-spin" style="transform-origin:305px 95px"/>';
+      return o + Big(20, 36, rowVal(rows, 'Full-load current') + ' FLC') + T(20, 150, 'breaker ' + rowVal(rows, 'Short-circuit breaker') + ' · overload ' + rowVal(rows, 'Overload setting')) + T(20, 170, 'start ' + rowVal(rows, 'Starting current'));
+    },
+    ups: function (v, rows) {
+      var o = Rc(30, 50, 70, 100, DC.bg, DC.ink, 1.4) + T(65, 104, 'UPS', 'dd-big', 'middle') + Ln(100, 100, 180, 100, DC.yel, 2) + Flow('M100 100H180', DC.yel, 0.8, 2) + Rc(180, 70, 70, 60, DC.bg, DC.ink, 1.2) + T(215, 104, 'load', 'dd-tag', 'middle');
+      var nb = clampN(v.str, 1, 4);
+      for (var i = 0; i < nb; i++) o += Rc(40 + i * 16, 160, 12, 24, 'rgba(127,217,98,0.5)', DC.ink, 1);
+      return o + T(30, 196, fmt(v.vdc, 0) + ' V DC · ' + fmt(v.ah, 0) + ' Ah × ' + fmt(v.str, 0)) + Big(270, 90, rowVal(rows, 'Backup time')) + T(270, 110, 'target needs ' + rowVal(rows, 'Battery for the target')) + T(270, 130, rowVal(rows, 'UPS rating') + ' UPS');
+    },
+    evc: function (v, rows) {
+      var n = clampN(v.n, 1, 8), o = Rc(20, 80, 40, 60, DC.bg, DC.ink, 1.4) + T(40, 154, 'panel', 'dd-tag', 'middle');
+      for (var i = 0; i < n; i++) { var x = 90 + i * 40; o += Ln(60, 100, x + 10, 100, DC.yel, 1.5) + Rc(x, 90, 20, 36, DC.bg, DC.ink, 1.2) + Rc(x - 6, 140, 32, 16, i < Math.round(n * v.div / 100) ? 'rgba(127,217,98,0.5)' : 'none', DC.ink, 1, ' rx="4"'); }
+      return o + Big(20, 40, rowVal(rows, 'Feeder load') + ' feeder') + T(20, 60, rowVal(rows, 'Current per charger') + ' each · breaker ' + rowVal(rows, 'Breaker per charger')) + T(20, 190, 'green = charging at once (' + fmt(v.div, 0) + ' % diversity)');
     }
   });
   var NPS_LBL = function (dn) { return ({ 15: '½"', 20: '¾"', 25: '1"', 32: '1¼"', 40: '1½"', 50: '2"', 65: '2½"', 80: '3"', 100: '4"', 125: '5"', 150: '6"', 200: '8"', 250: '10"', 300: '12"' })[dn] || dn + ' mm'; };

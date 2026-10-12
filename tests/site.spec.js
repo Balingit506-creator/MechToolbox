@@ -3,7 +3,7 @@ import { openSite } from './helpers.js'
 
 const visibleTitles = (page) => page.locator('#card-grid .card:visible h3').allTextContents()
 
-test('loads with all 92 calculators and no script errors', async ({ page }) => {
+test('loads with all 99 calculators and no script errors', async ({ page }) => {
   const errors = await openSite(page)
   await page.waitForTimeout(500)
   expect(errors).toEqual([])
@@ -11,7 +11,7 @@ test('loads with all 92 calculators and no script errors', async ({ page }) => {
 
 test('category filters show the right calculators', async ({ page }) => {
   await openSite(page)
-  const counts = { all: 92, M: 17, H: 7, V: 13, AC: 19, DD: 18, E: 9, P: 5, F: 5, S: 4 }
+  const counts = { all: 99, M: 17, H: 7, V: 13, AC: 19, DD: 18, E: 16, P: 5, F: 5, S: 4 }
   for (const [f, n] of Object.entries(counts)) {
     await page.locator(`[data-filter="${f}"]`).click()
     await expect(page.locator('#card-grid .card:visible')).toHaveCount(n)
@@ -33,7 +33,7 @@ test('minimize all hides the list and a category brings it back', async ({ page 
   await page.locator('[data-filter="E"]').click()
   await page.locator('#min-all').click()
   await expect(page.locator('#card-grid')).toBeHidden()
-  await expect(page.locator('#min-all-label')).toHaveText('Show all (9)')
+  await expect(page.locator('#min-all-label')).toHaveText('Show all (16)')
   await page.locator('[data-filter="F"]').click()
   await expect(page.locator('#card-grid .card:visible')).toHaveCount(5)
 })
