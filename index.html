@@ -1529,6 +1529,39 @@ body.modal-open .dock-tab { visibility: hidden; }
 .nav-mobile a.active, .nav-mobile a:hover { color: var(--accent); }
 @keyframes navDrop { from { opacity: 0; transform: translateY(-8px); } }
 @media (prefers-reduced-motion: reduce) { .nav-mobile { animation: none; } }
+
+/* Phones: compact header so the menu button always fits */
+.site-header .wrap { min-width: 0; }
+.logo { min-width: 0; }
+@media (max-width: 520px) {
+  .site-header .wrap { gap: 6px; }
+  .site-header .logo { font-size: 16px; gap: 6px; }
+  .logo-cursor { display: none; }
+  .logo-gear { width: 16px; height: 16px; }
+  .logo .slash { padding: 0 1px; }
+  .head-search { width: 34px; height: 34px; }
+  .site-header .sys button { min-width: 32px; padding: 7px 6px; letter-spacing: 0.06em; }
+  .menu-btn { width: 36px; height: 36px; flex-shrink: 0; }
+}
+@media (max-width: 380px) { .head-search { display: none; } .site-header .logo { font-size: 15px; } }
+
+/* Phones: centre the hero */
+@media (max-width: 640px) {
+  .hero-copy { text-align: center; }
+  .hero-copy > .eyebrow { display: flex; width: fit-content; max-width: 100%; margin-left: auto; margin-right: auto; text-align: left; }
+  .hero-lead { margin-left: auto; margin-right: auto; }
+  .hero-actions { justify-content: center; }
+  .hero-stats { margin-left: auto; margin-right: auto; }
+  .hero-stats li { text-align: left; }
+  .hero-codes { text-align: center; }
+  /* smaller floating tools so they cover less of the page */
+  .cv-btn, .cp-btn { width: 46px; height: 46px; }
+  .cp-btn .gl { width: 46px; height: 46px; }
+  .cv { left: 10px; bottom: 66px; } .cp { left: 10px; bottom: 12px; }
+  .dock-tab { left: 10px; bottom: 120px; width: 46px; }
+  .cv-panel { bottom: 56px; } .cp-panel { bottom: 56px; }
+  .fb-fab { right: 10px; bottom: 12px; }
+}
 </style>
 </head>
 <body>
