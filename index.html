@@ -556,7 +556,7 @@ mark.hl { color: var(--mint); background: linear-gradient(var(--mint), var(--min
   border: 1px solid var(--mint); border-radius: 3px; font: 600 11px/1 var(--mono); letter-spacing: 0; color: var(--mint);
   vertical-align: middle; transition: background var(--ease), color var(--ease);
 }
-.card:hover .disc-chip { background: var(--mint); color: var(--deep); }
+.card:hover .disc-chip { transform: scale(1.08); }
 
 /* ---------- Precise cooling load ---------- */
 .cl-limits {
@@ -1482,10 +1482,36 @@ body.modal-open .cv { visibility: hidden; }
 .eyebrow, .logo .tools, .hero-stats b { text-shadow: 0 0 12px rgba(255, 176, 0, 0.28); }
 .section-head h2 { background: linear-gradient(180deg, #FFF6E0 30%, #CDBB92); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
-/* Card accent: a short discipline-coloured line on the top edge that sweeps across on hover */
-.card { --dc: var(--accent); background: linear-gradient(90deg, var(--dc), color-mix(in srgb, var(--dc) 0%, transparent)) 16px 0 / 64px 3px no-repeat, var(--surface); transition: transform 260ms cubic-bezier(.2, .7, .2, 1), border-color 260ms ease, box-shadow 260ms ease, background-size 420ms cubic-bezier(.2, .7, .2, 1); }
-.card:hover, .card:focus-within { background-size: calc(100% - 32px) 3px, auto; border-color: color-mix(in srgb, var(--dc) 45%, transparent); }
-.cards.compact .card { background-size: 36px 3px, auto; }
+/* Card discipline colour lives in the code badge: filled chip + matching code text */
+.card .disc-chip { background: var(--dc); border-color: var(--dc) !important; color: #0B0B0B !important; font-weight: 700; box-shadow: 0 0 10px color-mix(in srgb, var(--dc) 45%, transparent); }
+.card .eyebrow { color: var(--dc); }
+.card:hover, .card:focus-within { border-color: color-mix(in srgb, var(--dc) 40%, var(--line)); }
+
+/* Appliance energy cost */
+.ec-top { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 14px; }
+.ec-rows { display: grid; gap: 10px; }
+.ec-row { display: grid; grid-template-columns: minmax(150px, 1.3fr) minmax(120px, 1fr) minmax(170px, 1.2fr) minmax(110px, 0.8fr) minmax(130px, 0.9fr) auto; gap: 10px; align-items: end; padding: 12px; border: 1px solid var(--edge); border-radius: 12px; background: rgba(11, 11, 11, 0.45); }
+@media (max-width: 860px) { .ec-row { grid-template-columns: 1fr 1fr; } .ec-del { justify-self: end; } }
+.ec-row .field label { margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ec-pwrow { display: flex; gap: 6px; } .ec-pwrow > .input-wrap:first-child { flex: 1; } .ec-u { width: 76px; }
+.ec-step { display: flex; gap: 4px; align-items: stretch; } .ec-step .input-wrap { flex: 1; } .ec-step .input-wrap input { text-align: center; } .ec-step .icon-btn { width: 34px; height: auto; }
+.ec-del { align-self: end; margin-bottom: 6px; }
+.ec-add { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 16px 0 6px; }
+.ec-h { margin: 22px 0 10px; font-size: 20px; }
+.ec-table table { min-width: 780px; }
+.ec-sub { display: block; margin-top: 2px; font: 500 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.ec-table .ec-total td { background: var(--accent); color: #0B0B0B; font-weight: 700; }
+
+/* Altimeter */
+.cp-alt { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--edge); }
+.cp-altv { font: 700 22px/1.1 var(--head); margin: 2px 0 4px; }
+.cp-alt-act { margin-top: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.cp-panel { max-height: calc(100vh - 100px); max-height: calc(100dvh - 100px); overflow: auto; }
+
+/* Convert & Constants panel: stay clear of the sticky header; keep the tabs visible while the list scrolls */
+.cv-panel { max-height: calc(100vh - 250px); max-height: calc(100dvh - 250px); padding-top: 0; }
+.cv-head { position: sticky; top: 0; z-index: 2; margin: 0 -14px 12px; padding: 12px 14px 10px; background: rgba(21, 21, 21, 0.98); border-bottom: 1px solid var(--edge); }
+.cp-panel { max-height: calc(100vh - 170px); max-height: calc(100dvh - 170px); }
 </style>
 </head>
 <body>
@@ -1887,6 +1913,12 @@ body.modal-open .cv { visibility: hidden; }
       <p class="cp-k cp-k2">Sun now</p>
       <p class="cp-sunline" id="cp-sun">—</p>
       <p class="cp-loc"><span id="cp-loc">—</span> <button type="button" class="cp-link" id="cp-myloc">Use my location</button></p>
+      <div class="cp-alt">
+        <p class="cp-k cp-k2">Altitude</p>
+        <p class="cp-altv" id="cp-alt" aria-live="polite">—</p>
+        <p class="cp-status" id="cp-alt-src">GPS on phones; elevation from map data on a PC.</p>
+        <p class="cp-alt-act"><button type="button" class="btn btn-solid btn-sm" id="cp-alt-btn">Measure altitude</button> <button type="button" class="cp-link" id="cp-alt-psy" hidden>Use in psychrometric chart</button></p>
+      </div>
     </div>
   </div>
 </div>
@@ -2428,6 +2460,8 @@ body.modal-open .cv { visibility: hidden; }
     pipe: '<path d="M8 38h144M8 58h144" class="ink"/><rect x="44" y="32" width="6" height="32" class="ink"/><rect x="110" y="32" width="6" height="32" class="ink"/>' +
           '<line x1="60" y1="48" x2="100" y2="48" class="ink a-march" marker-end="url(#arr-mini)"/><circle cx="80" cy="17" r="9" class="ink-m"/><path d="M80 26v12" class="ink-m"/><path d="M80 17l5-4" class="ink a-needle" style="stroke-width:1.2"/>' +
           '<text x="8" y="80" class="ink-t">ΔP · Re</text>',
+    chwins: '<circle cx="80" cy="45" r="32" fill="rgba(255,176,0,0.16)" class="ink"/><circle cx="80" cy="45" r="18" class="ink-m"/><circle cx="80" cy="45" r="14" fill="rgba(56,189,248,0.25)" class="ink-m"/>' +
+      '<path d="M16 45h30M114 45h30" class="ink a-march"/><text x="118" y="20" class="ink-t">t</text>',
     refpipe: '<rect x="14" y="30" width="34" height="30" rx="3" class="ink"/><rect x="112" y="24" width="34" height="42" rx="3" class="ink"/><circle cx="129" cy="45" r="11" class="ink-m"/>' +
       '<path d="M48 38H112M48 52H112" class="ink a-march"/><text x="56" y="32" class="ink-t">⌀ gas</text><text x="56" y="66" class="ink-t">⌀ liquid</text>',
     gen: '<rect x="20" y="30" width="62" height="36" rx="4" class="ink"/><circle cx="40" cy="48" r="9" class="ink a-flicker"/><path d="M58 40h16M58 48h16M58 56h16" class="ink-m"/>' +
@@ -2437,6 +2471,8 @@ body.modal-open .cv { visibility: hidden; }
     hwheat: '<rect x="54" y="12" width="44" height="66" rx="20" class="ink"/><path d="M66 60c0-8 8-10 8-18 0 8 8 10 8 18a8 8 0 0 1-16 0z" class="ink a-flicker"/><path d="M98 26h30M24 64h30" class="ink-m a-march"/><text x="110" y="20" class="ink-t">60 °C</text>',
     booster: '<circle cx="50" cy="50" r="16" class="ink"/><path d="M50 50l9-9" class="ink a-flicker"/><path d="M14 50h20M66 50h30v-30h30" class="ink-m a-march"/><rect x="96" y="46" width="34" height="32" rx="12" class="ink"/><text x="100" y="66" class="ink-t">kPa</text>',
     sprhyd: '<path d="M16 26H144M40 26v12M72 26v12M104 26v12M136 26v12" class="ink"/><path d="M34 46l-5 8M40 46v10M46 46l5 8M66 46l-5 8M72 46v10M78 46l5 8" class="ink-m a-flicker"/><path d="M16 26v52" class="ink a-march"/><text x="98" y="74" class="ink-t">Q · p</text>',
+    ecost: '<rect x="18" y="20" width="56" height="50" rx="4" class="ink"/><path d="M30 34h32M30 44h20" class="ink-m"/><circle cx="46" cy="58" r="6" class="ink a-flicker"/>' +
+      '<path d="M96 70V48M110 70V36M124 70V24M138 70V42" class="ink"/><text x="92" y="18" class="ink-t">kWh · cost</text>',
     pls: '<rect x="44" y="10" width="72" height="72" rx="3" class="ink"/><path d="M80 10v72" class="ink-m"/><path d="M52 22h20M52 32h20M52 42h20M52 52h20M52 62h20M88 22h20M88 32h20M88 42h20M88 52h20M88 62h20" class="ink"/>' +
       '<rect x="72" y="16" width="16" height="6" class="ink a-flicker"/><text x="122" y="30" class="ink-t">A</text><text x="122" y="48" class="ink-t">B</text><text x="122" y="66" class="ink-t">C</text>',
     elec: '<path d="M96 12L74 48h16l-6 30 26-40H94l8-26z" class="ink a-flicker"/><path d="M26 30h30M26 45h30M26 60h30" class="ink-m a-march"/>' +
@@ -2714,6 +2750,12 @@ body.modal-open .cv { visibility: hidden; }
     eqlen: '<rect x="14" y="26" width="70" height="14" class="ink a-grow"/><rect x="84" y="26" width="56" height="14" class="ink-m a-grow" style="animation-delay:.1s"/><text x="14" y="58" class="ink-t">L + ΣLe</text>',
     fitl:  '<path d="M14 60h50a20 20 0 0 0 20-20V14" class="ink"/><path d="M14 74h50a34 34 0 0 0 34-34V14" class="ink"/><text x="110" y="50" class="ink-t">ΣC·Pv</text>',
     tpl:   '<rect x="14" y="30" width="40" height="16" class="ink a-grow"/><rect x="54" y="30" width="30" height="16" class="ink-m a-grow" style="animation-delay:.08s"/><rect x="84" y="30" width="50" height="16" class="ink a-grow" style="animation-delay:.16s"/><text x="14" y="70" class="ink-t">Fan static ΣΔP</text>',
+    dsheet: '<path d="M30 40L70 22H134L94 40Z" class="ink-m"/><path d="M30 40H94V74H30Z" class="ink"/><path d="M94 40L134 22V56L94 74" class="ink"/><path d="M38 47H86V67H38Z" class="ink-m"/>' +
+      '<path d="M100 82h40M30 82h56" class="ink-m a-march"/><text x="104" y="14" class="ink-t">sheets</text>',
+    insul: '<rect x="40" y="18" width="80" height="54" rx="2" fill="rgba(255,176,0,0.18)" class="ink"/><rect x="52" y="30" width="56" height="30" class="ink-m"/><text x="62" y="49" class="ink-t">duct</text>' +
+      '<path d="M40 82h80" class="ink-m a-march"/><text x="124" y="22" class="ink-t">t</text>',
+    hanger: '<path d="M20 12h120" class="ink"/><path d="M50 12v52M110 12v52" class="ink-m"/><rect x="58" y="34" width="44" height="26" class="ink"/><path d="M42 64h76" class="ink a-flicker"/>' +
+      '<path d="M20 82h120" class="ink-m a-march"/><text x="118" y="30" class="ink-t">rod</text>',
     dar:   '<rect x="20" y="30" width="40" height="40" class="ink-m"/><rect x="70" y="38" width="70" height="24" class="ink a-draw" pathLength="1"/><text x="10" y="86" class="ink-t">W : H</text>',
     dins:  '<rect x="34" y="22" width="92" height="50" class="ink-m" stroke-dasharray="3 2"/><rect x="44" y="32" width="72" height="30" class="ink"/><text x="10" y="86" class="ink-t">INS · dew point</text>'
   });
@@ -2852,6 +2894,21 @@ body.modal-open .cv { visibility: hidden; }
   function pipeFric(q, D, eMm, nu, rho) { var V = q / (Math.PI * D * D / 4), Re = V * D / nu; return { V: V, Re: Re, dpm: darcyF(Re, eMm, D) / D * rho * V * V / 2 }; }
   var CHW_RHO = 999.7, CHW_NU = 1.31e-6, CHW_CP = 4.19; // water at about 10 °C
   // Smallest pipe meeting the velocity limit (1.2 m/s up to 50 mm, 3.0 m/s above) and the friction target.
+  // Outside diameter (m) of the selected pipe: steel Sch. 40 by DN, copper = nominal + 1/8 in, PPR row = OD.
+  var NPS_OD = { 15: 21.3, 20: 26.7, 25: 33.4, 32: 42.2, 40: 48.3, 50: 60.3, 65: 73.0, 80: 88.9, 100: 114.3, 125: 141.3, 150: 168.3, 200: 219.1, 250: 273.0, 300: 323.9, 350: 355.6, 400: 406.4 };
+  function chwOD(mat, row) {
+    if (mat === 'ppr') return row[0] / 1000;
+    if (mat === 'cu') return (row[0] / 25 * 25.4 + 3.175) / 1000;
+    return (NPS_OD[row[0]] || row[1] * 1.12) / 1000;
+  }
+  // Maximum hanger spacing (m) for water-filled pipe — MSS SP-58 / ASME B31.9 Table 914.4 (steel, copper); PPR typical manufacturer values.
+  function chwHangerSpacing(mat, row) {
+    var dn = row[0];
+    if (mat === 'ppr') return dn <= 32 ? 0.8 : dn <= 63 ? 1.2 : 1.5;
+    var ST = [[25, 2.1], [40, 2.7], [50, 3.0], [65, 3.4], [80, 3.7], [125, 4.3], [150, 5.2], [200, 5.8], [250, 6.7], [1e9, 7.0]];
+    var CU = [[25, 1.8], [40, 2.4], [50, 2.4], [80, 3.0], [100, 3.7], [1e9, 4.3]];
+    return (mat === 'cu' ? CU : ST).filter(function (x) { return dn <= x[0]; })[0][1];
+  }
   function chwSize(v) {
     var M = PIPE_MATS[v.mat], q = v.p / (CHW_CP * v.dt * CHW_RHO), pick = null, k;
     var vlim = function (row) { return (v.mat === 'ppr' ? row[0] <= 63 : row[0] <= 50) ? 1.2 : 3.0; };
@@ -3067,6 +3124,11 @@ body.modal-open .cv { visibility: hidden; }
         ];
       },
       note: 'Water at 20 °C (ρ = 998 kg/m³, μ = 1.0 mPa·s), commercial steel ε = 0.045 mm. Laminar flow uses f = 64 / Re.'
+    },
+
+    ecost: {
+      code: 'ELEC / 006', title: 'Appliance Energy Cost', card: true, disc: 'E', special: true,
+      desc: 'Daily, monthly and yearly electricity cost of your appliances from their power, hours of use and your rate per kWh — any currency.'
     },
 
     pls: {
@@ -4148,6 +4210,136 @@ body.modal-open .cv { visibility: hidden; }
       note: 'Use the index (longest / highest-loss) run. Add AHU internal losses separately if the fan is selected for total static pressure.'
     },
 
+    dsheet: {
+      code: 'DUCT / 032', title: 'Duct Sheet Metal Calculator', card: true, disc: 'M',
+      desc: 'Galvanised sheets for a rectangular duct run — perimeter, sheet area with waste, number of sheets, gauge by size and weight.',
+      fields: [
+        { k: 'w', label: 'Duct width (W)', q: 'dia', def: [450, 18] },
+        { k: 'h', label: 'Duct height (H)', q: 'dia', def: [250, 10] },
+        { k: 'l', label: 'Duct length', q: 'len', def: [10, 33] },
+        { k: 'wa', label: 'Waste, seams and fittings', unit: '%', def: [15, 15], zero: true },
+        { k: 'sh', label: 'Sheet size', opts: [['1.22x2.44', '4 ft × 8 ft (1.22 × 2.44 m)'], ['1.22x3.05', '4 ft × 10 ft (1.22 × 3.05 m)'], ['0.914x2.44', '3 ft × 8 ft (0.914 × 2.44 m)'], ['1.0x2.0', '1.0 × 2.0 m'], ['1.25x2.5', '1.25 × 2.5 m']], def: ['1.22x2.44', '1.22x2.44'] },
+        { k: 'cur', label: 'Currency', opts: [['₱', '₱  Philippine peso (PHP)'], ['$', '$  US dollar (USD)'], ['€', '€  Euro (EUR)'], ['£', '£  British pound (GBP)'], ['A$', 'A$  Australian dollar (AUD)'], ['C$', 'C$  Canadian dollar (CAD)'], ['S$', 'S$  Singapore dollar (SGD)'], ['¥', '¥  Japanese yen (JPY)'], ['CN¥', '¥  Chinese yuan (CNY)'], ['₩', '₩  Korean won (KRW)'], ['₹', '₹  Indian rupee (INR)'], ['RM', 'RM  Malaysian ringgit (MYR)'], ['Rp', 'Rp  Indonesian rupiah (IDR)'], ['฿', '฿  Thai baht (THB)'], ['₫', '₫  Vietnamese dong (VND)'], ['AED', 'AED  UAE dirham'], ['SAR', 'SAR  Saudi riyal'], ['QAR', 'QAR  Qatari riyal']], def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
+        { k: 'ps', label: 'Price per sheet', unit: 'per sheet', def: [0, 0], zero: true },
+        { k: 'acc', label: 'Accessories', unit: '% of sheets', def: [10, 10], zero: true },
+        { k: 'lab', label: 'Labor (fabricate + install)', unit: 'per area', def: [0, 0], zero: true },
+        { k: 't', label: 'Thickness', opts: [['auto', 'Auto by size (SMACNA)'], ['0.55', '26 ga — 0.55 mm'], ['0.70', '24 ga — 0.70 mm'], ['0.85', '22 ga — 0.85 mm'], ['1.00', '20 ga — 1.00 mm'], ['1.30', '18 ga — 1.30 mm']], def: ['auto', 'auto'] }
+      ],
+      formula: function () { return ['Perimeter P = 2 (W + H)', 'Area = P × length × (1 + waste)', 'Sheets = area / sheet area (rounded up)', 'Weight = area × thickness × 7.85 kg/m² per mm', 'Cost = sheets × price + accessories % + labor × net area']; },
+      calc: function (v) {
+        var P = 2 * (v.w + v.h), net = P * v.l, gross = net * (1 + v.wa / 100), dim = v.sh.split('x').map(Number), sa = dim[0] * dim[1];
+        var g = BOQ_GAUGE.filter(function (x) { return Math.max(v.w, v.h) <= x[0]; })[0] || BOQ_GAUGE[BOQ_GAUGE.length - 1];
+        var t = v.t === 'auto' ? g[2] : +v.t, gaLbl = v.t === 'auto' ? g[1] : ({ '0.55': '26 ga', '0.70': '24 ga', '0.85': '22 ga', '1.00': '20 ga', '1.30': '18 ga' }[v.t] + ' (' + v.t + ' mm)');
+        var sheets = Math.ceil(gross / sa - 1e-9), kg = gross * t * 7.85, perM = gross / Math.max(v.l, 1e-9);
+        var wt = function (x) { return sys === 'si' ? fmt(x, 0) + ' kg' : fmt(x * 2.20462, 0) + ' lb'; };
+        var fit = P <= dim[0] + 1e-9;
+        return [
+          ['Sheets needed', fmt(sheets, 0) + ' sheets', 1, fmt(dim[0], 3).replace(/.?0+$/, '') + ' × ' + fmt(dim[1], 2) + ' m sheets'],
+          ['Perimeter', fq(P, 'len'), 0, 'flat pattern: W ' + fq(v.w, 'dia') + ' + H ' + fq(v.h, 'dia') + ' + W + H'],
+          ['Sheet area, net', fq(net, 'area')],
+          ['Sheet area with allowance', fq(gross, 'area'), 1, '+' + fmt(v.wa) + ' % waste, seams and fittings'],
+          ['Thickness', gaLbl, 0, v.t === 'auto' ? 'by the longest side ' + fq(Math.max(v.w, v.h), 'dia') + ' (SMACNA, ±500 Pa)' : 'chosen'],
+          ['Weight of GI sheet', wt(kg), 1, fmt(t * 7.85, 2) + ' kg/m²'],
+          ['Per length of duct', fmt(perM / sa, 2) + ' sheet (' + fq(perM, 'area') + ')', 0, sys === 'si' ? 'per metre' : 'per metre (' + fmt(perM * 0.3048 / 0.092903, 2) + ' ft² per ft)'],
+          ['Sheet layout', fit ? 'one sheet width wraps the duct' : 'two L-shaped pieces per section', 0, fit ? 'perimeter ' + fq(P, 'len') + ' ≤ sheet width ' + fq(dim[0], 'len') : 'perimeter ' + fq(P, 'len') + ' is wider than one ' + fq(dim[0], 'len') + ' sheet']
+        ].concat((function () {
+          // Cost in any currency: sheets × price + accessories % of the sheets + labor × net duct area
+          var c = v.cur ? v.cur + ' ' : '', mat = sheets * v.ps, acc = mat * v.acc / 100, lab = v.lab * net / Q.area[sys][1], tot = mat + acc + lab;
+          if (!(v.ps > 0) && !(v.lab > 0)) return [['Estimated cost', 'enter a price per sheet', 0, 'and optionally labor per ' + Q.area[sys][0] + ' — any currency']];
+          return [
+            ['Sheets cost', c + n2(mat), 0, fmt(sheets, 0) + ' × ' + c + n2(v.ps)],
+            ['Accessories', c + n2(acc), 0, fmt(v.acc) + ' % of the sheets (flanges, sealant, hangers)'],
+            ['Labor', c + n2(lab), 0, v.lab > 0 ? fq(net, 'area') + ' × ' + c + n2(v.lab) + ' per ' + Q.area[sys][0] : 'not included'],
+            ['Estimated cost', c + n2(tot), 1, c + n2(tot / (v.l / Q.len[sys][1])) + ' per ' + Q.len[sys][0] + ' of duct']
+          ];
+        })());
+      },
+      note: 'Preliminary take-off. Allowance covers longitudinal seams (Pittsburgh lock), transverse joints, offcuts and simple fittings; add fittings separately for heavy runs. Check gauge and reinforcement against SMACNA HVAC Duct Construction Standards for the pressure class, and against shop drawings.'
+    },
+
+    insul: {
+      code: 'DUCT / 033', title: 'HVAC Insulation Calculator', card: true, disc: 'M',
+      desc: 'Insulation for a duct or pipe run — area with waste, rolls / sheets / sections, contact adhesive, foil tape and cost in any currency.',
+      fields: [
+        { k: 'ty', label: 'Insulate a', opts: [['rect', 'Rectangular duct'], ['round', 'Round duct'], ['pipe', 'Pipe']], def: ['rect', 'rect'] },
+        { k: 'w', label: 'Duct width (W)', q: 'dia', def: [450, 18], show: function (s) { return s.ty === 'rect'; } },
+        { k: 'h', label: 'Duct height (H)', q: 'dia', def: [250, 10], show: function (s) { return s.ty === 'rect'; } },
+        { k: 'od', label: 'Outside diameter', q: 'dia', def: [300, 12], show: function (s) { return s.ty !== 'rect'; } },
+        { k: 'l', label: 'Length', q: 'len', def: [10, 33] },
+        { k: 't', label: 'Insulation thickness', q: 'dia', def: [25, 1] },
+        { k: 'wa', label: 'Waste', unit: '%', def: [10, 10], zero: true },
+        { k: 'm', label: 'Material', opts: [['roll', 'Fiberglass wrap roll, 1.2 × 15 m (18 m²)'], ['board', 'Fiberglass board, 1.2 × 2.4 m (2.88 m²)'], ['rubber', 'Closed-cell rubber sheet, 1 × 2 m (2 m²)'], ['sect', 'Preformed pipe section, 1 m long']], def: ['roll', 'roll'] },
+        { k: 'cur', label: 'Currency', opts: [['₱', '₱  Philippine peso (PHP)'], ['$', '$  US dollar (USD)'], ['€', '€  Euro (EUR)'], ['£', '£  British pound (GBP)'], ['A$', 'A$  Australian dollar (AUD)'], ['C$', 'C$  Canadian dollar (CAD)'], ['S$', 'S$  Singapore dollar (SGD)'], ['¥', '¥  Japanese yen (JPY)'], ['CN¥', '¥  Chinese yuan (CNY)'], ['₩', '₩  Korean won (KRW)'], ['₹', '₹  Indian rupee (INR)'], ['RM', 'RM  Malaysian ringgit (MYR)'], ['Rp', 'Rp  Indonesian rupiah (IDR)'], ['฿', '฿  Thai baht (THB)'], ['₫', '₫  Vietnamese dong (VND)'], ['AED', 'AED  UAE dirham'], ['SAR', 'SAR  Saudi riyal'], ['QAR', 'QAR  Qatari riyal']], def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
+        { k: 'pu', label: 'Price per roll / sheet / section', unit: 'each', def: [0, 0], zero: true },
+        { k: 'lab', label: 'Labor (install)', unit: 'per area', def: [0, 0], zero: true }
+      ],
+      formula: function () { return ['Duct area = (2 (W + H) + 8 t) × length', 'Pipe area = π (OD + 2 t) × length', 'Adhesive ≈ 1 L per 4 m²', 'Tape: a joint every 1.2 m (duct) or 2 m (pipe) plus one seam along the run']; },
+      calc: function (v) {
+        var rect = v.ty === 'rect', P = rect ? 2 * (v.w + v.h) + 8 * v.t : Math.PI * (v.od + 2 * v.t);
+        var area = P * v.l, gross = area * (1 + v.wa / 100);
+        var MAT = { roll: [18, 'rolls'], board: [2.88, 'boards'], rubber: [2, 'sheets'], sect: [0, 'sections'] }[v.m];
+        var n = v.m === 'sect' ? Math.ceil(v.l * (1 + v.wa / 100) - 1e-9) : Math.ceil(gross / MAT[0] - 1e-9);
+        var tapeLen = Math.ceil(v.l / (rect ? 1.2 : 2) - 1e-9) * P + v.l, tape = Math.max(1, Math.ceil(tapeLen / 50 - 1e-9)), glue = gross / 4;
+        var rows = [
+          [MAT[1].charAt(0).toUpperCase() + MAT[1].slice(1) + ' of insulation', fmt(n, 0), 1, v.m === 'sect' ? 'for ' + fq(v.od, 'dia') + ' pipe, ' + fq(v.t, 'dia') + ' wall — 1 m sections' : 'each ' + fq(MAT[0], 'area')],
+          ['Outer perimeter', fq(P, 'len'), 0, rect ? 'insulated ' + fq(v.w + 2 * v.t, 'dia') + ' × ' + fq(v.h + 2 * v.t, 'dia') : 'insulated ⌀ ' + fq(v.od + 2 * v.t, 'dia')],
+          ['Insulation area', fq(area, 'area')],
+          ['With waste', fq(gross, 'area'), 1, '+' + fmt(v.wa) + ' %'],
+          ['Contact adhesive', sys === 'si' ? fmt(glue, 1) + ' L' : fmt(glue / 3.785411784, 2) + ' gal', 0, 'about 1 L per 4 m² (1 gal per 160 ft²)'],
+          ['Foil tape (50 m rolls)', fmt(tape, 0) + ' roll(s)', 0, fq(tapeLen, 'len') + ' of joints and seam']
+        ];
+        var c = v.cur ? v.cur + ' ' : '', mat = n * v.pu, lab = v.lab * area / Q.area[sys][1];
+        if (v.pu > 0 || v.lab > 0) rows.push(['Insulation cost', c + n2(mat), 0, fmt(n, 0) + ' × ' + c + n2(v.pu)], ['Labor', c + n2(lab), 0, v.lab > 0 ? fq(area, 'area') + ' × ' + c + n2(v.lab) + ' per ' + Q.area[sys][0] : 'not included'], ['Estimated cost', c + n2(mat + lab), 1, 'adhesive and tape not priced']);
+        else rows.push(['Estimated cost', 'enter a price per roll / sheet', 0, 'and optionally labor per ' + Q.area[sys][0] + ' — any currency']);
+        return rows;
+      },
+      note: 'Rough take-off. Wrap and board sizes vary by brand — check the pack size. In humid climates use a continuous vapour barrier on chilled ducts and pipes, and size the thickness to stop condensation (see the Duct Insulation calculator).'
+    },
+
+    hanger: {
+      code: 'DUCT / 034', title: 'Duct Hanger & Support Calculator', card: true, disc: 'M',
+      desc: 'Trapeze hangers for a rectangular duct run — count, load per rod, threaded rod size, angle bar, anchors, nuts and washers, with cost.',
+      fields: [
+        { k: 'w', label: 'Duct width (W)', q: 'dia', def: [450, 18] },
+        { k: 'h', label: 'Duct height (H)', q: 'dia', def: [250, 10] },
+        { k: 'l', label: 'Duct length', q: 'len', def: [10, 33] },
+        { k: 's', label: 'Hanger spacing', q: 'len', def: [2.4, 8] },
+        { k: 'd', label: 'Drop from slab', q: 'len', def: [0.6, 2] , zero: true },
+        { k: 't', label: 'Insulation thickness', q: 'dia', def: [25, 1], zero: true },
+        { k: 'x', label: 'Extra hangers for fittings', unit: '%', def: [10, 10], zero: true },
+        { k: 'cur', label: 'Currency', opts: [['₱', '₱  Philippine peso (PHP)'], ['$', '$  US dollar (USD)'], ['€', '€  Euro (EUR)'], ['£', '£  British pound (GBP)'], ['A$', 'A$  Australian dollar (AUD)'], ['C$', 'C$  Canadian dollar (CAD)'], ['S$', 'S$  Singapore dollar (SGD)'], ['¥', '¥  Japanese yen (JPY)'], ['CN¥', '¥  Chinese yuan (CNY)'], ['₩', '₩  Korean won (KRW)'], ['₹', '₹  Indian rupee (INR)'], ['RM', 'RM  Malaysian ringgit (MYR)'], ['Rp', 'Rp  Indonesian rupiah (IDR)'], ['฿', '฿  Thai baht (THB)'], ['₫', '₫  Vietnamese dong (VND)'], ['AED', 'AED  UAE dirham'], ['SAR', 'SAR  Saudi riyal'], ['QAR', 'QAR  Qatari riyal']], def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
+        { k: 'pr', label: 'Price per 3 m threaded rod', unit: 'each', def: [0, 0], zero: true },
+        { k: 'pa', label: 'Price per 6 m angle bar', unit: 'each', def: [0, 0], zero: true },
+        { k: 'pk', label: 'Price per anchor set (anchor, nuts, washers)', unit: 'each', def: [0, 0], zero: true }
+      ],
+      formula: function () { return ['Hangers = ⌈length ÷ spacing⌉ + 1, + extra % for fittings', 'Load per rod = (duct sheet + insulation ≈ 1 kg/m²) × spacing × 1.5 ÷ 2', 'Rod = drop + H + 2t + 0.1 m; bar = W + 2t + 0.2 m']; },
+      calc: function (v) {
+        var base = Math.ceil(v.l / v.s - 1e-9) + 1, n = Math.ceil(base * (1 + v.x / 100) - 1e-9), rods = 2 * n;
+        var g = BOQ_GAUGE.filter(function (x) { return Math.max(v.w, v.h) <= x[0]; })[0] || BOQ_GAUGE[BOQ_GAUGE.length - 1];
+        var sheet = 2 * (v.w + v.h) * v.s * g[2] * 7.85, ins = v.t > 0 ? 2 * (v.w + v.h + 4 * v.t) * v.s * 1 : 0, perRod = (sheet + ins) * 1.5 / 2;
+        var ROD = [[90, '8 mm', '5/16 in'], [160, '10 mm', '3/8 in'], [260, '12 mm', '1/2 in'], [1e9, '16 mm', '5/8 in']], rod = ROD.filter(function (r) { return perRod <= r[0]; })[0];
+        var rodL = v.d + v.h + 2 * v.t + 0.1, rodPcs = Math.ceil(rods * rodL / 3 - 1e-9);
+        var barL = v.w + 2 * v.t + 0.2, barPcs = Math.ceil(n * barL / 6 - 1e-9);
+        var bar = v.w <= 0.6 ? ['25 × 25 × 3 mm', '1 × 1 × 1/8 in'] : v.w <= 1.0 ? ['40 × 40 × 4 mm', '1½ × 1½ × 3/16 in'] : v.w <= 1.5 ? ['50 × 50 × 5 mm', '2 × 2 × 3/16 in'] : ['65 × 65 × 6 mm', '2½ × 2½ × 1/4 in'];
+        var si = sys === 'si', kg = function (x) { return si ? fmt(x, 0) + ' kg' : fmt(x * 2.20462, 0) + ' lb'; };
+        var rows = [
+          ['Trapeze hangers', fmt(n, 0), 1, fmt(base, 0) + ' along the run + ' + fmt(v.x) + ' % for fittings'],
+          ['Load on each rod', kg(perRod), 0, g[1] + ' duct + insulation, × 1.5 safety'],
+          ['Threaded rod size', (si ? rod[1] : rod[2]) + ' × ' + fmt(rods, 0) + ' rods', 1, 'each ' + fq(rodL, 'len') + ' long'],
+          ['Rod needed (3 m lengths)', fmt(rodPcs, 0) + ' pcs', 0, fq(rods * rodL, 'len') + ' total'],
+          ['Trapeze angle bar', (si ? bar[0] : bar[1]) + ', ' + fq(barL, 'len') + ' each', 0, 'by duct width ' + fq(v.w, 'dia')],
+          ['Angle bar needed (6 m lengths)', fmt(barPcs, 0) + ' pcs', 0, fq(n * barL, 'len') + ' total'],
+          ['Anchors', fmt(rods, 0) + ' pcs', 0, 'one per rod'],
+          ['Nuts and washers', fmt(rods * 2, 0) + ' nuts / ' + fmt(rods * 2, 0) + ' washers', 0, 'two each per rod']
+        ];
+        var c = v.cur ? v.cur + ' ' : '', cost = rodPcs * v.pr + barPcs * v.pa + rods * v.pk;
+        rows.push(cost > 0 ? ['Estimated cost', c + n2(cost), 1, 'rod ' + c + n2(rodPcs * v.pr) + ' · angle ' + c + n2(barPcs * v.pa) + ' · anchors ' + c + n2(rods * v.pk)] : ['Estimated cost', 'enter prices for rod, angle bar and anchors', 0, 'any currency']);
+        rows.push(['Design check', v.s <= 3.0 + 1e-9 ? STATUS.pass : STATUS.warn, 1, v.s <= 3.0 + 1e-9 ? 'spacing within the SMACNA maximum of 3 m (10 ft) for this size' : 'spacing above 3 m (10 ft) — SMACNA tables limit trapeze spacing; reduce it']);
+        return rows;
+      },
+      note: 'Rough take-off. Rod sizes: 8 mm up to 90 kg, 10 mm up to 160 kg, 12 mm up to 260 kg, 16 mm above (per rod, with the 1.5 factor). Confirm hanger spacing, rod and angle sizes against SMACNA HVAC Duct Construction Standards (Ch. 5) and the anchor rating with your structural engineer.'
+    },
+
     dar: {
       code: 'DUCT / 043', title: 'Duct Aspect Ratio Calculator', card: true, disc: 'M',
       desc: 'Aspect ratio check with equal-friction alternatives from 1 : 1 to 4 : 1 and the sheet-metal impact.',
@@ -4629,7 +4821,9 @@ body.modal-open .cv { visibility: hidden; }
         { k: 'mat', label: 'Pipe material', opts: optsOf(PIPE_MATS), def: ['st', 'st'] },
         { k: 'fr', label: 'Friction limit', q: 'fricw', def: [400, 4] },
         { k: 'l', label: 'Run length, one way (L)', q: 'len', def: [30, 100] },
-        { k: 'fa', label: 'Fittings & valves allowance', unit: '%', def: [50, 50], zero: true, max: 300, maxMsg: 'Use an allowance of 300 % or less.' }
+        { k: 'fa', label: 'Fittings & valves allowance', unit: '%', def: [50, 50], zero: true, max: 300, maxMsg: 'Use an allowance of 300 % or less.' },
+        { k: 'wa', label: 'Pipe waste and fittings (take-off)', unit: '%', def: [10, 10], zero: true },
+        { k: 'ti', label: 'Insulation thickness', q: 'dia', def: [40, 1.5], zero: true }
       ],
       formula: function () { return ['Q = P / (ρ · cp · ΔT)', 'Δp/L = (f / D) · ρV²/2   (Darcy–Weisbach, Swamee–Jain f)', 'Smallest size with V ≤ limit and Δp/L ≤ target   ·   loop Δp = Δp/L × 2L × (1 + allowance)']; },
       calc: function (v) {
@@ -4642,9 +4836,63 @@ body.modal-open .cv { visibility: hidden; }
           ['Loop pressure drop', fq(r.loop, 'press'), 1, fq(r.loop / (999.7 * 9.81), 'len') + ' head · supply + return, incl. ' + fmt(v.fa, 0) + ' % fittings'],
           ['One size smaller', r.prev ? pipeLabel(v.mat, r.prev) : '—', 0, r.prev ? fq(pipeFric(r.q, r.prev[1] / 1000, r.M.e, CHW_NU, CHW_RHO).V, 'vpipe') + ' · ' + fq(pipeFric(r.q, r.prev[1] / 1000, r.M.e, CHW_NU, CHW_RHO).dpm, 'fricw') + ' — exceeds a limit' : ''],
           ['Check', ok ? STATUS.pass : STATUS.warn, 0, ok ? 'within velocity and friction limits' : 'largest size in the table — split the flow']
-        ];
+        ].concat((function () {
+          // Take-off: supply + return pipe, 6 m lengths, insulation over the outside diameter, hangers at the maximum spacing
+          var run = 2 * v.l * (1 + v.wa / 100), od = chwOD(v.mat, r.row), sp = chwHangerSpacing(v.mat, r.row);
+          var insA = Math.PI * (od + 2 * v.ti) * run;
+          return [
+            ['Pipe, supply + return', fq(run, 'len'), 1, '2 × ' + fq(v.l, 'len') + ' + ' + fmt(v.wa) + ' % waste and fittings'],
+            ['6 m pipe lengths', fmt(Math.ceil(run / 6 - 1e-9), 0) + ' pcs', 0, sys === 'si' ? '' : '20 ft lengths'],
+            ['Insulation area', fq(insA, 'area'), 0, 'outer ⌀ ' + fq(od + 2 * v.ti, 'dia') + ' (pipe ' + fq(od, 'dia') + ' + 2 × ' + fq(v.ti, 'dia') + ')'],
+            ['Hangers (max spacing)', fmt(Math.ceil(run / sp - 1e-9), 0) + ' (' + fq(sp, 'len') + ')', 0, v.mat === 'ppr' ? 'PPR — manufacturer spacing, cold water' : 'MSS SP-58 / ASME B31.9, water-filled ' + (v.mat === 'cu' ? 'copper' : 'steel')]
+          ];
+        })());
       },
       note: 'Water at about 10 °C (ρ = 1000 kg/m³, ν = 1.31 mm²/s). Velocity limits: 1.2 m/s (4 ft/s) up to 50 mm, 3 m/s (10 ft/s) above — typical ASHRAE guidance for noise and erosion.'
+    },
+
+    chwins: {
+      code: 'HVAC / 011', title: 'Chilled Water Pipe Insulation', card: true, disc: 'M',
+      desc: 'Insulation tubes for a chilled-water route — thickness by size, adhesive, joint tape, hanger saddles, outdoor cladding and cost in any currency.',
+      fields: [
+        { k: 'dn', label: 'Pipe size (Sch. 40 steel)', opts: [['15', '½"'], ['20', '¾"'], ['25', '1"'], ['32', '1¼"'], ['40', '1½"'], ['50', '2"'], ['65', '2½"'], ['80', '3"'], ['100', '4"'], ['125', '5"'], ['150', '6"'], ['200', '8"'], ['250', '10"'], ['300', '12"']], def: ['125', '125'] },
+        { k: 'l', label: 'Route length, one way', q: 'len', def: [50, 165] },
+        { k: 'np', label: 'Pipes insulated', opts: [['2', 'Supply + return'], ['1', 'One pipe']], def: ['2', '2'] },
+        { k: 'loc', label: 'Location', opts: [['in', 'Indoors'], ['out', 'Outdoors (aluminium cladding)']], def: ['in', 'in'] },
+        { k: 'th', label: 'Thickness', opts: [['auto', 'Suggested for size'], ['19', '19 mm (¾")'], ['25', '25 mm (1")'], ['32', '32 mm (1¼")'], ['40', '40 mm (1½")'], ['50', '50 mm (2")']], def: ['auto', 'auto'] },
+        { k: 'wa', label: 'Waste', unit: '%', def: [10, 10], zero: true },
+        { k: 'cur', label: 'Currency', opts: [['₱', '₱  Philippine peso (PHP)'], ['$', '$  US dollar (USD)'], ['€', '€  Euro (EUR)'], ['£', '£  British pound (GBP)'], ['A$', 'A$  Australian dollar (AUD)'], ['C$', 'C$  Canadian dollar (CAD)'], ['S$', 'S$  Singapore dollar (SGD)'], ['¥', '¥  Japanese yen (JPY)'], ['CN¥', '¥  Chinese yuan (CNY)'], ['₩', '₩  Korean won (KRW)'], ['₹', '₹  Indian rupee (INR)'], ['RM', 'RM  Malaysian ringgit (MYR)'], ['Rp', 'Rp  Indonesian rupiah (IDR)'], ['฿', '฿  Thai baht (THB)'], ['₫', '₫  Vietnamese dong (VND)'], ['AED', 'AED  UAE dirham'], ['SAR', 'SAR  Saudi riyal'], ['QAR', 'QAR  Qatari riyal']], def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
+        { k: 'pt', label: 'Price per 2 m tube', unit: 'each', def: [0, 0], zero: true },
+        { k: 'pg', label: 'Price per litre of adhesive', unit: 'per L', def: [0, 0], zero: true },
+        { k: 'pk', label: 'Price per tape roll', unit: 'each', def: [0, 0], zero: true },
+        { k: 'pc', label: 'Cladding price', unit: 'per area', def: [0, 0], zero: true, show: function (s) { return s.loc === 'out'; } },
+        { k: 'pl', label: 'Labor', unit: 'per length', def: [0, 0], zero: true }
+      ],
+      formula: function () { return ['Area = π × (OD + 2t) × length', 'Tubes = length ÷ 2 m', 'Adhesive ≈ 1 L per 4 m²; tape at every 2 m joint + one seam', 'Cladding (outdoors) = π × (OD + 2t) × length × 1.1 overlap']; },
+      calc: function (v) {
+        var dn = +v.dn, od = NPS_OD[dn] / 1000, auto = dn <= 40 ? 25 : dn <= 80 ? 32 : dn <= 150 ? 40 : 50, t = (v.th === 'auto' ? auto : +v.th) / 1000;
+        var Do = od + 2 * t, len = v.l * +v.np * (1 + v.wa / 100), area = Math.PI * Do * len, tubes = Math.ceil(len / 2 - 1e-9);
+        var glue = area / 4, tapeLen = tubes * Math.PI * Do + len, tape = Math.max(1, Math.ceil(tapeLen / 50 - 1e-9));
+        var saddles = Math.ceil(v.l * +v.np / chwHangerSpacing('st', [dn]) - 1e-9), clad = v.loc === 'out' ? area * 1.1 : 0;
+        var dia = function (m) { return fq(m, 'dia'); };
+        var rows = [
+          ['Insulation tubes, 2 m each', fmt(tubes, 0), 1, 'closed-cell tube for ' + dia(od) + ' OD pipe'],
+          ['Thickness used', dia(t), 0, v.th === 'auto' ? 'suggested for this size in humid tropical conditions — check the dew point' : 'chosen'],
+          ['Insulated outer diameter', dia(Do)],
+          ['Pipe length, with waste', fq(len, 'len'), 0, (+v.np === 2 ? 'supply + return' : 'one pipe') + ' + ' + fmt(v.wa) + ' %'],
+          ['Insulation surface area', fq(area, 'area'), 1],
+          ['Contact adhesive', sys === 'si' ? fmt(glue, 1) + ' L' : fmt(glue / 3.785411784, 2) + ' gal', 0, 'about 1 L per 4 m²'],
+          ['Joint tape (50 m rolls)', fmt(tape, 0) + ' roll(s)', 0, fq(tapeLen, 'len') + ' of joints and seam'],
+          ['Hanger saddles', fmt(saddles, 0) + ' pcs', 0, 'one per support at ' + fq(chwHangerSpacing('st', [dn]), 'len') + ' spacing'],
+          ['Cladding area', v.loc === 'out' ? fq(clad, 'area') : 'Not needed', 0, v.loc === 'out' ? 'aluminium jacket, 10 % overlap' : 'indoors — vapour-barrier jacket only']
+        ];
+        var c = v.cur ? v.cur + ' ' : '', perLen = v.pl / Q.len[sys][1];
+        var parts = [['tubes', tubes * v.pt], ['adhesive', glue * v.pg], ['tape', tape * v.pk], ['cladding', clad / Q.area[sys][1] * v.pc], ['labor', len * perLen]];
+        var total = parts.reduce(function (a, p) { return a + p[1]; }, 0);
+        rows.push(total > 0 ? ['Estimated cost', c + n2(total), 1, parts.filter(function (p) { return p[1] > 0; }).map(function (p) { return p[0] + ' ' + c + n2(p[1]); }).join(' · ')] : ['Estimated cost', 'enter prices for tubes, adhesive, tape and labor', 0, 'any currency']);
+        return rows;
+      },
+      note: 'Rough take-off. Suggested thicknesses are typical for chilled water at about 6 °C in humid tropical air (25 mm to 1½", 32 mm to 3", 40 mm to 6", 50 mm above) — confirm against the project specification and a dew-point check. Keep the vapour barrier continuous through hangers (use insulated saddles).'
     },
 
     pump: {
@@ -4905,20 +5153,20 @@ body.modal-open .cv { visibility: hidden; }
   /* ---------- Cards ---------- */
   var grid = $('#card-grid');
   // HVAC sub-groups (a calculator can belong to more than one); these cards also stay under Mechanical.
-  var HVAC_TAGS = { psy: ['AC'], refpipe: ['AC'], chw: ['AC'], pump: ['AC', 'H'], hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
+  var HVAC_TAGS = { psy: ['AC'], refpipe: ['AC'], chwins: ['AC'], chw: ['AC'], pump: ['AC', 'H'], hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
                     oa: ['V'], vbz: ['V'], voz: ['V'], exh: ['V'], mua: ['V'], xfer: ['V'], bal: ['V'], vcmp: ['V'],
                     sdiff: ['GRL'], rgrille: ['GRL'], egrille: ['GRL'], louv: ['GRL'], fvel: ['GRL'], farea: ['GRL'], ndiff: ['GRL'], cfmd: ['GRL'], tsd: ['GRL'],
                     fexh: ['FAN'], fsup: ['FAN'], ffa: ['FAN'], fsp: ['FAN'], ftp: ['FAN'], fpow: ['FAN'], feff: ['FAN'], fop: ['FAN'],
-                    rdc: ['DD'], rcd: ['DD'], dvel: ['DD'], eqf: ['DD'], sreg: ['DD'], dfric: ['DD'], eqlen: ['DD'], fitl: ['DD'], tpl: ['DD'], dar: ['DD'], dins: ['DD'], duct: ['DD', 'AC'], ductd: ['DD', 'AC'], diff: ['DD', 'AC'],
+                    rdc: ['DD'], rcd: ['DD'], dvel: ['DD'], eqf: ['DD'], sreg: ['DD'], dfric: ['DD'], eqlen: ['DD'], fitl: ['DD'], tpl: ['DD'], dar: ['DD'], dsheet: ['DD'], insul: ['DD'], hanger: ['DD'], dins: ['DD'], duct: ['DD', 'AC'], ductd: ['DD', 'AC'], diff: ['DD', 'AC'],
                     btu: ['AC'], cool: ['AC'], pcl: ['AC'] };
   var HVAC_NAMES = { H: 'Heating', V: 'Ventilation', AC: 'Air Conditioning', DD: 'Duct Design' };
   // Display order: Mechanical by group (air conditioning, heating, ventilation, duct design, fans), then E, P, F, S.
-  var CARD_ORDER = ['btu', 'cool', 'pcl', 'psy', 'heat', 'phl', 'hwflow', 'chw', 'pump', 'refpipe', 'fuel', 'cost',
+  var CARD_ORDER = ['btu', 'cool', 'pcl', 'psy', 'heat', 'phl', 'hwflow', 'chw', 'chwins', 'pump', 'refpipe', 'fuel', 'cost',
     'ach', 'geom', 'oa', 'vbz', 'voz', 'exh', 'mua', 'xfer', 'bal', 'vcmp',
-    'duct', 'rdc', 'rcd', 'dvel', 'eqf', 'sreg', 'dfric', 'eqlen', 'fitl', 'tpl', 'dar', 'dins', 'ductd', 'diff',
+    'duct', 'rdc', 'rcd', 'dvel', 'eqf', 'sreg', 'dfric', 'eqlen', 'fitl', 'tpl', 'dar', 'dsheet', 'insul', 'hanger', 'dins', 'ductd', 'diff',
     'fexh', 'fsup', 'ffa', 'fsp', 'ftp', 'fpow', 'feff', 'fop',
     'sdiff', 'rgrille', 'egrille', 'louv', 'fvel', 'farea', 'ndiff', 'cfmd', 'tsd',
-    'elec', 'pls', 'vdrop', 'cable', 'gen', 'pfc', 'light', 'pipe', 'tank', 'hwheat', 'booster', 'wsfu', 'sprinkler', 'sprhyd', 'firepump', 'hazen', 'hydrant', 'drain', 'dfu', 'septic', 'roofdrain'];
+    'elec', 'pls', 'ecost', 'vdrop', 'cable', 'gen', 'pfc', 'light', 'pipe', 'tank', 'hwheat', 'booster', 'wsfu', 'sprinkler', 'sprhyd', 'firepump', 'hazen', 'hydrant', 'drain', 'dfu', 'septic', 'roofdrain'];
   var statCalcs = document.getElementById('stat-calcs');
   if (statCalcs) statCalcs.textContent = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).length;
   var cardIds = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).sort(function (a, b) {
@@ -5038,6 +5286,9 @@ body.modal-open .cv { visibility: hidden; }
     eqlen:     ['Le = C·D / f', 'Equivalent-length method from loss coefficients; typical C values (ASHRAE Duct Fitting Database gives exact values).', 'method'],
     fitl:      ['Loss = Σ n·C·Pv', 'ASHRAE Handbook—Fundamentals Ch. 21; typical coefficients — ASHRAE Duct Fitting Database for exact values.', 'typical'],
     tpl:       ['Friction + ΣC·Pv + components, plus margin', 'ASHRAE Handbook—Fundamentals Ch. 21 (system pressure); component drops from manufacturer data.', 'method'],
+    dsheet:    ['Area = 2(W + H) × L × (1 + waste); sheets = area / sheet; weight = area × t × 7.85', 'SMACNA HVAC Duct Construction Standards (gauge by size and pressure class, seams and joints); galvanised steel density 7,850 kg/m³.', 'typical'],
+    insul:     ['Area = (2(W + H) + 8t) × L or π(OD + 2t) × L; adhesive 1 L / 4 m²; tape at joints + seam', 'Manufacturer installation guides (fiberglass wrap / board, elastomeric foam); SMACNA HVAC Duct Construction Standards; ASHRAE 90.1 Section 6.4.4 insulation.', 'typical'],
+    hanger:    ['Hangers = ⌈L/S⌉ + 1 + extra; load per rod = (sheet + insulation) × S × 1.5 / 2; rod and angle by load and width', 'SMACNA HVAC Duct Construction Standards Ch. 5 (hangers and supports — spacing, rod and trapeze sizes); anchor ratings by the manufacturer.', 'typical'],
     dar:       ['AR = long / short side; alternatives at equal De', 'Huebscher equivalent diameter; 4 : 1 limit is common practice (SMACNA).', 'method'],
     dins:      ['Insulation R from surface temperature ≥ dew point + 1 K; energy minimum by location', 'ASHRAE Handbook—Fundamentals Ch. 23 (insulation for mechanical systems); ASHRAE 90.1 duct insulation table (approximate R-values).', 'method'],
     oa:        ['Vbz = Rp·Pz + Ra·Az — people, area or combined', 'ANSI/ASHRAE Standard 62.1 Ventilation Rate Procedure, Table 6-1 (rates and default occupant density). Local codes may differ.', 'standard'],
@@ -5050,12 +5301,14 @@ body.modal-open .cv { visibility: hidden; }
     vcmp:      ['Designed / required with tolerance bands', 'Your project criteria; required values from ASHRAE 62.1, 62.2 or the local code.', 'method'],
     chw:       ['Q = P/(ρ·cp·ΔT); Darcy–Weisbach (Swamee–Jain f); smallest size within velocity and friction limits', 'ASHRAE Handbook—Fundamentals Ch. 22 (Pipe Sizing) and HVAC Systems & Equipment (hydronic systems). Pipe IDs: ASME B36.10 Sch. 40, ASTM B88 Type L, PPR PN20.', 'method'],
     pump:      ['H = Σ losses × (1 + margin); P = Q·Δp/η; motor ≥ 1.15 × shaft', 'ASHRAE Handbook—HVAC Systems & Equipment Ch. 44 (centrifugal pumps); Hydraulic Institute standards.', 'method'],
+    chwins:    ['Area = π(OD + 2t) × L; tubes = L / 2 m; adhesive 1 L / 4 m²; tape at joints + seam', 'Manufacturer data for closed-cell elastomeric / phenolic pipe insulation; ASHRAE 90.1 Table 6.8.3 (minimum pipe insulation); ASHRAE Fundamentals Ch. 23 (condensation control).', 'typical'],
     refpipe:   ['Line sizes from typical manufacturer tables; extra charge by liquid-line length; traps every ~6 m of suction rise', 'Manufacturer installation manuals (Daikin, Mitsubishi Electric, Carrier) for R410A / R32; ASHRAE Handbook—Refrigeration Ch. 1 (refrigerant piping, oil return).', 'typical'],
     gen:       ['S = P/pf × (1 + future); transformer ≥ S / loading; generator ≥ S/0.8 and ≥ motor-start kVA / 1.5', 'IEEE 446 (emergency and standby power), NFPA 110; IEC 60076 / ANSI C57 preferred ratings; PEC 2017 Art. 7.0 (emergency systems). Motor-start pick-up typical.', 'typical'],
     pfc:       ['Q = P (tan φ₁ − tan φ₂); conductors and breaker 135 % of capacitor current', 'NEC 460.8 / PEC 2017 Art. 4.60 (capacitors); IEEE 18; IEC 60831.', 'method'],
     hwheat:    ['Peak-hour demand vs 70 % usable storage + recovery; P = recovery × cp × ΔT / η', 'ASHRAE Handbook—HVAC Applications Ch. 51 (service water heating); CIBSE Guide G; Legionella control per ASHRAE 188.', 'method'],
     booster:   ['Cut-in = static + friction + fixture minimum; tank = drawdown / acceptance factor', 'ASPE Plumbing Engineering Design Handbook Vol. 2 (booster systems); IPC 604 / NPCP fixture pressures; Hydraulic Institute.', 'method'],
     sprhyd:    ['q = K√p head by head; Hazen–Williams C = 120; 1.2√A heads per branch; +20 % fittings', 'NFPA 13 (2022) Ch. 19 (design approaches), Ch. 28 (hydraulic calculations); Hazen–Williams per NFPA 13 §28.2.2.', 'method'],
+    ecost:     ['kWh/day = W × hours × units / 1000; cost = kWh × rate; month = 30 days; year = 12 months', 'Arithmetic estimate; appliance wattages are typical nameplate / measured values — use the label or a plug-in meter for your unit. Inverter units vary with load.', 'typical'],
     pls:       ['I = VA / V (1-pole, 2-pole) or VA / (√3·V) (3-pole); breaker ≥ 1.25 × I; demand: receptacles 10 kVA + 50 % of the rest, motors + 25 % of the largest', 'PEC 2017 Art. 2.10, 2.15, 2.20 (load calculations), 2.40 (standard ratings), Table 3.10.1.16; NEC 210.19–210.20, 215.2–215.3, 220.42–220.50, 240.6, Table 310.16. Metric conductor ampacities interpolated — confirm with PEC.', 'method'],
     cable:     ['Iz = I_table × Ct × Cg ≥ design current; voltage drop k·I·L·ρ/A', 'NEC Table 310.16, 310.15(B)/(C), 240.4(D), 110.14(C). Metric sizes interpolated — confirm with PEC 2017 Table 3.10.1.16, AS/NZS 3008.1.1 or IEC 60364-5-52.', 'method'],
     light:     ['N = E·A/(Φ·UF·MF); RI = L·W/(Hm·(L+W))', 'Lumen method — SLL Code for Lighting, IES Lighting Handbook; illuminance targets EN 12464-1. UF values typical for recessed LED panels.', 'typical'],
@@ -5171,7 +5424,7 @@ body.modal-open .cv { visibility: hidden; }
     ductd: 'duct design gauge smacna insulation kitchen exhaust hood grease supply return fresh air', diff: 'diffuser grille throw adpi nc layout ceiling register',
     fexh: 'exhaust fan selection kitchen hood toilet smoke car park', fsup: 'supply fan ahu sfp', ffa: 'fresh air fan', fsp: 'fan static pressure esp', ftp: 'fan total pressure',
     fpow: 'fan power motor hp kw bhp brake horsepower', feff: 'fan efficiency', fop: 'fan curve system curve operating point',
-    refpipe: 'refrigerant pipe size liquid suction gas line copper vrf split charge', gen: 'generator genset transformer kva standby motor start', pfc: 'power factor correction capacitor kvar bank', hwheat: 'water heater hot water storage tank recovery', booster: 'booster pump pressure tank hydropneumatic bladder', sprhyd: 'sprinkler hydraulic calculation remote area hazen williams',     pls: 'panel load schedule panelboard board circuits breaker phase balancing demand feeder', elec: 'electrical load amps current demand factor panel', vdrop: 'voltage drop cable wire size conductor',
+    refpipe: 'refrigerant pipe size liquid suction gas line copper vrf split charge', gen: 'generator genset transformer kva standby motor start', pfc: 'power factor correction capacitor kvar bank', hwheat: 'water heater hot water storage tank recovery', booster: 'booster pump pressure tank hydropneumatic bladder', sprhyd: 'sprinkler hydraulic calculation remote area hazen williams',     ecost: 'appliance energy cost electricity bill kwh consumption rate aircon refrigerator meralco',     pls: 'panel load schedule panelboard board circuits breaker phase balancing demand feeder', elec: 'electrical load amps current demand factor panel', vdrop: 'voltage drop cable wire size conductor',
     pipe: 'pipe pressure drop water reynolds velocity', tank: 'water tank storage demand pump cistern',
     sprinkler: 'sprinkler nfpa 13 fire heads density', firepump: 'fire pump nfpa 20', hazen: 'hazen williams friction fire pipe',
     hydrant: 'hydrant flow test nfpa 291 water supply', drain: 'drain sewer manning slope pipe capacity', dfu: 'fixture units dfu ipc pipe size toilet',
@@ -6311,7 +6564,7 @@ body.modal-open .cv { visibility: hidden; }
         return;
       }
       html += '<div class="field"><label for="' + fid + '">' + labelHtml(f.label) + '</label>' +
-        '<div class="input-wrap"><input id="' + fid + '" data-k="' + f.k + '" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" ' +
+        '<div class="input-wrap"><input id="' + fid + '" data-k="' + f.k + '" type="text" inputmode="' + (f.text ? 'text' : 'decimal') + '" autocomplete="off" spellcheck="false" ' +
         'aria-describedby="' + fid + '-u" value="' + esc(vals[id][f.k]) + '">' +
         unitCtl(f.q, fid + '-u', unitOf(f), f.label) + '</div></div>';
     });
@@ -6338,6 +6591,7 @@ body.modal-open .cv { visibility: hidden; }
     ensureVals(id);
     d.fields.forEach(function (f) {
       if (f.opts) { v[f.k] = vals[id][f.k]; return; }
+      if (f.text) { v[f.k] = String(vals[id][f.k] == null ? '' : vals[id][f.k]).trim(); return; }   // free text, e.g. a currency symbol
       var x = num(vals[id][f.k]);
       var ok = x !== null && (f.neg || (f.zero ? x >= 0 : x > 0));
       if (ok && f.max != null && x > f.max) { ok = false; msg = f.maxMsg; }
@@ -8457,6 +8711,103 @@ body.modal-open .cv { visibility: hidden; }
     rpOpen(html);
   }
 
+  /* ---------- Appliance energy cost: rate × kWh per appliance, any currency ---------- */
+  var EC_APPS = [
+    ['Aircon', 'Inverter', 650, 'W', 8], ['Refrigerator', 'Inverter', 122, 'W', 24], ['Electric fan', 'Standard', 60, 'W', 8], ['LED TV', 'Standard', 80, 'W', 5],
+    ['LED bulb', 'LED', 9, 'W', 6], ['Washing machine', 'Standard', 500, 'W', 1], ['Rice cooker', 'Standard', 600, 'W', 1], ['Electric kettle', 'Standard', 2000, 'W', 0.3],
+    ['Water heater (shower)', 'Standard', 3500, 'W', 0.5], ['Microwave oven', 'Standard', 1100, 'W', 0.3], ['Flat iron', 'Standard', 1000, 'W', 0.5],
+    ['Desktop computer', 'Standard', 150, 'W', 8], ['Laptop', 'Standard', 50, 'W', 8], ['Water pump', 'Standard', 0.75, 'hp', 2], ['Other', 'Standard', 100, 'W', 1]
+  ];
+  var EC_TECH = ['Inverter', 'Non-inverter', 'Standard', 'LED'];
+  var EC_KEY = 'mechtoolbox-ecost', ecBound = false;
+  var ecId = function () { return Math.random().toString(36).slice(2, 9); };
+  var ecRow = function (i) { var a = EC_APPS[i]; return { id: ecId(), app: a[0], tech: a[1], p: a[2], u: a[3], hrs: a[4], n: 1 }; };
+  var EC = null;
+  function ecInit() {   // on first open: the currency defaults are defined further down the page
+    if (EC) return;
+    try { EC = JSON.parse(localStorage.getItem(EC_KEY) || 'null'); } catch (e) {}
+    if (!EC || !Array.isArray(EC.rows)) EC = { rate: codeBasis === 'ph' ? 14 : codeBasis === 'au' ? 0.32 : codeBasis === 'us' ? 0.17 : 0.2, cur: BOQ_DEF_CUR[codeBasis] || '', rows: [ecRow(0), ecRow(1), ecRow(2)] };
+  }
+  var ecSave = function () { try { localStorage.setItem(EC_KEY, JSON.stringify(EC)); } catch (e) {} };
+  // Inverter aircons modulate down once the room is cool: average draw ≈ 60 % of rated input (non-inverter runs at full input while on).
+  var ecF = function (r) { return /^Aircon/.test(r.app) && r.tech === 'Inverter' ? 0.6 : 1; };
+  var ecW = function (r) { var p = esNum(r.p); return r.u === 'kW' ? p * 1000 : r.u === 'hp' ? p * 745.7 : p; };
+  function ecCalc() {
+    var rate = esNum(EC.rate), tot = { kwh: 0, n: 0 };
+    var rows = EC.rows.map(function (r) { var kwh = ecW(r) * ecF(r) * esNum(r.hrs) * Math.max(0, esNum(r.n)) / 1000; tot.kwh += kwh; tot.n += Math.max(0, esNum(r.n)); return { r: r, kwh: kwh, day: kwh * rate }; });
+    tot.day = tot.kwh * rate;
+    return { rate: rate, rows: rows, tot: tot };
+  }
+  var ecMoney = function (x) { return (EC.cur ? EC.cur + ' ' : '') + n2(x); };
+  function ecTableHtml() {
+    var R = ecCalc();
+    return '<div class="table-wrap boq-table ec-table"><table><thead><tr><th>Appliance</th><th>Units</th><th>Usage per day</th><th>Energy per day</th><th>Cost per day</th><th>Cost per month</th><th>Cost per year</th></tr></thead><tbody>' +
+      R.rows.map(function (x) { var r = x.r; return '<tr><td><b>' + esc(r.app) + '</b><span class="ec-sub">' + esc(fmt(esNum(r.p)) + ' ' + r.u + ' · ' + r.tech + (ecF(r) < 1 ? ' × ' + fmt(ecF(r), 2) + ' avg load' : '')) + '</span></td><td class="num">' + fmt(esNum(r.n), 0) + '</td><td class="num">' + fmt(esNum(r.hrs)) + ' h</td><td class="num">' + fmt(x.kwh, 2) + ' kWh</td><td class="num">' + ecMoney(x.day) + '</td><td class="num">' + ecMoney(x.day * 30) + '</td><td class="num">' + ecMoney(x.day * 360) + '</td></tr>'; }).join('') +
+      '</tbody><tfoot><tr class="ec-total"><td>Total</td><td class="num">' + fmt(R.tot.n, 0) + '</td><td></td><td class="num">' + fmt(R.tot.kwh, 2) + ' kWh</td><td class="num">' + ecMoney(R.tot.day) + '</td><td class="num">' + ecMoney(R.tot.day * 30) + '</td><td class="num">' + ecMoney(R.tot.day * 360) + '</td></tr></tfoot></table></div>';
+  }
+  function ecFormHtml() {
+    var opt = function (list, cur) { return list.map(function (o) { return '<option' + (o === cur ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join(''); };
+    return '<div class="ec-rows">' + EC.rows.map(function (r, i) {
+      var f = function (k, extra) { return '<div class="input-wrap"><input type="text" autocomplete="off" data-ec="' + r.id + '" data-k="' + k + '" value="' + esc(r[k]) + '"' + (extra || '') + '></div>'; };
+      return '<div class="ec-row">' +
+        '<div class="field"><label>Appliance</label><div class="input-wrap"><select data-ec="' + r.id + '" data-k="app">' + opt(EC_APPS.map(function (a) { return a[0]; }), r.app) + '</select></div></div>' +
+        '<div class="field"><label>Technology</label><div class="input-wrap"><select data-ec="' + r.id + '" data-k="tech">' + opt(EC_TECH, r.tech) + '</select></div></div>' +
+        '<div class="field ec-pw"><label>Power use</label><div class="ec-pwrow">' + f('p', ' inputmode="decimal" aria-label="Power, ' + esc(r.app) + '"') + '<div class="input-wrap ec-u"><select data-ec="' + r.id + '" data-k="u" aria-label="Power unit">' + opt(['W', 'kW', 'hp'], r.u) + '</select></div></div></div>' +
+        '<div class="field"><label>Hours</label>' + f('hrs', ' inputmode="decimal" aria-label="Hours per day, ' + esc(r.app) + '"') + '</div>' +
+        '<div class="field"><label>Units</label><div class="ec-step"><button type="button" class="icon-btn" data-ecact="minus" data-id="' + r.id + '" aria-label="One fewer">−</button>' + f('n', ' inputmode="numeric" aria-label="Units, ' + esc(r.app) + '"') + '<button type="button" class="icon-btn" data-ecact="plus" data-id="' + r.id + '" aria-label="One more">+</button></div></div>' +
+        '<button type="button" class="pj-icon es-ib ec-del" data-ecact="del" data-id="' + r.id + '" title="Remove appliance" aria-label="Remove ' + esc(r.app) + '">✕</button></div>';
+    }).join('') + '</div><div class="ec-add"><button type="button" class="btn btn-solid" data-ecact="add">+ Add appliance</button><button type="button" class="btn btn-outline" data-ecact="clear">Clear</button></div>';
+  }
+  function ecResults() {
+    var R = ecCalc(), big = R.rows.slice().sort(function (a, b) { return b.day - a.day; })[0];
+    var rows = [
+      ['Energy per day', fmt(R.tot.kwh, 2) + ' kWh', 0, fmt(R.tot.kwh * 30, 1) + ' kWh per month'],
+      ['Cost per month', ecMoney(R.tot.day * 30), 1, ecMoney(R.tot.day) + ' per day at ' + ecMoney(R.rate) + ' per kWh'],
+      ['Cost per year', ecMoney(R.tot.day * 360), 1, '12 months of 30 days'],
+      ['Largest consumer', big ? big.r.app + ' — ' + ecMoney(big.day * 30) + ' / month' : '—', 0, big && R.tot.day > 0 ? fmt(big.day / R.tot.day * 100, 0) + ' % of the bill' : '']
+    ];
+    $('#r-rows').innerHTML = rows.map(function (r) { return '<div' + (r[2] ? ' class="strong"' : '') + '><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + (r[3] ? '<span class="sub">' + esc(r[3]) + '</span>' : '') + '</dd></div>'; }).join('');
+    $('#copy-btn').disabled = false;
+    lastCopy = ['Appliance Energy Cost (rate ' + ecMoney(R.rate) + '/kWh)'].concat(R.rows.map(function (x) { return x.r.app + ' × ' + fmt(esNum(x.r.n), 0) + ', ' + fmt(esNum(x.r.hrs)) + ' h/day: ' + fmt(x.kwh, 2) + ' kWh/day, ' + ecMoney(x.day * 30) + '/month'; }))
+      .concat(rows.map(function (r) { return r[0] + ': ' + r[1]; })).join('\n');
+    $('#ec-tbl').innerHTML = ecTableHtml();
+  }
+  function renderEcost() {
+    ecInit();
+    mBody.innerHTML = '<p class="m-desc">Add your appliances with their power and daily hours of use. The rate is on your electric bill (total charges ÷ kWh used gives an all-in rate). Type any currency.</p>' +
+      '<form class="fields ec-top" novalidate><div class="field"><label for="ec-rate">Electricity rate (per kWh)</label><div class="input-wrap"><input id="ec-rate" data-ecf="rate" type="text" inputmode="decimal" autocomplete="off" value="' + esc(EC.rate) + '"><span class="unit">/ kWh</span></div></div>' +
+      '<div class="field"><label for="ec-cur">Currency</label><div class="input-wrap"><input id="ec-cur" data-ecf="cur" type="text" autocomplete="off" list="ec-curs" value="' + esc(EC.cur) + '" placeholder="₱, $, €, PHP…"></div><datalist id="ec-curs"><option value="₱"><option value="$"><option value="A$"><option value="€"><option value="£"><option value="¥"><option value="₹"><option value="RM"><option value="S$"><option value="AED"></datalist></div></form>' +
+      '<div id="ec-form">' + ecFormHtml() + '</div>' +
+      '<section class="result" aria-labelledby="r-title">' + copyBlock() + '<div class="result-box"><div aria-live="polite"><dl class="rows" id="r-rows"></dl><p class="err" id="r-err" hidden></p></div></div>' +
+      '<h3 class="ec-h">Your estimated consumption cost</h3><div id="ec-tbl"></div>' + refLine('ecost') + '</section>';
+    ecResults();
+    $('form.ec-top', mBody).addEventListener('submit', function (e) { e.preventDefault(); });
+    $('form.ec-top', mBody).addEventListener('input', function (e) { var k = e.target.dataset.ecf; if (!k) return; EC[k] = e.target.value; ecSave(); ecResults(); });
+    var form = $('#ec-form');
+    var find = function (id) { return EC.rows.filter(function (r) { return r.id === id; })[0]; };
+    form.addEventListener('input', function (e) { var t = e.target, r = t.dataset.ec && find(t.dataset.ec); if (!r || t.tagName === 'SELECT') return; r[t.dataset.k] = t.value; ecSave(); ecResults(); });
+    form.addEventListener('change', function (e) {
+      var t = e.target, r = t.dataset.ec && find(t.dataset.ec); if (!r || t.tagName !== 'SELECT') return;
+      r[t.dataset.k] = t.value;
+      if (t.dataset.k === 'app') { var a = EC_APPS.filter(function (x) { return x[0] === t.value; })[0]; if (a) { r.tech = a[1]; r.p = a[2]; r.u = a[3]; r.hrs = a[4]; } form.innerHTML = ecFormHtml(); }
+      ecSave(); ecResults();
+    });
+    if (ecBound) return; ecBound = true;   // one handler for the buttons, however often the modal re-renders
+    mBody.addEventListener('click', function (e) {
+      if (current !== 'ecost') return;
+      var b = e.target.closest('[data-ecact]'); if (!b) return;
+      var act = b.dataset.ecact, r = EC.rows.filter(function (x) { return x.id === b.dataset.id; })[0], focusId = null;
+      if (act === 'add') { var nr = ecRow(EC_APPS.length - 1); EC.rows.push(nr); focusId = nr.id; }
+      else if (act === 'clear') { if (!window.confirm('Remove all appliances?')) return; EC.rows = [ecRow(EC_APPS.length - 1)]; }
+      else if (act === 'del' && r) EC.rows = EC.rows.filter(function (x) { return x !== r; });
+      else if (act === 'plus' && r) r.n = Math.max(0, esNum(r.n)) + 1;
+      else if (act === 'minus' && r) r.n = Math.max(0, esNum(r.n) - 1);
+      else return;
+      ecSave(); $('#ec-form').innerHTML = ecFormHtml(); ecResults();
+      if (focusId) { var s = $('#ec-form [data-ec="' + focusId + '"][data-k="app"]'); if (s) s.focus(); }
+    });
+  }
+
   var SPECIAL = {
     diff:  { code: CALCS.diff.code, title: 'Diffuser Selection & Layout', render: renderDF, sys: true },
     ductd: { code: CALCS.ductd.code, title: 'HVAC Duct Designer', render: renderDD, sys: true },
@@ -8465,7 +8816,8 @@ body.modal-open .cv { visibility: hidden; }
     ref:  { code: 'UTIL / HVAC', title: 'MEP References', render: renderRef, sys: false },
     pcl:  { code: CALCS.pcl.code, title: 'Precise Cooling Load', render: renderCL, sys: true },
     psy:  { code: CALCS.psy.code, title: 'Psychrometric Chart', render: renderPsy, sys: true },
-    pls:  { code: CALCS.pls.code, title: 'Panel Load Schedule', render: renderPls, sys: true }
+    pls:  { code: CALCS.pls.code, title: 'Panel Load Schedule', render: renderPls, sys: true },
+    ecost: { code: CALCS.ecost.code, title: 'Appliance Energy Cost', render: renderEcost, sys: false }
   };
 
   function render(id) {
@@ -8473,7 +8825,7 @@ body.modal-open .cv { visibility: hidden; }
     $('#m-code').textContent = d.code;
     $('#m-title').textContent = d.title;
     $('#m-sys').hidden = !!sp && !sp.sys;
-    modal.classList.toggle('wide', id === 'pcl' || id === 'phl' || id === 'ductd' || id === 'diff' || id === 'psy' || id === 'pls');
+    modal.classList.toggle('wide', id === 'pcl' || id === 'phl' || id === 'ductd' || id === 'diff' || id === 'psy' || id === 'pls' || id === 'ecost');
     $('#m-close').setAttribute('aria-label', 'Close ' + d.title);
     if (sp) sp.render(); else renderCalc(id);
   }
@@ -10854,6 +11206,42 @@ body.modal-open .cv { visibility: hidden; }
       try { localStorage.setItem('mechtoolbox-loc', JSON.stringify(cpLoc)); } catch (e) {}
       cpSun(); cpClock();
     }, function () { $('#cp-loc').textContent = 'Location blocked — using ' + (CP_CITIES[codeBasis] || CP_CITIES.intl)[0]; }, { maximumAge: 600000, timeout: 10000 });
+  });
+  // Altimeter: GPS altitude where the device gives one; otherwise ground elevation for the position (Open-Meteo, on request).
+  var cpAltM = null;
+  try { var alt0 = JSON.parse(localStorage.getItem('mechtoolbox-alt') || 'null'); if (alt0 && typeof alt0.m === 'number') { cpAltM = alt0.m; } } catch (e) {}
+  function cpAltShow(m, src) {
+    cpAltM = m;
+    var p = 101.325 * Math.pow(1 - 2.25577e-5 * m, 5.2559);
+    $('#cp-alt').textContent = sys === 'si' ? fmt(m, 0) + ' m' : fmt(m / 0.3048, 0) + ' ft';
+    $('#cp-alt-src').textContent = src + ' · air pressure ≈ ' + (sys === 'si' ? fmt(p, 1) + ' kPa' : fmt(p * 0.2953, 2) + ' inHg') + ' (standard atmosphere)';
+    $('#cp-alt-psy').hidden = false;
+    try { localStorage.setItem('mechtoolbox-alt', JSON.stringify({ m: m, src: src })); } catch (e) {}
+  }
+  try { var alt1 = JSON.parse(localStorage.getItem('mechtoolbox-alt') || 'null'); if (alt1 && typeof alt1.m === 'number') cpAltShow(alt1.m, alt1.src + ' (last reading)'); } catch (e) {}
+  $('#cp-alt-btn').addEventListener('click', function () {
+    var src = $('#cp-alt-src');
+    if (!navigator.geolocation) { src.textContent = 'Location is not available in this browser.'; return; }
+    src.textContent = 'Getting your position…';
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      var c = pos.coords;
+      cpLoc = ['You', c.latitude, c.longitude];
+      try { localStorage.setItem('mechtoolbox-loc', JSON.stringify(cpLoc)); } catch (e) {}
+      cpSun();
+      if (typeof c.altitude === 'number' && isFinite(c.altitude)) { cpAltShow(c.altitude, 'GPS' + (c.altitudeAccuracy ? ' ±' + (sys === 'si' ? fmt(c.altitudeAccuracy, 0) + ' m' : fmt(c.altitudeAccuracy / 0.3048, 0) + ' ft') : '')); return; }
+      src.textContent = 'No GPS altitude on this device — looking up the ground elevation…';
+      fetch('https://api.open-meteo.com/v1/elevation?latitude=' + c.latitude.toFixed(4) + '&longitude=' + c.longitude.toFixed(4))
+        .then(function (r) { return r.json(); })
+        .then(function (j) { var e = j && j.elevation && j.elevation[0]; if (typeof e === 'number') cpAltShow(e, 'ground elevation (Open-Meteo, 90 m map data)'); else src.textContent = 'Elevation lookup gave no result.'; })
+        .catch(function () { src.textContent = 'Could not reach the elevation service — check the connection.'; });
+    }, function () { src.textContent = 'Location was blocked — allow it to measure the altitude.'; }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  });
+  $('#cp-alt-psy').addEventListener('click', function () {
+    if (cpAltM == null) return;
+    psy.alt = Math.max(0, cpAltM);
+    try { localStorage.setItem('mechtoolbox-psy', JSON.stringify(psy)); } catch (e) {}
+    cpToggle(false);
+    openModal('psy', cpBtn);
   });
   function cpToggle(open) {
     cpPanel.hidden = !open;

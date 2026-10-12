@@ -75,3 +75,17 @@ test('floating converter converts as you type and lists constants', async ({ pag
   await expect(page.locator('#cv-panel')).toBeHidden()
   expect(errors).toEqual([])
 })
+
+test('altimeter falls back to ground elevation and feeds the psychrometric chart', async ({ page, context }) => {
+  const errors = await openSite(page)
+  await context.grantPermissions(['geolocation'])
+  await context.setGeolocation({ latitude: 16.4023, longitude: 120.596 })          // Baguio — no GPS altitude in the browser
+  await page.route('**/api.open-meteo.com/**', (r) => r.fulfill({ contentType: 'application/json', body: '{"elevation":[1500]}' }))
+  await page.locator('#cp-btn').click()
+  await page.locator('#cp-alt-btn').click()
+  await expect(page.locator('#cp-alt')).toHaveText('1,500 m')
+  await expect(page.locator('#cp-alt-src')).toContainText('84.6 kPa')
+  await page.locator('#cp-alt-psy').click()
+  await expect(page.locator('#psy-alt')).toHaveValue('1500')
+  expect(errors).toEqual([])
+})
