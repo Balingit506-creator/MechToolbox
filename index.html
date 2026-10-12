@@ -2483,6 +2483,13 @@ body.modal-open .dock-tab { visibility: hidden; }
     refcycle: '<path d="M40 20h80v50H40z" class="ink-m"/><path d="M40 20h80" class="ink"/><path d="M40 70h80" class="ink a-march"/><circle cx="120" cy="45" r="8" class="ink"/><text x="22" y="86" class="ink-t">COP · EER</text>',
     shsc: '<circle cx="50" cy="44" r="22" class="ink"/><circle cx="110" cy="44" r="22" class="ink"/><path d="M50 44l10-12M110 44l-8-14" class="ink a-flicker"/><text x="36" y="84" class="ink-t">SH · SC</text>',
     ctower: '<path d="M50 74L58 22h44l8 52z" class="ink"/><path d="M62 30h36M60 44h40" class="ink-m a-march"/><path d="M70 14c2-6 6-6 8 0M84 14c2-6 6-6 8 0" class="ink-m a-flicker"/>',
+    expt: '<rect x="56" y="16" width="48" height="60" rx="20" class="ink"/><path d="M58 46h44" class="ink-m a-flicker"/><path d="M80 76v10M40 86h80" class="ink-m a-march"/><text x="110" y="30" class="ink-t">ΔV</text>',
+    cond: '<rect x="30" y="16" width="100" height="26" rx="2" class="ink"/><path d="M60 42v24c0 10 16 10 16 0v-10" class="ink a-march"/><path d="M76 56h50" class="ink-m"/><circle cx="68" cy="50" r="2" class="ink a-flicker"/>',
+    pmv: '<circle cx="50" cy="44" r="10" class="ink"/><path d="M38 80c2-20 22-20 24 0" class="ink"/><path d="M90 30h50M90 44h40M90 58h30" class="ink-m"/><text x="92" y="82" class="ink-t">PMV ±0.5</text>',
+    erv: '<rect x="56" y="18" width="48" height="54" class="ink"/><path d="M56 18l48 54M104 18L56 72" class="ink-m"/><path d="M14 30h42M104 60h42" class="ink a-march"/><path d="M146 30h-42M56 60H14" class="ink-m a-march"/>',
+    carpark: '<rect x="16" y="20" width="128" height="56" class="ink-m"/><rect x="34" y="50" width="30" height="14" rx="4" class="ink"/><rect x="92" y="50" width="30" height="14" rx="4" class="ink"/><path d="M40 32h30M90 32h30" class="ink a-march"/>',
+    stairp: '<path d="M30 80h20v-14h20v-14h20v-14h20v-14h20" class="ink"/><path d="M140 18v62" class="ink-m"/><path d="M146 30h-14M146 50h-14" class="ink a-march"/><text x="20" y="20" class="ink-t">+50 Pa</text>',
+    leak: '<rect x="20" y="30" width="120" height="30" class="ink"/><path d="M60 30v-8M100 60v8" class="ink-m a-flicker"/><circle cx="140" cy="45" r="10" class="ink-m"/><text x="22" y="84" class="ink-t">CL · P^0.65</text>',
     refpipe: '<rect x="14" y="30" width="34" height="30" rx="3" class="ink"/><rect x="112" y="24" width="34" height="42" rx="3" class="ink"/><circle cx="129" cy="45" r="11" class="ink-m"/>' +
       '<path d="M48 38H112M48 52H112" class="ink a-march"/><text x="56" y="32" class="ink-t">⌀ gas</text><text x="56" y="66" class="ink-t">⌀ liquid</text>',
     gen: '<rect x="20" y="30" width="62" height="36" rx="4" class="ink"/><circle cx="40" cy="48" r="9" class="ink a-flicker"/><path d="M58 40h16M58 48h16M58 56h16" class="ink-m"/>' +
@@ -2975,6 +2982,22 @@ body.modal-open .dock-tab { visibility: hidden; }
       ['Design check', v.run <= 20 ? STATUS.pass : STATUS.warn, 1, v.run <= 20 ? 'run time leaves time for defrost' : 'over 20 h/day leaves little time for defrost — size for 16–18 h']
     ];
     return { rows: rows, wall: wall, prod: prod, inf: inf, other: ppl + lights + fans, total: total };
+  }
+  // Water density (kg/m³), Tanaka et al. fit, 0–100 °C.
+  // Temperature text from °C in the active units (fq() has no offset for °F).
+  function tTxtC(c) { return sys === 'si' ? fmt(c, 1) + ' °C' : fmt(c * 9 / 5 + 32, 1) + ' °F'; }
+  function rhoW(t) { return 1000 * (1 - (t + 288.9414) / (508929.2 * (t + 68.12963)) * Math.pow(t - 3.9863, 2)); }
+  // PMV / PPD — ISO 7730 Annex D algorithm (ta, tr in °C, vel m/s, rh %, met, clo).
+  function pmvCalc(ta, tr, vel, rh, met, clo) {
+    var pa = rh * 10 * Math.exp(16.6536 - 4030.183 / (ta + 235)), icl = 0.155 * clo, m = met * 58.15, mw = m;
+    var fcl = icl <= 0.078 ? 1 + 1.29 * icl : 1.05 + 0.645 * icl, hcf = 12.1 * Math.sqrt(vel), taa = ta + 273, tra = tr + 273;
+    var tcla = taa + (35.5 - ta) / (3.5 * icl + 0.1), p1 = icl * fcl, p2 = p1 * 3.96, p3 = p1 * 100, p4 = p1 * taa, p5 = 308.7 - 0.028 * mw + p2 * Math.pow(tra / 100, 4);
+    var xn = tcla / 100, xf = tcla / 50, n = 0, hc = hcf;
+    while (Math.abs(xn - xf) > 0.00015 && n < 150) { xf = (xf + xn) / 2; var hcn = 2.38 * Math.pow(Math.abs(100 * xf - taa), 0.25); hc = hcf > hcn ? hcf : hcn; xn = (p5 + p4 * hc - p2 * Math.pow(xf, 4)) / (100 + p3 * hc); n++; }
+    var tcl = 100 * xn - 273, hl1 = 3.05e-3 * (5733 - 6.99 * mw - pa), hl2 = mw > 58.15 ? 0.42 * (mw - 58.15) : 0, hl3 = 1.7e-5 * m * (5867 - pa), hl4 = 0.0014 * m * (34 - ta);
+    var hl5 = 3.96 * fcl * (Math.pow(xn, 4) - Math.pow(tra / 100, 4)), hl6 = fcl * hc * (tcl - ta), ts = 0.303 * Math.exp(-0.036 * m) + 0.028;
+    var pmv = ts * (mw - hl1 - hl2 - hl3 - hl4 - hl5 - hl6);
+    return { pmv: pmv, ppd: 100 - 95 * Math.exp(-0.03353 * Math.pow(pmv, 4) - 0.2179 * pmv * pmv), tcl: tcl };
   }
   function chwSize(v) {
     var M = PIPE_MATS[v.mat], q = v.p / (CHW_CP * v.dt * CHW_RHO), pick = null, k;
@@ -3980,6 +4003,93 @@ body.modal-open .dock-tab { visibility: hidden; }
       note: 'Ez values from ASHRAE 62.1 Table 6-2. "Warm air" means supply warmer than the space (heating mode); check both heating and cooling modes and use the lower Ez.'
     },
 
+    erv: {
+      code: 'VENT / 021', title: 'ERV / Heat Recovery Payback', card: true, disc: 'M',
+      desc: 'Energy recovered from exhaust air on the outdoor-air stream — kW, TR, kWh a year, money saved and payback in any currency.',
+      fields: [
+        { k: 'q', label: 'Outdoor airflow', q: 'air', def: [3600, 2120] },
+        { k: 'to', label: 'Outdoor temperature', q: 'tc', def: [33, 91] },
+        { k: 'ro', label: 'Outdoor relative humidity', unit: '%', def: [65, 65], max: 100, maxMsg: 'Relative humidity must be 100 % or less.' },
+        { k: 'ti', label: 'Indoor temperature', q: 'tc', def: [24, 75] },
+        { k: 'ri', label: 'Indoor relative humidity', unit: '%', def: [55, 55], max: 100, maxMsg: 'Relative humidity must be 100 % or less.' },
+        { k: 'eff', label: 'Total (enthalpy) effectiveness', unit: '%', def: [60, 60], max: 100, maxMsg: 'Effectiveness must be 100 % or less.' },
+        { k: 'hrs', label: 'Operating hours per year', unit: 'h/yr', def: [3000, 3000] },
+        { k: 'cop', label: 'Cooling plant COP', unit: '', def: [3.5, 3.5] },
+        { k: 'fan', label: 'Extra fan power', unit: 'W', def: [400, 400], zero: true },
+        { k: 'cur', label: 'Currency', opts: [['₱', '₱  Philippine peso (PHP)'], ['$', '$  US dollar (USD)'], ['€', '€  Euro (EUR)'], ['£', '£  British pound (GBP)'], ['A$', 'A$  Australian dollar (AUD)'], ['C$', 'C$  Canadian dollar (CAD)'], ['S$', 'S$  Singapore dollar (SGD)'], ['¥', '¥  Japanese yen (JPY)'], ['CN¥', '¥  Chinese yuan (CNY)'], ['₩', '₩  Korean won (KRW)'], ['₹', '₹  Indian rupee (INR)'], ['RM', 'RM  Malaysian ringgit (MYR)'], ['Rp', 'Rp  Indonesian rupiah (IDR)'], ['฿', '฿  Thai baht (THB)'], ['₫', '₫  Vietnamese dong (VND)'], ['AED', 'AED  UAE dirham'], ['SAR', 'SAR  Saudi riyal'], ['QAR', 'QAR  Qatari riyal']], def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
+        { k: 'rate', label: 'Electricity rate', unit: 'per kWh', def: [12, 0.15], zero: true },
+        { k: 'cost', label: 'ERV installed cost', unit: 'total', def: [0, 0], zero: true }
+      ],
+      formula: function () { return ['Recovered = ṁ × ε × (h_out − h_in)', 'Electricity saved = recovered / COP − extra fan power', 'Payback = installed cost / yearly saving']; },
+      calc: function (v) {
+        var p = 101325, ho = 1.006 * v.to + wFromRH(v.to, v.ro / 100, p) * (2501 + 1.86 * v.to), hi = 1.006 * v.ti + wFromRH(v.ti, v.ri / 100, p) * (2501 + 1.86 * v.ti);
+        var md = v.q * 1.2, rec = md * v.eff / 100 * Math.max(0, ho - hi), elec = rec / v.cop - v.fan / 1000, kwh = elec * v.hrs, save = kwh * v.rate;
+        var c = v.cur ? v.cur + ' ' : '', pb = save > 0 && v.cost > 0 ? v.cost / save : null;
+        return [
+          ['Cooling recovered', fq(rec, 'power'), 1, fmt(rec / 3.51685, 2) + ' TR at design · Δh ' + fmt(ho - hi, 1) + ' kJ/kg'],
+          ['Electricity saved', fmt(Math.max(kwh, 0), 0) + ' kWh / year', 0, fmt(elec, 2) + ' kW net of ' + fmt(v.fan, 0) + ' W extra fan power'],
+          ['Money saved', save > 0 ? c + n2(save) + ' / year' : 'enter the electricity rate', 1, save > 0 ? c + n2(save / 12) + ' per month' : ''],
+          ['Simple payback', pb ? fmt(pb, 1) + ' years' : 'enter the installed cost', 1, pb ? 'installed cost ' + c + n2(v.cost) : ''],
+          ['Design check', elec > 0 ? (pb == null || pb <= 5 ? STATUS.pass : STATUS.warn) : STATUS.warn, 1, elec <= 0 ? 'fan power exceeds the energy recovered — not worth it at these conditions' : pb && pb > 5 ? 'payback over 5 years — check hours, airflow and price' : 'saves energy at these conditions']
+        ];
+      },
+      note: 'Design-day estimate scaled by operating hours; real savings vary with the weather — use a bin or hourly analysis for the final business case. Humid tropical climates gain most from total-energy (enthalpy) wheels or plates. ASHRAE 90.1 §6.5.6.1 requires energy recovery for larger outdoor-air systems.'
+    },
+
+    carpark: {
+      code: 'VENT / 022', title: 'Car Park Ventilation', card: true, disc: 'M',
+      desc: 'Enclosed car park exhaust by air changes and by floor area, fire-mode rate, jet fans and CO sensors.',
+      fields: [
+        { k: 'a', label: 'Floor area', q: 'area', def: [2500, 27000] },
+        { k: 'hh', label: 'Clear height', q: 'len', def: [3, 10] },
+        { k: 'ach', label: 'Normal air changes', unit: '/h', def: [6, 6] },
+        { k: 'fire', label: 'Fire-mode air changes', unit: '/h', def: [10, 10] },
+        { k: 'jf', label: 'Area served per jet fan', q: 'area', def: [600, 6500] }
+      ],
+      formula: function () { return ['Normal = max(ACH × volume, 3.75 L/s·m² × area)   (IMC 404: 0.75 CFM/ft²)', 'Fire mode = fire ACH × volume', 'Jet fans = area ÷ area per fan;  CO sensors ≈ 1 per 400 m² (4,300 ft²)']; },
+      calc: function (v) {
+        var vol = v.a * v.hh, byAch = vol * v.ach / 3600, byArea = v.a * 0.00375, normal = Math.max(byAch, byArea), fire = vol * v.fire / 3600;
+        var jets = Math.ceil(v.a / v.jf - 1e-9), co = Math.ceil(v.a / 400 - 1e-9);
+        return [
+          ['Normal exhaust', fq(normal, 'air'), 1, byAch >= byArea ? fmt(v.ach) + ' ACH governs' : 'area rate 3.75 L/s·m² governs'],
+          ['Fire-mode exhaust', fq(fire, 'air'), 1, fmt(v.fire) + ' ACH — size fans and power for this'],
+          ['Make-up air', fq(normal * 0.85, 'air'), 0, 'about 85 % of exhaust keeps the car park negative'],
+          ['Jet fans', fmt(jets, 0), 0, 'one per ' + fq(v.jf, 'area') + ' — confirm with a CFD study'],
+          ['CO sensors', fmt(co, 0), 0, 'demand control: run at low speed until CO reaches 25–35 ppm'],
+          ['Design check', STATUS.pass, 1, 'split the exhaust over at least two fans so one failure leaves capacity']
+        ];
+      },
+      note: '6 ACH normal / 10 ACH fire follows BS 7346-7 and common Philippine practice (check the Fire Code of the Philippines and PMEC); IMC 404 requires 0.75 CFM/ft² (3.75 L/s·m²) or CO-based demand control. Smoke-control fans need a high-temperature rating (e.g. 300 °C for 1 h).'
+    },
+
+    stairp: {
+      code: 'VENT / 023', title: 'Stairwell Pressurization', card: true, disc: 'M',
+      desc: 'Supply air to keep smoke out of an escape stair — door leakage at the design pressure, open-door airflow and the door-opening force check.',
+      fields: [
+        { k: 'n', label: 'Floors (doors into the stair)', unit: 'floors', def: [10, 10] },
+        { k: 'dp', label: 'Design pressure difference', q: 'pv', def: [50, 0.2] },
+        { k: 'lk', label: 'Leakage area per closed door', q: 'area', def: [0.01, 0.108] },
+        { k: 'no', label: 'Doors open at once', unit: 'doors', def: [2, 2], zero: true },
+        { k: 'vo', label: 'Air velocity through an open door', q: 'vduct', def: [0.75, 150] },
+        { k: 'dw', label: 'Door width', q: 'len', def: [0.9, 3] },
+        { k: 'dh', label: 'Door height', q: 'len', def: [2.1, 7] },
+        { k: 'fc', label: 'Door closer force', unit: 'N', def: [45, 45] }
+      ],
+      formula: function () { return ['Closed doors: Q = 0.83 × ΣA × √ΔP', 'Open doors: Q = v × door area × doors open', 'Fan = (closed leakage of the rest + open-door flow) × 1.25 for duct and shaft leakage', 'Door force F = F_closer + W·A·ΔP / (2 (W − d))  (NFPA 92)']; },
+      calc: function (v) {
+        var closed = 0.83 * v.lk * Math.max(v.n - v.no, 0) * Math.sqrt(v.dp), Ad = v.dw * v.dh, open = v.vo * Ad * v.no, fan = (closed + open) * 1.25;
+        var F = v.fc + v.dw * Ad * v.dp / (2 * (v.dw - 0.075)), fOk = F <= 133;
+        return [
+          ['Supply fan', fq(fan, 'air'), 1, 'closed-door leakage + open doors, × 1.25'],
+          ['Closed-door leakage', fq(closed, 'air'), 0, fmt(Math.max(v.n - v.no, 0), 0) + ' closed doors at ' + fq(v.dp, 'pv')],
+          ['Open-door airflow', fq(open, 'air'), 0, fmt(v.no, 0) + ' door(s) of ' + fq(Ad, 'area') + ' at ' + fq(v.vo, 'vduct')],
+          ['Door-opening force', sys === 'si' ? fmt(F, 0) + ' N' : fmt(F * 0.2248, 0) + ' lbf', 1, 'limit 133 N (30 lbf), NFPA 101'],
+          ['Design check', fOk && v.dp >= 12.5 ? STATUS.pass : STATUS.warn, 1, !fOk ? 'door too hard to open — lower the pressure or use a pressure-relief damper' : v.dp < 12.5 ? 'below the NFPA 92 minimum of 12.5 Pa (sprinklered)' : 'pressure and door force within limits — add a pressure-relief damper for the closed-door case']
+        ];
+      },
+      note: 'Simplified method after NFPA 92 and EN 12101-6. Typical leakage per closed single door about 0.01 m² (EN 12101-6); minimum pressure 12.5 Pa sprinklered (NFPA 92) or 50 Pa (EN 12101-6 class A–C). Check the Fire Code of the Philippines RIRR, and size the final system with a network model and commissioning tests.'
+    },
+
     exh: {
       code: 'VENT / 029', title: 'Exhaust Air Calculator', card: true, disc: 'M',
       desc: 'Minimum exhaust for toilets, bathrooms, kitchens, commercial kitchen hoods, laundries, labs, workshops, garages and more.',
@@ -4458,6 +4568,29 @@ body.modal-open .dock-tab { visibility: hidden; }
         return rows;
       },
       note: 'Rough take-off. Rod sizes: 8 mm up to 90 kg, 10 mm up to 160 kg, 12 mm up to 260 kg, 16 mm above (per rod, with the 1.5 factor). Confirm hanger spacing, rod and angle sizes against SMACNA HVAC Duct Construction Standards (Ch. 5) and the anchor rating with your structural engineer.'
+    },
+
+    leak: {
+      code: 'DUCT / 035', title: 'Duct Leakage Test', card: true, disc: 'M',
+      desc: 'SMACNA leakage test — allowed leakage for the leakage class and test pressure against the measured value.',
+      fields: [
+        { k: 'a', label: 'Duct surface area tested', q: 'area', def: [100, 1076] },
+        { k: 'p', label: 'Test pressure', q: 'pv', def: [500, 2] },
+        { k: 'cl', label: 'Leakage class (SMACNA CL)', opts: [['3', 'CL 3 — sealed, high pressure'], ['6', 'CL 6 — sealed rectangular / round'], ['12', 'CL 12 — sealed rectangular, low pressure'], ['24', 'CL 24'], ['48', 'CL 48 — unsealed']], def: ['6', '6'] },
+        { k: 'q', label: 'System airflow', q: 'air', def: [5000, 2940] },
+        { k: 'm', label: 'Measured leakage', q: 'air', def: [0, 0], zero: true }
+      ],
+      formula: function () { return ['F = CL × P^0.65   (CFM per 100 ft², P in in.wg)', 'Allowed leakage = F × area / 100 ft²', 'Pass when measured ≤ allowed']; },
+      calc: function (v) {
+        var pin = v.p / 249.0889, F = +v.cl * Math.pow(pin, 0.65), aft = v.a / 0.09290304, allowCfm = F * aft / 100, allow = allowCfm * 0.000471947;
+        var pct = allow / v.q * 100, has = v.m > 0, ok = !has || v.m <= allow + 1e-12;
+        return [
+          ['Allowed leakage', fq(allow, 'air'), 1, fmt(F, 1) + ' CFM per 100 ft² at ' + fq(v.p, 'pv') + ' (' + fmt(pct, 1) + ' % of the system airflow)'],
+          ['Measured leakage', has ? fq(v.m, 'air') : 'enter the test result', 0, has ? fmt(v.m / v.q * 100, 1) + ' % of the system airflow' : ''],
+          ['Design check', ok ? STATUS.pass : STATUS.warn, 1, !has ? 'enter the measured leakage to check the test' : ok ? 'leakage within CL ' + v.cl : 'leakage above CL ' + v.cl + ' — find and reseal the leaks, then retest']
+        ];
+      },
+      note: 'SMACNA HVAC Air Duct Leakage Test Manual. Test at least the design operating pressure, usually 10–25 % of the system by area, chosen by the engineer. ASHRAE 90.1 §6.4.4.2.2 requires testing ducts above 750 Pa (3 in.wg) to CL 4 or better.'
     },
 
     dar: {
@@ -5165,6 +5298,87 @@ body.modal-open .dock-tab { visibility: hidden; }
       note: 'Typical design: 35 → 29.4 °C (95 → 85 °F) condenser water, about 3 gpm per TR. Size the tower at the local design wet-bulb (approach usually 3–4 K). Water treatment sets the cycles of concentration — 3 to 6 is common.'
     },
 
+    expt: {
+      code: 'HVAC / 017', title: 'Expansion Tank (Closed System)', card: true, disc: 'M',
+      desc: 'Diaphragm expansion tank for a closed chilled- or hot-water loop — water expansion, acceptance volume, total tank size and pre-charge.',
+      fields: [
+        { k: 'vs', label: 'System water volume', q: 'vol', def: [2, 70] },
+        { k: 't1', label: 'Minimum (fill) temperature', q: 'tc', def: [7, 45] },
+        { k: 't2', label: 'Maximum temperature (off, warm room / hot)', q: 'tc', def: [35, 95] },
+        { k: 'p1', label: 'Fill pressure at the tank (gauge)', q: 'press', def: [150, 22] },
+        { k: 'p2', label: 'Maximum pressure at the tank (gauge)', q: 'press', def: [270, 39] }
+      ],
+      check: function (v) { return v.t2 > v.t1 ? (v.p2 > v.p1 ? '' : 'The maximum pressure must be above the fill pressure.') : 'The maximum temperature must be above the fill temperature.'; },
+      formula: function () { return ['Expansion = V_s × [(ρ₁ / ρ₂ − 1) − 3α·Δt]   (steel α = 11.7 × 10⁻⁶ /K)', 'Tank = expansion / (1 − P₁ / P₂)   (absolute pressures)', 'Pre-charge = fill pressure']; },
+      calc: function (v) {
+        var e = rhoW(v.t1) / rhoW(v.t2) - 1 - 3 * 11.7e-6 * (v.t2 - v.t1), ex = v.vs * Math.max(e, 0);
+        var P1 = v.p1 + 101325, P2 = v.p2 + 101325, af = 1 - P1 / P2, tank = ex / af;
+        var STD = [8, 12, 18, 24, 35, 50, 80, 100, 150, 200, 300, 400, 500, 600, 750, 1000, 1500, 2000], std = nextUp(STD, tank * 1000);
+        var L = function (m3) { return sys === 'si' ? fmt(m3 * 1000, m3 * 1000 < 100 ? 1 : 0) + ' L' : fmt(m3 * 264.172, 1) + ' gal'; };
+        return [
+          ['Expansion tank (total)', std ? (sys === 'si' ? std + ' L' : fmt(std / 3.785, 0) + ' gal') : L(tank) + ' — use several tanks', 1, 'needed ' + L(tank)],
+          ['Water expansion', L(ex), 0, fmt(e * 100, 2) + ' % from ' + tTxtC(v.t1) + ' to ' + tTxtC(v.t2)],
+          ['Acceptance factor', fmt(af, 3), 0, 'share of the tank that takes water'],
+          ['Pre-charge', fq(v.p1, 'press'), 0, 'set to the fill pressure before filling'],
+          ['Design check', af >= 0.1 ? STATUS.pass : STATUS.warn, 1, af >= 0.1 ? 'pressure band gives a usable acceptance factor' : 'narrow pressure band — the tank gets very large; widen the band or raise the relief setting']
+        ];
+      },
+      note: 'Maximum pressure is usually about 90 % of the relief-valve setting, minus the static height above the tank. For chilled water the maximum temperature is the warmest the idle loop reaches (often the plant-room or ambient temperature). ASHRAE Handbook—HVAC Systems & Equipment Ch. 13.'
+    },
+
+    cond: {
+      code: 'HVAC / 018', title: 'Condensate Drain & Trap', card: true, disc: 'M',
+      desc: 'Condensate from a cooling coil, drain pipe size (IMC Table 307.2.2), slope and the trap seal for the fan static pressure.',
+      fields: [
+        { k: 'q', label: 'Coil cooling capacity', q: 'power', def: [35.17, 120000] },
+        { k: 'shr', label: 'Sensible heat ratio', unit: '0–1', def: [0.75, 0.75], max: 1, maxMsg: 'SHR must be between 0 and 1.' },
+        { k: 'sp', label: 'Fan static pressure at the pan', q: 'pv', def: [500, 2] },
+        { k: 'pos', label: 'Pan pressure', opts: [['neg', 'Negative — draw-through fan'], ['pos', 'Positive — blow-through fan']], def: ['neg', 'neg'] },
+        { k: 'hr', label: 'Operating hours per day', unit: 'h', def: [12, 12] }
+      ],
+      formula: function () { return ['Condensate = Q × (1 − SHR) / h_fg   (2,450 kJ/kg)', 'Pipe: IMC Table 307.2.2 by tons', 'Draw-through trap: inlet leg ≥ SP + 25 mm, outlet leg ≥ SP / 2 + 13 mm']; },
+      calc: function (v) {
+        var lat = v.q * (1 - v.shr), kgs = lat / 2450, lph = kgs * 3600, tr = v.q / 3.51685;
+        var pipe = tr <= 20 ? ['20 mm', '¾ in'] : tr <= 40 ? ['25 mm', '1 in'] : tr <= 90 ? ['32 mm', '1¼ in'] : tr <= 125 ? ['40 mm', '1½ in'] : ['50 mm', '2 in'];
+        var spmm = v.sp / 9.80665, inlet = v.pos === 'neg' ? spmm + 25 : 25, outlet = v.pos === 'neg' ? spmm / 2 + 13 : spmm + 13;
+        var mm = function (x) { return sys === 'si' ? fmt(x, 0) + ' mm' : fmt(x / 25.4, 1) + ' in'; };
+        return [
+          ['Condensate', sys === 'si' ? fmt(lph, 1) + ' L/h' : fmt(lph / 3.785, 2) + ' gal/h', 1, (sys === 'si' ? fmt(lph * v.hr, 0) + ' L/day' : fmt(lph * v.hr / 3.785, 0) + ' gal/day') + ' over ' + fmt(v.hr) + ' h'],
+          ['Drain pipe size', sys === 'si' ? pipe[0] : pipe[1], 1, fmt(tr, 1) + ' TR — IMC Table 307.2.2 (minimum ¾ in)'],
+          ['Slope', sys === 'si' ? '1 % (10 mm per m) minimum' : '⅛ in per ft minimum'],
+          ['Trap — inlet leg', mm(inlet), 0, v.pos === 'neg' ? 'static ' + mm(spmm) + ' + 25 mm (1 in)' : 'blow-through: 25 mm (1 in) seal'],
+          ['Trap — outlet leg', mm(outlet), 0, v.pos === 'neg' ? 'half the static + 13 mm (½ in)' : 'static + 13 mm (½ in) above the outlet'],
+          ['Design check', STATUS.pass, 1, 'add a cleanout at each change of direction and insulate the drain where it can sweat']
+        ];
+      },
+      note: 'Trap depths follow common manufacturer guidance for draw-through (negative) and blow-through (positive) drain pans. Discharge to an indirect waste receptor, never straight to a sanitary drain. IMC 307.2; NPCP for the Philippines.'
+    },
+
+    pmv: {
+      code: 'HVAC / 019', title: 'Thermal Comfort (PMV / PPD)', card: true, disc: 'M',
+      desc: 'Predicted mean vote and percentage dissatisfied for a space — air and radiant temperature, air speed, humidity, activity and clothing.',
+      fields: [
+        { k: 'ta', label: 'Air temperature', q: 'tc', def: [24, 75] },
+        { k: 'tr', label: 'Mean radiant temperature', q: 'tc', def: [24, 75] },
+        { k: 'v', label: 'Air speed', q: 'vduct', def: [0.1, 20] },
+        { k: 'rh', label: 'Relative humidity', unit: '%', def: [55, 55], max: 100, maxMsg: 'Relative humidity must be 100 % or less.' },
+        { k: 'met', label: 'Activity', opts: [['1.0', 'Seated, quiet — 1.0 met'], ['1.1', 'Office work, typing — 1.1 met'], ['1.2', 'Standing, relaxed — 1.2 met'], ['1.6', 'Light activity, shopping — 1.6 met'], ['2.0', 'Walking — 2.0 met']], def: ['1.1', '1.1'] },
+        { k: 'clo', label: 'Clothing', opts: [['0.36', 'Shorts, short-sleeve shirt — 0.36 clo'], ['0.5', 'Light trousers, short sleeves — 0.5 clo'], ['0.61', 'Trousers, long-sleeve shirt — 0.61 clo'], ['0.74', 'Office wear with light jacket — 0.74 clo'], ['1.0', 'Business suit — 1.0 clo']], def: ['0.5', '0.5'] }
+      ],
+      formula: function () { return ['PMV = [0.303 e^(−0.036 M) + 0.028] × (heat produced − heat lost)', 'PPD = 100 − 95 e^(−0.03353 PMV⁴ − 0.2179 PMV²)', 'Comfort (Category B): −0.5 ≤ PMV ≤ +0.5, PPD ≤ 10 %']; },
+      calc: function (v) {
+        var r = pmvCalc(v.ta, v.tr, Math.max(v.v, 0.05), v.rh, +v.met, +v.clo), p = r.pmv, ok = Math.abs(p) <= 0.5;
+        var feel = p < -2.5 ? 'cold' : p < -1.5 ? 'cool' : p < -0.5 ? 'slightly cool' : p <= 0.5 ? 'neutral' : p <= 1.5 ? 'slightly warm' : p <= 2.5 ? 'warm' : 'hot';
+        return [
+          ['PMV', (p > 0 ? '+' : '') + fmt(p, 2), 1, feel + ' on the ASHRAE scale (−3 cold … +3 hot)'],
+          ['PPD', fmt(r.ppd, 0) + ' %', 1, 'people expected to be dissatisfied'],
+          ['Clothing surface', tTxtC(r.tcl), 0, fmt(+v.met) + ' met · ' + fmt(+v.clo) + ' clo'],
+          ['Design check', ok ? STATUS.pass : STATUS.warn, 1, ok ? 'within ASHRAE 55 / ISO 7730 Category B (|PMV| ≤ 0.5)' : (p > 0 ? 'too warm — lower the temperature or raise the air speed' : 'too cool — raise the temperature or lower the air speed')]
+        ];
+      },
+      note: 'ISO 7730 Annex D / ASHRAE 55 PMV model, valid for 10–30 °C air, up to 1 m/s and 0.8–4 met. Above 0.2 m/s ASHRAE 55 uses the elevated-air-speed (SET) method; ceiling fans let warmer set-points stay comfortable.'
+    },
+
     pump: {
       code: 'HVAC / 000', title: 'Pump Head & Selection', card: true, disc: 'M',
       desc: 'Pump head from pipe, fitting, equipment and valve losses, then the duty point, shaft power and motor size.',
@@ -5423,7 +5637,7 @@ body.modal-open .dock-tab { visibility: hidden; }
   /* ---------- Cards ---------- */
   var grid = $('#card-grid');
   // HVAC sub-groups (a calculator can belong to more than one); these cards also stay under Mechanical.
-  var HVAC_TAGS = { psy: ['AC'], refpipe: ['AC'], chwins: ['AC'], chhang: ['AC'], coldroom: ['AC'], refcycle: ['AC'], shsc: ['AC'], ctower: ['AC'], chw: ['AC'], pump: ['AC', 'H'], hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
+  var HVAC_TAGS = { psy: ['AC'], refpipe: ['AC'], chwins: ['AC'], chhang: ['AC'], coldroom: ['AC'], refcycle: ['AC'], shsc: ['AC'], ctower: ['AC'], expt: ['AC', 'H'], cond: ['AC'], pmv: ['AC'], erv: ['V'], carpark: ['V'], stairp: ['V'], leak: ['DD'], chw: ['AC'], pump: ['AC', 'H'], hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
                     oa: ['V'], vbz: ['V'], voz: ['V'], exh: ['V'], mua: ['V'], xfer: ['V'], bal: ['V'], vcmp: ['V'],
                     sdiff: ['GRL'], rgrille: ['GRL'], egrille: ['GRL'], louv: ['GRL'], fvel: ['GRL'], farea: ['GRL'], ndiff: ['GRL'], cfmd: ['GRL'], tsd: ['GRL'],
                     fexh: ['FAN'], fsup: ['FAN'], ffa: ['FAN'], fsp: ['FAN'], ftp: ['FAN'], fpow: ['FAN'], feff: ['FAN'], fop: ['FAN'],
@@ -5431,9 +5645,9 @@ body.modal-open .dock-tab { visibility: hidden; }
                     btu: ['AC'], cool: ['AC'], pcl: ['AC'] };
   var HVAC_NAMES = { H: 'Heating', V: 'Ventilation', AC: 'Air Conditioning', DD: 'Duct Design' };
   // Display order: Mechanical by group (air conditioning, heating, ventilation, duct design, fans), then E, P, F, S.
-  var CARD_ORDER = ['btu', 'cool', 'pcl', 'psy', 'heat', 'phl', 'hwflow', 'chw', 'chwins', 'chhang', 'coldroom', 'refcycle', 'shsc', 'ctower', 'pump', 'refpipe', 'fuel', 'cost',
-    'ach', 'geom', 'oa', 'vbz', 'voz', 'exh', 'mua', 'xfer', 'bal', 'vcmp',
-    'duct', 'rdc', 'rcd', 'dvel', 'eqf', 'sreg', 'dfric', 'eqlen', 'fitl', 'tpl', 'dar', 'dsheet', 'insul', 'hanger', 'dins', 'ductd', 'diff',
+  var CARD_ORDER = ['btu', 'cool', 'pcl', 'psy', 'pmv', 'heat', 'phl', 'hwflow', 'chw', 'chwins', 'chhang', 'coldroom', 'refcycle', 'shsc', 'ctower', 'expt', 'cond', 'pump', 'refpipe', 'fuel', 'cost',
+    'ach', 'geom', 'oa', 'vbz', 'voz', 'exh', 'mua', 'xfer', 'bal', 'vcmp', 'erv', 'carpark', 'stairp',
+    'duct', 'rdc', 'rcd', 'dvel', 'eqf', 'sreg', 'dfric', 'eqlen', 'fitl', 'tpl', 'dar', 'dsheet', 'insul', 'hanger', 'leak', 'dins', 'ductd', 'diff',
     'fexh', 'fsup', 'ffa', 'fsp', 'ftp', 'fpow', 'feff', 'fop',
     'sdiff', 'rgrille', 'egrille', 'louv', 'fvel', 'farea', 'ndiff', 'cfmd', 'tsd',
     'elec', 'pls', 'ecost', 'vdrop', 'cable', 'gen', 'pfc', 'light', 'lpd', 'pipe', 'tank', 'hwheat', 'booster', 'wsfu', 'sprinkler', 'sprhyd', 'firepump', 'hazen', 'hydrant', 'drain', 'dfu', 'septic', 'roofdrain'];
@@ -5577,6 +5791,13 @@ body.modal-open .dock-tab { visibility: hidden; }
     refcycle:  ['COP = η · T_e / (T_c − T_e); W = Q / COP; rejection Q + W', 'ASHRAE Handbook—Fundamentals Ch. 2 (thermodynamics and refrigeration cycles); AHRI 550/590 rating conditions.', 'method'],
     shsc:      ['T_sat from p; SH = T_suction − T_sat; SC = T_sat − T_liquid', 'Refrigerant saturation tables (ASHRAE Fundamentals Ch. 30) fitted ln p = A − B/T; manufacturer charging charts.', 'typical'],
     ctower:    ['Rejection Q(1 + 1/COP); flow = rejection / (ρ·cp·ΔT); evaporation rejection / 2,400 kJ/kg; blowdown E / (COC − 1)', 'CTI ATC-105; ASHRAE Handbook—HVAC Systems & Equipment Ch. 40 (cooling towers).', 'method'],
+    expt:      ['V_t = V_s[(ρ₁/ρ₂ − 1) − 3αΔt] / (1 − P₁/P₂)', 'ASHRAE Handbook—HVAC Systems & Equipment Ch. 13 (hydronic heating and cooling — expansion tanks).', 'method'],
+    cond:      ['Condensate = Q(1 − SHR)/h_fg; pipe per IMC Table 307.2.2; trap legs from fan static', 'IMC 307.2 (condensate disposal); manufacturer drain-trap guidance; NPCP.', 'standard'],
+    pmv:       ['PMV / PPD per the ISO 7730 Annex D algorithm', 'ANSI/ASHRAE 55-2020; ISO 7730:2005 (Category B: |PMV| ≤ 0.5, PPD ≤ 10 %).', 'standard'],
+    erv:       ['Recovered = ṁ ε Δh; saving = recovered / COP − fan; payback = cost / saving', 'AHRI 1060 (air-to-air energy recovery ratings); ASHRAE 90.1 §6.5.6.1; ASHRAE HVAC Systems & Equipment Ch. 26.', 'method'],
+    carpark:   ['max(ACH × V, 3.75 L/s·m² × A); fire ACH × V; jet fans by area', 'IMC 404 (enclosed parking garages); BS 7346-7; Fire Code of the Philippines RIRR; PMEC.', 'typical'],
+    stairp:    ['Q = 0.83 A √ΔP + v·A_door·n; F = F_dc + W·A·ΔP / (2(W − d))', 'NFPA 92 (smoke control); NFPA 101 (door force 133 N); EN 12101-6 (pressure differential systems).', 'method'],
+    leak:      ['F = CL × P^0.65 (CFM/100 ft²); allowed = F × area / 100', 'SMACNA HVAC Air Duct Leakage Test Manual; ASHRAE 90.1 §6.4.4.2.2.', 'standard'],
     refpipe:   ['Line sizes from typical manufacturer tables; extra charge by liquid-line length; traps every ~6 m of suction rise', 'Manufacturer installation manuals (Daikin, Mitsubishi Electric, Carrier) for R410A / R32; ASHRAE Handbook—Refrigeration Ch. 1 (refrigerant piping, oil return).', 'typical'],
     gen:       ['S = P/pf × (1 + future); transformer ≥ S / loading; generator ≥ S/0.8 and ≥ motor-start kVA / 1.5', 'IEEE 446 (emergency and standby power), NFPA 110; IEC 60076 / ANSI C57 preferred ratings; PEC 2017 Art. 7.0 (emergency systems). Motor-start pick-up typical.', 'typical'],
     pfc:       ['Q = P (tan φ₁ − tan φ₂); conductors and breaker 135 % of capacitor current', 'NEC 460.8 / PEC 2017 Art. 4.60 (capacitors); IEEE 18; IEC 60831.', 'method'],
@@ -6837,6 +7058,50 @@ body.modal-open .dock-tab { visibility: hidden; }
       var o = '<path d="M60 170L76 40h88l16 130z" fill="rgba(56,189,248,0.08)" stroke="' + DC.ink + '" stroke-width="1.4"/>' + Ci(120, 34, 14, 'none', DC.mut, 1) + '<path d="M104 22c4-12 10-12 14 0M122 22c4-12 10-12 14 0" fill="none" stroke="' + DC.mut + '" class="a-flicker"/>';
       o += Flow('M260 70H170', DC.red, 1, 2.4) + Flow('M70 150H20V110', DC.blue, 1, 2.4) + T(265, 74, 'hot water in') + T(20, 100, 'cooled water out');
       return o + Big(240, 130, rowVal(rows, 'Tower size')) + T(240, 150, rowVal(rows, 'Condenser-water flow')) + T(240, 168, 'make-up ' + rowVal(rows, 'Make-up water'));
+    }
+  });
+  Object.assign(DRAWS, {
+    expt: function (v, rows) {
+      var e = Math.max(0, rhoW(v.t1) / rhoW(v.t2) - 1), af = 1 - (v.p1 + 101325) / (v.p2 + 101325), fill = clampN(af, 0.05, 0.95);
+      var o = Rc(150, 30, 80, 140, DC.bg, DC.ink, 1.6, ' rx="34"') + Rc(154, 170 - 136 * fill, 72, 132 * fill, 'rgba(108,184,255,0.35)', 'none', 0, ' rx="30"') + Ln(152, 170 - 136 * fill, 228, 170 - 136 * fill, DC.mint, 2, '5 3');
+      o += Ln(190, 170, 190, 188, DC.blue, 3) + Ln(40, 188, 380, 188, DC.blue, 3) + Flow('M40 188H380', DC.blue, 2, 2) + T(240, 100, 'diaphragm', 'dd-tag');
+      return o + Big(260, 50, rowVal(rows, 'Expansion tank (total)')) + T(260, 70, 'expansion ' + rowVal(rows, 'Water expansion')) + T(260, 88, 'acceptance ' + fmt(af, 2));
+    },
+    cond: function (v, rows) {
+      var o = Rc(40, 30, 200, 40, DC.bg, DC.ink, 1.4) + T(140, 54, 'cooling coil', 'dd-tag', 'middle') + Rc(40, 70, 200, 10, 'rgba(108,184,255,0.3)', DC.blue, 1) + T(250, 80, 'drain pan');
+      o += '<path d="M120 80v50a16 16 0 0 0 32 0v-24h120" fill="none" stroke="' + DC.blue + '" stroke-width="3"/>' + Flow('M120 80v50a16 16 0 0 0 32 0v-24h120', DC.blue, 1.4, 2);
+      return o + T(100, 150, 'trap', 'dd-tag', 'end') + Big(270, 140, rowVal(rows, 'Condensate')) + T(270, 158, rowVal(rows, 'Drain pipe size') + ' drain') + T(270, 176, 'inlet leg ' + rowVal(rows, 'Trap — inlet leg'));
+    },
+    pmv: function (v, rows) {
+      var r = pmvCalc(v.ta, v.tr, Math.max(v.v, 0.05), v.rh, +v.met, +v.clo), x = function (p) { return 40 + (clampN(p, -3, 3) + 3) / 6 * 340; }, o = '';
+      ['cold', 'cool', 'sl. cool', 'neutral', 'sl. warm', 'warm', 'hot'].forEach(function (s, i) { o += T(x(i - 3), 140, s, 'dd-tag', 'middle'); });
+      o += Rc(40, 100, 340, 18, 'none', DC.mut, 1) + Rc(x(-0.5), 100, x(0.5) - x(-0.5), 18, 'rgba(127,217,98,0.35)') + Ci(x(r.pmv), 109, 8, Math.abs(r.pmv) <= 0.5 ? DC.mint : DC.red, DC.ink, 1.4, ' class="dz-pulse"');
+      return o + Big(40, 50, 'PMV ' + rowVal(rows, 'PMV')) + T(40, 70, 'PPD ' + rowVal(rows, 'PPD')) + T(380, 70, rowVal(rows, 'PMV') === '' ? '' : (r.pmv > 0.5 ? 'too warm' : r.pmv < -0.5 ? 'too cool' : 'comfortable'), 'dd-tag', 'end');
+    },
+    erv: function (v, rows) {
+      var o = Rc(160, 50, 100, 100, DC.bg, DC.ink, 1.6) + Ln(160, 50, 260, 150, DC.mut, 1) + Ln(260, 50, 160, 150, DC.mut, 1) + T(210, 170, 'ERV core', 'dd-tag', 'middle');
+      o += Flow('M20 75H160', DC.red, 1.2, 3) + Flow('M260 75H400', DC.blue, 1.2, 3) + Flow('M400 125H260', DC.mut, 1.2, 3) + Flow('M160 125H20', DC.mut, 1.2, 3);
+      o += T(20, 66, 'outdoor air in') + T(400, 66, 'to the AHU', 'dd-tag', 'end') + T(400, 145, 'room exhaust', 'dd-tag', 'end') + T(20, 145, 'to outside');
+      return o + Big(20, 30, rowVal(rows, 'Cooling recovered')) + T(400, 30, rowVal(rows, 'Money saved'), 'dd-tag', 'end') + T(400, 190, rowVal(rows, 'Simple payback'), 'dd-tag', 'end');
+    },
+    carpark: function (v, rows) {
+      var o = Rc(20, 40, 380, 120, DC.bg, DC.ink, 1.4), n = Math.min(numIn(rowVal(rows, 'Jet fans')), 12), i;
+      for (i = 0; i < 8; i++) o += Rc(40 + i * 44, 128, 30, 20, 'none', DC.mut, 1);
+      for (i = 0; i < n; i++) { var x = 40 + (i % 6) * 60, y = i < 6 ? 70 : 100; o += Rc(x, y - 6, 26, 12, 'rgba(255,176,0,0.3)', DC.yel, 1) + Flow('M' + (x + 26) + ' ' + y + 'h24', DC.yel, 0.8, 1.4); }
+      return o + Ln(400, 60, 412, 60, DC.red, 4) + T(410, 54, 'exhaust', 'dd-tag', 'end') + Big(20, 30, rowVal(rows, 'Normal exhaust') + ' normal') + T(20, 186, 'fire mode ' + rowVal(rows, 'Fire-mode exhaust') + ' · ' + fmt(n, 0) + ' jet fans shown');
+    },
+    stairp: function (v, rows) {
+      var o = '', fl = Math.min(v.n, 8), hh = 140 / fl;
+      o += Rc(200, 30, 90, 150, 'rgba(108,184,255,0.10)', DC.blue, 1.6) + T(245, 24, 'stair +' + fq(v.dp, 'pv'), 'dd-tag', 'middle');
+      for (var i = 0; i < fl; i++) { var y = 36 + i * hh; o += Ln(200, y + hh - 6, 200, y + 4, i < v.no ? DC.red : DC.ink, 3) + Ln(120, y + hh, 200, y + hh, DC.mut, 1); }
+      o += Flow('M330 180V40', DC.blue, 1, 2.4) + Ln(290, 40, 330, 40, DC.blue, 2.4) + T(336, 110, 'supply fan');
+      return o + Big(20, 50, rowVal(rows, 'Supply fan')) + T(20, 70, 'door force ' + rowVal(rows, 'Door-opening force')) + T(20, 88, fmt(v.no, 0) + ' door(s) open (red)');
+    },
+    leak: function (v, rows) {
+      var allow = inSI(rowVal(rows, 'Allowed leakage'), 'air'), mx = Math.max(allow, v.m) * 1.2 || 1, o = Rc(40, 40, 260, 40, DC.bg, DC.ink, 1.4) + T(170, 64, 'duct under test', 'dd-tag', 'middle');
+      o += Flow('M90 40v-16', DC.red, 1.2, 1.4) + Flow('M220 80v16', DC.red, 1.2, 1.4) + Ci(320, 60, 16, DC.bg, DC.ink, 1.2) + T(320, 92, fq(v.p, 'pv'), 'dd-tag', 'middle');
+      var bar = function (y, label, x, col) { return T(40, y - 6, label) + Rc(40, y, 340, 14, 'none', DC.mut, 1) + Rc(40, y, clampN(x / mx, 0, 1) * 340, 14, col); };
+      return o + bar(130, 'Allowed ' + rowVal(rows, 'Allowed leakage'), allow, 'rgba(255,176,0,0.5)') + (v.m > 0 ? bar(170, 'Measured ' + rowVal(rows, 'Measured leakage'), v.m, v.m <= allow ? 'rgba(127,217,98,0.6)' : 'rgba(255,107,91,0.6)') : T(40, 176, 'enter the measured leakage'));
     }
   });
   var NPS_LBL = function (dn) { return ({ 15: '½"', 20: '¾"', 25: '1"', 32: '1¼"', 40: '1½"', 50: '2"', 65: '2½"', 80: '3"', 100: '4"', 125: '5"', 150: '6"', 200: '8"', 250: '10"', 300: '12"' })[dn] || dn + ' mm'; };
