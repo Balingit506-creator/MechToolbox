@@ -7685,6 +7685,167 @@ body.modal-open .dock-tab { visibility: hidden; }
   });
   var NPS_LBL = function (dn) { return ({ 15: '½"', 20: '¾"', 25: '1"', 32: '1¼"', 40: '1½"', 50: '2"', 65: '2½"', 80: '3"', 100: '4"', 125: '5"', 150: '6"', 200: '8"', 250: '10"', 300: '12"' })[dn] || dn + ' mm'; };
 
+  /* Design suggestions for the newer calculators (take-offs, refrigeration, electrical, plumbing, fire). */
+  var sgv = function (rows, l) { return rowVal(rows, l); };
+  Object.assign(SUGGEST, {
+    refpipe: function (v, rows) { return [
+      SG('Run ' + sgv(rows, 'Liquid line').split(' (')[0] + ' liquid and ' + sgv(rows, 'Gas (suction) line').split(' (')[0] + ' suction lines in ACR-grade copper, brazed with nitrogen purge.', 'Manufacturer installation manual'),
+      SG('Charge ' + sgv(rows, 'Extra refrigerant charge') + ' of extra refrigerant by weight after a vacuum to 500 microns.', 'Manufacturer charging procedure'),
+      v.h > 10 ? SG('With ' + fq(v.h, 'len') + ' of height, slope suction lines toward the compressor and add the oil traps shown.', 'ASHRAE Refrigeration Ch. 1') : null]; },
+    gen: function (v, rows) { return [
+      SG('Choose a ' + sgv(rows, 'Transformer') + ' transformer and a ' + sgv(rows, 'Standby generator').split(' ·')[0] + ' standby set with an automatic transfer switch.', 'IEEE 446 / NFPA 110'),
+      SG(+v.st >= 6 && v.m > 15 ? 'Start the ' + fq(v.m, 'kwhp') + ' motor with a soft starter or VFD to shrink the generator.' : 'Load the generator in steps (largest motors first) so the voltage dip stays under 15–20 %.', 'Generator sizing practice'),
+      SG('Size the generator fuel tank for the backup hours you need (typically 8–24 h) and add a day tank.', 'NFPA 110 / PEC Art. 7.0')]; },
+    pfc: function (v, rows) { return [
+      SG('Install a ' + sgv(rows, 'Standard bank') + ' automatic capacitor bank in steps of about 20 % at the main board.', 'IEEE 18 / IEC 60831'),
+      SG('If VFDs or UPS units are present, use detuned reactors (7 %) to avoid harmonic resonance.', 'IEEE 519'),
+      SG('Protect the bank with a ' + sgv(rows, 'Capacitor breaker') + ' breaker and cables rated 135 % of capacitor current.', 'NEC 460.8 / PEC 4.60')]; },
+    hwheat: function (v, rows) { return [
+      SG('Choose a ' + sgv(rows, 'Storage tank') + ' storage heater of about ' + sgv(rows, 'Heater power').split(' input')[0] + '.', 'ASHRAE HVAC Applications Ch. 51'),
+      SG('Store at 60 °C (140 °F) and fit thermostatic mixing valves at 43–49 °C (110–120 °F) at fixtures.', 'ASHRAE 188 / Legionella control'),
+      SG('Consider a heat-pump water heater — about a third of the electricity of a resistance heater.', 'Energy efficiency')]; },
+    booster: function (v, rows) { return [
+      SG('Use a variable-speed booster set (duty + standby) — it holds a steady pressure and can shrink the tank to about 20 %.', 'ASPE Data Book Vol. 2'),
+      SG('Set the pressure switch to cut in at ' + sgv(rows, 'Cut-in pressure') + ' and out at ' + sgv(rows, 'Cut-out pressure') + '; pre-charge the tank 14 kPa (2 psi) below cut-in.', 'Hydro-pneumatic tank practice'),
+      SG('Fit pressure-reducing valves where floors see more than 550 kPa (80 psi).', 'IPC 604.8 / NPCP')]; },
+    sprhyd: function (v, rows) { return [
+      SG('Select the fire pump for ' + sgv(rows, 'With hose allowance') + ' plus a 10 % margin on pressure.', 'NFPA 20'),
+      SG('Check the most remote area at the far end of the cross main; a looped or gridded main lowers the friction.', 'NFPA 13 Ch. 28'),
+      SG('Confirm the result with a full node-by-node hydraulic calculation and a water-supply flow test.', 'NFPA 13 §28.2 / NFPA 291')]; },
+    dsheet: function (v, rows) { return [
+      SG('Order ' + sgv(rows, 'Sheets needed') + ' of ' + sgv(rows, 'Thickness') + ' GI sheet for this run.', 'SMACNA HVAC Duct Construction Standards'),
+      SG('Use Pittsburgh lock seams and TDC / TDF flanged joints with mastic sealant (Seal Class A or B).', 'SMACNA Ch. 1–2'),
+      SG('Keep the aspect ratio at 4 : 1 or less — wide flat ducts use more sheet and need more reinforcement.', 'SMACNA / ASHRAE Fundamentals Ch. 21')]; },
+    insul: function (v, rows) { return [
+      SG('Buy ' + sgv(rows, rows[0][0]) + ' ' + rows[0][0].toLowerCase() + ' plus ' + sgv(rows, 'Contact adhesive') + ' adhesive and ' + sgv(rows, 'Foil tape (50 m rolls)') + ' of foil tape.', 'Take-off'),
+      SG('For chilled air in humid climates keep the vapour barrier continuous — tape every joint and pin with self-adhesive pins.', 'ASHRAE Fundamentals Ch. 23'),
+      SG('Check the thickness against the dew point with the Duct Insulation calculator.', 'ASHRAE 90.1 Table 6.8.2')]; },
+    hanger: function (v, rows) { return [
+      SG('Use ' + sgv(rows, 'Threaded rod size') + ' with ' + sgv(rows, 'Trapeze angle bar').split(',')[0] + ' trapezes every ' + fq(v.s, 'len') + '.', 'SMACNA Ch. 5'),
+      SG('Add a hanger within 600 mm (2 ft) of every elbow, branch and equipment connection.', 'SMACNA Ch. 5'),
+      SG('Use rated wedge or drop-in anchors and check their tension rating against ' + sgv(rows, 'Load on each rod') + ' per rod.', 'Anchor manufacturer data')]; },
+    chwins: function (v, rows) { return [
+      SG('Use ' + sgv(rows, 'Thickness used') + ' closed-cell elastomeric or phenolic insulation — ' + sgv(rows, 'Insulation tubes, 2 m each') + ' tubes for this route.', 'ASHRAE 90.1 Table 6.8.3'),
+      SG('Use insulated pipe supports (saddles) so the vapour barrier is never crushed at hangers.', 'MSS SP-58'),
+      v.loc === 'out' ? SG('Outdoors, jacket with aluminium cladding and seal all laps against rain and UV.', 'Manufacturer guide') : SG('Indoors in plant rooms, add a PVC jacket where the insulation can be knocked.', 'Good practice')]; },
+    chhang: function (v, rows) { return [
+      SG('Support every ' + sgv(rows, 'Maximum spacing') + ' with ' + sgv(rows, 'Threaded rod size') + ' rods.', 'MSS SP-58 / ASME B31.9'),
+      SG('Place a support within 600 mm (2 ft) of each valve, pump and change of direction, and at the base of risers.', 'MSS SP-58'),
+      SG('Use insulated saddles or high-density inserts so the insulation vapour barrier stays continuous.', 'ASHRAE Fundamentals Ch. 23')]; },
+    lpd: function (v, rows) { return [
+      SG(/Pass/.test(sgv(rows, 'Design check')) ? 'Installed LPD ' + sgv(rows, 'Lighting power density') + ' is within the limit — keep it with LED luminaires of 120 lm/W or better.' : 'Cut ' + sgv(rows, 'Share of allowance') + ' — use higher-efficacy LED (≥ 120 lm/W) or fewer luminaires.', 'ASHRAE 90.1 §9.6'),
+      SG('Add occupancy sensors and daylight dimming within 4.5 m (15 ft) of windows.', 'ASHRAE 90.1 §9.4.1'),
+      SG('Check the illuminance with the Lighting calculator so you do not under-light the space.', 'EN 12464-1 / IES')]; },
+    coldroom: function (v, rows) { return [
+      SG('Select a condensing unit and evaporator of about ' + sgv(rows, 'Equipment capacity') + ' at ' + fq(v.tr, 'tc') + ' room temperature.', 'ASHRAE Refrigeration Ch. 24'),
+      SG('Fit strip curtains or an air curtain on the door — infiltration is often a third of the load.', 'ASHRAE Refrigeration Ch. 24'),
+      v.tr < 0 ? SG('For a freezer, add floor heating under the slab to stop frost heave, and use 150 mm (6 in) PU panels.', 'Cold-store practice') : SG('Use 100 mm (4 in) PU panels for coolers; 150 mm (6 in) for freezers.', 'Cold-store practice')]; },
+    refcycle: function (v, rows) { return [
+      SG('Expected COP ' + sgv(rows, 'Expected COP') + ' — each 1 K lower condensing temperature saves about 2–3 % compressor power.', 'ASHRAE Fundamentals Ch. 2'),
+      SG('Keep the condenser clean and well ventilated, and raise the evaporating temperature as far as the load allows.', 'Energy efficiency'),
+      SG('Reject ' + sgv(rows, 'Condenser heat rejection') + ' — size the condenser or cooling tower for this, not the cooling capacity.', 'Cooling tower sizing')]; },
+    shsc: function (v, rows) { return [
+      SG(sgv(rows, 'Diagnosis').charAt(0).toUpperCase() + sgv(rows, 'Diagnosis').slice(1) + '.', 'Refrigerant charging practice'),
+      SG('Measure with the system running at least 15 minutes at full load, with clean filters and coils.', 'Manufacturer charging chart'),
+      SG('Charge blends (R410A, R404A, R407C) as liquid only.', 'Refrigerant handling')]; },
+    ctower: function (v, rows) { return [
+      SG('Select a tower of about ' + sgv(rows, 'Tower size') + ' at the local design wet-bulb with a 3–4 K approach.', 'CTI ATC-105'),
+      SG('Plan make-up water of ' + sgv(rows, 'Make-up water') + ' and treatment to hold ' + fmt(v.coc) + ' cycles of concentration.', 'ASHRAE HVAC Systems Ch. 40'),
+      SG('Use VFD fans and a condenser-water reset to save energy at part load.', 'ASHRAE 90.1 §6.5.5')]; },
+    expt: function (v, rows) { return [
+      SG('Install a ' + sgv(rows, 'Expansion tank (total)') + ' diaphragm tank, pre-charged to ' + sgv(rows, 'Pre-charge') + ', on the pump suction side.', 'ASHRAE HVAC Systems Ch. 13'),
+      SG('Connect it at the point of no pressure change and fit a lockable isolating valve and drain.', 'Hydronic design practice'),
+      SG('Set the relief valve at least 10 % above the maximum operating pressure.', 'ASME / local code')]; },
+    cond: function (v, rows) { return [
+      SG('Run a ' + sgv(rows, 'Drain pipe size') + ' drain at 1 % slope to an indirect waste receptor.', 'IMC 307.2'),
+      SG('Build the trap with a ' + sgv(rows, 'Trap — inlet leg') + ' inlet leg so the fan cannot pull air through it.', 'Manufacturer drain guidance'),
+      SG('Insulate the drain to stop it sweating, and fit a float switch or secondary pan above ceilings.', 'IMC 307.2.3')]; },
+    pmv: function (v, rows) { var p = numIn(sgv(rows, 'PMV')); return [
+      SG(Math.abs(p) <= 0.5 ? 'Comfortable (PMV ' + sgv(rows, 'PMV') + ') — keep this set-point.' : p > 0 ? 'Too warm — lower the set-point about 1 K, or add ceiling fans (0.5 m/s lets the set-point rise about 2 K).' : 'Too cool — raise the set-point about 1 K or reduce air speed at the occupants.', 'ASHRAE 55 §5.3'),
+      SG('Keep relative humidity around 40–60 % — it matters more for comfort in the tropics than small temperature changes.', 'ASHRAE 55'),
+      SG('Use the Psychrometric Chart to check the coil can hold this temperature and humidity.', 'ASHRAE Fundamentals Ch. 1')]; },
+    erv: function (v, rows) { return [
+      SG('An enthalpy (total-energy) ERV recovers ' + sgv(rows, 'Cooling recovered') + ' at design — size the coil and chiller down by that amount.', 'ASHRAE 90.1 §6.5.6.1'),
+      SG('Provide bypass for mild weather and filters (MERV 8 or better) on both airstreams.', 'AHRI 1060'),
+      SG('Keep exhaust and outdoor-air openings at least 3 m (10 ft) apart to avoid re-entrainment.', 'ASHRAE 62.1 §5.5')]; },
+    carpark: function (v, rows) { return [
+      SG('Exhaust ' + sgv(rows, 'Normal exhaust') + ' in normal mode with two-speed fans rated for 300 °C / 1 h in fire mode.', 'BS 7346-7 / EN 12101-3'),
+      SG('Use ' + sgv(rows, 'CO sensors') + ' CO sensors for demand control — fans on low until 25–35 ppm.', 'IMC 404.1'),
+      SG('Confirm jet-fan positions with a CFD study and keep make-up air openings at the far end from the exhaust.', 'BS 7346-7')]; },
+    stairp: function (v, rows) { return [
+      SG('Supply ' + sgv(rows, 'Supply fan') + ' with a fan on emergency power and a barometric pressure-relief damper.', 'NFPA 92'),
+      SG('Inject air at several levels (at least every 3 floors) in tall stairs to keep the pressure even.', 'NFPA 92 / EN 12101-6'),
+      SG('Commission with all doors closed and with the design doors open; check the door-opening force (' + sgv(rows, 'Door-opening force') + ').', 'NFPA 92 Ch. 8')]; },
+    leak: function (v, rows) { return [
+      SG('Allowed leakage ' + sgv(rows, 'Allowed leakage') + ' — test sections before insulation and ceilings go in.', 'SMACNA Leakage Test Manual'),
+      SG('Seal joints and seams to Seal Class A for ducts above 750 Pa (3 in.wg).', 'ASHRAE 90.1 §6.4.4.2'),
+      SG('Test at least 10–25 % of the system by area, chosen to include fittings and branches.', 'SMACNA')]; },
+    solar: function (v, rows) { return [
+      SG('Install ' + sgv(rows, 'PV system size') + ' facing south (Philippines) or north (Australia) at about the site latitude tilt, with a ' + sgv(rows, 'Inverter') + ' inverter.', 'NREL / PV design practice'),
+      SG('Apply for net-metering with your distribution utility before installation.', 'RA 9513 / ERC net-metering rules'),
+      SG('Check the roof structure and use a DC isolator and surge protection on the PV strings.', 'PEC Art. 6.90 / NEC 690')]; },
+    sccur: function (v, rows) { return [
+      SG('Specify breakers in this panel rated at least ' + sgv(rows, 'Panel breaker rating') + ' interrupting capacity.', 'NEC 110.9 / PEC 1.10.1.9'),
+      SG('Fault current at the panel is ' + sgv(rows, 'Fault current at the panel') + ' — longer or smaller feeders lower it.', 'IEEE 551'),
+      SG('Run a full short-circuit and coordination study before ordering switchgear.', 'IEEE 242 / IEC 60909')]; },
+    conduit: function (v, rows) { return [
+      SG('Use ' + sgv(rows, 'Conduit size') + ' for these wires (' + sgv(rows, 'Fill') + ' fill).', 'NEC Ch. 9'),
+      SG('Leave room for future circuits — designers often aim for about 30 % fill.', 'Good practice'),
+      SG('Derate ampacity when more than three current-carrying wires share a conduit.', 'NEC 310.15(C)(1)')]; },
+    egc: function (v, rows) { return [
+      SG('Run a ' + sgv(rows, 'Equipment grounding conductor') + ' EGC with the circuit conductors.', 'NEC 250.122 / PEC 2.50'),
+      SG('Bond the service with a ' + sgv(rows, 'Grounding electrode conductor') + ' GEC to the ground rods and water pipe.', 'NEC 250.66'),
+      SG('Measure the ground resistance after installation and add rods if it is above 25 Ω.', 'NEC 250.53')]; },
+    motor: function (v, rows) { return [
+      SG('Use a ' + sgv(rows, 'Short-circuit breaker') + ' breaker with the overload relay set to ' + sgv(rows, 'Overload setting') + '.', 'NEC 430.32 / 430.52'),
+      SG('Wire the branch with ' + sgv(rows, 'Branch conductor') + ' (125 % of FLC).', 'NEC 430.22'),
+      +v.st >= 6 && v.p > 7.5 ? SG('Above 7.5 kW (10 hp), consider a star-delta, soft starter or VFD to limit the voltage dip.', 'Utility rules / IEEE 399') : SG('Choose an IE3 (premium) motor — it pays back quickly on long run hours.', 'IEC 60034-30')]; },
+    ups: function (v, rows) { return [
+      SG('Choose a ' + sgv(rows, 'UPS rating') + ' online (double-conversion) UPS for this load.', 'IEC 62040-3'),
+      SG('Size the battery for ' + sgv(rows, 'Battery for the target') + ' to meet the target time at end of life.', 'IEEE 485'),
+      SG('Keep the battery room near 25 °C (77 °F) — every 8–10 K above that halves lead-acid battery life.', 'IEEE 1184')]; },
+    evc: function (v, rows) { return [
+      SG('Give each charger its own ' + sgv(rows, 'Breaker per charger') + ' circuit with a Type B RCD (or Type A with 6 mA DC detection).', 'IEC 60364-7-722 / NEC 625'),
+      SG('Use a load-management system so the feeder can stay at ' + sgv(rows, 'Feeder load') + '.', 'NEC 625.42'),
+      SG('Run spare conduits to more parking bays now — adding them later costs far more.', 'Good practice')]; },
+    lpg: function (v, rows) { return [
+      SG('Use ' + sgv(rows, 'Pipe size (Sch. 40)') + ' black steel (or copper) pipe, pressure-tested and leak-checked before use.', 'NFPA 54 / IFGC'),
+      SG('Keep LPG cylinders outdoors in a ventilated cage with a regulator, and fit a gas detector in the kitchen.', 'NFPA 58 / RA 9514'),
+      SG('Add an emergency shut-off valve at an accessible point outside the kitchen.', 'Fire Code / NFPA 54')]; },
+    exloop: function (v, rows) { return [
+      SG('Allow ' + sgv(rows, 'Expansion') + ' of movement — use an L-bend leg of ' + sgv(rows, 'L-bend / offset leg') + ' or a U-loop.', 'Pipe stress practice'),
+      SG('Anchor at both ends of each run and guide the pipe near loops so it moves in line.', 'ASME B31.9'),
+      v.m === 'ppr' || v.m === 'pex' || v.m === 'pvc' ? SG('Plastic pipe moves about 10 × more than steel — plan loops on long hot-water runs.', 'Manufacturer design guide') : SG('For large steel movements, consider an expansion joint with guides.', 'EJMA')]; },
+    greasetrap: function (v, rows) { return [
+      SG('Install a ' + sgv(rows, 'Gravity interceptor') + ' gravity interceptor outside the kitchen with traffic-rated covers.', 'UPC 1014'),
+      SG('Fit a hydromechanical unit of ' + sgv(rows, 'Hydromechanical unit (sink)') + ' under each pot sink if space allows.', 'PDI G101'),
+      SG('Pump out when grease and solids reach 25 % of the depth, and keep a log for inspections.', 'UPC 1014 / LGU rules')]; },
+    rainwater: function (v, rows) { return [
+      SG('Install a ' + sgv(rows, 'Storage tank') + ' tank with a first-flush diverter of ' + sgv(rows, 'First-flush diverter') + '.', 'ASPE 63'),
+      SG('Use harvested water for toilets, irrigation and cooling-tower make-up; treat it before any potable use.', 'RA 6716 / NPCP'),
+      SG('Screen gutters and overflow to the storm drain to keep mosquitoes and leaves out.', 'Good practice')]; },
+    fext: function (v, rows) { return [
+      SG('Mount ' + sgv(rows, 'Extinguishers') + ' × ' + v.r + '-A ABC extinguishers on escape routes and near exits.', 'NFPA 10 / RA 9514'),
+      SG('Add a Class K (wet chemical) unit within 9 m (30 ft) of commercial cooking, and CO₂ units near electrical rooms.', 'NFPA 10 §6.6'),
+      SG('Schedule monthly checks and yearly servicing by an accredited contractor.', 'NFPA 10 Ch. 7 / BFP')]; },
+    standpipe: function (v, rows) { return [
+      SG('Provide ' + sgv(rows, 'System demand') + ' at ' + sgv(rows, 'Pump pressure') + ' with a ' + sgv(rows, 'Riser size (minimum)') + ' riser.', 'NFPA 14'),
+      SG('Fit a fire-department connection (Siamese) at the street side within 30 m of a hydrant.', 'NFPA 14 §6.4'),
+      SG('Add pressure-regulating valves where outlet static pressure exceeds 100 psi (6.9 bar).', 'NFPA 14 §7.2')]; },
+    firetank: function (v, rows) { return [
+      SG('Provide ' + sgv(rows, 'Fire reserve volume') + ' reserved for fire, with a separate suction or anti-vortex plate.', 'NFPA 22 / NFPA 20'),
+      SG('Use a level switch to alarm low water and a refill line that recovers in ' + sgv(rows, 'Refill time') + '.', 'NFPA 22'),
+      SG('Where the tank also serves domestic water, draw domestic from above the fire reserve level.', 'Combined tank practice')]; },
+    smoke: function (v, rows) { return [
+      SG('Exhaust ' + sgv(rows, 'Smoke exhaust') + ' with fans rated for the smoke temperature (' + sgv(rows, 'Smoke temperature') + ').', 'NFPA 92 / EN 12101-3'),
+      SG('Bring in make-up air low and slow (≤ 1 m/s, 200 fpm) so it does not disturb the plume.', 'NFPA 92 §5.9'),
+      SG('Use several exhaust inlets to avoid plugholing, and confirm with a CFD model for complex atria.', 'NFPA 92 §5.6')]; },
+    payback: function (v, rows) { return [
+      SG(/Pass/.test(sgv(rows, 'Design check')) ? 'Worth replacing — payback ' + sgv(rows, 'Simple payback') + '.' : 'Payback is long — check the run hours and the price, or wait for the old unit to fail.', 'Simple payback'),
+      SG('Check for utility or DOE energy-efficiency rebates that shorten the payback.', 'PH DOE EEC Act (RA 11285)'),
+      SG('It avoids ' + sgv(rows, 'CO₂ avoided') + ' — useful for green-building credits.', 'BERDE / LEED')]; }
+  });
+
   /* Design suggestions for the five calculators. */
   Object.assign(SUGGEST, {
     chw: function (v) {
