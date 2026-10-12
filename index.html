@@ -102,7 +102,7 @@ svg { display: block; }
   position: sticky; top: 0; z-index: 50;
   background: var(--deep);
   border-bottom: 1px solid var(--line);
-  overflow: hidden;
+  overflow: visible;   /* the mobile menu drops below the header */
 }
 .site-header::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -219,7 +219,7 @@ svg { display: block; }
 .nav-mobile li + li { border-top: 1px solid var(--line); }
 .nav-mobile a { display: block; padding: 16px 0; font-size: 18px; color: var(--text); }
 
-@media (min-width: 768px) {
+@media (min-width: 1100px) {   /* seven links + search + SI/IMP need about 1,100 px */
   .nav-desktop { display: flex; margin-right: 8px; }
   .menu-btn, .nav-mobile { display: none !important; }
 }
@@ -1523,6 +1523,12 @@ body.dock-hidden .dock-tab { left: 0; bottom: 60px; width: 22px; height: 56px; b
 body.dock-hidden .dock-tab svg { transform: rotate(180deg); }
 body.modal-open .dock-tab { visibility: hidden; }
 @media (prefers-reduced-motion: reduce) { .dock-tab, .cv, .cp, .dock-tab svg { transition: none; } }
+
+/* Mobile menu: slide down under the header, scroll if the phone is short */
+.nav-mobile { background: #0B0B0B !important; max-height: calc(100vh - 64px); max-height: calc(100dvh - 64px); overflow: auto; box-shadow: 0 24px 40px -20px rgba(0, 0, 0, 0.9); animation: navDrop 220ms cubic-bezier(.2, .7, .2, 1); }
+.nav-mobile a.active, .nav-mobile a:hover { color: var(--accent); }
+@keyframes navDrop { from { opacity: 0; transform: translateY(-8px); } }
+@media (prefers-reduced-motion: reduce) { .nav-mobile { animation: none; } }
 </style>
 </head>
 <body>
@@ -11508,7 +11514,7 @@ body.modal-open .dock-tab { visibility: hidden; }
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && !mnav.hidden) { setMenu(false); menuBtn.focus(); }
   });
-  window.matchMedia('(min-width: 768px)').addEventListener('change', function (m) { if (m.matches) setMenu(false); });
+  window.matchMedia('(min-width: 1100px)').addEventListener('change', function (m) { if (m.matches) setMenu(false); });
 
   /* ---------- Motion & interaction ---------- */
 
