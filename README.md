@@ -14,6 +14,21 @@ The Design Pitfalls view shows 116 common design and installation mistakes acros
 
 The whole site is one self-contained file, `index.html` (vanilla JavaScript, inline CSS and SVG). Vite is used only to serve and build it.
 
+## Ads (Adsterra)
+
+Ad codes go in the `ADSTERRA ADS` block near the end of `index.html`, just above the calculator window markup. Paste each code from Adsterra (Websites → your site → GET CODE) inside one `<template>`, exactly as Adsterra gives it; an empty template shows nothing.
+
+| Template | Size to create in Adsterra | Shows in |
+|---|---|---|
+| Native Banner (switched off — code kept in a comment) | responsive | Home, calculator windows, Design Pitfalls, Codes & Standards when switched on |
+| 728 × 90 banner (added) | 728 × 90 | Home (under the category tiles), Design Pitfalls, Codes & Standards — screens 800 px and wider |
+| 320 × 50 banner (added) | 320 × 50 | above the calculator list (all screens); Home, Pitfalls and Standards on screens under 800 px |
+| sidebar | 160 × 300 | the calculator category sidebar (desktop) |
+| calculator result | 300 × 250 | every calculator window, under the result |
+| Social Bar (added) · Popunder | — | whole page; Social Bar position is set in the Adsterra dashboard |
+
+Change `data-ad` to move a code to other slots (`home`, `calc-top`, `calc-side`, `calc-result`, `pitfalls`, `standards`), `data-size` to match the banner size (or `auto` for a Native Banner) and `data-media` to `desktop`, `mobile` or `all`. Fixed-size banners load in their own frame when their slot scrolls into view; the Native Banner runs in the page itself (in a frame its images never load) and moves to whichever of its slots is on screen, and ads never load in automated test browsers. Add your live domain in Adsterra before testing — ads usually do not fill on `localhost` or a file opened from disk.
+
 ## Commands
 
 | Command | What it does |
@@ -31,6 +46,7 @@ The whole site is one self-contained file, `index.html` (vanilla JavaScript, inl
 
 - `site.spec.js` — page loads without errors, category filters, compact view, minimize all, search.
 - `navigation.spec.js` — one view at a time, header links and Back, "/" to search, Home category tiles, recently used calculators, inputs beside the result on wide screens, compact list by default.
+- `ads.spec.js` — ad slots stay hidden without codes; pasted codes fill their slots in their own frames, and page-level codes run once.
 - `search.spec.js` — Standards search (references, sources, regional codes, whole-number matching, highlights), Pitfalls search highlights, and "/" focusing the search of the current view.
 - `pitfalls.spec.js` — the Design Pitfalls view: a wrong and a right drawing for each mistake, labels kept inside every drawing, discipline filter and search, links to and from calculators.
 - `refrigeration.spec.js` — known values for the refrigerant P–T chart, product freezing, evaporator / condensing unit selection, refrigerant charge safety, ice storage and refrigerant pipe supports.

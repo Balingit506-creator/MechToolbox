@@ -30,3 +30,12 @@ for (const width of [390, 600, 1280]) {
     }
   })
 }
+
+// The swipeable category and suggestion chip rows must not widen the calculator column on phones.
+test('the calculator list fits a phone screen', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await openSite(page)
+  const card = await page.locator('#card-grid .card').first().boundingBox()
+  expect(card.x + card.width).toBeLessThanOrEqual(390)
+  await expect(page.locator('.view-toggle')).toBeInViewport({ ratio: 1 })
+})

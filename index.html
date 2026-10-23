@@ -8,7 +8,10 @@
 <meta name="theme-color" content="#0B0B0B">
 <script>
   document.documentElement.classList.add('js');
-  window.addEventListener('error', function () { document.documentElement.classList.remove('js'); });
+  window.addEventListener('error', function (e) {
+    if (e && (e.message === 'Script error.' || (e.filename && e.filename.split('#')[0] !== location.href.split('#')[0]))) return; // errors from other sites' scripts (ads) are not ours
+    document.documentElement.classList.remove('js');
+  });
 </script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2307110F'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%232DD4A8' stroke-width='5' stroke-dasharray='3.534 3.534'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%232DD4A8' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%232DD4A8'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1609,8 +1612,8 @@ main > section.section { min-height: calc(100vh - 230px); min-height: calc(100dv
 
 /* Calculators: categories in a sidebar on desktop, a single swipeable row on phones */
 #calculators > .wrap { max-width: 1360px; }
-.calc-layout { display: grid; }
-.calc-main { min-width: 0; }
+.calc-layout { display: grid; grid-template-columns: minmax(0, 1fr); } /* the swipeable chip rows must not widen the column */
+.calc-main, .calc-side { min-width: 0; }
 .calc-side .f-group { display: none; }
 @media (max-width: 1023px) {
   .filters [data-filter="all"] .f-label { display: none; }
@@ -1870,6 +1873,17 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
 .pf-glass { fill: rgba(127, 217, 98, 0.3); stroke: var(--pass); stroke-width: 1.4; }
 .pf-liquidpool { fill: rgba(56, 189, 248, 0.3); }
 .pf-chain { stroke: var(--muted); stroke-width: 2; stroke-dasharray: 4 2; }
+/* Ad slots: hidden until an Adsterra code is pasted for them */
+.ad-slot { margin: 24px auto; text-align: center; }
+.ad-slot[hidden] { display: none; }
+.ad-slot::before { content: "Advertisement"; display: block; margin-bottom: 6px; font: 500 10px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); opacity: 0.7; }
+.ad-frame { display: block; max-width: 100%; margin: 0 auto; border: 0; }
+.ad-side { margin: 18px 0 0; }
+.ad-modal { margin: 0 16px 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+@media (min-width: 640px) { .ad-modal { margin: 0 24px 24px; } }
+@media (max-width: 1023px) { .ad-side { display: none !important; } }
+.ad-native { width: 100%; text-align: left; }
+.ad-slot.ad-waiting { display: none !important; } /* a native slot while the banner is shown elsewhere */
 </style>
 </head>
 <body>
@@ -2048,6 +2062,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       <div class="hq-head"><h2>Jump straight in</h2><a href="#calculators">All calculators <span aria-hidden="true">→</span></a></div>
       <div class="hq-grid" id="hq-grid"></div>
       <div class="hq-recent" id="hq-recent" hidden><span class="f-group">Recently used</span><div class="recent-list" id="hq-recent-list"></div></div>
+      <div class="ad-slot" data-ad-slot="home" hidden></div>
     </div>
   </section>
 
@@ -2079,6 +2094,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
         <p class="f-group">Recently used</p>
         <div class="recent-list" id="side-recent-list"></div>
       </div>
+      <div class="ad-slot ad-side" data-ad-slot="calc-side" hidden></div>
       </aside>
       <div class="calc-main">
       <div class="calc-search" role="search">
@@ -2104,6 +2120,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
         <p>No calculators match <strong id="search-term"></strong>.</p>
         <button type="button" class="btn btn-outline btn-sm" id="search-clear">Clear search</button>
       </div>
+      <div class="ad-slot" data-ad-slot="calc-top" hidden></div>
       <div class="view-bar">
         <p class="min-note" id="min-note" aria-live="polite" hidden></p>
         <button type="button" class="min-all" id="min-all" aria-expanded="true" aria-controls="card-grid">
@@ -2157,6 +2174,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       </div>
       <p class="pf-count" id="pf-count" aria-live="polite"></p>
       <p class="pf-empty" id="pf-empty" hidden>No pitfalls match — try another word or pick “All”.</p>
+      <div class="ad-slot" data-ad-slot="pitfalls" hidden></div>
       <div class="pf-grid" id="pf-grid"></div>
     </div>
   </section>
@@ -2216,6 +2234,8 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
         <p class="pf-count" id="std-count" aria-live="polite"></p>
         <p class="pf-empty" id="std-empty" hidden>Nothing matches — try a code number (e.g. 62.1), a standard (NEC, SMACNA) or a calculator name.</p>
       </div>
+
+      <div class="ad-slot" data-ad-slot="standards" hidden></div>
 
       <div class="std-callout reveal" role="note">
         <p><strong>How these references were compiled.</strong> The formulas and values in MechToolBox were written from established engineering knowledge of the standards listed here — they were not transcribed page by page from licensed copies. Editions differ, local amendments apply, and some values are typical rather than code-mandated. Always confirm against the edition your jurisdiction has adopted.</p>
@@ -2398,6 +2418,74 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   </form>
 </dialog>
 
+<!-- ===================================== ADSTERRA ADS =====================================
+  Paste each ad code from Adsterra (Websites → your site → GET CODE) inside one <template> below,
+  exactly as Adsterra gives it (both <script> tags). An empty <template> shows nothing.
+
+  data-ad     where the ad shows — one or more of these slots, separated by spaces:
+                home          Home page, under the category tiles
+                calc-top      Calculators, above the list (phones — the sidebar has no room there)
+                calc-side     Calculators, in the category sidebar (desktop)
+                calc-result   Inside every calculator window, under the result
+                pitfalls      Design Pitfalls, above the cards
+                standards     Codes & Standards, under the search box
+  data-size   the banner size you created in Adsterra: 728x90, 468x60, 300x250, 160x300, 160x600, 320x50 —
+              or "auto" for a Native Banner
+  data-media  desktop (800 px and wider), mobile (narrower) or all
+
+  Each ad loads only when its slot scrolls into view, inside its own frame, so it cannot break the page.
+  Ads never load in automated test browsers. Social Bar and Popunder codes go in the two "page"
+  templates at the end — they cover the whole page, so add them only if you accept that trade-off.
+========================================================================================= -->
+<div id="ad-codes" hidden>
+  <!-- Native Banner (responsive) — switched off: its code is kept inside the comment below.
+       To use it again, remove the comment markers around the two lines; the first filled template for a slot wins. -->
+  <template data-ad="home calc-result pitfalls standards" data-size="auto" data-media="all">
+<!--
+<script async="async" data-cfasync="false" src="https://bauval.org/21/4ac7cb50622a8d6588263c9b3708ebf2"></script>
+<div id="container-4ac7cb50622a8d6588263c9b3708ebf2"></div>
+-->
+  </template>
+  <!-- 728 × 90 banner: Home, Design Pitfalls and Codes & Standards on desktop (phones get the 320 × 50 below). -->
+  <template data-ad="home pitfalls standards" data-size="728x90" data-media="desktop">
+<script>
+  atOptions = {
+    'key' : '5242aee04730c2507cd1ad2241469a2b',
+    'format' : 'iframe',
+    'height' : 90,
+    'width' : 728,
+    'params' : {}
+  };
+</script>
+<script src="https://bauval.org/22/5242aee04730c2507cd1ad2241469a2b"></script>
+  </template>
+  <!-- 320 × 50 banner: above the calculator list (phones and desktop), and Home, Pitfalls and Standards on phones. -->
+  <template data-ad="calc-top home pitfalls standards" data-size="320x50" data-media="all">
+<script>
+  atOptions = {
+    'key' : '94cabf42639f417dd7c1dba17450e483',
+    'format' : 'iframe',
+    'height' : 50,
+    'width' : 320,
+    'params' : {}
+  };
+</script>
+<script src="https://bauval.org/22/94cabf42639f417dd7c1dba17450e483"></script>
+  </template>
+  <template data-ad="calc-side" data-size="160x300" data-media="desktop">
+    <!-- paste a 160x300 banner code here -->
+  </template>
+  <template data-ad="calc-result" data-size="300x250" data-media="all">
+    <!-- paste a 300x250 banner code here -->
+  </template>
+  <template data-ad-page="social-bar">
+<script data-cfasync="false" src="https://bauval.org/14/58ae293542b30c60805187f5eac6be77"></script>
+  </template>
+  <template data-ad-page="popunder">
+    <!-- optional: paste a Popunder code here -->
+  </template>
+</div>
+
 <dialog class="modal" id="modal" aria-labelledby="m-title">
   <div class="m-head">
     <div>
@@ -2422,6 +2510,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     </div>
   </div>
   <div class="m-body" id="m-body"></div>
+  <div class="ad-slot ad-modal" data-ad-slot="calc-result" hidden></div>
 </dialog>
 
 <script>
@@ -14074,6 +14163,70 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     var pid = b.dataset.pitfall;
     if (modal.open) { closeModal(); setTimeout(function () { showPitfall(pid); }, reduceMotion.matches ? 0 : 180); } else showPitfall(pid);
   });
+
+  /* ---------- Ads (Adsterra): each code pasted into a <template data-ad> fills the matching .ad-slot ---------- */
+  (function () {
+    if (navigator.webdriver) return; // never in automated test browsers
+    var codeOf = function (t) { return t.innerHTML.replace(/<!--[\s\S]*?-->/g, '').trim(); }; // the placeholder comment does not count
+    var mobile = window.matchMedia('(max-width: 799px)').matches; // below 800 px a 728-wide banner does not fit the content
+    var tpls = $$('#ad-codes template[data-ad]').filter(function (t) { var m = t.dataset.media || 'all'; return codeOf(t) && (m === 'all' || (m === 'mobile') === mobile); });
+    var pick = function (slot) { return tpls.filter(function (t) { return t.dataset.ad.split(/\s+/).indexOf(slot) >= 0; })[0]; };
+    var sizeOf = function (t) { var s = (t.dataset.size || 'auto').split('x'); return s.length === 2 ? [+s[0], +s[1]] : null; };
+    // Put an ad code into the page itself; scripts are re-created so they execute (template content is inert).
+    function inject(t, into) {
+      Array.prototype.forEach.call(t.content.childNodes, function (n) {
+        if (n.nodeName !== 'SCRIPT') { if (n.nodeType === 1) into.appendChild(n.cloneNode(true)); return; }
+        var s = document.createElement('script');
+        Array.prototype.forEach.call(n.attributes, function (a) { s.setAttribute(a.name, a.value); });
+        s.text = n.textContent;
+        into.appendChild(s);
+      });
+    }
+    // Fixed-size banners run in their own frame: Adsterra's global atOptions and document.write cannot clash between slots or touch the page.
+    function fill(box) {
+      var t = pick(box.dataset.adSlot), size = sizeOf(t), f = document.createElement('iframe');
+      f.title = 'Advertisement'; f.className = 'ad-frame'; f.setAttribute('scrolling', 'no');
+      f.width = size[0]; f.height = size[1];
+      f.srcdoc = '<!doctype html><html><head><meta charset="utf-8"><base target="_blank"><style>html,body{margin:0;padding:0;background:transparent;overflow:hidden}body{display:flex;justify-content:center}</style></head><body>' + codeOf(t) + '</body></html>';
+      box.appendChild(f);
+    }
+    // Native banners must run in the page itself (inside a frame their images never load), and their container id can exist
+    // only once per page — so one native banner moves to whichever of its slots is on screen: the open calculator window first,
+    // otherwise the current view.
+    var native = null;
+    function placeNative() {
+      var mine = slots.filter(function (b) { return !sizeOf(pick(b.dataset.adSlot)); });
+      var shown = mine.filter(function (b) { var d = b.closest('dialog'); return d ? d.open : !b.closest('[hidden]'); }); // its view (or the window) is showing
+      var target = shown.filter(function (b) { return b.closest('dialog[open]'); })[0] || shown[0];
+      if (!target) return;
+      if (!native) { native = document.createElement('div'); native.className = 'ad-native'; target.appendChild(native); inject(pick(target.dataset.adSlot), native); }
+      else if (native.parentNode !== target) target.appendChild(native);
+      mine.forEach(function (b) { b.classList.toggle('ad-waiting', b !== target); });
+    }
+    var slots = $$('.ad-slot').filter(function (box) {
+      var t = pick(box.dataset.adSlot); if (!t) return false;
+      var size = sizeOf(t); box.hidden = false;
+      if (size) box.style.minHeight = (size[1] + 20) + 'px'; // reserve the space so the page does not jump when the ad arrives
+      return true;
+    });
+    var io = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        if (sizeOf(pick(e.target.dataset.adSlot))) { io.unobserve(e.target); fill(e.target); } else if (!native) placeNative(); // the native banner first loads when a slot comes near
+      });
+    }, { rootMargin: '200px' }) : null;
+    slots.forEach(function (box) { if (io) io.observe(box); else if (sizeOf(pick(box.dataset.adSlot))) fill(box); });
+    if (!io) placeNative();
+    // Follow the views and the calculator window with the native banner once it has loaded.
+    var follow = function () { if (native) setTimeout(placeNative, 0); };
+    window.addEventListener('hashchange', follow);
+    window.addEventListener('popstate', follow);
+    var dlg = $('#modal');
+    dlg.addEventListener('close', follow);
+    new MutationObserver(function () { if (dlg.open) { if (native) follow(); else if (!io) placeNative(); } }).observe(dlg, { attributes: true, attributeFilter: ['open'] });
+    // Page-level formats (Social Bar, Popunder) are meant to run in the page itself.
+    $$('#ad-codes template[data-ad-page]').forEach(function (t) { if (codeOf(t)) inject(t, document.body); });
+  })();
 
   /* ---------- Views: one section on screen at a time, picked from the header (hash routing, so Back works) ---------- */
   var views = $$('main > section');
