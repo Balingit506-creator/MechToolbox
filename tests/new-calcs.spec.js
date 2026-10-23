@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { openSite, openCalc, closeCalc, setField, row, rows, suggestions, setSystem, setCode } from './helpers.js'
+import { openSite, openCalc, closeCalc, setField, row, rows, suggestions, setSystem, setCode, show } from './helpers.js'
 
 // Known results for the chilled-water, pump, cable, lighting and water-supply calculators (default inputs).
 test.describe('known values', () => {
@@ -71,6 +71,7 @@ test.describe('known values', () => {
 // Project links and BOQ items.
 test('room data flows cooling load → chilled water → pump, and into the BOQ', async ({ page }) => {
   const errors = await openSite(page)
+  await show(page, 'projects')
   await page.locator('#pj-new-name').fill('Office L3')
   await page.locator('#pj-create').click()
   await page.locator('#pj-r-name').fill('Open office')

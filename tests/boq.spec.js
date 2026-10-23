@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test'
-import { openSite, closeCalc, setCode } from './helpers.js'
+import { openSite, closeCalc, setCode, show } from './helpers.js'
 
 // One room taken to the duct step, with 20 m supply and 10 m return duct runs.
 async function roomToDuct(page) {
+  await show(page, 'projects')
   await page.locator('#pj-new-name').fill('Office L3')
   await page.locator('#pj-create').click()
   await page.locator('#pj-r-name').fill('Open office')

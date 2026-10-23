@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test'
-import { openSite, closeCalc, row } from './helpers.js'
+import { openSite, closeCalc, row, show } from './helpers.js'
 
 async function createProjectWithRoom(page) {
+  await show(page, 'projects')
   await page.locator('#pj-new-name').fill('Office L3')
   await page.locator('#pj-create').click()
   await page.locator('#pj-r-name').fill('Open office')
@@ -168,6 +169,7 @@ test('ceiling height defaults to 10 ft in imperial units', async ({ page }) => {
   await openSite(page)
   await page.locator('.site-header button[data-sys="imp"]').click()
   await expect(page.locator('#gd-q-h')).toHaveValue('10')
+  await show(page, 'projects')
   await page.locator('#pj-new-name').fill('X')
   await page.locator('#pj-create').click()
   await expect(page.locator('#pj-r-h')).toHaveValue('10')

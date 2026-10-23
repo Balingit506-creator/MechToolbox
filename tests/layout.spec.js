@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test'
-import { openSite, closeCalc } from './helpers.js'
+import { openSite, closeCalc, show } from './helpers.js'
 
 // Wide tables (room schedule, BOQ) must scroll inside their own box — the page itself never scrolls sideways.
 for (const width of [390, 600, 1280]) {
   test(`no horizontal page overflow at ${width}px with a project and the BOQ open`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 })
     await openSite(page)
+    await show(page, 'projects')
     await page.locator('#pj-new-name').fill('Office L3')
     await page.locator('#pj-create').click()
     await page.locator('#pj-r-l').fill('12.5')

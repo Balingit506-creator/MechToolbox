@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test'
-import { openSite, closeCalc } from './helpers.js'
+import { openSite, closeCalc, show, setCode } from './helpers.js'
 
 async function quickStart(page) {
+  await show(page, 'guide')
   await page.locator('#gd-q-name').fill('Office L3')
   await page.locator('#gd-q-room').fill('Open office')
   await page.locator('#gd-q-l').fill('12.5')
@@ -11,7 +12,7 @@ async function quickStart(page) {
 }
 
 test('quick start creates the project and the first step opens the calculator filled from the room', async ({ page }) => {
-  const errors = await openSite(page)
+  const errors = await openSite(page, 'guide')
   await expect(page.locator('#gd-quick')).toBeVisible()
   await quickStart(page)
   await expect(page.locator('.gd-panel h3')).toHaveText('Cooling load')
@@ -35,9 +36,9 @@ test('quick start creates the project and the first step opens the calculator fi
 })
 
 test('workflows, code-basis targets, optional steps and the review step', async ({ page }) => {
-  await openSite(page)
+  await openSite(page, 'guide')
   await quickStart(page)
-  await page.locator('#std-ph .codeb button[data-code="ph"]').click()
+  await setCode(page, 'ph')
   await page.locator('.gd-tab', { hasText: 'Electrical' }).click()
   await expect(page.locator('.gd-panel h3')).toHaveText('Lighting')
   await expect(page.locator('.gd-panel')).toContainText('Philippine Green Building Code')
@@ -57,16 +58,18 @@ test('workflows, code-basis targets, optional steps and the review step', async 
 })
 
 test('the guide follows the active room', async ({ page }) => {
-  await openSite(page)
+  await openSite(page, 'guide')
   await quickStart(page)
   await page.locator('#gd-open').click()
   await page.locator('#pj-save').click()
   await closeCalc(page)
+  await show(page, 'projects')
   await page.locator('#pj-r-name').fill('Meeting room')
   await page.locator('#pj-r-l').fill('6')
   await page.locator('#pj-r-w').fill('5')
   await page.locator('#pj-r-p').fill('8')
   await page.locator('#pj-form button[type="submit"]').click()
+  await show(page, 'guide')
   await expect(page.locator('#gd-room')).toHaveValue(/.+/)
   await expect(page.locator('.gd-tab[aria-pressed="true"]')).toContainText('0/6') // new room, nothing done yet
   await page.locator('#gd-room').selectOption({ label: 'Open office' })

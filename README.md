@@ -2,6 +2,14 @@
 
 Engineering calculators for M·E·P·F·S design (mechanical, electrical, plumbing, fire protection, sanitary), with live drawings, design suggestions, printable PDF calculation reports, a step-by-step design guide (HVAC, electrical, plumbing & sanitary, fire), projects that carry room data from one calculator to the next, a bill of quantities for Electrical, Plumbing & Sanitary, Mechanical and Fire Protection in the standard QS format (material and labor costs, supervision & profit, contingencies, VAT) with a BOM, and code references for International, Philippine, Australian and US practice.
 
+Refrigeration tools include cold-room load, product freezing load and time (blast freezers), evaporator and condensing-unit selection, refrigeration cycle and COP, a refrigerant P–T chart, superheat and subcooling, refrigerant pipe sizing, refrigerant charge safety (ASHRAE 15 / IEC 60335-2-40) and ice thermal storage.
+
+Plumbing adds hot water recirculation, high-rise pressure zones (PRV), water hammer surge and swimming pool circulation and heating. Fire protection adds clean agent quantity (NFPA 2001), fire alarm battery standby, detector spacing and count (NFPA 72), occupant load and egress (IBC) and foam concentrate quantity (NFPA 11 / 16).
+
+Hanger and support take-offs cover chilled water, ductwork, plumbing (IPC Table 308.5 spacing, riser clamps), fire sprinkler piping (NFPA 13 spacing and rod sizes, seismic sway braces) and refrigerant line sets (insulated liquid + suction lines, supports at bends) — supports, rod sizes and lengths, angle bar, clamps or saddles, anchors and cost.
+
+The site works like an app: the header switches between views (Home, Calculators, Guide, Projects, Estimate, Utilities, Standards, About) instead of one long page. Each view has its own address (`#calculators`, `#projects`…), so links and the Back button work. Calculators are grouped in a sidebar by category, open in a two-column window (inputs beside the result), and the last six you used are listed on Home and in the sidebar.
+
 The whole site is one self-contained file, `index.html` (vanilla JavaScript, inline CSS and SVG). Vite is used only to serve and build it.
 
 ## Commands
@@ -20,6 +28,9 @@ The whole site is one self-contained file, `index.html` (vanilla JavaScript, inl
 `tests/` holds Playwright tests that open `index.html` directly:
 
 - `site.spec.js` — page loads without errors, category filters, compact view, minimize all, search.
+- `navigation.spec.js` — one view at a time, header links and Back, "/" to search, Home category tiles, recently used calculators, inputs beside the result on wide screens, compact list by default.
+- `refrigeration.spec.js` — known values for the refrigerant P–T chart, product freezing, evaporator / condensing unit selection, refrigerant charge safety, ice storage and refrigerant pipe supports.
+- `plumbing-fire.spec.js` — known values for hot water recirculation, pressure zones, water hammer, pool circulation, clean agent, fire alarm battery, detector layout, egress, foam, and plumbing and sprinkler pipe hangers.
 - `all-calculators.spec.js` — every calculator opens and produces a result in SI and IMP under every code basis (INTL / PH / AU / US).
 - `values.spec.js` — known results for key calculators (duct sizing, diffusers, electrical, fire). If one fails, a formula or table changed.
 - `guide.spec.js` — the design guide: quick start, steps that open calculators filled from the room, auto-advance after saving, code-basis targets, optional steps, review / BOQ, and switching rooms.
@@ -30,7 +41,9 @@ The whole site is one self-contained file, `index.html` (vanilla JavaScript, inl
 - `report.spec.js` — the PDF calculation report: project details, sections, results, drawing, suggestions, code basis, wide calculators.
 - `codes-units.spec.js` — Philippine / Australian / US electrical rules, natural-ventilation rules, unit conversion round trips and unit lists per system.
 
-Run one file with `npx playwright test tests/values.spec.js`.
+Run one file with `npx playwright test tests/values.spec.js`. On a slower PC, limit the browsers running at once with `npx playwright test --workers=2` — with too many in parallel, tests time out.
+
+Tests open the site on the Calculators view; use the `show(page, 'projects')` helper to switch views, as a user would with the header links.
 
 ## Note
 

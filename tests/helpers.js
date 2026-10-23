@@ -4,17 +4,25 @@ import { expect } from '@playwright/test'
 
 export const SITE = pathToFileURL(resolve('index.html')).href
 
-// Open the site and fail the test on any script error.
-export async function openSite(page) {
+// Open the site on one of its views (default: Calculators) and fail the test on any script error.
+export async function openSite(page, view = 'calculators') {
   const errors = []
   page.on('pageerror', (e) => errors.push(e.message))
-  await page.goto(SITE)
-  await expect(page.locator('#card-grid .card')).toHaveCount(108)
+  await page.goto(SITE + (view ? '#' + view : ''))
+  await expect(page.locator('#card-grid .card')).toHaveCount(125)
   return errors
 }
 
+// Switch to another view — Home ('top'), 'calculators', 'guide', 'projects', 'estimate', 'utilities', 'standards', 'about' — like the header links do.
+export async function show(page, view) {
+  await page.evaluate((v) => { location.hash = v }, view)
+  await expect(page.locator('#' + view)).toBeVisible()
+}
+
 export async function openCalc(page, id) {
-  await page.locator(`[data-open="${id}"]`).first().click()
+  const btn = page.locator(`#card-grid [data-open="${id}"]`)
+  if (await btn.isVisible()) await btn.click()
+  else await page.evaluate((x) => (document.querySelector('#card-grid [data-open="' + x + '"]') || document.querySelector('[data-open="' + x + '"]')).click(), id) // another view, or a utility
   await expect(page.locator('#modal')).toBeVisible()
 }
 
@@ -52,6 +60,10 @@ export async function setSystem(page, sys) {
   await page.locator(`.site-header button[data-sys="${sys}"]`).click()
 }
 
+// Pick the code basis on the Standards view, then return to the view the test was on.
 export async function setCode(page, code) {
+  const back = await page.evaluate(() => document.body.dataset.view)
+  await show(page, 'standards')
   await page.locator(`#std-ph .codeb button[data-code="${code}"]`).click()
+  await show(page, back)
 }

@@ -1562,6 +1562,108 @@ body.modal-open .dock-tab { visibility: hidden; }
   .cv-panel { bottom: 56px; } .cp-panel { bottom: 56px; }
   .fb-fab { right: 10px; bottom: 12px; }
 }
+/* ---------- App shell: one view on screen at a time (see route() in the script) ---------- */
+main > section[hidden] { display: none !important; }
+main > section.section { min-height: calc(100vh - 230px); min-height: calc(100dvh - 230px); }
+.section { padding: 32px 0 56px; }
+@media (min-width: 1024px) { .section { padding: 40px 0 64px; } }
+.section-head { max-width: 760px; margin-bottom: 24px; }
+.section-head h2 { font-size: clamp(1.6rem, 2.8vw, 2.2rem); margin: 12px 0 8px; }
+.section-head p:not(.eyebrow) { font-size: 15.5px; }
+@media (max-width: 639px) { .section-head { margin-bottom: 18px; } .section-head h2 { font-size: 1.45rem; } .section-head p:not(.eyebrow) { font-size: 14.5px; } }
+.f-group { margin: 0; font: 500 11px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+/* Home: category tiles and recently used under the hero */
+.hero { padding-bottom: 48px; }
+.hero .wrap.home-quick { display: block; margin-top: 40px; }
+.hq-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.hq-head h2 { font-size: clamp(1.15rem, 2vw, 1.4rem); }
+.hq-head a { color: var(--mint); font: 500 13px var(--mono); letter-spacing: 0.06em; text-decoration: none; white-space: nowrap; }
+.hq-head a:hover { color: var(--mint-hover); }
+.hq-grid { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 700px) { .hq-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .hq-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.hq-tile {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0;
+  padding: 14px 16px; border: 1px solid var(--edge); border-radius: 12px; background: var(--surface);
+  color: var(--text); text-align: left; cursor: pointer;
+  transition: border-color 200ms ease, background 200ms ease, transform 200ms cubic-bezier(.2, .7, .2, 1);
+}
+.hq-tile:hover { border-color: rgba(255, 176, 0, 0.5); background: #191712; transform: translateY(-2px); }
+.hq-tile:active { transform: scale(0.98); }
+.hq-k { padding: 4px 6px; border: 1px solid rgba(255, 176, 0, 0.3); border-radius: 6px; font: 600 11px/1 var(--mono); letter-spacing: 0.12em; color: var(--mint); }
+.hq-tile b { margin-top: 6px; font: 600 15.5px/1.25 var(--head); }
+.hq-tile small { color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+.hq-n { margin-top: auto; padding-top: 6px; font: 500 11.5px var(--mono); letter-spacing: 0.06em; color: var(--muted); }
+.hq-tile:hover .hq-n { color: var(--mint); }
+.hq-recent { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-top: 18px; }
+@media (max-width: 639px) { .hq-tile { padding: 12px 14px; } .hq-tile small { display: none; } }
+
+.recent-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.recent-chip {
+  padding: 6px 12px; border: 1px solid var(--edge); border-radius: 999px; background: rgba(21, 21, 21, 0.75);
+  color: var(--text); font: 500 13px/1.3 var(--body); text-align: left; cursor: pointer;
+  transition: border-color var(--ease), color var(--ease), background var(--ease);
+}
+.recent-chip:hover { border-color: var(--mint); color: var(--mint); }
+
+/* Calculators: categories in a sidebar on desktop, a single swipeable row on phones */
+#calculators > .wrap { max-width: 1360px; }
+.calc-layout { display: grid; }
+.calc-main { min-width: 0; }
+.calc-side .f-group { display: none; }
+@media (max-width: 1023px) {
+  .filters [data-filter="all"] .f-label { display: none; }
+  .filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -16px 12px; padding: 2px 16px 4px; }
+  .filters::-webkit-scrollbar, .search-chips::-webkit-scrollbar, .side-recent .recent-list::-webkit-scrollbar { display: none; }
+  .filters button { flex: 0 0 auto; }
+  .side-recent { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .side-recent[hidden] { display: none; }
+  .side-recent .f-group { display: block; flex: 0 0 auto; }
+  .side-recent .recent-list { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding-right: 16px; }
+  .side-recent .recent-chip { flex: 0 0 auto; white-space: nowrap; }
+  .search-chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding: 2px 16px 2px 0; }
+  .search-chips > * { flex: 0 0 auto; }
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+  .filters { margin: 0 -24px 12px; padding: 2px 24px 4px; }
+  .side-recent .recent-list, .search-chips { margin-right: -24px; padding-right: 24px; }
+}
+@media (min-width: 1024px) {
+  .calc-layout { grid-template-columns: 236px minmax(0, 1fr); gap: 36px; align-items: start; }
+  .calc-side { position: sticky; top: 84px; max-height: calc(100vh - 100px); overflow-y: auto; scrollbar-width: thin; padding-right: 4px; }
+  .calc-side .f-group { display: block; margin: 16px 12px 6px; }
+  .filters { flex-direction: column; flex-wrap: nowrap; gap: 2px; margin: 0; }
+  .filters button { width: 100%; padding: 8px 12px; border-color: transparent; border-radius: 10px; background: transparent; text-align: left; font: 500 14px/1.25 var(--body); letter-spacing: 0; text-transform: none; }
+  .filters button:hover { border-color: var(--edge); background: rgba(255, 176, 0, 0.05); }
+  .filters button[aria-pressed="true"] { border-color: rgba(255, 176, 0, 0.45); background: rgba(255, 176, 0, 0.09); box-shadow: none; }
+  .filters .f-key { min-width: 28px; font: 600 11px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+  .filters .f-label { flex: 1; }
+  .filters button[aria-pressed="true"] .f-label { color: var(--text); }
+  .side-recent { margin-top: 18px; padding-top: 6px; border-top: 1px solid var(--line); }
+  .side-recent .recent-list { flex-direction: column; gap: 2px; }
+  .side-recent .recent-chip { border-color: transparent; border-radius: 8px; background: transparent; padding: 7px 12px; font-size: 13.5px; }
+  .side-recent .recent-chip:hover { background: rgba(255, 176, 0, 0.05); }
+  .calc-main .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1200px) { .calc-main .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Calculator window: inputs on the left, the answer on the right, so the result is visible without scrolling */
+dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
+@media (min-width: 960px) {
+  .calc-split { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+  .calc-split .result { margin-top: 0; }
+  .calc-split .calc-draw { margin-top: 20px; }
+  .calc-out { position: sticky; top: calc(var(--mh, 100px) + 12px); }
+}
+.std-src { margin-bottom: 28px; }
+.std-src summary { display: flex; align-items: center; gap: 10px; cursor: pointer; list-style: none; }
+.std-src summary::-webkit-details-marker { display: none; }
+.std-src summary::after { content: "+"; margin-left: auto; font: 500 18px var(--mono); color: var(--mint); }
+.std-src[open] summary::after { content: "−"; }
+.std-src summary h3 { margin: 0; }
+.std-src[open] summary { margin-bottom: 14px; }
+@media (prefers-reduced-motion: reduce) { .hq-tile, .hq-tile:hover { transform: none; transition: none; } }
 </style>
 </head>
 <body>
@@ -1626,6 +1728,7 @@ body.modal-open .dock-tab { visibility: hidden; }
   </div>
   <nav class="nav-mobile" id="nav-mobile" aria-label="Mobile" hidden>
     <ul>
+      <li><a href="#top">Home</a></li>
       <li><a href="#calculators">Calculators</a></li>
       <li><a href="#guide">Design guide</a></li>
       <li><a href="#projects">Projects</a></li>
@@ -1645,8 +1748,8 @@ body.modal-open .dock-tab { visibility: hidden; }
         <h1 id="hero-title">Engineering <span class="mint">calculators.</span> Made simple.</h1>
         <p class="hero-lead">Fast, practical tools for mechanical, electrical, plumbing, fire protection and sanitary design — HVAC, ductwork, piping, cables, sprinklers, drainage, units, and more.</p>
         <div class="hero-actions">
-          <a class="btn btn-solid" href="#calculators">Explore calculators <span class="arr arr-down" aria-hidden="true">↓</span></a>
-          <a class="btn btn-outline" href="#utilities">View utilities <span class="arr arr-down" aria-hidden="true">↓</span></a>
+          <a class="btn btn-solid" href="#calculators">Explore calculators <span class="arr" aria-hidden="true">→</span></a>
+          <a class="btn btn-outline" href="#guide">Design guide <span class="arr" aria-hidden="true">→</span></a>
         </div>
         <ul class="hero-stats" aria-label="At a glance">
           <li><b id="stat-calcs">66</b><span>Calculators</span></li>
@@ -1654,7 +1757,7 @@ body.modal-open .dock-tab { visibility: hidden; }
           <li><b>4</b><span>Code bases</span></li>
           <li><b>PDF</b><span>Reports &amp; BOQ</span></li>
         </ul>
-        <p class="hero-codes"><span>Built on</span> ASHRAE · NFPA · NEC · PEC · AS/NZS · SMACNA · IPC</p>
+        <p class="hero-codes"><span>Built on</span> ASHRAE · NFPA · NEC · PEC · AS/NZS · SMACNA · IPC · IEC</p>
       </div>
 
       <div class="hero-visual">
@@ -1730,6 +1833,11 @@ body.modal-open .dock-tab { visibility: hidden; }
       <div class="hero-badge hb-2" aria-hidden="true"><span class="hb-ico hb-mint">❄</span><div><b>8.99 kW · 2.56 TR</b><small>Cooling load, 30 m² office</small></div></div>
       </div>
     </div>
+    <div class="wrap home-quick">
+      <div class="hq-head"><h2>Jump straight in</h2><a href="#calculators">All calculators <span aria-hidden="true">→</span></a></div>
+      <div class="hq-grid" id="hq-grid"></div>
+      <div class="hq-recent" id="hq-recent" hidden><span class="f-group">Recently used</span><div class="recent-list" id="hq-recent-list"></div></div>
+    </div>
   </section>
 
   <section class="section" id="calculators" aria-labelledby="calc-title">
@@ -1737,9 +1845,32 @@ body.modal-open .dock-tab { visibility: hidden; }
       <div class="section-head reveal">
         <p class="eyebrow">01 — Engineering Calculators</p>
         <h2 id="calc-title">Your everyday engineering toolbox.</h2>
-        <p>Choose a discipline and a tool, enter your project values, and get a clear result with the formula and engineering units shown.</p>
+        <p>Pick a category or search by name or everyday words. Each calculator shows the formula, the result in your units and a live drawing.</p>
       </div>
-      <div class="calc-search reveal" role="search">
+      <div class="calc-layout">
+      <aside class="calc-side" aria-label="Calculator categories">
+      <div class="filters" role="group" aria-label="Filter calculators by discipline">
+        <button type="button" data-filter="all" aria-pressed="true"><span class="f-key">All</span><span class="f-label">calculators</span><span class="f-n"></span></button>
+        <p class="f-group" aria-hidden="true">Mechanical · HVAC&amp;R</p>
+        <button type="button" data-filter="AC" aria-pressed="false"><span class="f-key">AC</span><span class="f-label">Air Conditioning</span><span class="f-n"></span></button>
+        <button type="button" data-filter="R" aria-pressed="false"><span class="f-key">R</span><span class="f-label">Refrigeration</span><span class="f-n"></span></button>
+        <button type="button" data-filter="H" aria-pressed="false"><span class="f-key">H</span><span class="f-label">Heating</span><span class="f-n"></span></button>
+        <button type="button" data-filter="V" aria-pressed="false"><span class="f-key">V</span><span class="f-label">Ventilation</span><span class="f-n"></span></button>
+        <button type="button" data-filter="DD" aria-pressed="false"><span class="f-key">DD</span><span class="f-label">Duct Design</span><span class="f-n"></span></button>
+        <button type="button" data-filter="M" aria-pressed="false"><span class="f-key">M</span><span class="f-label">Fans &amp; Air Terminals</span><span class="f-n"></span></button>
+        <p class="f-group" aria-hidden="true">Building services</p>
+        <button type="button" data-filter="E" aria-pressed="false"><span class="f-key">E</span><span class="f-label">Electrical</span><span class="f-n"></span></button>
+        <button type="button" data-filter="P" aria-pressed="false"><span class="f-key">P</span><span class="f-label">Plumbing</span><span class="f-n"></span></button>
+        <button type="button" data-filter="F" aria-pressed="false"><span class="f-key">F</span><span class="f-label">Fire Protection</span><span class="f-n"></span></button>
+        <button type="button" data-filter="S" aria-pressed="false"><span class="f-key">S</span><span class="f-label">Sanitary</span><span class="f-n"></span></button>
+      </div>
+      <div class="side-recent" id="side-recent" hidden>
+        <p class="f-group">Recently used</p>
+        <div class="recent-list" id="side-recent-list"></div>
+      </div>
+      </aside>
+      <div class="calc-main">
+      <div class="calc-search" role="search">
         <label for="calc-q" class="sr-only">Search calculators</label>
         <div class="input-wrap search-wrap">
           <svg class="search-ico" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
@@ -1752,20 +1883,9 @@ body.modal-open .dock-tab { visibility: hidden; }
           <span>Try:</span>
           <button type="button" data-q="aircon" style="--i:0">aircon</button><button type="button" data-q="duct" style="--i:1">duct</button><button type="button" data-q="exhaust" style="--i:2">exhaust</button>
           <button type="button" data-q="fan" style="--i:3">fan</button><button type="button" data-q="sprinkler" style="--i:4">sprinkler</button><button type="button" data-q="pipe" style="--i:5">pipe</button>
-          <button type="button" data-q="voltage" style="--i:6">voltage</button><button type="button" data-q="drain" style="--i:7">drain</button>
+          <button type="button" data-q="refrigerant" style="--i:6">refrigerant</button><button type="button" data-q="freezer" style="--i:7">freezer</button>
+          <button type="button" data-q="voltage" style="--i:8">voltage</button><button type="button" data-q="drain" style="--i:9">drain</button>
         </div>
-      </div>
-      <div class="filters reveal" role="group" aria-label="Filter calculators by discipline">
-        <button type="button" data-filter="all" aria-pressed="true"><span class="f-key">All</span><span class="f-n"></span></button>
-        <button type="button" data-filter="M" aria-pressed="false"><span class="f-key">M</span><span class="f-label">Mechanical</span><span class="f-n"></span></button>
-        <button type="button" data-filter="H" aria-pressed="false"><span class="f-key">H</span><span class="f-label">Heating</span><span class="f-n"></span></button>
-        <button type="button" data-filter="V" aria-pressed="false"><span class="f-key">V</span><span class="f-label">Ventilation</span><span class="f-n"></span></button>
-        <button type="button" data-filter="AC" aria-pressed="false"><span class="f-key">AC</span><span class="f-label">Air Conditioning</span><span class="f-n"></span></button>
-        <button type="button" data-filter="DD" aria-pressed="false"><span class="f-key">DD</span><span class="f-label">Duct Design</span><span class="f-n"></span></button>
-        <button type="button" data-filter="E" aria-pressed="false"><span class="f-key">E</span><span class="f-label">Electrical</span><span class="f-n"></span></button>
-        <button type="button" data-filter="P" aria-pressed="false"><span class="f-key">P</span><span class="f-label">Plumbing</span><span class="f-n"></span></button>
-        <button type="button" data-filter="F" aria-pressed="false"><span class="f-key">F</span><span class="f-label">Fire Protection</span><span class="f-n"></span></button>
-        <button type="button" data-filter="S" aria-pressed="false"><span class="f-key">S</span><span class="f-label">Sanitary</span><span class="f-n"></span></button>
       </div>
       <p class="sr-only" id="filter-status" aria-live="polite"></p>
       <div class="search-empty" id="search-empty" hidden>
@@ -1792,6 +1912,8 @@ body.modal-open .dock-tab { visibility: hidden; }
       </div>
       <div class="cards" id="card-grid">
         <noscript><p>The calculators need JavaScript enabled.</p></noscript>
+      </div>
+      </div>
       </div>
     </div>
   </section>
@@ -1861,8 +1983,10 @@ body.modal-open .dock-tab { visibility: hidden; }
       <div class="std-groups reveal" id="std-groups"></div>
 
       <div class="std-list reveal">
-        <h3>Standards &amp; sources cited</h3>
-        <ul id="std-sources"></ul>
+        <details class="std-src">
+          <summary><h3>Standards &amp; sources cited</h3><span class="f-n" id="std-src-n"></span></summary>
+          <ul id="std-sources"></ul>
+        </details>
         <div class="std-ph" id="std-ph" data-on="0">
           <div class="std-ph-head">
             <h3>Regional codes &amp; standards</h3>
@@ -2100,6 +2224,7 @@ body.modal-open .dock-tab { visibility: hidden; }
     fricq: { si: ['Pa/m', 1],       imp: ['in.wg/100 ft', 8.1715] },
     kq:    { si: ['W/m·K', 1],      imp: ['BTU·in/h·ft²·°F', 0.14423] },
     kwhp:  { si: ['kW', 1],         imp: ['hp', 0.7457] },
+    mass:  { si: ['kg', 1],         imp: ['lb', 0.45359237] },
     tc:    { si: ['°C', 1],         imp: ['°F', 1] } // temperature: converted with an offset, see readVals / setSys
   };
   // More units per quantity: [label, factor to the SI base]. The first SI / IP entries match Q's defaults.
@@ -2127,11 +2252,12 @@ body.modal-open .dock-tab { visibility: hidden; }
     raq:   [['L/s·m²', 1], ['m³/h·m²', 1 / 3.6], ['CFM/ft²', 5.08]],
     fricq: [['Pa/m', 1], ['mm H₂O/m', 9.80665], ['in.wg/100 ft', 8.1715]],
     kwhp:  [['kW', 1], ['W', 0.001], ['hp', 0.7457]],
-    dens:  [['mm/min', 1], ['L/min·m²', 1], ['gpm/ft²', 40.746]]
+    dens:  [['mm/min', 1], ['L/min·m²', 1], ['gpm/ft²', 40.746]],
+    mass:  [['kg', 1], ['g', 0.001], ['t', 1000], ['lb', 0.45359237], ['oz', 0.028349523]]
   };
   // Units offered in IMP mode only; TR and hp are used with both systems; everything else is metric (SI mode).
   var IMP_UNITS = ['ft', 'in', 'yd', 'ft²', 'in²', 'yd²', 'ft³', 'US gal', 'UK gal', 'CFM', 'fpm', 'ft/s', 'gpm', 'UK gpm', 'psi', 'ft H₂O', 'in.wg', 'BTU/h', 'MBH', '°F',
-    'therm', 'MMBtu', 'kBTU', 'gal/day', 'in/h', 'gal/yr', 'W/ft²', 'BTU/h·ft²', 'CFM/person', 'CFM/ft²', 'in.wg/100 ft', 'gpm/ft²'];
+    'therm', 'MMBtu', 'kBTU', 'gal/day', 'in/h', 'gal/yr', 'W/ft²', 'BTU/h·ft²', 'CFM/person', 'CFM/ft²', 'in.wg/100 ft', 'gpm/ft²', 'lb', 'oz'];
   var BOTH_UNITS = ['TR', 'hp'];
   function unitFits(label, s) { return BOTH_UNITS.indexOf(label) >= 0 || (IMP_UNITS.indexOf(label) >= 0) === (s === 'imp'); }
   var Q_DEF = {}; // the built-in unit of each quantity, per system
@@ -2520,6 +2646,11 @@ body.modal-open .dock-tab { visibility: hidden; }
       '<text x="58" y="84" class="ink-t">CHWS · CHWR</text>',
     coldroom: '<rect x="30" y="20" width="100" height="56" rx="2" class="ink"/><rect x="40" y="30" width="80" height="36" class="ink-m"/><path d="M60 40l6 6-6 6M80 40l6 6-6 6" class="ink a-flicker"/><text x="98" y="16" class="ink-t">2 °C</text>',
     refcycle: '<path d="M40 20h80v50H40z" class="ink-m"/><path d="M40 20h80" class="ink"/><path d="M40 70h80" class="ink a-march"/><circle cx="120" cy="45" r="8" class="ink"/><text x="22" y="86" class="ink-t">COP · EER</text>',
+    refpt: '<path d="M24 16V74H146" class="ink-m"/><path d="M26 72C70 70 108 54 140 16" class="ink"/><path d="M98 74V46H24" class="ink-m a-march" stroke-dasharray="3 3"/><circle cx="98" cy="46" r="3" fill="var(--accent)" class="a-flicker"/><text x="108" y="86" class="ink-t">P–T</text>',
+    freeze: '<rect x="20" y="24" width="68" height="44" rx="2" class="ink"/><path d="M54 30v32M40 38l28 16M68 38L40 54" class="ink-m a-flicker"/><path d="M100 30h42M100 46h42M100 62h42" class="ink-m a-march" marker-end="url(#arr-mini)"/><text x="20" y="86" class="ink-t">−18 °C · h</text>',
+    evap: '<rect x="16" y="18" width="128" height="36" rx="3" class="ink"/><circle cx="56" cy="36" r="11" class="ink-m"/><circle cx="104" cy="36" r="11" class="ink-m"/><path d="M56 25v22M45 36h22M104 25v22M93 36h22" class="ink-m a-flicker"/><path d="M40 62l-6 12M80 62v12M120 62l6 12" class="ink a-bob"/><text x="16" y="88" class="ink-t">TD · SST</text>',
+    refsafe: '<rect x="18" y="14" width="124" height="62" class="ink-m"/><rect x="28" y="20" width="44" height="12" rx="2" class="ink"/><path d="M50 38c-5 7-5 12 0 12s5-5 0-12z" class="ink a-bob"/><path d="M114 30l16 28H98z" class="ink"/><path d="M114 39v9M114 52v1" class="ink a-flicker"/><text x="18" y="88" class="ink-t">kg/m³ ≤ RCL</text>',
+    icestore: '<rect x="22" y="26" width="76" height="50" rx="3" class="ink"/><path d="M30 36h18v14H30zM54 36h18v14H54zM30 56h18v14H30zM54 56h18v14H54z" class="ink-m a-flicker"/><circle cx="128" cy="28" r="10" class="ink-m"/><path d="M134 22a10 10 0 0 1-8 16" class="ink"/><path d="M106 58h36" class="ink a-march" marker-end="url(#arr-mini)"/><text x="104" y="86" class="ink-t">ton-h</text>',
     shsc: '<circle cx="50" cy="44" r="22" class="ink"/><circle cx="110" cy="44" r="22" class="ink"/><path d="M50 44l10-12M110 44l-8-14" class="ink a-flicker"/><text x="36" y="84" class="ink-t">SH · SC</text>',
     ctower: '<path d="M50 74L58 22h44l8 52z" class="ink"/><path d="M62 30h36M60 44h40" class="ink-m a-march"/><path d="M70 14c2-6 6-6 8 0M84 14c2-6 6-6 8 0" class="ink-m a-flicker"/>',
     expt: '<rect x="56" y="16" width="48" height="60" rx="20" class="ink"/><path d="M58 46h44" class="ink-m a-flicker"/><path d="M80 76v10M40 86h80" class="ink-m a-march"/><text x="110" y="30" class="ink-t">ΔV</text>',
@@ -2962,7 +3093,7 @@ body.modal-open .dock-tab { visibility: hidden; }
   var CHW_RHO = 999.7, CHW_NU = 1.31e-6, CHW_CP = 4.19; // water at about 10 °C
   // Smallest pipe meeting the velocity limit (1.2 m/s up to 50 mm, 3.0 m/s above) and the friction target.
   // Outside diameter (m) of the selected pipe: steel Sch. 40 by DN, copper = nominal + 1/8 in, PPR row = OD.
-  var NPS_OD = { 15: 21.3, 20: 26.7, 25: 33.4, 32: 42.2, 40: 48.3, 50: 60.3, 65: 73.0, 80: 88.9, 100: 114.3, 125: 141.3, 150: 168.3, 200: 219.1, 250: 273.0, 300: 323.9, 350: 355.6, 400: 406.4 };
+  var NPS_OD = { 15: 21.3, 20: 26.7, 25: 33.4, 32: 42.2, 40: 48.3, 50: 60.3, 65: 73.0, 80: 88.9, 90: 101.6, 100: 114.3, 125: 141.3, 150: 168.3, 200: 219.1, 250: 273.0, 300: 323.9, 350: 355.6, 400: 406.4 };
   function chwOD(mat, row) {
     if (mat === 'ppr') return row[0] / 1000;
     if (mat === 'cu') return (row[0] / 25 * 25.4 + 3.175) / 1000;
@@ -2977,7 +3108,7 @@ body.modal-open .dock-tab { visibility: hidden; }
     return (mat === 'cu' ? CU : ST).filter(function (x) { return dn <= x[0]; })[0][1];
   }
   // Chilled-water pipe supports (used by the calculator and its drawing).
-  var SCH40_WALL = { 25: 3.38, 32: 3.56, 40: 3.68, 50: 3.91, 65: 5.16, 80: 5.49, 100: 6.02, 125: 6.55, 150: 7.11, 200: 8.18, 250: 9.27, 300: 10.31 };
+  var SCH40_WALL = { 15: 2.77, 20: 2.87, 25: 3.38, 32: 3.56, 40: 3.68, 50: 3.91, 65: 5.16, 80: 5.49, 90: 5.74, 100: 6.02, 125: 6.55, 150: 7.11, 200: 8.18, 250: 9.27, 300: 10.31 };
   function chhangCalc(v) {
     var dn = +v.dn, od = NPS_OD[dn] / 1000, wall = SCH40_WALL[dn] / 1000, id = od - 2 * wall, t = v.t;
     var steel = Math.PI * (od - wall) * wall * 7850, water = Math.PI * id * id / 4 * 1000, insul = Math.PI * (od + t) * t * 90, kgm = steel + water + insul;
@@ -3021,6 +3152,28 @@ body.modal-open .dock-tab { visibility: hidden; }
       ['Design check', v.run <= 20 ? STATUS.pass : STATUS.warn, 1, v.run <= 20 ? 'run time leaves time for defrost' : 'over 20 h/day leaves little time for defrost — size for 16–18 h']
     ];
     return { rows: rows, wall: wall, prod: prod, inf: inf, other: ppl + lights + fans, total: total };
+  }
+  // Product freezing: Siebel properties from water content, heat per batch (kJ) and Plank / Nagaoka freezing time.
+  function freezeCalc(v) {
+    var f = foodOf(v), cpa = 0.837 + 3.349 * f.xw, cpb = 0.837 + 1.256 * f.xw, L = 334 * f.xw;   // kJ/kg·K, kJ/kg
+    var q1 = v.m * cpa * Math.max(0, v.ti - f.tf), q2 = v.m * L, q3 = v.m * cpb * (f.tf - v.to), Q = q1 + q2 + q3;
+    var load = Q * (1 + v.sf / 100) / (v.bt * 3600), dh = Q / v.m * 1000;   // kW; J/kg from entering to final
+    var PR = { slab: [1 / 2, 1 / 8], cyl: [1 / 4, 1 / 16], sph: [1 / 6, 1 / 24] }[v.sh] || [1 / 2, 1 / 8], h = +v.air;
+    var hrs = f.rho * dh / (f.tf - v.ta) * (PR[0] * v.d / h + PR[1] * v.d * v.d / f.k) * (1 + 0.008 * Math.max(0, v.ti - f.tf)) / 3600, ok = hrs <= v.bt;
+    var kj = function (x) { return sys === 'si' ? fmt(x / 3600, 1) + ' kWh' : fmt(x * 0.947817, 0) + ' BTU'; };
+    var cp = function (x) { return sys === 'si' ? fmt(x, 2) + ' kJ/kg·K' : fmt(x * 0.238846, 3) + ' BTU/lb·°F'; };
+    var shape = { slab: 'slab', cyl: 'cylinder', sph: 'sphere' }[v.sh] || 'slab';
+    var rows = [
+      ['Average refrigeration load', fq(load, 'power'), 1, fmt(load / 3.51685, 2) + ' TR over ' + fmt(v.bt) + ' h, incl. ' + fmt(v.sf) + ' % safety'],
+      ['Estimated freezing time', fmt(hrs, 1) + ' h', 1, 'core to ' + tTxtC(v.to) + ' — ' + shape + ' ' + dimTxt(v.d) + ', air ' + tTxtC(v.ta)],
+      ['Heat removed per batch', kj(Q), 0, sys === 'si' ? fmt(dh / 1000, 0) + ' kJ/kg' : fmt(dh / 1000 * 0.429923, 0) + ' BTU/lb'],
+      ['Above freezing (sensible)', kj(q1), 0, 'cp ' + cp(cpa)],
+      ['Freezing (latent)', kj(q2), 0, sys === 'si' ? 'L ' + fmt(L, 0) + ' kJ/kg' : 'L ' + fmt(L * 0.429923, 0) + ' BTU/lb'],
+      ['Below freezing (sensible)', kj(q3), 0, 'cp ' + cp(cpb)],
+      ['Product properties', 'freezes at ' + tTxtC(f.tf) + ' · ' + fmt(f.xw * 100, 0) + ' % water', 0, (sys === 'si' ? 'ρ ' + fmt(f.rho, 0) + ' kg/m³' : 'ρ ' + fmt(f.rho * 0.062428, 1) + ' lb/ft³') + ' · frozen k ' + fmt(f.k, 1) + ' W/m·K'],
+      ['Design check', ok ? STATUS.pass : STATUS.warn, 1, ok ? 'freezes in about ' + fmt(hrs, 1) + ' h, within the ' + fmt(v.bt) + ' h batch' : 'needs about ' + fmt(hrs, 1) + ' h — colder or faster air, thinner product, or a longer batch']
+    ];
+    return { rows: rows, q1: q1, q2: q2, q3: q3, hrs: hrs, load: load };
   }
   // Water density (kg/m³), Tanaka et al. fit, 0–100 °C.
   // Temperature text from °C in the active units (fq() has no offset for °F).
@@ -3155,6 +3308,18 @@ body.modal-open .dock-tab { visibility: hidden; }
     fext: '<rect x="66" y="26" width="28" height="54" rx="10" class="ink"/><path d="M74 26v-8h16l10 6" class="ink-m"/><text x="70" y="58" class="ink-t">ABC</text><path d="M100 24c8 0 14 6 14 14" class="ink a-flicker"/>',
     standpipe: '<path d="M60 84V10" class="ink"/><path d="M60 22h16M60 44h16M60 66h16" class="ink-m"/><circle cx="80" cy="22" r="4" class="ink a-flicker"/><circle cx="80" cy="44" r="4" class="ink-m"/><circle cx="80" cy="66" r="4" class="ink-m"/>',
     firetank: '<rect x="40" y="20" width="80" height="58" rx="2" class="ink"/><path d="M42 40h76" class="ink-m a-flicker"/><path d="M120 66h28" class="ink a-march"/><text x="50" y="62" class="ink-t">FIRE</text>',
+    plhang: '<path d="M10 12h140" class="ink"/><path d="M40 12v40M120 12v40" class="ink-m"/><path d="M30 52a10 10 0 0 0 20 0M110 52a10 10 0 0 0 20 0" class="ink"/><path d="M14 56h132" class="ink a-march"/><text x="10" y="86" class="ink-t">IPC 308</text>',
+    fphang: '<path d="M10 12h140" class="ink"/><path d="M50 12v34M110 12v34" class="ink-m"/><path d="M14 52h132" class="ink"/><path d="M40 52v8M80 52v8M120 52v8" class="ink-m"/><path d="M36 64l4-4 4 4M76 64l4-4 4 4M116 64l4-4 4 4" class="ink a-flicker"/><text x="10" y="86" class="ink-t">NFPA 13</text>',
+    rfhang: '<path d="M10 12h140" class="ink"/><path d="M36 12v50M124 12v50" class="ink-m"/><path d="M28 62h104" class="ink"/><circle cx="62" cy="50" r="12" class="ink-m"/><circle cx="62" cy="50" r="6" class="ink"/><circle cx="96" cy="54" r="8" class="ink-m"/><circle cx="96" cy="54" r="3" class="ink a-flicker"/><text x="10" y="86" class="ink-t">line set</text>',
+    hwrec: '<path d="M24 20h112v50H24z" class="ink-m"/><path d="M24 20h112" class="ink a-march" marker-end="url(#arr-mini)"/><path d="M136 70H24" class="ink a-march"/><rect x="10" y="30" width="20" height="30" rx="3" class="ink"/><text x="40" y="86" class="ink-t">60 °C loop</text>',
+    przone: '<rect x="56" y="8" width="48" height="74" class="ink-m"/><path d="M56 26h48M56 44h48M56 62h48" class="ink-m"/><path d="M80 8v74" class="ink a-march"/><rect x="74" y="40" width="12" height="8" class="ink"/><text x="110" y="47" class="ink-t">PRV</text>',
+    hammer: '<path d="M10 52h100" class="ink"/><path d="M10 38h100" class="ink"/><path d="M110 30l16 14-16 14z" class="ink"/><path d="M118 30v-12h-10" class="ink-m"/><path d="M20 30l12-12 12 12 12-12 12 12" class="ink-m a-flicker"/><text x="14" y="80" class="ink-t">Δp = ρ·a·ΔV</text>',
+    pool: '<path d="M16 34h128v36H16z" class="ink"/><path d="M16 44q16-6 32 0t32 0t32 0t32 0" class="ink-m a-march"/><path d="M144 52h10v-24h-20" class="ink-m"/><text x="18" y="86" class="ink-t">turnover h</text>',
+    cleanagent: '<rect x="20" y="20" width="26" height="56" rx="8" class="ink"/><path d="M33 20v-8h30v12" class="ink-m"/><rect x="70" y="24" width="76" height="52" class="ink-m"/><path d="M84 40c6-6 12 6 18 0s12 6 18 0M84 56c6-6 12 6 18 0s12 6 18 0" class="ink a-flicker"/><text x="72" y="16" class="ink-t">kg · %</text>',
+    fabatt: '<rect x="20" y="28" width="56" height="40" rx="3" class="ink"/><rect x="84" y="28" width="56" height="40" rx="3" class="ink"/><path d="M34 22v6M62 22v6M98 22v6M126 22v6" class="ink"/><path d="M36 48h20M108 40v16M100 48h16" class="ink-m a-flicker"/><text x="40" y="86" class="ink-t">Ah · 24 h</text>',
+    detect: '<rect x="14" y="12" width="132" height="64" class="ink-m"/><circle cx="47" cy="44" r="22" class="ink-m"/><circle cx="113" cy="44" r="22" class="ink-m"/><circle cx="47" cy="44" r="4" class="ink a-flicker"/><circle cx="113" cy="44" r="4" class="ink a-flicker"/><text x="14" y="88" class="ink-t">0.7 S</text>',
+    egress: '<rect x="14" y="14" width="110" height="62" class="ink-m"/><path d="M124 30v28" class="ink"/><path d="M40 46h96" class="ink a-march" marker-end="url(#arr-mini)"/><path d="M136 34l10 12-10 12" class="ink-m"/><text x="18" y="88" class="ink-t">exits · width</text>',
+    foam: '<rect x="16" y="22" width="30" height="50" rx="4" class="ink"/><path d="M46 46h40" class="ink a-march"/><path d="M86 46l20-14M86 46l20 0M86 46l20 14" class="ink-m"/><circle cx="122" cy="32" r="6" class="ink-m a-flicker"/><circle cx="126" cy="48" r="7" class="ink-m a-flicker"/><circle cx="120" cy="62" r="5" class="ink-m a-flicker"/><text x="12" y="88" class="ink-t">3 % · L</text>',
     smoke: '<path d="M20 80V30l60-20 60 20v50" class="ink"/><path d="M60 80c0-14 20-14 20-28s20-14 20-28" class="ink-m a-flicker"/><path d="M30 36h100" class="ink-m"/><path d="M80 8v-6" class="ink a-march"/>',
     payback: '<path d="M20 74h120" class="ink-m"/><path d="M28 74V40M48 74V48M68 74V56M88 74V30M108 74V22M128 74V14" class="ink"/><path d="M28 40L128 14" class="ink a-march"/>',
     lpd: '<rect x="20" y="16" width="120" height="58" rx="3" class="ink-m"/><path d="M40 16v8M80 16v8M120 16v8" class="ink"/><path d="M34 24h12M74 24h12M114 24h12" class="ink a-flicker"/>' +
@@ -3175,12 +3340,36 @@ body.modal-open .dock-tab { visibility: hidden; }
   // Within about 1 % from −20 to 50 °C; approximate outside that. Blends (R410A, R404A) use the mean of bubble and dew.
   var REFRIG = {
     r410a: ['R410A', 7.98, 24.2], r32: ['R32', 8.13, 24.8], r22: ['R22', 4.98, 15.34], r134a: ['R134a', 2.93, 10.17],
-    r404a: ['R404A', 6.10, 18.30], r290: ['R290 (propane)', 4.74, 13.69], r717: ['R717 (ammonia)', 4.29, 15.55]
+    r404a: ['R404A', 6.10, 18.30], r290: ['R290 (propane)', 4.74, 13.69], r717: ['R717 (ammonia)', 4.29, 15.55],
+    r1234yf: ['R1234yf', 3.16, 10.18], r600a: ['R600a (isobutane)', 1.57, 5.31]
   };
   function refFit(k) { var r = REFRIG[k], B = Math.log(r[2] / r[1]) / (1 / 273.15 - 1 / 313.15); return { A: Math.log(r[1]) + B / 273.15, B: B }; }
   function refPsat(k, tC) { var f = refFit(k); return Math.exp(f.A - f.B / (tC + 273.15)); }          // bar abs
   function refTsat(k, pAbs) { var f = refFit(k); return f.B / (f.A - Math.log(pAbs)) - 273.15; }       // °C
   var REFRIG_OPTS = Object.keys(REFRIG).map(function (k) { return [k, REFRIG[k][0]]; });
+  // [ASHRAE 34 safety group, GWP (IPCC AR4), remark, RCL kg/m³ (ASHRAE 34), LFL kg/m³ for the IEC 60335-2-40 charge limit or null]. Typical values — editions change.
+  var REFRIG_INFO = {
+    r410a: ['A1', '2088', 'HFC blend — being phased down; R32 and R454B replace it', 0.42, null],
+    r32: ['A2L', '675', 'mildly flammable — charge limits apply in small rooms', 0.077, 0.307],
+    r22: ['A1', '1810', 'HCFC — ozone-depleting, phased out for new equipment', 0.21, null],
+    r134a: ['A1', '1430', 'HFC — chillers and medium-temperature refrigeration', 0.21, null],
+    r404a: ['A1', '3922', 'very high GWP — restricted in many markets; R448A / R449A replace it', 0.52, null],
+    r290: ['A3', '3', 'highly flammable — small sealed systems and chillers', 0.009, 0.038],
+    r717: ['B2L', '0', 'toxic and mildly flammable — machinery rooms per ASHRAE 15 / IIAR 2', 0.00022, null],
+    r1234yf: ['A2L', '<1', 'HFO — very low GWP, mildly flammable', 0.075, 0.289],
+    r600a: ['A3', '3', 'highly flammable — domestic refrigerators and freezers', 0.0095, 0.043]
+  };
+  // Foods: [name, water fraction, initial freezing point °C, density kg/m³, frozen conductivity W/m·K] — typical (ASHRAE Refrigeration Ch. 19).
+  var FOODS = {
+    beef: ['Beef, lean', 0.74, -1.7, 1050, 1.4], pork: ['Pork', 0.60, -2.2, 1030, 1.3], chicken: ['Chicken', 0.74, -2.8, 1050, 1.4],
+    fish: ['Fish, lean', 0.80, -2.2, 1050, 1.5], shrimp: ['Shrimp / prawns', 0.76, -2.2, 1050, 1.4], veg: ['Vegetables (average)', 0.90, -0.8, 980, 1.6],
+    fruit: ['Fruit (average)', 0.85, -1.5, 1000, 1.5], custom: ['Custom — enter water content and freezing point', 0.74, -1.7, 1030, 1.3]
+  };
+  var FOOD_OPTS = Object.keys(FOODS).map(function (k) { return [k, FOODS[k][0]]; });
+  function foodOf(v) { var f = FOODS[v.pr] || FOODS.beef, c = v.pr === 'custom'; return { name: f[0], xw: c ? v.xw / 100 : f[1], tf: c ? v.tf : f[2], rho: f[3], k: f[4] }; }
+  // Unit-cooler design TD by the humidity to hold: [key, label, TD low, TD high in K] (typical manufacturer guidance, 7–22 °F).
+  var EVAP_RH = [['95', '90–95 % RH — leafy vegetables, fresh fish, eggs', 7 / 1.8, 9 / 1.8], ['90', '85–90 % RH — most fruit, vegetables, fresh meat', 10 / 1.8, 12 / 1.8],
+    ['85', '80–85 % RH — general cooler, dairy, packaged meat', 12 / 1.8, 16 / 1.8], ['75', '65–80 % RH — packaged and dry products', 17 / 1.8, 22 / 1.8]];
   // Conductor sizes: [label, AWG equivalent, THHN area in² (NEC Ch. 9 Table 5)]; PH mm² mapped to the next AWG area.
   var WIRE_AWG = [['14 AWG', 0.0097], ['12 AWG', 0.0133], ['10 AWG', 0.0211], ['8 AWG', 0.0366], ['6 AWG', 0.0507], ['4 AWG', 0.0824], ['3 AWG', 0.0973], ['2 AWG', 0.1158], ['1 AWG', 0.1562],
     ['1/0 AWG', 0.1855], ['2/0 AWG', 0.2223], ['3/0 AWG', 0.2679], ['4/0 AWG', 0.3237], ['250 kcmil', 0.3970], ['300 kcmil', 0.4608], ['350 kcmil', 0.5242], ['500 kcmil', 0.7073]];
@@ -3190,6 +3379,180 @@ body.modal-open .dock-tab { visibility: hidden; }
   // Conduit internal area, in² (NEC Ch. 9 Table 4): trade size → [EMT, PVC Sch. 40]
   var CONDUIT = [['½"', '16 mm', 0.304, 0.285], ['¾"', '21 mm', 0.533, 0.508], ['1"', '27 mm', 0.864, 0.832], ['1¼"', '35 mm', 1.496, 1.453], ['1½"', '41 mm', 2.036, 1.986],
     ['2"', '53 mm', 3.356, 3.291], ['2½"', '63 mm', 5.858, 4.695], ['3"', '78 mm', 8.846, 7.268], ['3½"', '91 mm', 11.545, 9.737], ['4"', '103 mm', 14.753, 12.554]];
+  // Pipe modulus of elasticity for water-hammer wave speed: [name, E in GPa].
+  var PIPE_E = { steel: ['Steel', 200], di: ['Ductile iron', 170], cu: ['Copper', 117], pvc: ['PVC / CPVC', 3], ppr: ['PP-R', 0.9], pe: ['HDPE (PE100)', 0.9] };
+  // Clean agents, NFPA 2001: [name, k1, k2 (S = k1 + k2·T, m³/kg), typical Class A/C design %, NOAEL %, kind].
+  var AGENTS = {
+    hfc227: ['HFC-227ea (FM-200)', 0.1269, 0.000513, 7.0, 9.0, 'halo'],
+    fk: ['FK-5-1-12 (Novec 1230)', 0.0664, 0.000274, 4.5, 10.0, 'halo'],
+    ig541: ['IG-541 (Inergen)', 0.65799, 0.00239, 38.5, 43, 'inert']
+  };
+  // NFPA 2001 altitude correction factors: [m above sea level, factor].
+  var ALT_F = [[0, 1], [305, 0.96], [610, 0.93], [914, 0.89], [1219, 0.86], [1524, 0.82], [1829, 0.78], [2134, 0.75], [2438, 0.72], [2743, 0.69], [3048, 0.66]];
+  function altFactor(m) {
+    if (m <= 0) return 1;
+    for (var i = 1; i < ALT_F.length; i++) if (m <= ALT_F[i][0]) { var a = ALT_F[i - 1], b = ALT_F[i]; return a[1] + (b[1] - a[1]) * (m - a[0]) / (b[0] - a[0]); }
+    return ALT_F[ALT_F.length - 1][1];
+  }
+  // Pressure zones of a tall building: static rise per floor, floors per zone, zones.
+  function przoneCalc(v) {
+    var per = 998 * 9.80665 * v.fh, nz = Math.max(1, Math.floor((v.pmax - v.pmin) / per + 1e-9) + 1), zones = Math.ceil(v.n / nz - 1e-9), ok = nz >= 3;
+    var rows = [
+      ['Floors per zone', fmt(nz, 0), 1, 'static rise ' + fq(per, 'press') + ' per floor'],
+      ['Pressure zones', fmt(zones, 0), 1, zones > 1 ? fmt(zones - 1, 0) + ' PRV station' + (zones > 2 ? 's' : '') + ' (or separate pump sets)' : 'one zone — no PRV needed for static pressure'],
+      ['Pressure at the bottom of a full zone', fq(v.pmin + per * (nz - 1), 'press'), 0, 'with ' + fq(v.pmin, 'press') + ' at its top floor'],
+      ['Static pressure over the building', fq(per * (v.n - 1), 'press'), 0, 'top to bottom floor, ' + fq(v.fh * (v.n - 1), 'len')],
+      ['Design check', ok ? STATUS.pass : STATUS.warn, 1, ok ? 'every fixture stays between ' + fq(v.pmin, 'press') + ' and ' + fq(v.pmax, 'press') + ' static' : 'fewer than 3 floors per zone — check the pressure limits']
+    ];
+    return { rows: rows, nz: nz, zones: zones };
+  }
+  // NFPA 72 Table 17.6.3.5.1 — heat detector spacing factor by ceiling height: [up to m, factor].
+  var HEAT_HT = [[3.05, 1], [3.66, 0.91], [4.27, 0.84], [4.88, 0.77], [5.49, 0.71], [6.10, 0.64], [6.71, 0.58], [7.32, 0.52], [7.93, 0.46], [8.54, 0.40], [9.14, 0.34]];
+  // Detectors for a room by the rectangle method: fewest a × b cells with a² + b² ≤ (1.4 S)².
+  function detectCalc(v) {
+    var heat = v.ty === 'heat', S0 = heat ? v.hs : v.ss, hr = HEAT_HT.filter(function (x) { return v.ch <= x[0] + 1e-9; })[0], red = heat ? (hr ? hr[1] : 0.34) : 1;
+    var S = S0 * red, D = 1.4 * S;
+    var grid = function (L, W) {
+      var best = null;
+      for (var ny = Math.max(1, Math.ceil(W / D)); ny <= Math.ceil(W / (0.1 * S)); ny++) {
+        var b = W / ny; if (b >= D) continue;
+        var nx = Math.ceil(L / Math.sqrt(D * D - b * b) - 1e-9), n = nx * ny;
+        if (!best || n < best.n) best = { n: n, nx: nx, ny: ny };
+        if (best && ny > best.n) break;
+      }
+      return best;
+    };
+    var g1 = grid(v.l, v.w), g2 = grid(v.w, v.l), g = g2 && g2.n < g1.n ? { n: g2.n, nx: g2.ny, ny: g2.nx } : g1;
+    var a = v.l / g.nx, b = v.w / g.ny, high = heat ? v.ch > 9.14 + 1e-9 : v.ch > 12, ok = !high;
+    var rows = [
+      ['Detectors needed', fmt(g.n, 0), 1, g.nx + ' × ' + g.ny + ' layout'],
+      ['Spacing used', fq(a, 'len') + ' × ' + fq(b, 'len'), 0, 'every point within 0.7 S = ' + fq(0.7 * S, 'len')],
+      ['Design spacing S', fq(S, 'len'), 0, heat ? 'listed ' + fq(S0, 'len') + ' × ' + fmt(red * 100, 0) + ' % for a ' + fq(v.ch, 'len') + ' ceiling' : 'listed spacing on a smooth, flat ceiling'],
+      ['Distance to the walls', fq(a / 2, 'len') + ' / ' + fq(b / 2, 'len'), 0, 'half the spacing each way'],
+      ['Floor area per detector', fq(v.l * v.w / g.n, 'area'), 0],
+      ['Design check', ok ? STATUS.pass : STATUS.warn, 1, ok ? 'spacing per NFPA 72 for a smooth ceiling' : heat ? 'ceiling over 9.1 m (30 ft) — outside the heat-detector table; use linear heat or a performance design' : 'very high ceiling — smoke may stratify; consider beam or aspirating detection']
+    ];
+    return { rows: rows, nx: g.nx, ny: g.ny, a: a, b: b, S: S };
+  }
+  // IBC 2021 Table 1004.5 load factors (ft² per person, net / gross) and §1017.2 travel distance (ft): [key, use, factor, area, unsprinklered, sprinklered]. 0 = not permitted.
+  var EGRESS_OCC = [
+    ['asmstand', 'Assembly, standing space', 5, 'net', 200, 250], ['asmchair', 'Assembly, chairs only (theatre)', 7, 'net', 200, 250],
+    ['asmtable', 'Assembly, tables and chairs (restaurant)', 15, 'net', 200, 250], ['business', 'Business, offices', 150, 'gross', 200, 300],
+    ['class', 'Educational, classrooms', 20, 'net', 200, 250], ['merc', 'Mercantile, sales floor', 60, 'gross', 200, 250],
+    ['gym', 'Exercise rooms', 50, 'gross', 200, 250], ['kitchen', 'Kitchen, commercial', 200, 'gross', 200, 250],
+    ['ind', 'Industrial, general', 100, 'gross', 200, 250], ['resid', 'Residential', 200, 'gross', 200, 250],
+    ['store', 'Storage, warehouse', 500, 'gross', 200, 250], ['health', 'Health care, inpatient areas', 240, 'gross', 0, 200]
+  ];
+  // Currency choices for the price fields of the support take-offs.
+  var CURRENCY_OPTS = [['₱', '₱  Philippine peso (PHP)'], ['$', '$  US dollar (USD)'], ['€', '€  Euro (EUR)'], ['£', '£  British pound (GBP)'], ['A$', 'A$  Australian dollar (AUD)'], ['C$', 'C$  Canadian dollar (CAD)'], ['S$', 'S$  Singapore dollar (SGD)'], ['¥', '¥  Japanese yen (JPY)'], ['CN¥', '¥  Chinese yuan (CNY)'], ['₩', '₩  Korean won (KRW)'], ['₹', '₹  Indian rupee (INR)'], ['RM', 'RM  Malaysian ringgit (MYR)'], ['Rp', 'Rp  Indonesian rupiah (IDR)'], ['฿', '฿  Thai baht (THB)'], ['₫', '₫  Vietnamese dong (VND)'], ['AED', 'AED  UAE dirham'], ['SAR', 'SAR  Saudi riyal'], ['QAR', 'QAR  Qatari riyal']];
+  // Common fields of the support take-offs: drop, extra %, currency and unit prices.
+  function hangFields(clampLabel) {
+    return [
+      { k: 'd', label: 'Drop from slab', q: 'len', def: [0.6, 2], zero: true },
+      { k: 'x', label: 'Extra supports for fittings', unit: '%', def: [10, 10], zero: true },
+      { k: 'cur', label: 'Currency', opts: CURRENCY_OPTS, def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
+      { k: 'pr', label: 'Price per 3 m threaded rod', unit: 'each', def: [0, 0], zero: true },
+      { k: 'pa', label: 'Price per 6 m angle bar / hanger each', unit: 'each', def: [0, 0], zero: true },
+      { k: 'ps', label: 'Price per ' + clampLabel, unit: 'each', def: [0, 0], zero: true },
+      { k: 'pk', label: 'Price per anchor set', unit: 'each', def: [0, 0], zero: true }
+    ];
+  }
+  // Rod rating (kg, with the 1.5 margin applied to the load) → [kg, mm, inch].
+  var HANG_ROD = [[270, 10, '3/8 in'], [510, 12, '1/2 in'], [810, 16, '5/8 in'], [1150, 20, '3/4 in'], [1500, 22, '7/8 in'], [1e9, 24, '1 in']];
+  var PIPE_IN = { 15: 0.5, 20: 0.75, 25: 1, 32: 1.25, 40: 1.5, 50: 2, 65: 2.5, 80: 3, 90: 3.5, 100: 4, 125: 5, 150: 6, 200: 8 };
+  var CU_L_WALL = { 15: 1.02, 20: 1.14, 25: 1.27, 32: 1.40, 40: 1.52, 50: 1.78, 65: 2.03, 80: 2.29, 90: 2.54, 100: 2.79, 125: 3.18, 150: 3.56, 200: 5.08 }; // copper Type L, mm
+  var HANG_SIZE_OPTS = function (list) { return list.map(function (dn) { return [String(dn), String(PIPE_IN[dn]).replace('0.5', '½').replace('0.75', '¾').replace('1.25', '1¼').replace('1.5', '1½').replace('2.5', '2½').replace('3.5', '3½') + '"  (DN' + dn + ')']; }); };
+  // Filled-pipe weight per metre: [pipe kg/m, water kg/m, OD m] for steel / plastic on NPS sizes, copper tube or no-hub cast iron.
+  function pipeKgm(kind, dn, rho) {
+    var od, wall;
+    if (kind === 'cu') { od = (PIPE_IN[dn] + 0.125) * 0.0254; wall = CU_L_WALL[dn] / 1000; }
+    else if (kind === 'ci') { od = { 40: 1.90, 50: 2.35, 65: 2.88, 80: 3.35, 100: 4.38, 125: 5.30, 150: 6.30, 200: 8.38 }[dn] * 0.0254; wall = 0.0043; }
+    else if (kind === 'ppr') { od = { 15: 20, 20: 25, 25: 32, 32: 40, 40: 50, 50: 63, 65: 75, 80: 90, 100: 110, 125: 125, 150: 160, 200: 200 }[dn] / 1000; wall = od / 6; }
+    else { od = NPS_OD[dn] / 1000; wall = (SCH40_WALL[dn] / 1000) * (kind === 'sch10' ? 0.6 : 1); if (kind === 'cpvc') wall = od / 13.5; }
+    var id = od - 2 * wall;
+    return [Math.PI * (od - wall) * wall * rho, Math.PI * id * id / 4 * 1000, od];
+  }
+  // Shared take-off. p: sp (max spacing m), pipes [[label, kg/m, outer Ø m, pipe OD m]], tr (one trapeze for all pipes), minRod (mm),
+  // rodFixed (mm, rod set by the standard), loadFn / loadLabel / loadNote, spNote, rodNote, clampLabel, add (extra supports), extra rows.
+  function hangTakeoff(v, p) {
+    var np = p.pipes.length, tr = !!p.tr && np > 1, base = Math.ceil(v.l / p.sp - 1e-9) + 1, n = Math.ceil(base * (1 + v.x / 100) - 1e-9) + (p.add || 0);
+    var kgAll = 0, kgMax = 0, Do = 0;
+    p.pipes.forEach(function (q) { kgAll += q[1]; kgMax = Math.max(kgMax, q[1]); Do = Math.max(Do, q[2]); });
+    var rods = tr ? 2 * n : n * np, w = tr ? kgAll * p.sp / 2 : kgMax * p.sp, perRod = p.loadFn ? p.loadFn(w) : w * 1.5;
+    var byLoad = HANG_ROD.filter(function (r) { return perRod <= r[0]; })[0];
+    var rod = p.rodFixed ? HANG_ROD.filter(function (r) { return r[1] === p.rodFixed; })[0] : HANG_ROD.filter(function (r) { return r[1] >= Math.max(byLoad[1], p.minRod); })[0];
+    var rodL = v.d + Do + 0.1, rodPcs = Math.ceil(rods * rodL / 3 - 1e-9), barL = tr ? np * Do + (np - 1) * 0.05 + 0.3 : 0, barPcs = tr ? Math.ceil(n * barL / 6 - 1e-9) : 0;
+    var bar = 2 * perRod <= 150 ? ['40 × 40 × 4 mm', '1½ × 1½ × 3/16 in'] : 2 * perRod <= 300 ? ['50 × 50 × 5 mm', '2 × 2 × 3/16 in'] : ['65 × 65 × 6 mm', '2½ × 2½ × 1/4 in'];
+    var si = sys === 'si', kg = function (x) { return si ? fmt(x, 0) + ' kg' : fmt(x * 2.20462, 0) + ' lb'; }, clamps = n * np, cl = p.clampLabel || 'Pipe clamps';
+    var rows = [
+      [tr ? 'Trapeze supports' : np > 1 ? 'Hangers per line' : 'Hangers', fmt(n, 0), 1, fmt(base, 0) + ' along the route + ' + fmt(v.x) + ' % for fittings' + (p.add ? ' + ' + fmt(p.add, 0) + ' at bends and branches' : '')],
+      ['Maximum spacing', fq(p.sp, 'len'), 0, p.spNote],
+      ['Filled pipe weight', p.pipes.map(function (q) { return si ? fmt(q[1], 2) + ' kg/m' : fmt(q[1] * 0.67197, 2) + ' lb/ft'; }).join(' + '), 0, p.pipes.map(function (q) { return q[0]; }).join(' + ')],
+      [p.loadLabel || 'Load on each rod', kg(perRod), 0, p.loadNote || (tr ? np + ' pipes on one trapeze' : 'one pipe per rod') + ', × 1.5 safety'],
+      ['Threaded rod size', (si ? rod[1] + ' mm' : rod[2]) + ' × ' + fmt(rods, 0) + ' rods', 1, p.rodNote || (rod[1] > byLoad[1] ? 'MSS SP-58 minimum for this pipe size' : 'by load')],
+      ['Rod needed (3 m lengths)', fmt(rodPcs, 0) + ' pcs', 0, 'each rod ' + fq(rodL, 'len')]
+    ];
+    if (tr) rows.push(['Trapeze angle bar', (si ? bar[0] : bar[1]) + ', ' + fq(barL, 'len') + ' × ' + fmt(barPcs, 0) + ' bar(s) of 6 m', 0, np + ' pipes side by side']);
+    rows.push([cl, fmt(clamps, 0) + ' pcs', 0, 'one per pipe per support'], ['Anchors', fmt(rods, 0) + ' pcs'], ['Nuts and washers', fmt(rods * 2, 0) + ' nuts / ' + fmt(rods * 2, 0) + ' washers']);
+    rows = rows.concat(p.extra || []);
+    var c = v.cur ? v.cur + ' ' : '', cost = rodPcs * v.pr + (tr ? barPcs : rods) * v.pa + clamps * v.ps + rods * v.pk;
+    rows.push(cost > 0 ? ['Estimated cost', c + n2(cost), 1, 'rods ' + c + n2(rodPcs * v.pr) + ' · ' + (tr ? 'angle ' : 'hangers ') + c + n2((tr ? barPcs : rods) * v.pa) + ' · ' + cl.toLowerCase() + ' ' + c + n2(clamps * v.ps) + ' · anchors ' + c + n2(rods * v.pk)] : ['Estimated cost', 'enter prices for rod, angle / hanger, clamps and anchors', 0, 'any currency']);
+    return { rows: rows, n: n, sp: p.sp, rod: rod, tr: tr, Do: Do, pipes: p.pipes };
+  }
+  // IPC Table 308.5 maximum hanger spacing (m): [name, horizontal up to the size break, horizontal above it, size break DN, vertical, density kg/m³, plastic].
+  var PL_HANG = {
+    cu: ['Copper tube', 1.83, 3.05, 32, 3.05, 8940, false], st: ['Steel pipe', 3.66, 3.66, 0, 4.57, 7850, false],
+    ci: ['Cast-iron soil pipe', 1.52, 1.52, 0, 4.57, 7200, false], pvc: ['PVC / ABS', 1.22, 1.22, 0, 3.05, 1400, true],
+    cpvc: ['CPVC', 0.91, 1.22, 25, 3.05, 1550, true], ppr: ['PP-R / PEX', 0.81, 1.22, 25, 3.05, 900, true]
+  };
+  function plhangCalc(v) {
+    var m = PL_HANG[v.mat], dn = +v.dn, sp = dn <= m[3] ? m[1] : m[2], g = pipeKgm(v.mat === 'pvc' || v.mat === 'st' ? 'st' : v.mat, dn, m[5]);
+    var ins = Math.PI * (g[2] + v.t) * v.t * 90, Do = g[2] + 2 * v.t, extra = [];
+    if (v.rh > 0) {
+      var rc = Math.ceil(v.rh / m[4] - 1e-9) + 1;
+      extra.push(['Riser clamps', fmt(rc, 0) + ' pcs', 0, 'every ' + fq(m[4], 'len') + ' up ' + fq(v.rh, 'len') + ', including the base support' + (m[6] ? '; mid-story guides for plastic pipe' : '')]);
+    }
+    return hangTakeoff(v, {
+      sp: sp, pipes: [[m[0] + ' ' + HANG_SIZE_OPTS([dn])[0][1].split('  ')[0] + ' full of water', g[0] + g[1] + ins, Do, g[2]]], minRod: dn <= 50 ? 10 : dn <= 90 ? 12 : dn <= 125 ? 16 : dn <= 150 ? 20 : 22,
+      spNote: 'IPC Table 308.5 — ' + m[0].toLowerCase() + ', horizontal', clampLabel: v.t > 0 ? 'Insulation shields' : 'Pipe clamps / clevis', extra: extra
+    });
+  }
+  // NFPA 13 Table 17.4.2.1(a) maximum distance between hangers (ft) for ¾" … 8".
+  var FP_SIZES = [20, 25, 32, 40, 50, 65, 80, 90, 100, 125, 150, 200];
+  var FP_HANG = {
+    st: ['Steel, Sch. 10 / 40', [12, 12, 12, 15, 15, 15, 15, 15, 15, 15, 15, 15], 'st', 7850], tlw: ['Threaded lightwall steel', [12, 12, 12, 12, 12, 12, 12, 0, 0, 0, 0, 0], 'sch10', 7850],
+    cu: ['Copper tube', [8, 8, 10, 10, 12, 12, 12, 15, 15, 15, 15, 15], 'cu', 8940], cpvc: ['CPVC (listed)', [5.5, 6, 6.5, 7, 8, 9, 10, 0, 0, 0, 0, 0], 'cpvc', 1550]
+  };
+  function fphangCalc(v) {
+    var m = FP_HANG[v.mat], dn = +v.dn, ft = m[1][FP_SIZES.indexOf(dn)], sp = ft * 0.3048, g = pipeKgm(m[2], dn, m[3]), extra = [];
+    extra.push(['End sprinkler to last hanger', dn <= 25 ? fq(0.9144, 'len') + ' max' : fq(1.2192, 'len') + ' max', 0, 'unsupported armover on a branch line, steel at 100 psi or less']);
+    if (v.seis === 'yes') {
+      var lat = Math.max(2, Math.ceil(Math.max(v.l - 2 * 1.8288, 0) / 12.192 - 1e-9) + 1), lon = Math.ceil(Math.max(v.l - 2 * 12.192, 0) / 24.384 - 1e-9) + 1;
+      extra.push(['Seismic sway braces', fmt(lat, 0) + ' lateral + ' + fmt(lon, 0) + ' longitudinal', 1, 'lateral ≤ ' + fq(12.192, 'len') + ' apart, longitudinal ≤ ' + fq(24.384, 'len') + ' (mains)']);
+    }
+    return hangTakeoff(v, {
+      sp: sp, pipes: [[m[0] + ' ' + HANG_SIZE_OPTS([dn])[0][1].split('  ')[0] + ' full of water', g[0] + g[1], g[2], g[2]]], rodFixed: dn <= 100 ? 10 : dn <= 200 ? 12 : 16,
+      loadFn: function (w) { return 5 * w + 113.4; }, loadLabel: 'Hanger design load', loadNote: '5 × water-filled pipe + 114 kg (250 lb) — for engineered and trapeze hangers; listed hangers use the rod table',
+      spNote: 'NFPA 13 Table 17.4.2.1(a) — ' + m[0].toLowerCase(), rodNote: 'NFPA 13 rod size for this pipe size', clampLabel: 'Hanger rings / clevises', extra: extra
+    });
+  }
+  // ACR copper tube: [label, OD in, Type L wall in, support spacing ft (ASHRAE Refrigeration Handbook guidance)].
+  var ACR = [['1/4', 0.25, 0.030, 4], ['3/8', 0.375, 0.030, 4], ['1/2', 0.5, 0.035, 4], ['5/8', 0.625, 0.040, 5], ['3/4', 0.75, 0.042, 5], ['7/8', 0.875, 0.045, 6], ['1-1/8', 1.125, 0.050, 7],
+    ['1-3/8', 1.375, 0.055, 8], ['1-5/8', 1.625, 0.060, 9], ['2-1/8', 2.125, 0.070, 10], ['2-5/8', 2.625, 0.080, 11], ['3-1/8', 3.125, 0.090, 12], ['3-5/8', 3.625, 0.100, 13], ['4-1/8', 4.125, 0.110, 14]];
+  var ACR_OPTS = ACR.map(function (a, i) { return [String(i), a[0] + ' in  (' + fmt(a[1] * 25.4, 2) + ' mm OD)']; });
+  function rfhangCalc(v) {
+    var line = function (i, t, liquid) {
+      var a = ACR[+i], od = a[1] * 0.0254, w = a[2] * 0.0254, id = od - 2 * w;
+      return [(liquid ? 'liquid ' : 'suction ') + a[0] + ' in', Math.PI * (od - w) * w * 8940 + Math.PI * (od + t) * t * 60 + (liquid ? Math.PI * id * id / 4 * 1100 : 0), od + 2 * t, od, a[3] * 0.3048];
+    };
+    var pipes = [line(v.gas, v.tg, false)];
+    if (v.liq !== 'none') pipes.push(line(v.liq, v.tl, true));
+    var sp = Math.min.apply(null, pipes.map(function (q) { return q[4]; }));
+    return hangTakeoff(v, {
+      sp: sp, pipes: pipes, tr: v.st === 'tr', minRod: 10, add: Math.round(v.nb),
+      spNote: 'by the smallest line, ASHRAE Refrigeration guidance — check the unit manual', clampLabel: 'Insulation saddles', extra: []
+    });
+  }
   var CALCS = {
     btu: {
       code: 'HVAC / 001', title: 'HVAC BTU Calculator', card: true, disc: 'M',
@@ -4987,7 +5350,7 @@ body.modal-open .dock-tab { visibility: hidden; }
         { k: 'd', label: 'Drop from slab', q: 'len', def: [0.6, 2] , zero: true },
         { k: 't', label: 'Insulation thickness', q: 'dia', def: [25, 1], zero: true },
         { k: 'x', label: 'Extra hangers for fittings', unit: '%', def: [10, 10], zero: true },
-        { k: 'cur', label: 'Currency', opts: [['₱', '₱  Philippine peso (PHP)'], ['$', '$  US dollar (USD)'], ['€', '€  Euro (EUR)'], ['£', '£  British pound (GBP)'], ['A$', 'A$  Australian dollar (AUD)'], ['C$', 'C$  Canadian dollar (CAD)'], ['S$', 'S$  Singapore dollar (SGD)'], ['¥', '¥  Japanese yen (JPY)'], ['CN¥', '¥  Chinese yuan (CNY)'], ['₩', '₩  Korean won (KRW)'], ['₹', '₹  Indian rupee (INR)'], ['RM', 'RM  Malaysian ringgit (MYR)'], ['Rp', 'Rp  Indonesian rupiah (IDR)'], ['฿', '฿  Thai baht (THB)'], ['₫', '₫  Vietnamese dong (VND)'], ['AED', 'AED  UAE dirham'], ['SAR', 'SAR  Saudi riyal'], ['QAR', 'QAR  Qatari riyal']], def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
+        { k: 'cur', label: 'Currency', opts: CURRENCY_OPTS, def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
         { k: 'pr', label: 'Price per 3 m threaded rod', unit: 'each', def: [0, 0], zero: true },
         { k: 'pa', label: 'Price per 6 m angle bar', unit: 'each', def: [0, 0], zero: true },
         { k: 'pk', label: 'Price per anchor set (anchor, nuts, washers)', unit: 'each', def: [0, 0], zero: true }
@@ -5628,7 +5991,7 @@ body.modal-open .dock-tab { visibility: hidden; }
         { k: 'd', label: 'Drop from slab', q: 'len', def: [0.6, 2], zero: true },
         { k: 't', label: 'Insulation thickness', q: 'dia', def: [32, 1.25], zero: true },
         { k: 'x', label: 'Extra supports for fittings', unit: '%', def: [10, 10], zero: true },
-        { k: 'cur', label: 'Currency', opts: [['₱', '₱  Philippine peso (PHP)'], ['$', '$  US dollar (USD)'], ['€', '€  Euro (EUR)'], ['£', '£  British pound (GBP)'], ['A$', 'A$  Australian dollar (AUD)'], ['C$', 'C$  Canadian dollar (CAD)'], ['S$', 'S$  Singapore dollar (SGD)'], ['¥', '¥  Japanese yen (JPY)'], ['CN¥', '¥  Chinese yuan (CNY)'], ['₩', '₩  Korean won (KRW)'], ['₹', '₹  Indian rupee (INR)'], ['RM', 'RM  Malaysian ringgit (MYR)'], ['Rp', 'Rp  Indonesian rupiah (IDR)'], ['฿', '฿  Thai baht (THB)'], ['₫', '₫  Vietnamese dong (VND)'], ['AED', 'AED  UAE dirham'], ['SAR', 'SAR  Saudi riyal'], ['QAR', 'QAR  Qatari riyal']], def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
+        { k: 'cur', label: 'Currency', opts: CURRENCY_OPTS, def: ['₱', '$'], reg: { ph: '₱', au: 'A$', us: '$' } },
         { k: 'pr', label: 'Price per 3 m threaded rod', unit: 'each', def: [0, 0], zero: true },
         { k: 'pa', label: 'Price per 6 m angle bar / clevis each', unit: 'each', def: [0, 0], zero: true },
         { k: 'ps', label: 'Price per insulation saddle', unit: 'each', def: [0, 0], zero: true },
@@ -5637,6 +6000,23 @@ body.modal-open .dock-tab { visibility: hidden; }
       formula: function () { return ['Supports = ⌈route ÷ max spacing⌉ + 1, + extra %', 'Filled pipe = steel + water + insulation (kg/m)', 'Load per rod = pipes × kg/m × spacing × 1.5 ÷ rods', 'Rod ≥ load-based size and the MSS SP-58 minimum for the pipe size']; },
       calc: function (v) { return chhangCalc(v).rows; },
       note: 'Rough take-off. Spacing per MSS SP-58 / ASME B31.9 for water-filled steel; minimum rod sizes by pipe size per MSS SP-58 (⅜" to 2", ½" to 3½", ⅝" for 4–5", ¾" for 6", ⅞" for 8–12"). Use insulated saddles or inserts so the vapour barrier is not crushed. Confirm loads with your structural engineer.'
+    },
+
+    rfhang: {
+      code: 'HVAC / 020', title: 'Refrigerant Pipe Supports', card: true, disc: 'M',
+      desc: 'Supports for an insulated liquid + suction line set — shared trapeze or separate hangers, spacing by tube size, extra supports at bends and branch joints, saddles and rods.',
+      fields: [
+        { k: 'gas', label: 'Suction (gas) line OD', opts: ACR_OPTS, def: ['5', '5'] },
+        { k: 'liq', label: 'Liquid line OD', opts: [['none', 'None — single line']].concat(ACR_OPTS), def: ['1', '1'] },
+        { k: 'l', label: 'Route length', q: 'len', def: [30, 100] },
+        { k: 'st', label: 'Support style', opts: [['tr', 'Shared trapeze / channel for both lines'], ['cl', 'Separate hanger on each line']], def: ['tr', 'tr'] },
+        { k: 'tg', label: 'Suction line insulation', q: 'dia', def: [19, 0.75], zero: true },
+        { k: 'tl', label: 'Liquid line insulation', q: 'dia', def: [13, 0.5], zero: true },
+        { k: 'nb', label: 'Bends and branch joints', unit: 'pcs', def: [6, 6], zero: true }
+      ].concat(hangFields('insulation saddle')),
+      formula: function () { return ['Supports = ⌈route ÷ spacing⌉ + 1, + extra %, + one per bend / branch joint', 'Spacing by the smallest tube in the set', 'Weight = copper + insulation + liquid refrigerant (liquid line)', 'Rod ≥ load × 1.5, at least ⅜" (10 mm)']; },
+      calc: function (v) { return rfhangCalc(v).rows; },
+      note: 'Spacing follows ASHRAE Refrigeration Handbook guidance for copper tube (about 1.2 m / 4 ft for ½ in and smaller up to 4.3 m / 14 ft for 4⅛ in). Many split and VRF manuals ask for 1–2 m and a support within 300–500 mm of each bend and branch joint — the unit\'s installation manual governs.'
     },
 
     coldroom: {
@@ -5718,6 +6098,165 @@ body.modal-open .dock-tab { visibility: hidden; }
         ];
       },
       note: 'Typical targets: TXV / EEV systems 3–8 K (5–15 °F) superheat at the evaporator outlet; fixed orifice per the manufacturer\'s charging chart (often 5–12 K). Subcooling 3–8 K (5–15 °F) at the condenser outlet. Always use the unit\'s charging chart when one is given.'
+    },
+
+    refpt: {
+      code: 'HVAC / 015', title: 'Refrigerant P–T Chart', card: true, disc: 'M',
+      desc: 'Saturation pressure from temperature, or temperature from a gauge reading, for common refrigerants — with a P–T table, safety class and GWP.',
+      fields: [
+        { k: 're', label: 'Refrigerant', opts: REFRIG_OPTS, def: ['r410a', 'r410a'] },
+        { k: 'mode', label: 'Look up', opts: [['t', 'Temperature → pressure'], ['p', 'Gauge pressure → temperature']], def: ['t', 't'] },
+        { k: 't', label: 'Saturation temperature', q: 'tc', def: [5, 41], neg: true, show: function (s) { return s.mode === 't'; } },
+        { k: 'p', label: 'Gauge pressure', q: 'press', def: [850, 123], zero: true, show: function (s) { return s.mode === 'p'; } }
+      ],
+      check: function (v) { return v.mode === 't' && (v.t < -60 || v.t > 70) ? 'Use a temperature between −60 and 70 °C (−76 and 158 °F).' : ''; },
+      formula: function () { return ['ln p_abs = A − B / T   (fitted through the 0 °C and 40 °C table values)', 'p_gauge = p_abs − 1.013 bar', 'T_sat = B / (A − ln p_abs) − 273.15']; },
+      calc: function (v) {
+        var r = REFRIG[v.re], info = REFRIG_INFO[v.re], t = v.mode === 't' ? v.t : refTsat(v.re, v.p / 1e5 + 1.01325), pa = refPsat(v.re, t), pg = pa - 1.01325;
+        var P = function (bar) { return bar < 0 ? (sys === 'si' ? fmt(-bar * 750.06, 0) + ' mmHg vacuum' : fmt(-bar * 29.53, 1) + ' inHg vacuum') : fq(bar * 1e5, 'press'); };
+        var inFit = t >= -20 && t <= 50;
+        var rows = [
+          [v.mode === 't' ? 'Saturation pressure (gauge)' : 'Saturation temperature', v.mode === 't' ? P(pg) : tTxtC(t), 1, v.mode === 't' ? 'absolute ' + fq(pa * 1e5, 'press') : 'at ' + P(pg) + ' gauge'],
+          ['Saturation pressure (absolute)', fq(pa * 1e5, 'press'), 0, sys === 'si' ? fmt(pa, 2) + ' bar abs' : fmt(pa * 14.5038, 1) + ' psia'],
+          ['Safety class / GWP', info[0] + ' · GWP ' + info[1], 0, info[2]]
+        ];
+        var steps = sys === 'si' ? [-30, -20, -10, 0, 10, 20, 30, 40, 50] : [-20, 0, 20, 40, 60, 80, 100, 120];
+        steps.forEach(function (s) { var c = sys === 'si' ? s : (s - 32) * 5 / 9; rows.push(['at ' + (sys === 'si' ? s + ' °C' : s + ' °F'), P(refPsat(v.re, c) - 1.01325), 0]); });
+        rows.push(['Design check', inFit ? STATUS.pass : STATUS.warn, 1, inFit ? r[0] + ' fit within about 1 % here' : 'outside −20 to 50 °C (−4 to 122 °F) the fit is approximate — use the refrigerant tables']);
+        return rows;
+      },
+      note: 'Blends with glide (R404A, R410A) use the mean of bubble and dew point — for charging by superheat use the dew point, by subcooling the bubble point from the manufacturer\'s P–T chart. Pressures are approximate; confirm with refrigerant tables (ASHRAE Fundamentals Ch. 30, NIST REFPROP).'
+    },
+
+    freeze: {
+      code: 'HVAC / 016', title: 'Product Freezing Load & Time', card: true, disc: 'M',
+      desc: 'Blast-freezer batch — sensible, latent and sub-cooling heat of the product, the average refrigeration load, and the freezing time by Plank / Nagaoka.',
+      fields: [
+        { k: 'pr', label: 'Product', opts: FOOD_OPTS, def: ['beef', 'beef'] },
+        { k: 'xw', label: 'Water content', unit: '%', def: [74, 74], max: 100, maxMsg: 'Water content must be 100 % or less.', show: function (s) { return s.pr === 'custom'; } },
+        { k: 'tf', label: 'Initial freezing point', q: 'tc', def: [-1.7, 29], neg: true, show: function (s) { return s.pr === 'custom'; } },
+        { k: 'm', label: 'Product per batch', q: 'mass', def: [1000, 2200] },
+        { k: 'ti', label: 'Entering temperature', q: 'tc', def: [5, 41], neg: true },
+        { k: 'to', label: 'Final core temperature', q: 'tc', def: [-18, 0], neg: true },
+        { k: 'ta', label: 'Freezer air temperature', q: 'tc', def: [-35, -31], neg: true },
+        { k: 'air', label: 'Air movement', opts: [['6', 'Still air / storage freezer (h ≈ 6 W/m²·K)'], ['15', 'Blast freezer, 2–3 m/s (h ≈ 15 W/m²·K)'], ['25', 'Blast freezer, 4–5 m/s (h ≈ 25 W/m²·K)'], ['100', 'Plate / contact freezer (h ≈ 100 W/m²·K)']], def: ['15', '15'] },
+        { k: 'sh', label: 'Product shape', opts: [['slab', 'Slab / carton (thickness)'], ['cyl', 'Long cylinder (diameter)'], ['sph', 'Sphere (diameter)']], def: ['slab', 'slab'] },
+        { k: 'd', label: 'Thickness or diameter', q: 'dia', def: [80, 3] },
+        { k: 'bt', label: 'Batch time available', unit: 'h', def: [12, 12] },
+        { k: 'sf', label: 'Safety factor (trays, packaging)', unit: '%', def: [15, 15], zero: true }
+      ],
+      check: function (v) {
+        var tf = foodOf(v).tf;
+        return v.to >= tf ? 'The final temperature must be below the freezing point (' + tTxtC(tf) + ').' : v.ta >= v.to ? 'The freezer air must be colder than the final product temperature.' : v.ti <= v.to ? 'The entering temperature must be above the final temperature.' : '';
+      },
+      formula: function () { return ['cp above = 0.837 + 3.349·x_w;  cp below = 0.837 + 1.256·x_w;  L = 334·x_w kJ/kg  (Siebel)', 'Q = m·[cp_a·(T_in − T_f) + L + cp_b·(T_f − T_out)]', 'Average load = Q × (1 + safety) / batch time', 'Time = ρ·Δh / (T_f − T_air) × (P·a/h + R·a²/k) × (1 + 0.008·(T_in − T_f))  (Plank / Nagaoka)']; },
+      calc: function (v) { return freezeCalc(v).rows; },
+      note: 'Siebel\'s equations slightly overstate the frozen specific heat (not all water freezes at the core temperature) — a safe-side estimate. Plank / Nagaoka assumes uniform properties and a single piece in moving air; pallets, cartons and stacking can double the time. Validate with ASHRAE Refrigeration Handbook Ch. 19–20 property data or trials.'
+    },
+
+    evap: {
+      code: 'HVAC / 017', title: 'Evaporator & Condensing Unit Selection', card: true, disc: 'M',
+      desc: 'From the room load: design TD for the humidity you need, evaporating and condensing temperatures, coil rating per K, condensing unit duty, defrost type and pressure ratio.',
+      fields: [
+        { k: 'q', label: 'Refrigeration load (equipment capacity)', q: 'power', def: [10, 34000] },
+        { k: 'tr', label: 'Room temperature', q: 'tc', def: [2, 36], neg: true },
+        { k: 'rh', label: 'Room humidity to hold (coolers)', opts: EVAP_RH.map(function (r) { return [r[0], r[1]]; }), def: ['90', '90'] },
+        { k: 'n', label: 'Number of evaporators (unit coolers)', unit: 'units', def: [1, 1] },
+        { k: 'ta', label: 'Ambient air at the condenser', q: 'tc', def: [35, 95] },
+        { k: 'ctd', label: 'Condenser TD (SCT − ambient)', q: 'dT', def: [12, 20] },
+        { k: 'sl', label: 'Suction line loss (saturated)', q: 'dT', def: [1, 2], zero: true },
+        { k: 're', label: 'Refrigerant', opts: REFRIG_OPTS, def: ['r404a', 'r404a'] }
+      ],
+      formula: function () { return ['TD = room air − evaporating temperature (by humidity class; freezers ≈ 5.5 K / 10 °F)', 'SST = T_room − TD − suction loss;  SCT = T_ambient + condenser TD', 'Coil rating = Q / (n × TD)', 'COP ≈ 0.5 × Carnot;  heat rejection = Q + W']; },
+      calc: function (v) {
+        var fr = v.tr < 0, cls = EVAP_RH.filter(function (r) { return r[0] === v.rh; })[0] || EVAP_RH[1];
+        var td = fr ? 10 / 1.8 : (cls[2] + cls[3]) / 2, te = v.tr - td, sst = te - v.sl, sct = v.ta + v.ctd;
+        var Te = sst + 273.15, Tc = sct + 273.15, cop = 0.5 * Te / (Tc - Te), W = v.q / cop, pe = refPsat(v.re, sst), pc = refPsat(v.re, sct), pr = pc / pe, each = v.q / v.n;
+        var dK = function (k) { return sys === 'si' ? fmt(k, 1) + ' K' : fmt(k * 1.8, 1) + ' °F'; };
+        var rate = sys === 'si' ? fmt(each * 1000 / td, 0) + ' W/K' : fmt(each * 3412.14 / (td * 1.8), 0) + ' BTU/h·°F';
+        var PG = function (b) { return fq((b - 1.01325) * 1e5, 'press'); };
+        var defrost = v.tr >= 2 ? 'Off-cycle (air) defrost — room air above 0 °C melts the frost; 2–4 per day' : 'Electric or hot-gas defrost, 3–6 per day, with drain-line heater and heated drain pan';
+        var ok = pr <= 10 && cop > 0;
+        return [
+          ['Evaporator capacity (each)', fq(each, 'power'), 1, fmt(v.n, 0) + ' × at ' + dK(td) + ' TD · ' + fmt(each / 3.51685, 2) + ' TR'],
+          ['Coil rating per degree TD', rate, 0, 'compare with catalogue ratings given per K (°F) TD'],
+          ['Design TD', dK(td), 0, fr ? 'freezer — humidity is not controlled' : 'for ' + cls[0] + ' % RH: ' + dK(cls[2]) + '–' + dK(cls[3])],
+          ['Evaporating temperature (coil)', tTxtC(te), 0, 'SST at the compressor ' + tTxtC(sst)],
+          ['Condensing unit capacity', fq(v.q, 'power'), 1, 'at ' + tTxtC(sst) + ' SST and ' + tTxtC(v.ta) + ' ambient'],
+          ['Condensing temperature (SCT)', tTxtC(sct), 0, 'ambient + ' + dK(v.ctd)],
+          ['Compressor power (estimate)', sys === 'si' ? fmt(W, 2) + ' kW' : fmt(W / 0.7457, 1) + ' hp', 0, 'COP ≈ ' + fmt(cop, 2) + ' (half of Carnot)'],
+          ['Condenser heat rejection', fq(v.q + W, 'power'), 0, 'load + compressor power'],
+          ['Pressures (gauge)', PG(pe) + ' / ' + PG(pc), 0, REFRIG[v.re][0] + ' suction / discharge (approx.) · ratio ' + fmt(pr, 1)],
+          ['Defrost', defrost, 0],
+          ['Design check', ok ? STATUS.pass : STATUS.warn, 1, ok ? 'pressure ratio ' + fmt(pr, 1) + ' — fine for a single-stage compressor' : 'pressure ratio ' + fmt(pr, 1) + ' — use two-stage, a booster or a CO₂ cascade for this lift']
+        ];
+      },
+      note: 'TD by humidity follows typical unit-cooler manufacturer guidance (e.g. Heatcraft, Bohn, Güntner): the smaller the TD, the less moisture the coil strips from the product. Select the coil at the actual TD from catalogue data, and the condensing unit at the SST and ambient shown.'
+    },
+
+    refsafe: {
+      code: 'HVAC / 018', title: 'Refrigerant Charge Safety', card: true, disc: 'M',
+      desc: 'Will a full leak exceed the safe concentration? Room concentration against the refrigerant concentration limit, and charge limits for flammable refrigerants.',
+      fields: [
+        { k: 're', label: 'Refrigerant', opts: REFRIG_OPTS, def: ['r32', 'r32'] },
+        { k: 'm', label: 'System refrigerant charge', q: 'mass', def: [1.5, 3.3] },
+        { k: 'l', label: 'Smallest room served — length', q: 'len', def: [4, 13] },
+        { k: 'w', label: 'Room width', q: 'len', def: [3.5, 11.5] },
+        { k: 'h', label: 'Room height', q: 'len', def: [2.7, 9] },
+        { k: 'h0', label: 'Indoor unit mounting', opts: [['0.6', 'Floor (h₀ = 0.6 m)'], ['1.0', 'Window / low wall (h₀ = 1.0 m)'], ['1.8', 'High wall (h₀ = 1.8 m)'], ['2.2', 'Ceiling (h₀ = 2.2 m)']], def: ['1.8', '1.8'] }
+      ],
+      formula: function () { return ['Concentration = charge / room volume ≤ RCL  (ASHRAE 15 / 34)', 'Flammable: m_max = 2.5 × LFL^1.25 × h₀ × √A  (IEC 60335-2-40 / EN 378)', 'Minimum floor area A_min = (m / (2.5 × LFL^1.25 × h₀))²']; },
+      calc: function (v) {
+        var info = REFRIG_INFO[v.re], rcl = info[3], lfl = info[4], A = v.l * v.w, V = A * v.h, c = v.m / V, mRcl = rcl * V, h0 = +v.h0;
+        var kg = function (x) { return fq(x, 'mass'); }, conc = function (x) { return sys === 'si' ? fmt(x, 3) + ' kg/m³' : fmt(x * 62.428, 2) + ' lb/1000 ft³'; };
+        var rows = [
+          ['Concentration after a full leak', conc(c), 1, 'limit (RCL) ' + conc(rcl) + ' · ' + fmt(c / rcl * 100, 0) + ' % of it'],
+          ['Max charge for this room (RCL)', kg(mRcl), 0, 'room volume ' + fq(V, 'vol')]
+        ];
+        var okR = c <= rcl, okF = true;
+        if (lfl) {
+          var k = 2.5 * Math.pow(lfl, 1.25) * h0, m1 = 4 * lfl, m3 = 130 * lfl, mF = Math.min(Math.max(k * Math.sqrt(A), m1), m3), Amin = Math.pow(v.m / k, 2);
+          okF = v.m <= mF;
+          rows.push(['Max charge — flammability', kg(mF), 1, 'IEC 60335-2-40 for ' + fq(A, 'area') + ' at h₀ ' + v.h0 + ' m · m₁ ' + kg(m1) + ', m₃ ' + kg(m3)]);
+          rows.push(['Minimum floor area for this charge', v.m <= m1 ? 'no minimum' : v.m > m3 ? 'not allowed in occupied rooms' : fq(Amin, 'area'), 0, v.m <= m1 ? 'charge at or below m₁ = ' + kg(m1) : 'LFL ' + conc(lfl)]);
+        }
+        rows.push(['Safety class / GWP', info[0] + ' · GWP ' + info[1], 0, info[2]]);
+        var ok = okR && okF;
+        rows.push(['Design check', ok ? STATUS.pass : okF && !okR && lfl ? STATUS.warn : STATUS.fail, 1, ok ? 'charge within the limits for this room' : !okF ? 'charge exceeds the flammable limit — smaller system, larger room, higher mounting or a different refrigerant' : 'over the RCL — add leak detection with ventilation or shut-off valves, or serve a larger room']);
+        return rows;
+      },
+      note: 'RCL values from ASHRAE 34 (typical — editions change). ASHRAE 15-2022 and IEC 60335-2-40 Ed. 7 allow larger A2L charges (R32, R454B, R1234yf) with leak detection, circulation airflow or safety shut-off valves — check the edition adopted locally. Use the smallest occupied room the refrigerant could leak into.'
+    },
+
+    icestore: {
+      code: 'HVAC / 019', title: 'Ice Thermal Storage', card: true, disc: 'M',
+      desc: 'Shift cooling to off-peak hours — chiller size for full or partial (load-levelling) storage, ton-hours of ice, ice mass and tank volume.',
+      fields: [
+        { k: 'pk', label: 'Peak cooling load', q: 'power', def: [1000, 3412000] },
+        { k: 'hrs', label: 'Cooling hours per day', unit: 'h', def: [10, 10], max: 24, maxMsg: 'Use 24 h or less.' },
+        { k: 'lf', label: 'Average load / peak (load factor)', unit: '%', def: [70, 70], max: 100, maxMsg: 'Load factor must be 100 % or less.' },
+        { k: 'st', label: 'Storage strategy', opts: [['partial', 'Partial — load levelling (chiller runs day and night)'], ['full', 'Full — chiller off during the cooling hours']], def: ['partial', 'partial'] },
+        { k: 'ch', label: 'Ice-making (charging) hours', unit: 'h', def: [10, 10], max: 24, maxMsg: 'Use 24 h or less.' },
+        { k: 'cr', label: 'Chiller capacity when making ice', unit: '% of nominal', def: [65, 65], max: 100, maxMsg: 'Use 100 % or less.' }
+      ],
+      check: function (v) { return v.hrs + v.ch > 24 ? 'Cooling hours plus charging hours cannot be more than 24.' : ''; },
+      formula: function () { return ['Daily cooling = peak × hours × load factor', 'Partial: chiller = daily / (hours + charge hours × CR);  storage = chiller × CR × charge hours', 'Full: chiller = daily / (charge hours × CR);  storage = daily', 'Ice = storage / 334 kJ/kg;  tank ≈ 0.068 m³ (2.4 ft³) per ton-hour']; },
+      calc: function (v) {
+        var daily = v.pk * v.hrs * v.lf / 100, cr = v.cr / 100, full = v.st === 'full';
+        var chiller = full ? daily / (v.ch * cr) : daily / (v.hrs + v.ch * cr), store = full ? daily : chiller * cr * v.ch;
+        var trh = store / 3.51685, ice = store * 3600 / 334, tank = trh * 0.068, red = 1 - chiller / v.pk;
+        var E = function (kwh) { return sys === 'si' ? fmt(kwh, 0) + ' kWh' : fmt(kwh / 3.51685, 0) + ' ton-h'; };
+        return [
+          ['Chiller size (nominal)', fq(chiller, 'power'), 1, fmt(chiller / 3.51685, 0) + ' TR · ' + fq(chiller * cr, 'power') + ' when making ice'],
+          ['Storage capacity', sys === 'si' ? fmt(store, 0) + ' kWh' : fmt(trh, 0) + ' ton-h', 1, sys === 'si' ? fmt(trh, 0) + ' ton-hours' : fmt(store, 0) + ' kWh'],
+          ['Daily cooling', E(daily), 0, fq(v.pk, 'power') + ' × ' + fmt(v.hrs) + ' h × ' + fmt(v.lf) + ' %'],
+          ['Ice to build', sys === 'si' ? fmt(ice / 1000, 1) + ' t' : fmt(ice * 2.20462 / 2000, 1) + ' short tons', 0, 'latent heat 334 kJ/kg (144 BTU/lb)'],
+          ['Tank volume (typical)', fq(tank, 'vol'), 0, 'ice-on-coil tanks, about 2.4 ft³ per ton-hour'],
+          ['Chiller vs conventional', (red >= 0 ? fmt(red * 100, 0) + ' % smaller' : fmt(-red * 100, 0) + ' % larger'), 0, 'conventional chiller = peak ' + fq(v.pk, 'power')],
+          ['Design check', red > 0 ? STATUS.pass : STATUS.warn, 1, red > 0 ? (full ? 'full storage moves the whole load off-peak' : 'load levelling — smallest chiller and tank') : 'the chiller is not smaller than the peak — lengthen the charging hours or use partial storage']
+        ];
+      },
+      note: 'Chillers making ice at −5 to −6 °C (23 °F) glycol leave typically 60–70 % of their nominal capacity. Add 10–15 % to the storage for tank losses and incomplete melt, and check the glycol pump and heat-exchanger design. Tank volume varies by product — use the manufacturer\'s data.'
     },
 
     ctower: {
@@ -6057,6 +6596,262 @@ body.modal-open .dock-tab { visibility: hidden; }
       note: 'Fixture units and the demand curve are typical IPC Appendix E values (cold + hot). NPCP / UPC tables differ slightly — confirm with the adopted code. Size branches to fixtures from the code\'s minimum branch sizes.'
     },
 
+    hwrec: {
+      code: 'PLMB / 022', title: 'Hot Water Recirculation', card: true, disc: 'P',
+      desc: 'Return loop that keeps hot water at the taps — loop heat loss, recirculation flow, return temperature, pump head and return pipe size.',
+      fields: [
+        { k: 'l', label: 'Loop length (supply + return)', q: 'len', def: [120, 400] },
+        { k: 'ins', label: 'Pipe insulation', opts: [['8', 'Well insulated, 25 mm (1 in) — about 8 W/m'], ['12', 'Insulated, 13 mm (½ in) — about 12 W/m'], ['30', 'Bare copper — about 30 W/m']], def: ['8', '8'] },
+        { k: 'ts', label: 'Supply temperature', q: 'tc', def: [60, 140] },
+        { k: 'dt', label: 'Allowed temperature drop around the loop', q: 'dT', def: [5, 10] },
+        { k: 'fr', label: 'Friction rate in the loop', q: 'fricw', def: [250, 2.5] }
+      ],
+      check: function (v) { return v.ts - v.dt <= 10 ? 'The temperature drop is too large for this supply temperature.' : ''; },
+      formula: function () { return ['Heat loss = loop length × loss per metre', 'Flow = heat loss / (ρ·cp·ΔT)', 'Pump head = loop length × 1.5 (fittings) × friction rate', 'Return pipe: smallest copper Type L with V ≤ 0.9 m/s (3 ft/s)']; },
+      calc: function (v) {
+        var q = v.l * +v.ins, Q = q / (4186 * v.dt) / 983, tr = v.ts - v.dt, dp = v.l * 1.5 * v.fr;   // W, m³/s (water ≈ 983 kg/m³ at 60 °C), °C, Pa
+        var CU = [['½ in', 0.01384], ['¾ in', 0.01994], ['1 in', 0.02604], ['1¼ in', 0.03213], ['1½ in', 0.03823], ['2 in', 0.05042]];   // copper Type L inside diameters (m)
+        var vel = function (c) { return Q / (Math.PI * c[1] * c[1] / 4); }, pick = CU.filter(function (c) { return vel(c) <= 0.9; })[0] || CU[CU.length - 1];
+        var dK = function (k) { return sys === 'si' ? fmt(k, 1) + ' K' : fmt(k * 1.8, 1) + ' °F'; }, ok = tr >= 55 - 1e-9;
+        return [
+          ['Recirculation flow', fq(Q, 'liq'), 1, sys === 'si' ? fmt(Q * 3600, 3) + ' m³/h' : fmt(Q * 60000, 2) + ' L/min'],
+          ['Loop heat loss', pw(q), 0, fq(v.l, 'len') + ' × ' + (sys === 'si' ? v.ins + ' W/m' : fmt(v.ins * 1.04, 1) + ' BTU/h·ft')],
+          ['Return temperature', tTxtC(tr), 0, 'supply ' + tTxtC(v.ts) + ' − ' + dK(v.dt)],
+          ['Pump head', fq(dp, 'press'), 1, sys === 'si' ? fmt(dp / 9806.65, 2) + ' m H₂O' : fmt(dp / 2989.067, 1) + ' ft H₂O'],
+          ['Return pipe size', pick[0] + ' copper Type L', 0, 'velocity ' + fq(vel(pick), 'vpipe')],
+          ['Design check', ok ? STATUS.pass : STATUS.warn, 1, ok ? 'water returns at 55 °C (131 °F) or hotter — keeps Legionella in check' : 'returns below 55 °C (131 °F) — raise the supply temperature, insulate, or allow a smaller drop']
+        ];
+      },
+      note: 'Size the pump for this flow and head with a bronze or stainless body, and balance each branch with thermostatic balancing valves. Heat-loss values are typical for ½–1 in copper at 60 °C (140 °F) in a 20 °C room — use insulation data for long or large loops.'
+    },
+
+    przone: {
+      code: 'PLMB / 023', title: 'High-Rise Pressure Zones (PRV)', card: true, disc: 'P',
+      desc: 'How many floors one pressure zone can serve between the minimum fixture pressure and the maximum static pressure, and the zones and PRV stations needed.',
+      fields: [
+        { k: 'n', label: 'Floors served', unit: 'floors', def: [30, 30] },
+        { k: 'fh', label: 'Floor-to-floor height', q: 'len', def: [3.2, 10.5] },
+        { k: 'pmin', label: 'Minimum pressure at the highest fixture', q: 'press', def: [100, 15] },
+        { k: 'pmax', label: 'Maximum static pressure at a fixture', q: 'press', def: [550, 80] }
+      ],
+      check: function (v) { return v.pmax <= v.pmin ? 'The maximum pressure must be above the minimum.' : ''; },
+      formula: function () { return ['Static rise per floor = ρ·g·h', 'Floors per zone = ⌊(p_max − p_min) / rise per floor⌋ + 1', 'Zones = ⌈floors / floors per zone⌉;  PRV stations = zones − 1']; },
+      calc: function (v) { return przoneCalc(v).rows; },
+      note: 'Static pressure only — the friction loss in the riser and branches comes on top of the minimum. IPC 604.8 caps static pressure at fixtures at 80 psi (552 kPa); flush valves typically need 100–170 kPa (15–25 psi). Fit PRV stations in duplicate with bypass, strainer and gauges.'
+    },
+
+    hammer: {
+      code: 'PLMB / 024', title: 'Water Hammer (Surge Pressure)', card: true, disc: 'P',
+      desc: 'Pressure surge when a valve closes — wave speed for the pipe, critical closing time, Joukowsky surge and peak pressure against the system rating.',
+      fields: [
+        { k: 'mat', label: 'Pipe material', opts: Object.keys(PIPE_E).map(function (k) { return [k, PIPE_E[k][0]]; }), def: ['cu', 'cu'] },
+        { k: 'd', label: 'Inside diameter', q: 'dia', def: [26, 1.025] },
+        { k: 'e', label: 'Wall thickness', q: 'dia', def: [1.27, 0.05] },
+        { k: 'dv', label: 'Velocity stopped by the valve', q: 'vpipe', def: [1.5, 5] },
+        { k: 'l', label: 'Pipe length from the valve to the source / tank', q: 'len', def: [30, 100] },
+        { k: 't', label: 'Valve closing time', unit: 's', def: [0.1, 0.1] },
+        { k: 'p0', label: 'Working pressure', q: 'press', def: [400, 60] },
+        { k: 'pr', label: 'Lowest pressure rating in the system', q: 'press', def: [1000, 150] }
+      ],
+      check: function (v) { return v.e * 2 >= v.d ? 'The wall thickness must be less than half the diameter.' : v.pr <= v.p0 ? 'The pressure rating must be above the working pressure.' : ''; },
+      formula: function () { return ['a = √( (K/ρ) / (1 + K·D / (E·e)) ),  K = 2.2 GPa', 'Critical time t_c = 2L / a', 'Δp = ρ·a·ΔV  (closing in ≤ t_c, Joukowsky);  Δp = ρ·a·ΔV × t_c / t  (slower)', 'Peak = working pressure + Δp']; },
+      calc: function (v) {
+        var E = PIPE_E[v.mat][1] * 1e9, a = Math.sqrt(2.2e9 / 1000 / (1 + 2.2e9 * v.d / (E * v.e))), tc = 2 * v.l / a, full = 1000 * a * v.dv;
+        var dp = full * (v.t <= tc ? 1 : tc / v.t), peak = v.p0 + dp, tNeed = tc * full / (v.pr - v.p0), ok = peak <= v.pr;
+        return [
+          ['Surge pressure rise', fq(dp, 'press'), 1, v.t <= tc ? 'closes within 2L/a — full Joukowsky surge' : 'slower than 2L/a — surge reduced by ' + fmt(tc / v.t * 100, 0) + ' %'],
+          ['Peak pressure', fq(peak, 'press'), 1, 'working ' + fq(v.p0, 'press') + ' + surge'],
+          ['Pressure wave speed', fq(a, 'vpipe'), 0, PIPE_E[v.mat][0] + ', D/e ' + fmt(v.d / v.e, 1)],
+          ['Critical closing time (2L/a)', fmt(tc, 3) + ' s', 0, 'full surge if the valve closes faster than this'],
+          ['Closing time to stay within the rating', fmt(Math.max(tNeed, tc), 2) + ' s', 0, 'without an arrestor'],
+          ['Design check', ok ? STATUS.pass : STATUS.warn, 1, ok ? 'peak within the ' + fq(v.pr, 'press') + ' rating' : 'peak over the rating — fit a water hammer arrestor at the valve, or close it slower than ' + fmt(Math.max(tNeed, tc), 2) + ' s']
+        ];
+      },
+      note: 'Quick-closing valves (solenoids, single-lever taps, flush valves, washing machines) close in 0.02–0.1 s — faster than 2L/a in most buildings, so the full Joukowsky surge applies. Keep velocities at or below about 2.4 m/s (8 ft/s) and fit ASSE 1010 / PDI-WH 201 arrestors at those valves.'
+    },
+
+    pool: {
+      code: 'PLMB / 025', title: 'Swimming Pool Circulation & Heating', card: true, disc: 'P',
+      desc: 'Pool volume, circulation flow for the turnover time, filter area, pump power and the heater size for the first heat-up.',
+      fields: [
+        { k: 'l', label: 'Pool length', q: 'len', def: [25, 82] },
+        { k: 'w', label: 'Pool width', q: 'len', def: [12.5, 41] },
+        { k: 'd', label: 'Average depth', q: 'len', def: [1.4, 4.6] },
+        { k: 'to', label: 'Turnover time', unit: 'h', def: [6, 6] },
+        { k: 'f', label: 'Filter type', opts: [['36.7', 'High-rate sand — 37 m/h (15 gpm/ft²)'], ['4.9', 'Diatomaceous earth (DE) — 4.9 m/h (2 gpm/ft²)'], ['0.92', 'Cartridge — 0.9 m/h (0.375 gpm/ft²)']], def: ['36.7', '36.7'] },
+        { k: 'h', label: 'Pump head (TDH)', q: 'press', def: [150, 22] },
+        { k: 'eta', label: 'Pump efficiency', unit: '%', def: [60, 60], max: 95, maxMsg: 'Use 95 % or less.' },
+        { k: 'dt', label: 'Heat-up temperature rise', q: 'dT', def: [12, 22] },
+        { k: 'hu', label: 'Heat-up time', unit: 'h', def: [48, 48] }
+      ],
+      formula: function () { return ['Volume = L × W × average depth', 'Flow = volume / turnover time', 'Filter area = flow / filtration rate', 'Pump power = Q·H / η;  heater = V·ρ·cp·ΔT / heat-up time']; },
+      calc: function (v) {
+        var V = v.l * v.w * v.d, Q = V / (v.to * 3600), A = Q * 3600 / +v.f, P = Q * v.h / (v.eta / 100), heat = V * 1000 * 4186 * v.dt / (v.hu * 3600), ok = v.to <= 6;
+        var dK = function (k) { return sys === 'si' ? fmt(k, 1) + ' K' : fmt(k * 1.8, 1) + ' °F'; };
+        return [
+          ['Circulation flow', fq(Q, 'liq'), 1, sys === 'si' ? fmt(Q * 3600, 1) + ' m³/h' : fmt(Q * 3600 / 0.003785411784, 0) + ' gal/h'],
+          ['Pool volume', fq(V, 'vol'), 0, sys === 'si' ? fmt(V * 1000, 0) + ' L' : fmt(V / 0.003785411784, 0) + ' gal'],
+          ['Filter area', fq(A, 'area'), 0, 'at the filtration rate of the selected filter'],
+          ['Pump power (shaft)', pwr(P), 0, 'flow × head / ' + fmt(v.eta) + ' %'],
+          ['Heater for heat-up', pw(heat), 1, 'raise ' + dK(v.dt) + ' in ' + fmt(v.hu) + ' h, before surface losses'],
+          ['Design check', ok ? STATUS.pass : STATUS.warn, 1, ok ? 'turnover within 6 h — the usual public-pool limit' : 'over 6 h — most health codes need 6 h or less for public pools (spas 30 min, wading pools 1 h)']
+        ];
+      },
+      note: 'Turnover limits come from the local health code (often 6 h for public pools, 30 min for spas). Surface losses usually set the running heater size — a cover cuts them by half or more. Size the balance tank and main drains for the circulation flow.'
+    },
+
+    cleanagent: {
+      code: 'FIRE / 021', title: 'Clean Agent Quantity (NFPA 2001)', card: true, disc: 'F',
+      desc: 'Agent needed to flood a room to its design concentration — HFC-227ea (FM-200), FK-5-1-12 (Novec 1230) or IG-541 (Inergen), with temperature and altitude.',
+      fields: [
+        { k: 'ag', label: 'Agent', opts: Object.keys(AGENTS).map(function (k) { return [k, AGENTS[k][0]]; }), def: ['hfc227', 'hfc227'] },
+        { k: 'l', label: 'Room length', q: 'len', def: [6, 20] },
+        { k: 'w', label: 'Room width', q: 'len', def: [5, 16] },
+        { k: 'h', label: 'Height (incl. raised floor / ceiling void)', q: 'len', def: [3, 10] },
+        { k: 't', label: 'Minimum room temperature', q: 'tc', def: [20, 68], neg: true },
+        { k: 'alt', label: 'Altitude above sea level', q: 'len', def: [0, 0], zero: true },
+        { k: 'c', label: 'Design concentration (0 = typical for the agent)', unit: '%', def: [0, 0], zero: true, max: 60, maxMsg: 'Use a concentration of 60 % or less.' }
+      ],
+      formula: function () { return ['Halocarbon: W = V / S × C / (100 − C)', 'Inert gas: X = 2.303 × (V_s / S) × log₁₀(100 / (100 − C)) per m³ of room', 'S = k₁ + k₂·T  (m³/kg);  × altitude correction factor']; },
+      calc: function (v) {
+        var A = AGENTS[v.ag], V = v.l * v.w * v.h, S = A[1] + A[2] * v.t, C = v.c > 0 ? v.c : A[3], af = altFactor(v.alt), inert = A[5] === 'inert', qty, kg;
+        if (inert) { var Vs = A[1] + A[2] * 21, X = 2.303 * (Vs / S) * Math.log10(100 / (100 - C)) * af; qty = X * V; kg = qty / Vs; }
+        else { kg = V / S * C / (100 - C) * af; }
+        var safe = C <= A[4];
+        return [
+          ['Agent quantity', inert ? fq(qty, 'vol') : fq(kg, 'mass'), 1, inert ? 'at 21 °C (70 °F) · ' + fq(kg, 'mass') : (sys === 'si' ? fmt(kg / V, 3) + ' kg/m³' : fmt(kg / V * 0.062428, 4) + ' lb/ft³') + ' of room'],
+          ['Design concentration', fmt(C, 1) + ' %', 0, v.c > 0 ? 'as entered' : 'typical Class A / C design for this agent'],
+          ['Protected volume', fq(V, 'vol'), 0, 'deduct solid, permanent objects only'],
+          ['Specific volume S', sys === 'si' ? fmt(S, 4) + ' m³/kg' : fmt(S * 16.0185, 3) + ' ft³/lb', 0, 'at ' + tTxtC(v.t)],
+          ['Altitude correction', '× ' + fmt(af, 2), 0, fq(v.alt, 'len') + ' above sea level'],
+          ['Design check', safe ? STATUS.pass : STATUS.warn, 1, safe ? 'at or below the NOAEL of ' + fmt(A[4]) + ' % — suitable for normally occupied rooms' : 'above the NOAEL of ' + fmt(A[4]) + ' % — occupied rooms need egress-time limits per NFPA 2001']
+        ];
+      },
+      note: 'Typical design concentrations: HFC-227ea 7.0 %, FK-5-1-12 4.5 %, IG-541 38.5 % (Class A and C hazards). Class B fuels need higher values from the agent listing. Check the room integrity with a door-fan test (hold time 10 min) and size the pressure relief vent. Final quantities come from the listed manufacturer\'s flow calculation.'
+    },
+
+    fabatt: {
+      code: 'FIRE / 022', title: 'Fire Alarm Battery (Standby)', card: true, disc: 'F',
+      desc: 'Battery for the fire alarm panel — standby current for 24 h, then alarm current for 5, 15 or 30 minutes, with a margin for ageing.',
+      fields: [
+        { k: 'is', label: 'Total standby current', unit: 'A', def: [0.85, 0.85] },
+        { k: 'ia', label: 'Total alarm current', unit: 'A', def: [3.2, 3.2] },
+        { k: 'ts', label: 'Standby time', unit: 'h', def: [24, 24] },
+        { k: 'ta', label: 'Alarm time', opts: [['5', '5 min — general alarm (NFPA 72)'], ['15', '15 min — voice evacuation (NFPA 72)'], ['30', '30 min — BS 5839-1 / EN 54-4']], def: ['5', '5'] },
+        { k: 'sf', label: 'Ageing / safety margin', unit: '%', def: [20, 20], zero: true }
+      ],
+      formula: function () { return ['Ah = (I_standby × t_standby + I_alarm × t_alarm / 60) × (1 + margin)', 'Battery: next standard size up', 'Charger ≥ standby current + used Ah / 48 h  (recharge within 48 h)']; },
+      calc: function (v) {
+        var used = v.is * v.ts + v.ia * +v.ta / 60, ah = used * (1 + v.sf / 100), SIZES = [7, 12, 18, 26, 33, 40, 55, 65, 80, 100, 150, 200];
+        var pick = SIZES.filter(function (s) { return s >= ah - 1e-9; })[0], ch = v.is + used / 48;
+        return [
+          ['Battery capacity needed', fmt(ah, 1) + ' Ah', 1, 'standby ' + fmt(v.is * v.ts, 1) + ' Ah + alarm ' + fmt(v.ia * v.ta / 60, 2) + ' Ah, + ' + fmt(v.sf) + ' %'],
+          ['Battery to fit', pick ? '2 × 12 V, ' + pick + ' Ah' : 'over 200 Ah', 1, pick ? 'in series for a 24 V panel' : 'split the load across power supplies'],
+          ['Charger current', fmt(ch, 2) + ' A', 0, 'standby load + recharge in 48 h'],
+          ['Design check', pick ? STATUS.pass : STATUS.warn, 1, pick ? 'standard sealed lead-acid size' : 'beyond a single panel battery — add power-supply boosters']
+        ];
+      },
+      note: 'Take the standby and alarm currents of the panel, every detector, module, sounder and strobe from their data sheets. NFPA 72 asks for 24 h standby then 5 min of alarm (15 min for voice evacuation); BS 5839-1 asks for 24 h plus 30 min. Batteries lose capacity with age and cold — keep the margin.'
+    },
+
+    detect: {
+      code: 'FIRE / 023', title: 'Detector Spacing & Count (NFPA 72)', card: true, disc: 'F',
+      desc: 'How many spot smoke or heat detectors a room needs — listed spacing, the ceiling-height reduction for heat detectors, and the 0.7 S rectangle method.',
+      fields: [
+        { k: 'ty', label: 'Detector type', opts: [['smoke', 'Spot smoke detector'], ['heat', 'Spot heat detector']], def: ['smoke', 'smoke'] },
+        { k: 'ss', label: 'Smoke detector spacing', q: 'len', def: [9.1, 30], show: function (s) { return s.ty === 'smoke'; } },
+        { k: 'hs', label: 'Heat detector listed spacing', q: 'len', def: [15.2, 50], show: function (s) { return s.ty === 'heat'; } },
+        { k: 'l', label: 'Room length', q: 'len', def: [20, 66] },
+        { k: 'w', label: 'Room width', q: 'len', def: [12, 40] },
+        { k: 'ch', label: 'Ceiling height', q: 'len', def: [3, 10] }
+      ],
+      formula: function () { return ['Heat detectors: S = listed spacing × ceiling-height factor (NFPA 72 Table 17.6.3.5.1)', 'Rectangle method: every point within 0.7·S of a detector — a² + b² ≤ (1.4·S)²', 'Count = fewest a × b cells that cover the room']; },
+      calc: function (v) { return detectCalc(v).rows; },
+      note: 'For smooth, flat ceilings. Beams, joists, sloped ceilings, high airflow (more than 8 air changes an hour) and ceilings over 3 m (10 ft) for smoke detectors change the spacing — see NFPA 72 Ch. 17. Keep detectors 100 mm (4 in) from walls when ceiling mounted and 0.9 m (3 ft) from supply diffusers.'
+    },
+
+    egress: {
+      code: 'FIRE / 024', title: 'Occupant Load & Egress', card: true, disc: 'F',
+      desc: 'Occupant load from floor area and use, the number of exits, total stair and door width, and the maximum travel distance.',
+      fields: [
+        { k: 'a', label: 'Floor area', q: 'area', def: [800, 8600] },
+        { k: 'occ', label: 'Use of the space', opts: EGRESS_OCC.map(function (o) { return [o[0], o[1] + ' — ' + o[2] + ' ft² (' + fmt(o[2] * 0.0929, 2) + ' m²) ' + o[3]]; }), def: ['business', 'business'] },
+        { k: 'spr', label: 'Fire protection', opts: [['no', 'Not sprinklered'], ['yes', 'Sprinklered (NFPA 13)'], ['voice', 'Sprinklered with voice alarm']], def: ['yes', 'yes'] }
+      ],
+      formula: function () { return ['Occupant load = area / load factor (rounded up)', 'Stair width = load × 0.3 in (0.2 in sprinklered with voice alarm)', 'Other egress width = load × 0.2 in (0.15 in)', 'Exits: 2 up to 500 people, 3 up to 1,000, 4 above']; },
+      calc: function (v) {
+        var o = EGRESS_OCC.filter(function (x) { return x[0] === v.occ; })[0] || EGRESS_OCC[3], ft2 = v.a / 0.09290304, n = Math.ceil(ft2 / o[2] - 1e-9);
+        var voice = v.spr === 'voice', sp = v.spr !== 'no', stairIn = n * (voice ? 0.2 : 0.3), otherIn = n * (voice ? 0.15 : 0.2);
+        var exits = n > 1000 ? 4 : n > 500 ? 3 : 2, td = sp ? o[5] : o[4], inch = function (x) { return dimTxt(x * 0.0254); };
+        var perStair = Math.max(stairIn / exits, 44), perDoor = Math.max(otherIn / exits, 32);
+        return [
+          ['Occupant load', fmt(n, 0) + ' people', 1, fq(v.a, 'area') + ' at ' + o[2] + ' ft² (' + fmt(o[2] * 0.0929, 2) + ' m²) ' + o[3] + ' per person'],
+          ['Exits required', fmt(exits, 0), 1, n <= 49 ? 'one exit may be enough for 49 or fewer — check IBC Table 1006.2.1' : 'IBC 1006.3.3'],
+          ['Total stair width', inch(stairIn), 0, 'each stair at least ' + inch(perStair) + ' (minimum 44 in / 1,118 mm)'],
+          ['Total door and corridor width', inch(otherIn), 0, 'each exit door at least ' + inch(perDoor) + ' clear (minimum 32 in / 813 mm)'],
+          ['Maximum travel distance', td ? fq(td * 0.3048, 'len') : 'not permitted', 0, sp ? 'sprinklered' : 'not sprinklered'],
+          ['Design check', td ? STATUS.pass : STATUS.fail, 1, td ? 'arrange the ' + exits + ' exits at least half the room diagonal apart (one-third if sprinklered)' : 'this use must be sprinklered']
+        ];
+      },
+      note: 'Load factors and widths from IBC 2021 (Tables 1004.5, 1017.2 and Sections 1005, 1006). "Net" areas exclude corridors, toilets and fixed equipment. NFPA 101 and local building and fire codes use similar but not identical values — the adopted code governs.'
+    },
+
+    foam: {
+      code: 'FIRE / 025', title: 'Foam Concentrate Quantity', card: true, disc: 'F',
+      desc: 'Foam solution flow and the concentrate and water to store for a spill area, foam-water sprinklers or a tank — with supplementary hose streams.',
+      fields: [
+        { k: 'a', label: 'Area to cover', q: 'area', def: [400, 4300] },
+        { k: 'r', label: 'Application rate', q: 'dens', def: [6.5, 0.16] },
+        { k: 't', label: 'Discharge time', unit: 'min', def: [10, 10] },
+        { k: 'pct', label: 'Concentrate', opts: [['1', '1 % concentrate'], ['3', '3 % concentrate (AR-AFFF / FFF)'], ['6', '6 % concentrate']], def: ['3', '3'] },
+        { k: 'hq', label: 'Supplementary hose streams', q: 'lpm', def: [380, 100], zero: true },
+        { k: 'ht', label: 'Hose stream time', unit: 'min', def: [20, 20], zero: true }
+      ],
+      formula: function () { return ['Solution flow = area × application rate', 'Solution = flow × time + hose flow × hose time', 'Concentrate = solution × %;  water = solution − concentrate']; },
+      calc: function (v) {
+        var q = v.a * v.r, sol = q * v.t + v.hq * v.ht, conc = sol * +v.pct / 100, L = function (x) { return sys === 'si' ? fq(x / 1000, 'vol') : fmt(x / 3.785411784, 0) + ' gal'; };   // L/min, L
+        return [
+          ['Foam concentrate', sys === 'si' ? fmt(conc, 0) + ' L' : fmt(conc / 3.785411784, 0) + ' gal', 1, v.pct + ' % of the solution — keep an equal reserve where the code asks for one'],
+          ['Foam solution flow', fq(q, 'lpm'), 1, fq(v.a, 'area') + ' × application rate'],
+          ['Total foam solution', L(sol), 0, 'system ' + fmt(v.t) + ' min + hose ' + fmt(v.ht) + ' min'],
+          ['Water for the solution', L(sol - conc), 0, 'add it to the fire water storage'],
+          ['Design check', v.t >= 10 ? STATUS.pass : STATUS.warn, 1, v.t >= 10 ? 'discharge time 10 min or more' : 'under 10 min — NFPA 11 / 16 discharge times are usually 10 min or longer']
+        ];
+      },
+      note: 'Rates and times come from the governing standard: NFPA 16 foam-water sprinklers 6.5 L/min·m² (0.16 gpm/ft²) for 10 min; NFPA 11 spill fires and tanks 4.1–6.5 L/min·m² (0.10–0.16 gpm/ft²) for 15–65 min depending on the fuel and outlet type. Use the listed rate for the concentrate and fuel (polar solvents need alcohol-resistant foam).'
+    },
+
+    plhang: {
+      code: 'PLMB / 026', title: 'Plumbing Pipe Hangers & Supports', card: true, disc: 'P',
+      desc: 'Hangers, riser clamps, rods, anchors and cost for a water or drainage run — IPC spacing for copper, steel, cast iron and plastic pipe.',
+      fields: [
+        { k: 'mat', label: 'Pipe material', opts: Object.keys(PL_HANG).map(function (k) { return [k, PL_HANG[k][0]]; }), def: ['cu', 'cu'] },
+        { k: 'dn', label: 'Pipe size', opts: HANG_SIZE_OPTS([15, 20, 25, 32, 40, 50, 65, 80, 100, 125, 150, 200]), def: ['50', '50'] },
+        { k: 'l', label: 'Horizontal run', q: 'len', def: [40, 130] },
+        { k: 'rh', label: 'Riser height (0 if none)', q: 'len', def: [0, 0], zero: true },
+        { k: 't', label: 'Insulation thickness (0 if none)', q: 'dia', def: [0, 0], zero: true }
+      ].concat(hangFields('pipe clamp / shield')),
+      check: function (v) { return v.mat === 'ci' && +v.dn < 40 ? 'Cast-iron soil pipe starts at 1½" (DN40).' : ''; },
+      formula: function () { return ['Hangers = ⌈run ÷ max spacing⌉ + 1, + extra %', 'Riser clamps = ⌈riser ÷ vertical spacing⌉ + 1', 'Filled pipe = pipe + water + insulation (kg/m)', 'Rod ≥ load × 1.5 and the MSS SP-58 minimum for the size']; },
+      calc: function (v) { return plhangCalc(v).rows; },
+      note: 'Spacing from IPC Table 308.5 (UPC Table 313.3 is similar); drainage pipe is taken as full of water for the rod load. Hang copper on copper-plated or isolated hangers to avoid galvanic corrosion, plastic pipe on wide straps, and insulated hot pipe on shields. Add a support within 600 mm (2 ft) of each change of direction.'
+    },
+
+    fphang: {
+      code: 'FIRE / 026', title: 'Fire Sprinkler Pipe Hangers (NFPA 13)', card: true, disc: 'F',
+      desc: 'Hangers for sprinkler mains and branch lines — NFPA 13 spacing and rod sizes, hanger design load, end-sprinkler distance and seismic sway braces.',
+      fields: [
+        { k: 'mat', label: 'Pipe material', opts: Object.keys(FP_HANG).map(function (k) { return [k, FP_HANG[k][0]]; }), def: ['st', 'st'] },
+        { k: 'dn', label: 'Pipe size', opts: HANG_SIZE_OPTS(FP_SIZES), def: ['100', '100'] },
+        { k: 'l', label: 'Pipe run length', q: 'len', def: [60, 200] },
+        { k: 'seis', label: 'Seismic bracing', opts: [['no', 'Not required'], ['yes', 'Required (NFPA 13 Ch. 18)']], def: ['no', 'no'] }
+      ].concat(hangFields('hanger ring / clevis')),
+      check: function (v) { return FP_HANG[v.mat][1][FP_SIZES.indexOf(+v.dn)] ? '' : FP_HANG[v.mat][0] + ' is not used above 3" — pick a smaller size or steel.'; },
+      formula: function () { return ['Hangers = ⌈run ÷ NFPA 13 max distance⌉ + 1, + extra %', 'Hanger design load = 5 × water-filled pipe + 250 lb (114 kg)', 'Rod: ⅜" (10 mm) to 4", ½" (12 mm) for 5–8"', 'Sway braces: lateral ≤ 40 ft (12.2 m), longitudinal ≤ 80 ft (24.4 m)']; },
+      calc: function (v) { return fphangCalc(v).rows; },
+      note: 'NFPA 13 also needs at least one hanger for each length of pipe on branch lines, restraint of armovers against upward thrust, and listed hangers. Seismic braces here are a first count for mains only — size them for the zone of influence with the seismic coefficient from the structural engineer.'
+    },
+
     rect: {
       code: 'UTIL / AREA', title: 'Rectangular Duct Dimensions',
       desc: 'Area, perimeter, hydraulic diameter and equivalent round size of a rectangular duct.',
@@ -6136,20 +6931,20 @@ body.modal-open .dock-tab { visibility: hidden; }
   /* ---------- Cards ---------- */
   var grid = $('#card-grid');
   // HVAC sub-groups (a calculator can belong to more than one); these cards also stay under Mechanical.
-  var HVAC_TAGS = { psy: ['AC'], refpipe: ['AC'], chwins: ['AC'], chhang: ['AC'], coldroom: ['AC'], refcycle: ['AC'], shsc: ['AC'], ctower: ['AC'], expt: ['AC', 'H'], cond: ['AC'], pmv: ['AC'], erv: ['V'], carpark: ['V'], stairp: ['V'], leak: ['DD'], chw: ['AC'], pump: ['AC', 'H'], hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
+  var HVAC_TAGS = { psy: ['AC'], refpipe: ['AC', 'R'], chwins: ['AC'], chhang: ['AC'], coldroom: ['R'], refcycle: ['AC', 'R'], shsc: ['R'], refpt: ['R'], freeze: ['R'], evap: ['R'], refsafe: ['R'], rfhang: ['R'], icestore: ['AC', 'R'], ctower: ['AC'], expt: ['AC', 'H'], cond: ['AC'], pmv: ['AC'], erv: ['V'], carpark: ['V'], stairp: ['V'], leak: ['DD'], chw: ['AC'], pump: ['AC', 'H'], hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
                     oa: ['V'], vbz: ['V'], voz: ['V'], exh: ['V'], mua: ['V'], xfer: ['V'], bal: ['V'], vcmp: ['V'],
                     sdiff: ['GRL'], rgrille: ['GRL'], egrille: ['GRL'], louv: ['GRL'], fvel: ['GRL'], farea: ['GRL'], ndiff: ['GRL'], cfmd: ['GRL'], tsd: ['GRL'],
                     fexh: ['FAN'], fsup: ['FAN'], ffa: ['FAN'], fsp: ['FAN'], ftp: ['FAN'], fpow: ['FAN'], feff: ['FAN'], fop: ['FAN'],
                     rdc: ['DD'], rcd: ['DD'], dvel: ['DD'], eqf: ['DD'], sreg: ['DD'], dfric: ['DD'], eqlen: ['DD'], fitl: ['DD'], tpl: ['DD'], dar: ['DD'], dsheet: ['DD'], insul: ['DD'], hanger: ['DD'], dins: ['DD'], duct: ['DD', 'AC'], ductd: ['DD', 'AC'], diff: ['DD', 'AC'],
                     btu: ['AC'], cool: ['AC'], pcl: ['AC'] };
-  var HVAC_NAMES = { H: 'Heating', V: 'Ventilation', AC: 'Air Conditioning', DD: 'Duct Design' };
-  // Display order: Mechanical by group (air conditioning, heating, ventilation, duct design, fans), then E, P, F, S.
-  var CARD_ORDER = ['btu', 'cool', 'pcl', 'psy', 'pmv', 'heat', 'phl', 'hwflow', 'chw', 'chwins', 'chhang', 'coldroom', 'refcycle', 'shsc', 'ctower', 'expt', 'cond', 'pump', 'refpipe', 'fuel', 'cost',
+  var HVAC_NAMES = { H: 'Heating', V: 'Ventilation', AC: 'Air Conditioning', R: 'Refrigeration', DD: 'Duct Design' };
+  // Display order: Mechanical by group (air conditioning, refrigeration, heating, ventilation, duct design, fans), then E, P, F, S.
+  var CARD_ORDER = ['btu', 'cool', 'pcl', 'psy', 'pmv', 'heat', 'phl', 'hwflow', 'chw', 'chwins', 'chhang', 'ctower', 'icestore', 'expt', 'cond', 'pump', 'refpipe', 'rfhang', 'coldroom', 'freeze', 'evap', 'refcycle', 'refpt', 'shsc', 'refsafe', 'fuel', 'cost',
     'ach', 'geom', 'oa', 'vbz', 'voz', 'exh', 'mua', 'xfer', 'bal', 'vcmp', 'erv', 'carpark', 'stairp',
     'duct', 'rdc', 'rcd', 'dvel', 'eqf', 'sreg', 'dfric', 'eqlen', 'fitl', 'tpl', 'dar', 'dsheet', 'insul', 'hanger', 'leak', 'dins', 'ductd', 'diff',
     'fexh', 'fsup', 'ffa', 'fsp', 'ftp', 'fpow', 'feff', 'fop',
     'sdiff', 'rgrille', 'egrille', 'louv', 'fvel', 'farea', 'ndiff', 'cfmd', 'tsd',
-    'elec', 'pls', 'ecost', 'vdrop', 'cable', 'sccur', 'conduit', 'egc', 'motor', 'gen', 'ups', 'pfc', 'solar', 'evc', 'payback', 'light', 'lpd', 'pipe', 'tank', 'hwheat', 'booster', 'lpg', 'exloop', 'wsfu', 'sprinkler', 'sprhyd', 'firepump', 'hazen', 'hydrant', 'fext', 'standpipe', 'firetank', 'smoke', 'drain', 'dfu', 'septic', 'greasetrap', 'rainwater', 'roofdrain'];
+    'elec', 'pls', 'ecost', 'vdrop', 'cable', 'sccur', 'conduit', 'egc', 'motor', 'gen', 'ups', 'pfc', 'solar', 'evc', 'payback', 'light', 'lpd', 'pipe', 'tank', 'hwheat', 'hwrec', 'booster', 'przone', 'lpg', 'exloop', 'hammer', 'plhang', 'wsfu', 'pool', 'sprinkler', 'sprhyd', 'firepump', 'hazen', 'fphang', 'hydrant', 'fext', 'standpipe', 'firetank', 'foam', 'cleanagent', 'detect', 'fabatt', 'smoke', 'egress', 'drain', 'dfu', 'septic', 'greasetrap', 'rainwater', 'roofdrain'];
   var statCalcs = document.getElementById('stat-calcs');
   if (statCalcs) statCalcs.textContent = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).length;
   var cardIds = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).sort(function (a, b) {
@@ -6195,7 +6990,7 @@ body.modal-open .dock-tab { visibility: hidden; }
     });
     function reduceMotionPref() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
     var saved = null; try { saved = localStorage.getItem('mechtoolbox-view'); } catch (e) {}
-    if (saved === 'compact') setView('compact', false);
+    if (saved !== 'cards') setView('compact', false);
   })();
 
   /* Minimize / show the whole calculator list. Searching or picking a category brings it back. */
@@ -6297,6 +7092,23 @@ body.modal-open .dock-tab { visibility: hidden; }
     carpark:   ['max(ACH × V, 3.75 L/s·m² × A); fire ACH × V; jet fans by area', 'IMC 404 (enclosed parking garages); BS 7346-7; Fire Code of the Philippines RIRR; PMEC.', 'typical'],
     stairp:    ['Q = 0.83 A √ΔP + v·A_door·n; F = F_dc + W·A·ΔP / (2(W − d))', 'NFPA 92 (smoke control); NFPA 101 (door force 133 N); EN 12101-6 (pressure differential systems).', 'method'],
     leak:      ['F = CL × P^0.65 (CFM/100 ft²); allowed = F × area / 100', 'SMACNA HVAC Air Duct Leakage Test Manual; ASHRAE 90.1 §6.4.4.2.2.', 'standard'],
+    plhang:    ['Hangers = ⌈L / S⌉ + 1 + extra; horizontal and riser spacing from IPC Table 308.5; rod by filled-pipe load × 1.5 and the MSS SP-58 minimum', 'IPC Table 308.5 (UPC Table 313.3 similar); MSS SP-58 rod sizes and loads.', 'standard'],
+    fphang:    ['S from NFPA 13 Table 17.4.2.1(a); rod by NFPA 13 table; hanger load 5 × filled weight + 250 lb; braces ≤ 40 ft lateral / 80 ft longitudinal', 'NFPA 13 Ch. 17 (hanging, bracing and restraint of system piping) and Ch. 18 (seismic protection).', 'standard'],
+    rfhang:    ['Supports = ⌈L / S⌉ + 1 + extra + bends; S by the smallest tube; saddles at each support', 'ASHRAE Handbook—Refrigeration Ch. 1 (refrigerant piping supports); MSS SP-58; split / VRF installation manuals.', 'typical'],
+    hwrec:     ['Loss = L × W/m; flow = loss / (ρ·cp·ΔT); head = 1.5·L·friction', 'ASHRAE Handbook—HVAC Applications (service water heating); ASHRAE 188 (Legionella); ASPE Data Book Vol. 2. Heat-loss values typical.', 'method'],
+    przone:    ['Static ρ·g·h per floor; floors per zone between p_min and p_max', 'IPC 604.8 (80 psi / 552 kPa maximum static, pressure-reducing valves) and IPC Table 604.3 minimum fixture pressures; ASPE Data Book.', 'standard'],
+    hammer:    ['a = √(K/ρ / (1 + K·D/(E·e))); Δp = ρ·a·ΔV (Joukowsky), × (2L/a)/t for slower closure', 'Joukowsky equation (AWWA M11, ASPE Data Book); ASSE 1010 / PDI-WH 201 water hammer arrestors.', 'method'],
+    pool:      ['Q = V / turnover; filter area = Q / rate; P = Q·H/η; heat-up V·ρ·cp·ΔT / t', 'ANSI/APSP/ICC-5 and -11 (pools and water quality), NSF/ANSI 50 (filters); turnover per the local health code.', 'typical'],
+    cleanagent:['Halocarbon W = V/S × C/(100 − C); inert gas X = 2.303 (Vs/S) log(100/(100 − C)); S = k1 + k2·T; altitude factor', 'NFPA 2001 (clean agent fire extinguishing systems) and ISO 14520; agent constants, NOAEL and altitude factors from NFPA 2001.', 'standard'],
+    fabatt:    ['Ah = (I_standby × 24 h + I_alarm × 5 / 15 min) × (1 + margin)', 'NFPA 72 §10.6.7 (secondary supply capacity) and §10.6.10 (recharge in 48 h); BS 5839-1 and EN 54-4 (30 min alarm).', 'standard'],
+    detect:    ['S = listed spacing (× height factor for heat); rectangle method, all points within 0.7 S', 'NFPA 72 Ch. 17 — Table 17.6.3.5.1 (heat detectors on high ceilings), smoke-detector spacing, Annex A rectangle method.', 'standard'],
+    egress:    ['Load = area / factor; width = load × 0.3 in (stairs) / 0.2 in (other); exits by load', 'IBC 2021 Table 1004.5, §1005.3, §1006.3.3, Table 1017.2; NFPA 101 has similar provisions.', 'standard'],
+    foam:      ['Solution = area × rate × time + hose streams; concentrate = solution × %', 'NFPA 11 (low-, medium- and high-expansion foam) and NFPA 16 (foam-water sprinklers); rates per listing and fuel.', 'method'],
+    refpt:     ['ln p = A − B/T fitted through the 0 °C and 40 °C saturation pressures', 'Refrigerant saturation tables (ASHRAE Handbook—Fundamentals Ch. 30; NIST REFPROP); ASHRAE 34 safety groups; IPCC AR4 GWP values.', 'typical'],
+    freeze:    ['Siebel cp and latent heat from water content; Plank freezing time with the Nagaoka correction', 'ASHRAE Handbook—Refrigeration Ch. 19 (thermal properties of foods) and Ch. 20 (cooling and freezing times).', 'method'],
+    evap:      ['TD by humidity class; SST = room − TD − suction loss; SCT = ambient + condenser TD; COP ≈ 0.5 × Carnot', 'Unit-cooler manufacturer guidance (Heatcraft, Bohn, Güntner); ASHRAE Handbook—Refrigeration (refrigerated-facility design).', 'typical'],
+    refsafe:   ['C = m / V ≤ RCL; flammable m_max = 2.5 × LFL^1.25 × h₀ × √A', 'ASHRAE 15 and ASHRAE 34 (RCL, safety groups); IEC 60335-2-40 Annex GG and EN 378-1 (flammable charge limits); ISO 5149.', 'method'],
+    icestore:  ['Partial: chiller = daily / (h + h_c·CR); full: chiller = daily / (h_c·CR); ice = E / 334 kJ/kg', 'ASHRAE Handbook—HVAC Systems & Equipment (thermal storage); ASHRAE Design Guide for Cool Thermal Storage.', 'method'],
     refpipe:   ['Line sizes from typical manufacturer tables; extra charge by liquid-line length; traps every ~6 m of suction rise', 'Manufacturer installation manuals (Daikin, Mitsubishi Electric, Carrier) for R410A / R32; ASHRAE Handbook—Refrigeration Ch. 1 (refrigerant piping, oil return).', 'typical'],
     gen:       ['S = P/pf × (1 + future); transformer ≥ S / loading; generator ≥ S/0.8 and ≥ motor-start kVA / 1.5', 'IEEE 446 (emergency and standby power), NFPA 110; IEC 60076 / ANSI C57 preferred ratings; PEC 2017 Art. 7.0 (emergency systems). Motor-start pick-up typical.', 'typical'],
     pfc:       ['Q = P (tan φ₁ − tan φ₂); conductors and breaker 135 % of capacitor current', 'NEC 460.8 / PEC 2017 Art. 4.60 (capacitors); IEEE 18; IEC 60831.', 'method'],
@@ -6407,8 +7219,8 @@ body.modal-open .dock-tab { visibility: hidden; }
       if (CALCS[id]) return [CALCS[id].title, CALCS[id].code];
       return { conv: ['Unit Converter', 'UTIL / UNIT'], ref: ['MEP References', 'UTIL / HVAC'], plan: ['Plan Overlay', 'Section 03'] }[id];
     };
-    $('#std-groups').innerHTML = groups.map(function (g, gi) {
-      return '<details class="std-group"' + (gi === 0 ? ' open' : '') + '><summary><span class="tk" style="--tc:var(--mint)">' + g[1] + '</span>' + esc(g[0]) +
+    $('#std-groups').innerHTML = groups.map(function (g) {
+      return '<details class="std-group"><summary><span class="tk" style="--tc:var(--mint)">' + g[1] + '</span>' + esc(g[0]) +
         '<span class="f-n">' + g[2].length + '</span></summary><div class="table-wrap"><table><thead><tr><th scope="col">Calculator</th><th scope="col">Method</th><th scope="col">Reference</th><th scope="col">Basis</th></tr></thead><tbody>' +
         g[2].map(function (id) {
           var r = REFS[id], n = name(id);
@@ -6416,6 +7228,7 @@ body.modal-open .dock-tab { visibility: hidden; }
             '<td class="b"><span class="std-chip std-' + r[2] + '">' + BASIS[r[2]] + '</span></td></tr>';
         }).join('') + '</tbody></table></div></details>';
     }).join('');
+    $('#std-src-n').textContent = SOURCES.length;
     $('#std-sources').innerHTML = SOURCES.map(function (s) { return '<li><strong>' + esc(s[0]) + '</strong> — ' + esc(s[1]) + '</li>'; }).join('');
   })();
 
@@ -6436,7 +7249,16 @@ body.modal-open .dock-tab { visibility: hidden; }
     ductd: 'duct design gauge smacna insulation kitchen exhaust hood grease supply return fresh air', diff: 'diffuser grille throw adpi nc layout ceiling register',
     fexh: 'exhaust fan selection kitchen hood toilet smoke car park', fsup: 'supply fan ahu sfp', ffa: 'fresh air fan', fsp: 'fan static pressure esp', ftp: 'fan total pressure',
     fpow: 'fan power motor hp kw bhp brake horsepower', feff: 'fan efficiency', fop: 'fan curve system curve operating point',
-    refpipe: 'refrigerant pipe size liquid suction gas line copper vrf split charge', gen: 'generator genset transformer kva standby motor start', pfc: 'power factor correction capacitor kvar bank', hwheat: 'water heater hot water storage tank recovery', booster: 'booster pump pressure tank hydropneumatic bladder', sprhyd: 'sprinkler hydraulic calculation remote area hazen williams',     ecost: 'appliance energy cost electricity bill kwh consumption rate aircon refrigerator meralco',     pls: 'panel load schedule panelboard board circuits breaker phase balancing demand feeder', elec: 'electrical load amps current demand factor panel', vdrop: 'voltage drop cable wire size conductor',
+    refpipe: 'refrigerant pipe size liquid suction gas line copper vrf split charge', refpt: 'pressure temperature pt chart saturation gauge psig bar boiling point refrigerant r410a r32 r22 r134a r404a r290 r1234yf r600a ammonia',
+    freeze: 'blast freezer freezing time product meat fish chicken shrimp frozen plank latent cold chain', evap: 'evaporator unit cooler condensing unit td sst sct defrost coil cold room freezer selection',
+    plhang: 'plumbing pipe hanger support spacing riser clamp clevis rod water drainage copper pvc cast iron ipc 308', fphang: 'sprinkler pipe hanger support spacing nfpa 13 seismic sway brace rod fire',
+    rfhang: 'refrigerant pipe support hanger line set copper insulation saddle vrf split trapeze unistrut',
+    hwrec: 'hot water recirculation return loop circulator legionella balancing valve', przone: 'pressure zone prv pressure reducing valve high rise tall building riser static pressure 80 psi',
+    hammer: 'water hammer surge arrestor joukowsky shock pressure solenoid valve', pool: 'swimming pool turnover filter sand pump heater spa',
+    cleanagent: 'clean agent fm200 fm-200 novec 1230 inergen gas suppression server room data center nfpa 2001 hfc-227ea', fabatt: 'fire alarm battery standby ah amp hour panel fdas nfpa 72',
+    detect: 'smoke detector heat detector spacing layout count fdas fire alarm nfpa 72', egress: 'occupant load egress exit width travel distance means of egress ibc nfpa 101 stairs',
+    foam: 'foam concentrate afff ar-afff foam-water deluge tank spill nfpa 11 nfpa 16',
+    refsafe: 'refrigerant leak safety charge limit rcl ashrae 15 en 378 iec 60335 flammable a2l a3 r32 r290 room size', icestore: 'ice thermal energy storage tes ton-hours off-peak load shifting glycol chiller', gen: 'generator genset transformer kva standby motor start', pfc: 'power factor correction capacitor kvar bank', hwheat: 'water heater hot water storage tank recovery', booster: 'booster pump pressure tank hydropneumatic bladder', sprhyd: 'sprinkler hydraulic calculation remote area hazen williams',     ecost: 'appliance energy cost electricity bill kwh consumption rate aircon refrigerator meralco',     pls: 'panel load schedule panelboard board circuits breaker phase balancing demand feeder', elec: 'electrical load amps current demand factor panel', vdrop: 'voltage drop cable wire size conductor',
     pipe: 'pipe pressure drop water reynolds velocity', tank: 'water tank storage demand pump cistern',
     sprinkler: 'sprinkler nfpa 13 fire heads density', firepump: 'fire pump nfpa 20', hazen: 'hazen williams friction fire pipe',
     hydrant: 'hydrant flow test nfpa 291 water supply', drain: 'drain sewer manning slope pipe capacity', dfu: 'fixture units dfu ipc pipe size toilet',
@@ -6445,7 +7267,7 @@ body.modal-open .dock-tab { visibility: hidden; }
     ndiff: 'number of diffusers how many count', cfmd: 'cfm per diffuser airflow each balancing', tsd: 'throw spread drop adpi t50 draught draft jet',
     septic: 'septic tank sewage', roofdrain: 'rain storm roof drain gutter downpipe leader'
   };
-  var TAG_NAMES = { H: 'heating', V: 'ventilation', AC: 'air conditioning aircon', DD: 'duct design', FAN: 'fan mechanical', GRL: 'diffuser grille louver louvre air terminal mechanical' };
+  var TAG_NAMES = { H: 'heating', V: 'ventilation', AC: 'air conditioning aircon', R: 'refrigeration cold chain', DD: 'duct design', FAN: 'fan mechanical', GRL: 'diffuser grille louver louvre air terminal mechanical' };
   var filterBtns = $$('.filters button'), cards = $$('.card', grid), activeFilter = 'all', query = '';
   var searchText = {};
   cards.forEach(function (c) {
@@ -6495,7 +7317,7 @@ body.modal-open .dock-tab { visibility: hidden; }
       c.classList.add('in');
     }); else shown.forEach(function (c) { c.classList.add('in'); });
     filterBtns.forEach(function (b) { $('.f-n', b).textContent = cards.filter(function (c) { return inFilter(c, b.dataset.filter) && matchesQuery(c); }).length; });
-    var name = activeFilter === 'all' ? '' : (activeFilter === 'M' ? 'Mechanical' : HVAC_NAMES[activeFilter] || DISC[activeFilter]) + ' ';
+    var name = activeFilter === 'all' ? '' : (activeFilter === 'M' ? 'Fans & Air Terminals' : HVAC_NAMES[activeFilter] || DISC[activeFilter]) + ' ';
     $('#filter-status').textContent = 'Showing ' + shown.length + ' ' + name + 'calculator' + (shown.length === 1 ? '' : 's') + (query ? ' for “' + query + '”' : '') + '.';
     $('#search-empty').hidden = shown.length > 0;
     $('#search-term').textContent = '“' + query + '”' + (activeFilter === 'all' ? '' : ' in ' + name.trim());
@@ -6519,7 +7341,7 @@ body.modal-open .dock-tab { visibility: hidden; }
     b.addEventListener('click', function () { setQuery(query === b.dataset.q ? '' : b.dataset.q); });
   });
   // Typewriter placeholder cycling real examples while the box is empty and unfocused.
-  var PH = ['duct size', 'aircon', 'fan power', 'sprinkler', 'kitchen hood', 'voltage drop', 'cooling load', 'septic tank'], phI = 0, phC = 0, phDel = false;
+  var PH = ['duct size', 'aircon', 'cold room', 'fan power', 'refrigerant', 'sprinkler', 'voltage drop', 'blast freezer', 'septic tank'], phI = 0, phC = 0, phDel = false;
   function phTick() {
     if (document.activeElement === searchInput || searchInput.value || document.hidden) { searchInput.placeholder = 'Search calculators…'; setTimeout(phTick, 700); return; }
     var word = PH[phI];
@@ -6539,7 +7361,7 @@ body.modal-open .dock-tab { visibility: hidden; }
     searchInput.focus();
   });
   function focusSearch() {
-    $('#calculators').scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'start' });
+    goView('calculators');
     setTimeout(function () {
       searchInput.focus({ preventScroll: true });
       searchWrap.classList.remove('flash'); void searchWrap.offsetWidth; searchWrap.classList.add('flash');
@@ -6554,6 +7376,34 @@ body.modal-open .dock-tab { visibility: hidden; }
   });
   // On load only set the counts — the cards keep their scroll-in animation.
   filterBtns.forEach(function (b) { $('.f-n', b).textContent = cards.filter(function (c) { return inFilter(c, b.dataset.filter); }).length; });
+
+  /* ---------- Home: category tiles and recently used calculators ---------- */
+  var HQ = [['AC', 'Air Conditioning', 'Cooling loads, psychrometrics, chilled water'], ['R', 'Refrigeration', 'Cold rooms, freezers, P–T chart, charge safety'],
+    ['H', 'Heating', 'Heat loss, boilers, fuel cost'], ['V', 'Ventilation', 'Outdoor air, exhaust, car parks, stairs'], ['DD', 'Duct Design', 'Sizing, friction, fittings, sheet metal'],
+    ['M', 'Fans & Air Terminals', 'Fans, diffusers, grilles, louvres'], ['E', 'Electrical', 'Loads, cables, voltage drop, solar'], ['P', 'Plumbing', 'Water demand, pumps, pressure zones, pools'],
+    ['F', 'Fire Protection', 'Sprinklers, clean agent, detection, egress'], ['S', 'Sanitary', 'Drainage, septic, grease, rainwater']];
+  $('#hq-grid').innerHTML = HQ.map(function (q) {
+    var n = cards.filter(function (c) { return inFilter(c, q[0]); }).length;
+    return '<button type="button" class="hq-tile" data-goto-filter="' + q[0] + '"><span class="hq-k">' + q[0] + '</span><b>' + esc(q[1]) + '</b><small>' + esc(q[2]) + '</small><span class="hq-n">' + n + ' tools →</span></button>';
+  }).join('');
+  $('#hq-grid').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-goto-filter]'); if (!b) return;
+    goView('calculators');
+    $('.filters [data-filter="' + b.dataset.gotoFilter + '"]').click();
+  });
+  var RECENT_KEY = 'mechtoolbox-recent', recent = [];
+  try { recent = (JSON.parse(localStorage.getItem(RECENT_KEY) || '[]') || []).filter(function (id) { return CALCS[id] && CALCS[id].card; }); } catch (e) {}
+  function renderRecent() {
+    var html = recent.map(function (id) { return '<button type="button" class="recent-chip" data-recent="' + id + '">' + esc(CALCS[id].title) + '</button>'; }).join('');
+    [['#side-recent', '#side-recent-list'], ['#hq-recent', '#hq-recent-list']].forEach(function (s) { $(s[1]).innerHTML = html; $(s[0]).hidden = !recent.length; });
+  }
+  function noteRecent(id) {
+    if (!CALCS[id] || !CALCS[id].card) return;
+    recent = [id].concat(recent.filter(function (x) { return x !== id; })).slice(0, 6);
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(recent)); } catch (e) {}
+  }
+  document.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-recent]'); if (b) openModal(b.dataset.recent, b); });
+  renderRecent();
 
   /* ---------- Live drawings for the calculators ---------- */
   // Each function returns SVG for a 420 × 200 canvas from the calculator's SI inputs (v) and formatted result rows.
@@ -7376,6 +8226,8 @@ body.modal-open .dock-tab { visibility: hidden; }
   };
   // Related calculators to open next.
   var NEXT = {
+    plhang: ['exloop', 'pipe'], fphang: ['sprhyd', 'hazen'], rfhang: ['refpipe'], hwrec: ['hwheat', 'booster'], przone: ['booster', 'wsfu'], hammer: ['pipe'], pool: ['booster'], cleanagent: ['fext'], fabatt: ['detect'], detect: ['fabatt', 'sprinkler'], egress: ['detect', 'fext'], foam: ['firetank', 'firepump'],
+    coldroom: ['evap', 'freeze', 'refsafe'], freeze: ['coldroom', 'evap'], evap: ['refpipe', 'refcycle'], refcycle: ['evap', 'refpt'], refpt: ['shsc', 'refcycle'], shsc: ['refpt'], refsafe: ['refpipe'], refpipe: ['refsafe', 'rfhang'], icestore: ['chw', 'ctower'],
     btu: ['cool', 'pcl'], cool: ['diff', 'duct', 'pcl'], heat: ['hwflow', 'phl'], hwflow: ['pipe'], fuel: ['cost'], cost: ['fuel'], ach: ['oa', 'diff'], geom: ['ach', 'btu'],
     oa: ['voz', 'ffa'], vbz: ['voz'], voz: ['ffa', 'vcmp'], exh: ['egrille', 'fexh', 'mua'], mua: ['ffa'], xfer: ['bal'], bal: ['vcmp'],
     duct: ['dvel', 'dfric', 'ductd'], rdc: ['eqf', 'dfric'], rcd: ['dar', 'dfric'], dvel: ['duct'], eqf: ['tpl'], sreg: ['tpl'], dfric: ['tpl'], eqlen: ['tpl'], fitl: ['tpl'], tpl: ['fsup', 'fpow'], dar: ['rcd'], dins: ['ductd'],
@@ -7551,7 +8403,52 @@ body.modal-open .dock-tab { visibility: hidden; }
       return o + Big(40, 36, rowVal(rows, 'Installed lighting power')) + T(40, 180, rowVal(rows, 'Share of allowance') + ' of the allowance');
     }
   });
+  // Section through a support for the pipe-hanger take-offs: slab, rods, trapeze or clevis, pipes with insulation.
+  function hangDraw(r, rows) {
+    var s = 56 / Math.max(r.Do, 0.02), slab = 26, bar = 150, o = Rc(40, slab - 10, 260, 10, 'url(#dz-hatch)', DC.mut, 1), xs = r.pipes.length > 1 ? [130, 210] : [170];
+    if (r.tr) { var L = xs[0] - r.pipes[0][2] * s / 2 - 16, R = xs[1] + r.pipes[1][2] * s / 2 + 16; o += Ln(L, slab, L, bar, DC.ink, 2) + Ln(R, slab, R, bar, DC.ink, 2) + Rc(L - 10, bar, R - L + 20, 6, DC.mut, DC.ink, 1); }
+    r.pipes.forEach(function (q, i) {
+      var D = q[2] * s, x = xs[i], cy = bar - D / 2;
+      if (!r.tr) o += Ln(x, slab, x, bar - D, DC.ink, 2) + '<path d="M' + n1(x - D / 2 - 4) + ' ' + n1(cy) + 'a' + n1(D / 2 + 4) + ' ' + n1(D / 2 + 4) + ' 0 0 0 ' + n1(D + 8) + ' 0" fill="none" stroke="' + DC.ink + '" stroke-width="2"/>';
+      o += (q[2] > q[3] + 1e-6 ? Ci(x, cy, D / 2, 'rgba(255,176,0,0.4)', DC.yel, 1) : '') + Ci(x, cy, q[3] * s / 2, i ? 'rgba(255,107,91,0.5)' : 'rgba(108,184,255,0.5)', DC.ink, 1);
+    });
+    return o + Big(410, 40, fmt(r.n, 0) + (r.tr ? ' trapezes' : ' hangers'), 'end') + T(410, 58, rowVal(rows, 'Threaded rod size'), 'dd-tag', 'end') + T(410, 76, 'every ' + fq(r.sp, 'len'), 'dd-tag', 'end');
+  }
   Object.assign(DRAWS, {
+    plhang: function (v, rows) { return hangDraw(plhangCalc(v), rows); },
+    fphang: function (v, rows) { return hangDraw(fphangCalc(v), rows); },
+    rfhang: function (v, rows) { return hangDraw(rfhangCalc(v), rows); },
+    detect: function (v, rows) {
+      var r = detectCalc(v), sc = Math.min(380 / v.l, 140 / v.w), W = v.l * sc, H = v.w * sc, x0 = 210 - W / 2, y0 = 38 + (140 - H) / 2, o = '';
+      o += '<defs><clipPath id="dt-clip"><rect x="' + n1(x0) + '" y="' + n1(y0) + '" width="' + n1(W) + '" height="' + n1(H) + '"/></clipPath></defs><g clip-path="url(#dt-clip)">';
+      for (var i = 0; i < r.nx; i++) for (var j = 0; j < r.ny; j++) o += Ci(x0 + (i + 0.5) * r.a * sc, y0 + (j + 0.5) * r.b * sc, 0.7 * r.S * sc, 'rgba(255,176,0,0.07)', DC.mint, 0.6);
+      o += '</g>' + Rc(x0, y0, W, H, 'none', DC.ink, 1.4);
+      for (i = 0; i < r.nx; i++) for (j = 0; j < r.ny; j++) o += Ci(x0 + (i + 0.5) * r.a * sc, y0 + (j + 0.5) * r.b * sc, 3.5, DC.red, DC.bg, 1);
+      return o + Big(12, 26, rowVal(rows, 'Detectors needed') + ' detectors') + T(408, 26, rowVal(rows, 'Spacing used'), 'dd-tag', 'end');
+    },
+    przone: function (v, rows) {
+      var r = przoneCalc(v), fh = Math.min(160 / v.n, 14), x = 150, w = 110, o = '', top = 186 - v.n * fh;
+      for (var i = 0; i < v.n; i++) { var z = Math.floor((v.n - 1 - i) / r.nz), y = 186 - (i + 1) * fh; o += Rc(x, y, w, Math.max(fh - 1, 0.6), z % 2 ? 'rgba(255,176,0,0.35)' : 'rgba(56,189,248,0.35)'); }
+      for (var k = 1; k < r.zones; k++) { var yb = top + k * r.nz * fh; o += Ln(x - 30, yb, x + w + 10, yb, DC.yel, 1, '3 3') + T(x - 34, yb + 3, 'PRV', 'dd-tag', 'end'); }
+      o += Ln(x + w + 24, top, x + w + 24, 186, DC.mut, 1) + T(x + w + 30, top + 10, 'roof tank / pumps') + T(x + w + 30, 182, fmt(v.n, 0) + ' floors');
+      return o + Big(12, 30, rowVal(rows, 'Pressure zones') + ' zones') + T(12, 48, rowVal(rows, 'Floors per zone') + ' floors per zone');
+    },
+    refpt: function (v, rows) {
+      var t = v.mode === 't' ? v.t : refTsat(v.re, v.p / 1e5 + 1.01325), t0 = -40, t1 = 60, pmax = refPsat(v.re, t1) - 1.01325, d = '';
+      var X = function (c) { return 60 + (c - t0) / (t1 - t0) * 330; }, Y = function (b) { return 166 - Math.max(0, b) / pmax * 130; };
+      for (var c = t0; c <= t1; c += 2) d += (c === t0 ? 'M' : 'L') + n1(X(c)) + ' ' + n1(Y(refPsat(v.re, c) - 1.01325));
+      var o = Ln(60, 166, 396, 166, DC.mut, 1) + Ln(60, 166, 60, 30, DC.mut, 1) + '<path d="' + d + '" fill="none" stroke="' + DC.mint + '" stroke-width="2"/>';
+      [-40, -20, 0, 20, 40, 60].forEach(function (c) { o += T(X(c), 182, sys === 'si' ? c + ' °C' : fmt(c * 9 / 5 + 32, 0) + ' °F', 'dd-tag', 'middle'); });
+      var tc = clampN(t, t0, t1), pg = refPsat(v.re, tc) - 1.01325;
+      o += Ln(X(tc), 166, X(tc), Y(pg), DC.yel, 1, '3 3') + Ln(60, Y(pg), X(tc), Y(pg), DC.yel, 1, '3 3') + Ci(X(tc), Y(pg), 5, DC.yel, DC.bg, 1.5);
+      return o + Big(72, 44, REFRIG[v.re][0]) + T(72, 62, rows[0][1] + (v.mode === 't' ? ' at ' + tTxtC(t) : ''));
+    },
+    freeze: function (v, rows) {
+      var r = freezeCalc(v), parts = [['Above freezing', r.q1, DC.blue], ['Latent', r.q2, DC.mint], ['Below freezing', r.q3, DC.vio]], sum = r.q1 + r.q2 + r.q3 || 1, x = 30, o = '';
+      parts.forEach(function (p) { var w = p[1] / sum * 360; o += Rc(x, 70, Math.max(w, 0), 26, p[2]); x += w; });
+      parts.forEach(function (p, i) { o += Rc(30 + i * 128, 116, 10, 10, p[2]) + T(46 + i * 128, 125, p[0] + ' ' + fmt(p[1] / sum * 100, 0) + ' %'); });
+      return o + Big(30, 46, rowVal(rows, 'Average refrigeration load')) + T(30, 160, 'Freezing time ' + rowVal(rows, 'Estimated freezing time') + ' · batch ' + fmt(v.bt) + ' h');
+    },
     coldroom: function (v, rows) {
       var r = coldroomCalc(v), parts = [['Walls', r.wall, DC.yel], ['Product', r.prod, DC.blue], ['Infiltration', r.inf, DC.vio], ['Other', r.other, DC.mut]], sum = parts.reduce(function (a, p) { return a + p[1]; }, 0) || 1, x = 40, o = '';
       o += Rc(30, 30, 120, 90, 'rgba(56,189,248,0.10)', DC.blue, 1.6) + T(90, 80, (sys === 'si' ? fmt(v.tr, 0) + ' °C' : fmt(v.tr * 9 / 5 + 32, 0) + ' °F'), 'dd-big', 'middle') + Rc(130, 70, 20, 50, DC.bg, DC.ink, 1.2) + T(140, 134, 'door', 'dd-tag', 'middle');
@@ -7769,6 +8666,73 @@ body.modal-open .dock-tab { visibility: hidden; }
       SG(/Pass/.test(sgv(rows, 'Design check')) ? 'Installed LPD ' + sgv(rows, 'Lighting power density') + ' is within the limit — keep it with LED luminaires of 120 lm/W or better.' : 'Cut ' + sgv(rows, 'Share of allowance') + ' — use higher-efficacy LED (≥ 120 lm/W) or fewer luminaires.', 'ASHRAE 90.1 §9.6'),
       SG('Add occupancy sensors and daylight dimming within 4.5 m (15 ft) of windows.', 'ASHRAE 90.1 §9.4.1'),
       SG('Check the illuminance with the Lighting calculator so you do not under-light the space.', 'EN 12464-1 / IES')]; },
+    plhang: function (v, rows) { return [
+      SG('Hang the pipe every ' + sgv(rows, 'Maximum spacing') + ' with ' + sgv(rows, 'Threaded rod size') + ' rods, plus a hanger within 600 mm (2 ft) of each bend and fixture branch.', 'IPC Table 308.5'),
+      v.mat === 'cu' ? SG('Use copper-plated or plastic-lined hangers on copper — bare steel against copper corrodes.', 'IPC 308') : SG('Support plastic pipe on wide straps that do not dig in, and allow it to move with temperature.', 'IPC 308'),
+      SG('On long hot-water runs, allow for expansion — see the Pipe Thermal Expansion & Loop calculator.', 'IPC 308')]; },
+    fphang: function (v, rows) { return [
+      SG('Hang the pipe every ' + sgv(rows, 'Maximum spacing') + ' on ' + sgv(rows, 'Threaded rod size') + ' rods with listed hangers.', 'NFPA 13 §17.4'),
+      SG('Keep the last hanger within ' + sgv(rows, 'End sprinkler to last hanger') + ' of the end sprinkler and restrain armovers against upward lift.', 'NFPA 13 §17.4.3'),
+      v.seis === 'yes' ? SG('Size the sway braces for their zone of influence with the seismic coefficient from the structural engineer.', 'NFPA 13 Ch. 18') : SG('Check whether the local code asks for seismic bracing and flexible couplings.', 'NFPA 13 Ch. 18')]; },
+    rfhang: function (v, rows) { return [
+      SG('Support the line set every ' + sgv(rows, 'Maximum spacing') + ' and within 300–500 mm (12–20 in) of each bend, branch joint and the outdoor unit.', 'Manufacturer installation manual'),
+      SG('Clamp over rigid insulation saddles so the suction-line vapour barrier is not crushed.', 'ASHRAE Refrigeration Ch. 1'),
+      SG('Let long runs slide on their supports for thermal movement; fix them only at anchors.', 'ASHRAE Refrigeration Ch. 1')]; },
+    hwrec: function (v, rows) { return [
+      SG('Select a bronze or stainless circulator for ' + sgv(rows, 'Recirculation flow') + ' at ' + sgv(rows, 'Pump head') + ', on a timer or temperature control.', 'ASHRAE 90.1 §7.4.4'),
+      SG('Fit thermostatic balancing valves on each return branch so the far fixtures get hot water first.', 'ASPE Data Book'),
+      SG('Store at 60 °C (140 °F) and keep the return at 55 °C (131 °F) or above; use thermostatic mixing valves at the outlets.', 'ASHRAE 188 / CIBSE TM13')]; },
+    przone: function (v, rows) { return [
+      SG('Plan ' + sgv(rows, 'Pressure zones') + ' zones of about ' + sgv(rows, 'Floors per zone') + ' floors, each with a duplicate PRV station (strainer, gauges, bypass).', 'IPC 604.8'),
+      SG('Check friction in the riser on top of the static pressure for the top floor of each zone.', 'ASPE Data Book'),
+      SG('Size the booster pumps with the Booster Pump calculator for the highest zone.', 'Plumbing design')]; },
+    hammer: function (v) { return [
+      SG('Fit a water hammer arrestor (ASSE 1010 / PDI-WH 201) at each quick-closing valve — solenoids, flush valves, washing machines.', 'IPC 604.9'),
+      SG('Keep water velocity at or below about 2.4 m/s (8 ft/s) — the surge grows in proportion to it.', 'ASPE Data Book'),
+      v.mat === 'pvc' || v.mat === 'ppr' || v.mat === 'pe' ? SG('Plastic pipe gives a lower surge, but check its rating at the working temperature.', 'Manufacturer data') : SG('Use slow-closing valves on pump discharges and long mains.', 'Hydraulic design')]; },
+    pool: function (v, rows) { return [
+      SG('Pump ' + sgv(rows, 'Circulation flow') + ' through ' + sgv(rows, 'Filter area') + ' of filter area; check the head with the actual pipe run and filter loss.', 'NSF/ANSI 50'),
+      SG('Use a pool cover — it halves the heat loss and evaporation.', 'Energy practice'),
+      SG('Fit anti-entrapment main drains (two per pump, or a vented system).', 'VGB Act / ANSI/APSP-16')]; },
+    cleanagent: function (v, rows) { return [
+      SG('Store ' + sgv(rows, 'Agent quantity') + ' and confirm it with the listed manufacturer\'s flow calculation.', 'NFPA 2001'),
+      SG('Seal the room and do a door-fan integrity test for a 10 min hold time; fit a pressure relief vent.', 'NFPA 2001 Annex C'),
+      SG('Use cross-zoned smoke detection to release, with abort and manual release stations at the exits.', 'NFPA 72 / NFPA 2001')]; },
+    fabatt: function (v, rows) { return [
+      SG('Fit ' + sgv(rows, 'Battery to fit') + ' sealed lead-acid batteries, date-labelled, and replace them every 4–5 years.', 'NFPA 72 §10.6.10'),
+      SG('Take every device\'s standby and alarm current from its data sheet, including strobes and relays.', 'NFPA 72'),
+      SG('Check the notification appliance circuits for voltage drop at the end of each loop.', 'NFPA 72 §18')]; },
+    detect: function (v, rows) { return [
+      SG('Lay out ' + sgv(rows, 'Detectors needed') + ' detectors about ' + sgv(rows, 'Spacing used') + ' apart, no more than half that from the walls.', 'NFPA 72 §17.6.3'),
+      SG('Keep smoke detectors at least 0.9 m (3 ft) from supply diffusers and return grilles.', 'NFPA 72 §17.7.4'),
+      SG('Size the panel standby batteries with the Fire Alarm Battery calculator.', 'NFPA 72 §10.6.7')]; },
+    egress: function (v, rows) { return [
+      SG('Provide ' + sgv(rows, 'Exits required') + ' exits with ' + sgv(rows, 'Total stair width') + ' of stair width in total.', 'IBC §1005 / §1006'),
+      SG('Place exits at least half the diagonal of the space apart (one-third with sprinklers).', 'IBC §1007.1.1'),
+      SG('Light the exit route at 10 lx (1 fc) minimum with emergency lighting for 90 minutes.', 'IBC §1008 / NFPA 101')]; },
+    foam: function (v, rows) { return [
+      SG('Store ' + sgv(rows, 'Foam concentrate') + ' of concentrate and add the solution water to the fire tank.', 'NFPA 11'),
+      SG('Use a bladder tank or proportioner listed for the concentrate and flow range.', 'NFPA 11 / NFPA 16'),
+      SG('Plan a foam test and concentrate sampling every year.', 'NFPA 25')]; },
+    refpt: function () { return [
+      SG('For blends with glide, read suction pressure against the dew point and liquid pressure against the bubble point.', 'Charging practice'),
+      SG('Check the charge from these readings with the Superheat & Subcooling calculator.', 'Charging practice')]; },
+    freeze: function (v, rows) { return [
+      SG('Size the freezer for ' + sgv(rows, 'Average refrigeration load') + ' of product load plus the room load (walls, fans, defrost) from the Cold Room calculator.', 'ASHRAE Refrigeration Ch. 24'),
+      SG('Keep 2–5 m/s air across the product and gaps between cartons — air speed and thickness set the freezing time.', 'ASHRAE Refrigeration Ch. 20'),
+      SG('Store frozen product at −18 °C (0 °F) or colder.', 'Food-safety practice')]; },
+    evap: function (v, rows) { return [
+      SG('Select ' + fmt(v.n, 0) + ' unit cooler(s) rated about ' + sgv(rows, 'Coil rating per degree TD') + ' and a condensing unit for ' + sgv(rows, 'Condensing unit capacity') + ' at the SST shown.', 'Manufacturer selection'),
+      SG('Size the suction line for about 1 K (2 °F) saturated loss — every extra kelvin costs 3–4 % capacity.', 'ASHRAE Refrigeration Ch. 1'),
+      v.tr < 0 ? SG('Heat the drain line and pan, and trap the drain outside the freezer.', 'Cold-store practice') : SG('A smaller TD holds humidity higher and cuts product weight loss — use a larger coil for fresh produce.', 'Unit-cooler selection')]; },
+    refsafe: function () { return [
+      SG('Check the smallest room the system serves — for a multi-split, the smallest bedroom, not the whole house.', 'ASHRAE 15'),
+      SG('Over the limit: refrigerant detection with alarm and ventilation, or automatic shut-off valves.', 'ASHRAE 15-2022 / IEC 60335-2-40'),
+      SG('Include the field charge added for the pipe length (Refrigerant Pipe Sizing).', 'Manufacturer installation manual')]; },
+    icestore: function (v, rows) { return [
+      SG('Select a ' + sgv(rows, 'Chiller size (nominal)') + ' chiller rated for ice making at about −6 °C (21 °F) glycol, with ' + sgv(rows, 'Storage capacity') + ' of storage.', 'ASHRAE HVAC Systems & Equipment'),
+      SG('Savings come from off-peak energy and demand charges — check the utility tariff before committing.', 'Thermal storage practice'),
+      SG('Use 25–30 % ethylene glycol in the chiller loop and a heat exchanger to the building chilled water.', 'Thermal storage practice')]; },
     coldroom: function (v, rows) { return [
       SG('Select a condensing unit and evaporator of about ' + sgv(rows, 'Equipment capacity') + ' at ' + fq(v.tr, 'tc') + ' room temperature.', 'ASHRAE Refrigeration Ch. 24'),
       SG('Fit strip curtains or an air curtain on the door — infiltration is often a third of the load.', 'ASHRAE Refrigeration Ch. 24'),
@@ -7985,7 +8949,7 @@ body.modal-open .dock-tab { visibility: hidden; }
   function renderCalc(id) {
     var d = CALCS[id];
     ensureVals(id);
-    var html = pjBarHtml(id) + '<p class="m-desc">' + esc(d.desc) + '</p><form class="fields" novalidate>';
+    var html = pjBarHtml(id) + '<p class="m-desc">' + esc(d.desc) + '</p><div class="calc-split"><div class="calc-in"><form class="fields" novalidate>';
     d.fields.forEach(function (f) {
       if (f.show && !f.show(vals[id])) return; // field not relevant to the current choices
       var fid = 'f-' + id + '-' + f.k;
@@ -8000,11 +8964,11 @@ body.modal-open .dock-tab { visibility: hidden; }
         'aria-describedby="' + fid + '-u" value="' + esc(vals[id][f.k]) + '">' +
         unitCtl(f.q, fid + '-u', unitOf(f), f.label) + '</div></div>';
     });
-    html += '</form>' + (d.fields.some(function (f) { return f.q && UNIT_ALT[f.q]; }) ? '<p class="unit-hint">Tip: click a unit (e.g. kW → TR, m³/h → L/s) to change it — the choice is remembered across calculators.</p>' : '') + (DRAWS[id] ? '<figure class="dd-draw calc-draw" id="calc-draw"></figure>' : '') + '<section class="result" aria-labelledby="r-title">' + copyBlock() +
+    html += '</form>' + (d.fields.some(function (f) { return f.q && UNIT_ALT[f.q]; }) ? '<p class="unit-hint">Tip: click a unit (e.g. kW → TR, m³/h → L/s) to change it — the choice is remembered across calculators.</p>' : '') + (DRAWS[id] ? '<figure class="dd-draw calc-draw" id="calc-draw"></figure>' : '') + '</div><div class="calc-out"><section class="result" aria-labelledby="r-title">' + copyBlock() +
       '<div class="result-box"><pre class="formula" id="r-formula"></pre>' +
       '<div aria-live="polite"><dl class="rows" id="r-rows"></dl><p class="err" id="r-err" hidden></p></div></div>' +
       '<div class="sugg" id="r-sugg" aria-live="polite" hidden></div>' +
-      (d.note ? '<p class="note">' + esc(d.note) + '</p>' : '') + refLine(id) + '</section>';
+      (d.note ? '<p class="note">' + esc(d.note) + '</p>' : '') + refLine(id) + '</section></div></div>';
     mBody.innerHTML = html;
     $$('form.fields input, form.fields select:not(.unit-sel)', mBody).forEach(function (el) {
       el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', function () {
@@ -10257,6 +11221,7 @@ body.modal-open .dock-tab { visibility: hidden; }
     $('#m-code').textContent = d.code;
     $('#m-title').textContent = d.title;
     $('#m-sys').hidden = !!sp && !sp.sys;
+    modal.classList.toggle('split', !sp);
     modal.classList.toggle('wide', id === 'pcl' || id === 'phl' || id === 'ductd' || id === 'diff' || id === 'psy' || id === 'pls' || id === 'ecost');
     $('#m-close').setAttribute('aria-label', 'Close ' + d.title);
     if (sp) sp.render(); else renderCalc(id);
@@ -10269,10 +11234,12 @@ body.modal-open .dock-tab { visibility: hidden; }
     clearTimeout(closeTimer); modal.classList.remove('closing');
     if (!modal.open) opener = trigger || document.activeElement;
     current = id;
+    noteRecent(id);
     render(id);
     document.body.classList.add('modal-open');
     if (typeof modal.showModal === 'function') modal.showModal(); else modal.setAttribute('open', '');
     modal.scrollTop = 0;
+    modal.style.setProperty('--mh', $('.m-head', modal).offsetHeight + 'px'); // the sticky result column sits under the sticky header
     var first = $('form.fields input, form.fields select', mBody) || $('input, select', mBody) || $('#m-close');
     first.focus();
   }
@@ -10291,6 +11258,9 @@ body.modal-open .dock-tab { visibility: hidden; }
     document.body.classList.remove('modal-open');
     current = null;
     planRefresh(); // values may have changed — refresh the projects table
+    var rid = opener && opener.dataset && opener.dataset.recent, inSide = opener && opener.closest && !!opener.closest('#side-recent');
+    renderRecent();
+    if (rid) opener = $((inSide ? '#side-recent' : '#hq-recent') + ' [data-recent="' + rid + '"]');
     if (opener && opener.focus) opener.focus();
   });
   modal.addEventListener('cancel', function (e) { e.preventDefault(); closeModal(); });
@@ -11558,7 +12528,7 @@ body.modal-open .dock-tab { visibility: hidden; }
       if (b.id === 'gd-open') { gdLast = { wf: GD.wf, step: GD.step, id: b.dataset.calc }; pjOpen(b.dataset.calc, r.id, b); return; }
       if (b.id === 'gd-prev') { gdGo(Math.max(0, GD.step - 1)); return; }
       if (b.id === 'gd-next') { gdGo(GD.step + 1); return; }
-      if (b.id === 'gd-boq') { pjBoqOpen = true; renderProjects(); var bq = $('#pj-boq'); if (bq) bq.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+      if (b.id === 'gd-boq') { pjBoqOpen = true; renderProjects(); goView('projects'); var bq = $('#pj-boq'); if (bq) bq.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
       if (b.id === 'gd-pdf') { pjReport(); return; }
       if (b.id === 'gd-csv') { pjCsv(); return; }
     });
@@ -11738,22 +12708,37 @@ body.modal-open .dock-tab { visibility: hidden; }
     t.style.setProperty('--my', (e.clientY - r.top) + 'px');
   }, { passive: true });
 
-  // Header shadow once the page scrolls; highlight the nav link for the section in view.
+  // Header shadow once the page scrolls.
   var header = $('.site-header');
   var onScroll = function () { header.classList.toggle('scrolled', window.scrollY > 8); };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
-  if ('IntersectionObserver' in window) {
-    var navIO = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (!en.isIntersecting) return;
-        $$('.nav-desktop a, .nav-mobile a').forEach(function (a) {
-          a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id);
-        });
-      });
-    }, { rootMargin: '-45% 0px -50% 0px' });
-    $$('main > section').forEach(function (s) { navIO.observe(s); });
+
+  /* ---------- Views: one section on screen at a time, picked from the header (hash routing, so Back works) ---------- */
+  var views = $$('main > section');
+  function showView(id) {
+    views.forEach(function (s) { s.hidden = s.id !== id; });
+    document.body.setAttribute('data-view', id);
+    $$('.nav-desktop a, .nav-mobile a').forEach(function (a) {
+      var on = a.getAttribute('href') === '#' + id;
+      a.classList.toggle('active', on);
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
   }
+  function route() {
+    var el = location.hash.length > 1 ? document.getElementById(location.hash.slice(1)) : null, sec = el && el.closest('main > section');
+    if (el && !sec && document.body.hasAttribute('data-view')) return; // e.g. the skip link (#main): stay on the current view
+    showView(sec ? sec.id : 'top');
+    if (el && el !== sec) el.scrollIntoView({ block: 'start' }); else window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  // Switch view from script; links get the same through the hashchange event.
+  function goView(id) {
+    if (location.hash !== '#' + id) history.pushState(null, '', '#' + id);
+    route();
+  }
+  window.addEventListener('hashchange', route);
+  window.addEventListener('popstate', route);
+  route();
 
   // Hero section drawing: cycles through the MEPFS systems; hover or tap a chip to hold one.
   var bp = $('.blueprint'), bpChips = $$('.bp-chip', bp), bpCode = $('#bp-code'), bpRead = $('#bp-read');

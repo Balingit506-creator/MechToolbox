@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { openSite, closeCalc } from './helpers.js'
+import { openSite, closeCalc, show } from './helpers.js'
 
 // Save a calculator's result (default inputs) to the active room through the project bar.
 async function saveToRoom(page, id) {
@@ -14,6 +14,7 @@ const qty = (page, no) => row(page, no).locator('td').nth(2)
 
 test('BOQ builds Electrical, Plumbing & Sanitary and Fire Protection divisions from saved results', async ({ page }) => {
   const errors = await openSite(page)
+  await show(page, 'projects')
   await page.locator('#pj-new-name').fill('Office L3')
   await page.locator('#pj-create').click()
   await page.locator('#pj-r-name').fill('Open office')
@@ -60,6 +61,7 @@ test('BOQ builds Electrical, Plumbing & Sanitary and Fire Protection divisions f
 
 test('division totals roll up into one project cost', async ({ page }) => {
   await openSite(page)
+  await show(page, 'projects')
   await page.locator('#pj-new-name').fill('Office L3')
   await page.locator('#pj-create').click()
   await page.locator('#pj-r-name').fill('Open office')

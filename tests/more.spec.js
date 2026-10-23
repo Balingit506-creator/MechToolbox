@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { openSite, openCalc, closeCalc, row } from './helpers.js'
+import { openSite, openCalc, closeCalc, row, show } from './helpers.js'
 
 test.describe('new calculators — known values (SI, INTL)', () => {
   test.beforeEach(async ({ page }) => { await openSite(page) })
@@ -42,6 +42,7 @@ test.describe('new calculators — known values (SI, INTL)', () => {
 })
 
 async function makeEstimate(page) {
+  await show(page, 'estimate')
   await page.locator('#es-new-name').fill('Clinic')
   await page.locator('#es-new-tpl').selectOption('M')
   await page.locator('#es-root [data-act="create"]').click()
@@ -80,6 +81,7 @@ test('price list fills an estimate and revisions compare and restore', async ({ 
 
 test('design basis report lists codes, criteria and the project summary', async ({ page, context }) => {
   await openSite(page)
+  await show(page, 'projects')
   await page.locator('#pj-new-name').fill('Clinic')
   await page.locator('#pj-create').click()
   await page.locator('#pj-r-name').fill('Lobby')
@@ -101,6 +103,7 @@ test('design basis report lists codes, criteria and the project summary', async 
 test('project BOQ fills blank rates from the price list', async ({ page }) => {
   await openSite(page)
   // a price with no match still reports cleanly
+  await show(page, 'projects')
   await page.locator('#pj-new-name').fill('X')
   await page.locator('#pj-create').click()
   expect(await page.locator('#pj-dbr').count()).toBe(1)

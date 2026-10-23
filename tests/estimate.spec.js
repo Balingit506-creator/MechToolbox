@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test'
-import { openSite } from './helpers.js'
+import { openSite, show } from './helpers.js'
 
 async function createEstimate(page, tpl = 'M') {
+  await show(page, 'estimate')
   await page.locator('#es-new-name').fill('Clinic fit-out')
   await page.locator('#es-new-tpl').selectOption(tpl)
   await page.locator('#es-root [data-act="create"]').click()
