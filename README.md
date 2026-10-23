@@ -10,6 +10,8 @@ Hanger and support take-offs cover chilled water, ductwork, plumbing (IPC Table 
 
 The site works like an app: the header switches between views (Home, Calculators, Guide, Projects, Estimate, Utilities, Standards, About) instead of one long page. Each view has its own address (`#calculators`, `#projects`…), so links and the Back button work. Calculators are grouped in a sidebar by category, open in a two-column window (inputs beside the result), and the last six you used are listed on Home and in the sidebar.
 
+The Design Pitfalls view shows 43 common design and installation mistakes across HVAC, plumbing, fire protection, electrical and refrigeration — such as a branch duct cut into an elbow, an intake beside an exhaust, an S-trap, a relief valve piped uphill, sprinklers blocked by a wide duct, a socket by a sink without GFCI, or brazing without nitrogen — each drawn beside the right way, with why it matters, the rule, the code reference and the calculator to check it. Search them or filter by discipline; related calculators link to them from their window header.
+
 The whole site is one self-contained file, `index.html` (vanilla JavaScript, inline CSS and SVG). Vite is used only to serve and build it.
 
 ## Commands
@@ -29,6 +31,7 @@ The whole site is one self-contained file, `index.html` (vanilla JavaScript, inl
 
 - `site.spec.js` — page loads without errors, category filters, compact view, minimize all, search.
 - `navigation.spec.js` — one view at a time, header links and Back, "/" to search, Home category tiles, recently used calculators, inputs beside the result on wide screens, compact list by default.
+- `pitfalls.spec.js` — the Design Pitfalls view: a wrong and a right drawing for each mistake, labels kept inside every drawing, discipline filter and search, links to and from calculators.
 - `refrigeration.spec.js` — known values for the refrigerant P–T chart, product freezing, evaporator / condensing unit selection, refrigerant charge safety, ice storage and refrigerant pipe supports.
 - `plumbing-fire.spec.js` — known values for hot water recirculation, pressure zones, water hammer, pool circulation, clean agent, fire alarm battery, detector layout, egress, foam, and plumbing and sprinkler pipe hangers.
 - `all-calculators.spec.js` — every calculator opens and produces a result in SI and IMP under every code basis (INTL / PH / AU / US).

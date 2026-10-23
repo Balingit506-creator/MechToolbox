@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { SITE, openSite, closeCalc } from './helpers.js'
 
-const VIEWS = ['top', 'calculators', 'guide', 'projects', 'estimate', 'utilities', 'standards', 'about']
+const VIEWS = ['top', 'calculators', 'guide', 'pitfalls', 'projects', 'estimate', 'utilities', 'standards', 'about']
 const visibleViews = (page) => page.evaluate((ids) => ids.filter((id) => !document.getElementById(id).hidden), VIEWS)
 
 test('one view at a time: header links switch views and Back returns', async ({ page }) => {
