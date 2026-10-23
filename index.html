@@ -1715,7 +1715,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
 .pf-water { stroke: var(--plumbing); stroke-width: 5; }
 .pf-fire { stroke: var(--fire); stroke-width: 4; }
 .pf-rfg { stroke: var(--hvac); stroke-width: 5; }
-.pf-hose { stroke: var(--plumbing); stroke-width: 3; opacity: 0.8; }
+.pf-hose { fill: none; stroke: var(--plumbing); stroke-width: 3; opacity: 0.8; }
 .pf-flow { fill: none; stroke: var(--accent); stroke-width: 1.4; stroke-dasharray: 5 7; animation: dd-march 0.9s linear infinite; }
 .pf-ring { fill: none; stroke-width: 2; }
 .pf-ring-bad { stroke: var(--fail); stroke-dasharray: 4 3; transform-box: fill-box; transform-origin: center; animation: pf-pulse 1.6s ease-in-out infinite; }
@@ -1744,9 +1744,13 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
 .m-pf-chip { padding: 4px 10px; border: 1px solid rgba(255, 107, 91, 0.45); border-radius: 999px; background: rgba(255, 107, 91, 0.07); color: var(--text); font: 500 12px/1.4 var(--body); text-align: left; cursor: pointer; transition: border-color var(--ease); }
 .m-pf-chip:hover { border-color: var(--fail); }
 @media (prefers-reduced-motion: reduce) { .pf-flow, .pf-ring-bad, .pf-spin, .pf-card.pf-flash { animation: none; } }
-.pf-tools { display: grid; gap: 12px; margin-bottom: 10px; }
-@media (min-width: 1024px) { .pf-tools { grid-template-columns: minmax(260px, 360px) 1fr; align-items: center; } .pf-tools .pf-filters { margin-bottom: 0; } }
-.pf-search input { width: 100%; }
+.pf-tools { display: block; }
+.pf-search, .std-search { max-width: 720px; margin-bottom: 12px; border-radius: 999px; padding-left: 16px; }
+.pf-search input, .std-search input { width: 100%; padding-top: 13px; padding-bottom: 13px; }
+.std-tools { margin-bottom: 20px; }
+.std-tools .pf-count:empty { display: none; }
+.std-callout[hidden] { display: none; }
+#std-groups tr[hidden], #std-sources li[hidden], #std-ph-list li[hidden], .std-group[hidden], .std-src[hidden] { display: none !important; }
 .pf-count { margin: 0 0 14px; font: 500 12px var(--mono); letter-spacing: 0.06em; color: var(--muted); }
 .pf-empty { padding: 24px; border: 1px dashed var(--line-2); border-radius: 12px; color: var(--muted); text-align: center; }
 .pf-sup { fill: rgba(56, 189, 248, 0.3); stroke: var(--mechanical); stroke-width: 1.2; }
@@ -1808,6 +1812,64 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
 .pf-cold { fill: rgba(56, 189, 248, 0.1); }
 .pf-strip { stroke: rgba(242, 232, 207, 0.5); stroke-width: 4; }
 @media (prefers-reduced-motion: reduce) { .pf-hotflow { animation: none; } }
+.pf-valvesym { fill: rgba(242, 232, 207, 0.12); stroke: var(--text); stroke-width: 1.2; }
+.pf-flexc { fill: none; stroke: var(--plumbing); stroke-width: 3; stroke-linejoin: round; }
+.pf-door { fill: rgba(163, 154, 128, 0.18); stroke: var(--muted); stroke-width: 1.4; }
+.pf-mastic { fill: rgba(127, 217, 98, 0.45); }
+.pf-filter { fill: none; stroke: var(--text); stroke-width: 1.4; }
+.pf-bar-n { fill: rgba(242, 232, 207, 0.15); stroke: var(--text); }
+.pf-bar-g { fill: rgba(127, 217, 98, 0.18); stroke: var(--pass); }
+.pf-bond { stroke: var(--fail); stroke-width: 5; stroke-linecap: round; }
+.pf-grease-blob { stroke: rgba(255, 217, 102, 0.75); stroke-width: 6; stroke-linecap: round; }
+.pf-paint { fill: rgba(242, 232, 207, 0.75); }
+.pf-bag { fill: rgba(127, 217, 98, 0.2); stroke: var(--pass); stroke-dasharray: 3 2; }
+.pf-exit { fill: rgba(127, 217, 98, 0.25); stroke: var(--pass); }
+.pf-cable-hot { stroke: var(--fail); stroke-width: 3; animation: pf-glow 1.2s ease-in-out infinite alternate; }
+@keyframes pf-glow { to { stroke: #FFB000; } }
+.pf-bulb { fill: rgba(255, 176, 0, 0.6); stroke: var(--accent); }
+.pf-ins-band { fill: none; stroke: rgba(255, 217, 102, 0.6); stroke-width: 8; }
+.pf-ice { fill: rgba(224, 242, 254, 0.75); stroke: var(--mechanical); }
+.pf-heat { fill: none; stroke: var(--fire); stroke-width: 1.4; stroke-dasharray: 3 3; }
+@media (prefers-reduced-motion: reduce) { .pf-cable-hot { animation: none; } }
+.pf-flue { fill: none; stroke: #8E8E8E; stroke-width: 8; stroke-linejoin: round; }
+.pf-snow { fill: none; stroke: #E0F2FE; stroke-width: 6; opacity: 0.8; }
+.pf-seal { fill: none; stroke: var(--plumbing); stroke-width: 4; }
+.pf-pull { fill: rgba(255, 107, 91, 0.75); stroke: var(--fail); }
+.pf-strobe { fill: rgba(242, 232, 207, 0.85); stroke: var(--fail); }
+.pf-bulb-red { fill: #FF6B5B; }
+.pf-bulb-green { fill: var(--pass); }
+.pf-heatwave { fill: none; stroke: var(--fire); stroke-width: 1.4; }
+.pf-bolt { fill: none; stroke: var(--warning); stroke-width: 2; stroke-linejoin: round; }
+.pf-cloth { fill: rgba(167, 139, 250, 0.35); stroke: var(--sanitary); }
+.pf-al { stroke: #C9CED6; stroke-width: 6; }
+.pf-al-hot { stroke: #C9CED6; stroke-width: 6; animation: pf-glow 1.2s ease-in-out infinite alternate; }
+.pf-phase { fill: rgba(255, 217, 102, 0.35); stroke: var(--warning); }
+.pf-bondok { stroke: var(--pass); stroke-width: 4; stroke-linecap: round; }
+.pf-cyl { fill: rgba(56, 189, 248, 0.3); stroke: var(--mechanical); }
+.pf-scale-box { fill: rgba(127, 217, 98, 0.15); stroke: var(--pass); }
+.pf-drier { fill: rgba(127, 217, 98, 0.3); stroke: var(--pass); }
+.pf-drier-old { fill: rgba(120, 90, 60, 0.5); stroke: var(--fail); }
+@media (prefers-reduced-motion: reduce) { .pf-al-hot { animation: none; } }
+.pf-coilblk { fill: rgba(56, 189, 248, 0.25); stroke: var(--mechanical); stroke-width: 1; stroke-dasharray: 2 2; }
+.pf-lint { fill: rgba(242, 232, 207, 0.5); }
+.pf-beam { fill: rgba(163, 154, 128, 0.25); stroke: var(--muted); }
+.pf-chem { fill: rgba(127, 217, 98, 0.35); }
+.pf-vb { fill: rgba(127, 217, 98, 0.4); stroke: var(--pass); }
+.pf-pan { fill: rgba(127, 217, 98, 0.15); stroke: var(--pass); stroke-width: 1.6; }
+.pf-pvc { stroke: #DCE3EA; stroke-width: 8; }
+.pf-crack { fill: none; stroke: var(--fail); stroke-width: 1.4; }
+.pf-jacket { fill: rgba(127, 217, 98, 0.2); stroke: var(--pass); }
+.pf-stem { stroke: var(--text); stroke-width: 2.5; }
+.pf-tamper { fill: rgba(127, 217, 98, 0.35); stroke: var(--pass); }
+.pf-joist { stroke: #B08050; stroke-width: 6; }
+.pf-plugc { fill: rgba(127, 217, 98, 0.4); stroke: var(--pass); }
+.pf-fluff { fill: rgba(255, 217, 102, 0.22); stroke: rgba(255, 217, 102, 0.5); stroke-dasharray: 2 3; }
+.pf-can { fill: rgba(242, 232, 207, 0.12); stroke: var(--text); stroke-width: 1.4; }
+.pf-tape-blk { fill: #2A2A2A; stroke: var(--fail); }
+.pf-bubble { fill: rgba(127, 217, 98, 0.12); stroke: var(--pass); stroke-width: 1.4; }
+.pf-glass { fill: rgba(127, 217, 98, 0.3); stroke: var(--pass); stroke-width: 1.4; }
+.pf-liquidpool { fill: rgba(56, 189, 248, 0.3); }
+.pf-chain { stroke: var(--muted); stroke-width: 2; stroke-dasharray: 4 2; }
 </style>
 </head>
 <body>
@@ -1862,7 +1924,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       <a href="#standards">Standards</a>
       <a href="#about">About</a>
     </nav>
-    <button type="button" class="icon-btn head-search" id="head-search" aria-label="Search calculators">
+    <button type="button" class="icon-btn head-search" id="head-search" aria-label="Search" title="Search (/)">
       <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     </button>
     <div class="sys" data-sys="si" role="group" aria-label="Unit system">
@@ -2088,7 +2150,8 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       <div class="pf-tools">
         <div class="input-wrap search-wrap pf-search">
           <svg class="search-ico" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <input id="pf-q" type="search" placeholder="Search pitfalls — e.g. trap, damper, vent, nitrogen" autocomplete="off" spellcheck="false" aria-label="Search pitfalls" aria-describedby="pf-count">
+          <input id="pf-q" type="search" placeholder="Search pitfalls — e.g. trap, damper, vent, sprinkler, nitrogen" autocomplete="off" spellcheck="false" aria-label="Search pitfalls" aria-describedby="pf-count">
+          <kbd aria-hidden="true">/</kbd>
         </div>
         <div class="pf-filters" id="pf-filters" role="group" aria-label="Filter pitfalls by discipline"></div>
       </div>
@@ -2142,6 +2205,16 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
         <p class="eyebrow">07 — Codes &amp; Standards</p>
         <h2 id="std-title">Where the numbers come from.</h2>
         <p>Every calculator, the method it uses and the code, standard or published source behind it — so you know what to check before a result goes into a design.</p>
+      </div>
+
+      <div class="std-tools">
+        <div class="input-wrap search-wrap std-search">
+          <svg class="search-ico" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input id="std-q" type="search" placeholder="Search codes &amp; standards — e.g. NFPA 13, ASHRAE 62.1, duct, voltage drop, PEC" autocomplete="off" spellcheck="false" aria-label="Search codes and standards" aria-describedby="std-count">
+          <kbd aria-hidden="true">/</kbd>
+        </div>
+        <p class="pf-count" id="std-count" aria-live="polite"></p>
+        <p class="pf-empty" id="std-empty" hidden>Nothing matches — try a code number (e.g. 62.1), a standard (NEC, SMACNA) or a calculator name.</p>
       </div>
 
       <div class="std-callout reveal" role="note">
@@ -7402,6 +7475,64 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     $('#std-sources').innerHTML = SOURCES.map(function (s) { return '<li><strong>' + esc(s[0]) + '</strong> — ' + esc(s[1]) + '</li>'; }).join('');
   })();
 
+  // Search matching shared by Pitfalls and Standards: the exact phrase, or every word; number words match whole numbers only ("13" is not "133").
+  var reEsc = function (w) { return w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); };
+  var isNum = function (w) { return /^\d+(\.\d+)?$/.test(w); };
+  var wordSrc = function (w) { return isNum(w) ? '(?<![\\d.])' + reEsc(w) + '(?![\\d])' : reEsc(w); };
+  function textMatches(text, q, words) {
+    if (!words.length || text.indexOf(q) >= 0) return true;
+    return words.every(function (w) { return isNum(w) ? new RegExp(wordSrc(w)).test(text) : text.indexOf(w) >= 0; });
+  }
+  // Highlight the search words inside an element (text only, never inside drawings); calling it again clears the old marks.
+  function markWords(root, words) {
+    $$('mark.hl', root).forEach(function (m) { m.replaceWith(document.createTextNode(m.textContent)); });
+    root.normalize();
+    if (!words.length) return;
+    var src = '(' + words.map(wordSrc).join('|') + ')', test = new RegExp(src, 'i'), split = new RegExp(src, 'gi'), nodes = [];
+    var walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: function (n) { return n.parentNode.closest('svg, mark') ? NodeFilter.FILTER_REJECT : test.test(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP; } });
+    while (walk.nextNode()) nodes.push(walk.currentNode);
+    nodes.forEach(function (n) {
+      var frag = document.createDocumentFragment();
+      n.nodeValue.split(split).forEach(function (s, i) {
+        if (!s) return;
+        if (i % 2) { var m = document.createElement('mark'); m.className = 'hl'; m.textContent = s; frag.appendChild(m); } else frag.appendChild(document.createTextNode(s));
+      });
+      n.parentNode.replaceChild(frag, n);
+    });
+  }
+
+  /* ---------- Search in Codes & Standards: calculator references, sources and regional codes ---------- */
+  var stdQuery = '', stdOpenBefore = null;
+  function applyStdSearch() {
+    var q = stdQuery || '', words = q ? q.split(/\s+/) : [], mw = words.length > 1 ? [q].concat(words) : words, nRows = 0, nSrc = 0, nReg = 0; // mw: highlight the whole phrase first
+    var hit = function (el) { return textMatches(el.textContent.toLowerCase(), q, words); };
+    var groups = $$('#std-groups .std-group'), src = $('.std-src');
+    if (words.length && !stdOpenBefore) stdOpenBefore = groups.map(function (g) { return g.open; }).concat([src.open]); // remember what was open before searching
+    groups.forEach(function (g) {
+      var n = 0;
+      $$('tbody tr', g).forEach(function (tr) { var on = !words.length || hit(tr); tr.hidden = !on; if (on) n++; markWords(tr, mw); });
+      g.hidden = !!words.length && !n;
+      if (words.length) { g.open = n > 0; nRows += n; }
+      $('summary .f-n', g).textContent = n;
+    });
+    $$('#std-sources > li').forEach(function (li) { var on = !words.length || hit(li); li.hidden = !on; if (on && words.length) nSrc++; markWords(li, mw); });
+    src.hidden = !!words.length && !nSrc;
+    if (words.length) src.open = nSrc > 0;
+    $$('#std-ph-list > li').forEach(function (block) {
+      var n = 0;
+      $$('ul > li', block).forEach(function (li) { var on = !words.length || hit(li); li.hidden = !on; if (on) n++; markWords(li, mw); });
+      block.hidden = !!words.length && !n;
+      if (words.length) nReg += n;
+    });
+    if (!words.length && stdOpenBefore) { groups.forEach(function (g, i) { g.open = stdOpenBefore[i]; }); src.open = stdOpenBefore[groups.length]; stdOpenBefore = null; }
+    var total = nRows + nSrc + nReg;
+    $('.std-callout').hidden = !!words.length; // results come straight under the search box
+    $('#std-count').textContent = words.length ? total + ' match' + (total === 1 ? '' : 'es') + ' — ' + nRows + ' calculator' + (nRows === 1 ? '' : 's') + ', ' + nSrc + ' source' + (nSrc === 1 ? '' : 's') + ', ' + nReg + ' regional' : '';
+    $('#std-empty').hidden = !words.length || total > 0;
+  }
+  $('#std-q').addEventListener('input', function () { stdQuery = this.value.trim().toLowerCase(); applyStdSearch(); });
+  $('#std-q').addEventListener('keydown', function (e) { if (e.key === 'Escape' && this.value) { e.stopPropagation(); this.value = ''; stdQuery = ''; applyStdSearch(); } });
+
   /* ---------- Discipline filter + search ---------- */
   // Everyday words people search with, on top of each card's title, description, code and categories.
   var KEYWORDS = {
@@ -7531,6 +7662,13 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     searchInput.focus();
   });
   function focusSearch() {
+    var v = document.body.dataset.view, local = v === 'pitfalls' ? $('#pf-q') : v === 'standards' ? $('#std-q') : null;
+    if (local) {
+      local.scrollIntoView({ block: 'center', behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+      local.focus({ preventScroll: true });
+      var w = local.closest('.search-wrap'); w.classList.remove('flash'); void w.offsetWidth; w.classList.add('flash');
+      return;
+    }
     goView('calculators');
     setTimeout(function () {
       searchInput.focus({ preventScroll: true });
@@ -12789,6 +12927,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
         return '<li class="' + (codeBasis === k || !REG[codeBasis] ? '' : 'reg-off') + '"><h4>' + REG[k].name + '</h4><ul>' +
           REG[k].sources.map(function (s) { return '<li><strong>' + esc(s[0]) + '</strong> — ' + esc(s[1]) + '</li>'; }).join('') + '</ul></li>';
       }).join('');
+      if (stdQuery) applyStdSearch();
     }
   }
   function setCode(next) {
@@ -13267,6 +13406,615 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       ref: 'ASHRAE Handbook—Refrigeration Ch. 24 (infiltration through doorways).' }
   ];
   PITFALLS = PITFALLS.concat(PF_MORE);
+  // Third set of drawing parts: person, valve, pump on a pipe, flexible connector, water heater.
+  var PF_MAN = function (x, y) { return '<circle cx="' + x + '" cy="' + y + '" r="6" class="pf-box"/><path d="M' + x + ' ' + (y + 6) + 'v22M' + (x - 10) + ' ' + (y + 14) + 'h20M' + x + ' ' + (y + 28) + 'l-7 12M' + x + ' ' + (y + 28) + 'l7 12" class="pf-thin"/>'; };
+  var PF_VLV = function (x, y) { return '<path d="M' + (x - 6) + ' ' + (y - 6) + 'L' + (x + 6) + ' ' + (y + 6) + 'V' + (y - 6) + 'L' + (x - 6) + ' ' + (y + 6) + 'Z" class="pf-valvesym"/>'; };
+  var PF_BFV = function (x, y) { return '<circle cx="' + x + '" cy="' + y + '" r="7" class="pf-valvesym"/><path d="M' + (x - 5) + ' ' + (y + 5) + 'L' + (x + 5) + ' ' + (y - 5) + '" class="pf-blade"/>'; };
+  var PF_PMP = function (x, y) { return '<circle cx="' + x + '" cy="' + y + '" r="12" class="pf-box"/><path d="M' + (x - 5) + ' ' + (y - 6) + 'l11 6-11 6z" class="pf-pivot"/>'; };
+  var PF_FLEXC = function (x, y) { return '<path d="M' + x + ' ' + y + 'l3-6 4 12 4-12 4 12 4-12 3 6" class="pf-flexc"/>'; };
+  var PF_WH = '<rect x="96" y="40" width="56" height="94" rx="10" class="pf-box"/>' + PF_T(124, 88, 'water', 'pf-t', 'middle') + PF_T(124, 100, 'heater', 'pf-t', 'middle') + '<path d="M10 140H230" class="pf-thin"/>';
+  var PF_SUB = '<rect x="70" y="16" width="100" height="124" rx="4" class="pf-box"/>' + PF_T(120, 30, 'sub-panel', 'pf-t', 'middle') + '<rect x="84" y="50" width="22" height="70" class="pf-bar-n"/><rect x="134" y="50" width="22" height="70" class="pf-bar-g"/>' + PF_T(95, 132, 'N', 'pf-t', 'middle') + PF_T(145, 132, 'G', 'pf-t', 'middle');
+  var PF_FRZ = '<rect x="10" y="10" width="160" height="130" class="pf-cold"/><path d="M170 10V140M10 140H230" class="pf-wallc"/><rect x="40" y="20" width="90" height="26" class="pf-box"/><path d="M40 46H130V52H40Z" class="pf-box"/>' + PF_T(85, 37, 'evaporator', 'pf-t', 'middle') + PF_T(30, 132, 'freezer', 'pf-t');
+  var PF_MORE2 = [
+    { id: 'exhvoid', d: 'M', title: 'Exhaust fan dumping into the ceiling void', calcs: ['exh', 'fexh'],
+      bad: '<path d="M10 10H230M10 60H230" class="pf-thin"/><rect x="100" y="60" width="40" height="8" class="pf-sup"/>' + PF_D('M112 60V32H128V60Z') + '<path d="M106 26q8-10 16 0t16 0M92 36q8-10 16 0" class="pf-leak"/>' + PF_X(120, 30, 14) + PF_T(14, 22, 'roof', 'pf-t') + PF_T(14, 54, 'ceiling', 'pf-t') + PF_T(120, 94, 'exhaust dumped into', 'pf-tb', 'middle') + PF_T(120, 106, 'the ceiling void:', 'pf-tb', 'middle') + PF_T(120, 118, 'moisture, mould, odour', 'pf-tb', 'middle'),
+      badCap: 'The fan duct stops in the ceiling space.',
+      good: '<path d="M10 10H230M10 60H230" class="pf-thin"/><rect x="100" y="60" width="40" height="8" class="pf-sup"/>' + PF_D('M112 60V2H128V60Z') + PF_F('M120 56V8') + PF_OK(120, 32, 12) + PF_T(14, 22, 'roof', 'pf-t') + PF_T(14, 54, 'ceiling', 'pf-t') + PF_T(120, 94, 'ducted to the outdoors', 'pf-tg', 'middle') + PF_T(120, 106, 'with a backdraft damper', 'pf-tg', 'middle'),
+      goodCap: 'The exhaust duct runs through to an outdoor cap.',
+      why: 'Toilet, bathroom and kitchen exhaust is wet and smelly. Blown into a ceiling void or attic it condenses on the cold structure, rots it, grows mould and finds its way back into the rooms.',
+      rule: 'Discharge exhaust air to the outdoors through a duct and a weather cap with a backdraft damper — never into attics, crawl spaces, ceiling voids or soffit vents — and keep the outlet away from intakes and openings.',
+      ref: 'IMC §501.3 (exhaust discharge) and §504 / §505 (dryer and domestic kitchen exhaust).' },
+    { id: 'ductleak', d: 'M', title: 'Duct joints left unsealed', calcs: ['leak', 'ductd'],
+      bad: PF_D('M10 55H230V95H10Z') + '<path d="M80 55V95M160 55V95" class="pf-thin"/><path d="M78 50l-6-14M84 50l4-14M158 100l-6 14M164 100l4 14" class="pf-leak"/>' + PF_F('M20 75H210') + PF_X(80, 55, 12) + PF_X(162, 95, 12) + PF_T(120, 132, 'conditioned air escapes', 'pf-tb', 'middle') + PF_T(120, 144, 'before it reaches the room', 'pf-tb', 'middle'),
+      badCap: 'Air whistles out of every transverse joint.',
+      good: PF_D('M10 55H230V95H10Z') + '<rect x="76" y="53" width="8" height="44" class="pf-mastic"/><rect x="156" y="53" width="8" height="44" class="pf-mastic"/>' + PF_F('M20 75H210') + PF_OK(80, 75, 14) + PF_T(120, 132, 'joints, seams and penetrations', 'pf-tg', 'middle') + PF_T(120, 144, 'sealed, then leak-tested', 'pf-tg', 'middle'),
+      goodCap: 'Mastic or tape on every joint, seam and penetration.',
+      why: 'Leaky ductwork means the fan moves air that never reaches the rooms. Rooms at the end of the run go short, fan energy rises, and supply air leaking into ceilings can condense and stain.',
+      rule: 'Seal all transverse joints, longitudinal seams and penetrations (SMACNA seal class A) and leak-test to the specified class — typically on higher-pressure ductwork and a sample of the low-pressure system.',
+      ref: 'ASHRAE 90.1 §6.4.4.2 (duct sealing and leakage testing); SMACNA HVAC Air Duct Leakage Test Manual.' },
+    { id: 'draught', d: 'M', title: 'Supply jet blowing straight onto people', calcs: ['tsd', 'sdiff'],
+      bad: '<path d="M10 16H230M10 140H230" class="pf-thin"/><rect x="100" y="16" width="34" height="6" class="pf-sup"/>' + PF_F('M117 24V92') + PF_MAN(117, 100) + '<rect x="132" y="116" width="70" height="6" class="pf-box"/>' + PF_X(117, 96, 16) + PF_T(14, 60, 'cold jet onto', 'pf-tb') + PF_T(14, 72, 'the occupants:', 'pf-tb') + PF_T(14, 84, 'draught', 'pf-tb'),
+      badCap: 'The diffuser throws cold air down onto the desk.',
+      good: '<path d="M10 16H230M10 140H230" class="pf-thin"/><rect x="100" y="16" width="34" height="6" class="pf-sup"/>' + PF_F('M100 24H24') + PF_F('M134 24H216') + PF_MAN(117, 100) + '<rect x="132" y="116" width="70" height="6" class="pf-box"/>' + PF_T(120, 50, 'the jet hugs the ceiling and', 'pf-tg', 'middle') + PF_T(120, 62, 'mixes above the occupied zone', 'pf-tg', 'middle'),
+      goodCap: 'The jet spreads along the ceiling and mixes before reaching people.',
+      why: 'Even well-tempered air feels cold when it moves fast across skin. Diffusers dumping onto desks cause draught complaints, people block the outlets, and the zone is then under-ventilated.',
+      rule: 'Select diffusers so the jet reaches the occupied zone slowly — about 0.25 m/s (50 fpm) or less, lower for cool conditions — and aim for ADPI of 80 % or more; avoid outlets directly above workstations.',
+      ref: 'ASHRAE 55 (local discomfort from draught); ASHRAE Handbook—Fundamentals Ch. 20 (ADPI).' },
+    { id: 'transfer', d: 'M', title: 'Exhausted room with no path for make-up air', calcs: ['xfer', 'exh', 'bal'],
+      bad: '<path d="M10 140H230M70 20V140" class="pf-thin"/><rect x="100" y="40" width="56" height="100" class="pf-door"/>' + PF_LV(190, 24, 30, 16, 'pf-exh') + PF_T(205, 18, 'exhaust', 'pf-t', 'middle') + PF_X(128, 136, 12) + PF_T(14, 60, 'sealed door,', 'pf-tb') + PF_T(14, 72, 'no grille:', 'pf-tb') + PF_T(14, 84, 'fan starves,', 'pf-tb') + PF_T(14, 96, 'door whistles', 'pf-tb'),
+      badCap: 'The toilet is exhausted but the door seals tight.',
+      good: '<path d="M10 140H230M70 20V140" class="pf-thin"/><rect x="100" y="40" width="56" height="92" class="pf-door"/>' + PF_LV(190, 24, 30, 16, 'pf-exh') + PF_T(205, 18, 'exhaust', 'pf-t', 'middle') + PF_F('M40 136H200') + PF_OK(128, 136, 10) + PF_T(14, 60, 'door undercut', 'pf-tg') + PF_T(14, 72, 'or a transfer', 'pf-tg') + PF_T(14, 84, 'grille', 'pf-tg'),
+      goodCap: 'An undercut or transfer grille lets replacement air in.',
+      why: 'An exhaust fan can only remove air that can get in. With no path, the fan moves far less than rated, odours are not cleared, and the door whistles or is hard to open.',
+      rule: 'Provide a transfer path sized for the exhaust flow — a door undercut (often 15–25 mm / ⅝–1 in) for small rooms, or a transfer grille or duct sized for low velocity — and check the room pressure.',
+      ref: 'ASHRAE 62.1 §5.16 (air classification and transfer air); IMC §403.2.2 (transfer air).' },
+    { id: 'filterbypass', d: 'M', title: 'Air bypassing the filter', calcs: ['ffa', 'fsup'],
+      bad: '<rect x="10" y="20" width="220" height="110" class="pf-box"/><path d="M110 34l10 8-10 8 10 8-10 8 10 8-10 8 10 8-10 8" class="pf-filter"/><path d="M176 24V126" class="pf-coil"/>' + PF_F('M20 75H100') + '<path d="M20 26H200M20 124H200" class="pf-hotflow" marker-end="url(#arr-mini)"/>' + PF_X(114, 26, 10) + PF_X(114, 124, 10) + PF_T(20, 98, 'gaps round', 'pf-tb') + PF_T(20, 110, 'the frame:', 'pf-tb') + PF_T(20, 122, 'dirty coil', 'pf-tb'),
+      badCap: 'The filter does not fill its frame; air goes around it.',
+      good: '<rect x="10" y="20" width="220" height="110" class="pf-box"/><path d="M110 22l10 8-10 8 10 8-10 8 10 8-10 8 10 8-10 8 10 8-10 8 10 8-10 8" class="pf-filter"/><rect x="106" y="20" width="18" height="4" class="pf-mastic"/><rect x="106" y="126" width="18" height="4" class="pf-mastic"/><path d="M176 24V126" class="pf-coil"/>' + PF_F('M20 75H100') + PF_F('M130 75H168') + PF_T(20, 104, 'sealed frame', 'pf-tg') + PF_T(20, 116, 'MERV 8+', 'pf-tg'),
+      goodCap: 'A full-size filter in a gasketed, sealed frame.',
+      why: 'Air takes the easy way round. Even small gaps let unfiltered air through, which loads the coil with dirt, cuts heat transfer, feeds microbial growth in the wet coil and fouls the ductwork.',
+      rule: 'Fit filters in sealed, gasketed racks with no bypass, at least MERV 8 upstream of cooling coils and wetted surfaces (higher where the design asks), and change them on pressure drop.',
+      ref: 'ASHRAE 62.1 §5.8 (particulate matter removal); ASHRAE 52.2 (MERV test).' },
+    { id: 'airvent', d: 'M', title: 'Chilled-water high point without an air vent', calcs: ['chw', 'pump'],
+      bad: PF_P('M10 120H70V40H170V120H230', 'pf-water') + '<ellipse cx="120" cy="40" rx="34" ry="6" class="pf-air"/>' + PF_X(120, 40, 18) + PF_T(120, 70, 'air collects', 'pf-tb', 'middle') + PF_T(120, 82, 'at the top:', 'pf-tb', 'middle') + PF_T(120, 94, 'no flow, noise,', 'pf-tb', 'middle') + PF_T(120, 106, 'corrosion', 'pf-tb', 'middle'),
+      badCap: 'The pipe rises over a beam with nowhere for air to escape.',
+      good: PF_P('M10 120H70V40H170V120H230', 'pf-water') + PF_P('M120 40V26', 'pf-water') + '<rect x="113" y="12" width="14" height="14" rx="2" class="pf-valve"/>' + PF_VLV(40, 132) + PF_P('M40 120V126', 'pf-water') + PF_OK(120, 20, 12) + PF_T(120, 70, 'vent at every', 'pf-tg', 'middle') + PF_T(120, 82, 'high point,', 'pf-tg', 'middle') + PF_T(120, 94, 'drain at every', 'pf-tg', 'middle') + PF_T(120, 106, 'low point', 'pf-tg', 'middle'),
+      goodCap: 'An automatic air vent at the top, a drain valve at the bottom.',
+      why: 'Air in a closed hydronic loop gathers at high points and in coil tops. It blocks flow, makes the pipes gurgle, starves terminals and speeds up corrosion.',
+      rule: 'Fit automatic or manual air vents at every high point and coil, drain valves at every low point, and an air separator in the plant. Arrange piping to avoid needless rises over obstructions.',
+      ref: 'ASHRAE Handbook—HVAC Systems & Equipment Ch. 13 (hydronic heating and cooling — air control).' },
+    { id: 'exptank', d: 'M', title: 'Expansion tank on the pump discharge', calcs: ['expt', 'pump'],
+      bad: PF_P('M20 40H220V120H20Z', 'pf-water') + PF_PMP(120, 120) + '<rect x="160" y="74" width="20" height="30" rx="8" class="pf-box"/>' + PF_P('M170 104V116', 'pf-water') + PF_X(170, 92, 18) + PF_T(120, 64, 'tank on the discharge:', 'pf-tb', 'middle') + PF_T(70, 84, 'suction pressure', 'pf-tb', 'middle') + PF_T(70, 96, 'drops → air in,', 'pf-tb', 'middle') + PF_T(70, 108, 'cavitation', 'pf-tb', 'middle'),
+      badCap: 'The expansion tank joins the loop after the pump.',
+      good: PF_P('M20 40H220V120H20Z', 'pf-water') + PF_PMP(120, 120) + '<rect x="70" y="74" width="20" height="30" rx="8" class="pf-box"/>' + PF_P('M80 104V116', 'pf-water') + PF_OK(80, 92, 18) + PF_T(120, 64, 'tank at the pump suction —', 'pf-tg', 'middle') + PF_T(160, 84, 'the point of', 'pf-tg', 'middle') + PF_T(160, 96, 'no pressure', 'pf-tg', 'middle') + PF_T(160, 108, 'change', 'pf-tg', 'middle'),
+      goodCap: 'The tank sets the pressure at the pump suction.',
+      why: 'Where the expansion tank connects, the pressure never changes. On the discharge side, starting the pump lowers the pressure everywhere else — high points go below atmospheric and draw in air, and the pump can cavitate.',
+      rule: 'Connect the expansion tank (and the fill) at the pump suction, the point of no pressure change, and set the fill pressure so the highest point stays positive with the pump running.',
+      ref: 'ASHRAE Handbook—HVAC Systems & Equipment Ch. 13 (expansion tanks and pressure control).' },
+    { id: 'pumpflex', d: 'M', title: 'Pump hard-piped without connectors or valves', calcs: ['pump'],
+      bad: PF_P('M10 90H100', 'pf-water') + PF_P('M140 90H230', 'pf-water') + '<circle cx="120" cy="90" r="20" class="pf-box"/><rect x="92" y="110" width="56" height="10" class="pf-box"/><path d="M40 76q4-6 8 0t8 0M186 76q4-6 8 0t8 0M110 128q4-6 8 0t8 0" class="pf-leak"/>' + PF_X(70, 90, 14) + PF_T(120, 40, 'rigid pipes carry vibration', 'pf-tb', 'middle') + PF_T(120, 52, 'and noise into the building', 'pf-tb', 'middle'),
+      badCap: 'Solid pipe straight onto the pump, no way to isolate it.',
+      good: PF_P('M10 90H58', 'pf-water') + PF_FLEXC(58, 90) + PF_P('M82 90H100', 'pf-water') + PF_P('M140 90H158', 'pf-water') + PF_FLEXC(158, 90) + PF_P('M182 90H230', 'pf-water') + '<circle cx="120" cy="90" r="20" class="pf-box"/><rect x="92" y="110" width="56" height="10" class="pf-box"/>' + PF_VLV(30, 90) + PF_VLV(206, 90) + PF_T(30, 74, 'valve', 'pf-tg', 'middle') + PF_T(70, 74, 'flex', 'pf-tg', 'middle') + PF_T(170, 74, 'flex', 'pf-tg', 'middle') + PF_T(206, 74, 'valve', 'pf-tg', 'middle') + PF_T(120, 140, 'isolation valves, strainer, check valve', 'pf-tg', 'middle'),
+      goodCap: 'Flexible connectors, isolation valves, strainer and check valve.',
+      why: 'Pump vibration travels along rigid pipe into the structure and is heard far away. Without isolation valves the whole system has to be drained to service the pump.',
+      rule: 'Fit flexible connectors at the pump suction and discharge, isolation valves on both sides, a strainer on the suction, a check valve on the discharge, and mount the pump on an inertia base or isolators where noise matters.',
+      ref: 'ASHRAE Handbook—HVAC Applications Ch. 49 (vibration isolation); ANSI/HI 9.6.6 (pump piping).' },
+    { id: 'thermexp', d: 'P', title: 'Water heater with no thermal expansion control', calcs: ['hwheat', 'expt'],
+      bad: PF_WH + PF_P('M10 56H96', 'pf-water') + PF_VLV(40, 56) + PF_T(40, 44, 'check valve', 'pf-t', 'middle') + '<circle cx="190" cy="60" r="18" class="pf-box"/><path d="M190 60L203 47" class="pf-needle-bad"/><path d="M152 50H172" class="pf-thin"/>' + PF_X(190, 60, 24) + PF_T(14, 96, 'heated water', 'pf-tb') + PF_T(14, 108, 'cannot expand:', 'pf-tb') + PF_T(14, 120, 'pressure jumps', 'pf-tb'),
+      badCap: 'A closed system (check valve or backflow preventer) and no expansion tank.',
+      good: PF_WH + PF_P('M10 56H96', 'pf-water') + PF_VLV(40, 56) + PF_T(40, 44, 'check valve', 'pf-t', 'middle') + '<rect x="62" y="70" width="22" height="34" rx="9" class="pf-box"/>' + PF_P('M73 70V58', 'pf-water') + PF_OK(73, 87, 18) + PF_T(14, 120, 'expansion tank', 'pf-tg') + PF_T(14, 132, 'on cold feed', 'pf-tg'),
+      goodCap: 'An expansion tank between the check valve and the heater.',
+      why: 'Water expands by about 2–4 % when heated. In a closed system there is nowhere for it to go, so the pressure jumps every heating cycle — the relief valve drips, fittings and fixtures are stressed, and tanks fail early.',
+      rule: 'Where the cold supply to a storage water heater passes a check valve, pressure-reducing valve or backflow preventer, fit a thermal expansion tank (or other listed device) on the cold feed, pre-charged to the supply pressure.',
+      ref: 'IPC §607.3.2 (thermal expansion control); UPC §608.3.' },
+    { id: 'traparm', d: 'P', title: 'Trap arm too long to the vent', calcs: ['dfu'],
+      bad: PF_BASIN + PF_P('M70 70V96a10 10 0 0 0 20 0V90H222', 'pf-drain') + PF_P('M222 10V145', 'pf-drain') + PF_DIM(90, 112, 222, 112, '', 0, 0) + PF_T(156, 126, 'longer than allowed', 'pf-tb', 'middle') + PF_X(80, 96, 14) + PF_T(150, 60, 'trap seal', 'pf-tb', 'middle') + PF_T(150, 72, 'siphons out', 'pf-tb', 'middle'),
+      badCap: 'The vent is far down a long trap arm.',
+      good: PF_BASIN + PF_P('M70 70V96a10 10 0 0 0 20 0V90H150', 'pf-drain') + PF_P('M150 10V145', 'pf-drain') + PF_DIM(90, 112, 150, 112, '', 0, 0) + PF_T(10, 126, '≤ 1.8 m for 1½ in', 'pf-tg') + PF_T(10, 138, '(2.4 m for 2 in)', 'pf-tg') + PF_T(156, 20, 'vent', 'pf-tg') + PF_OK(80, 96, 13),
+      goodCap: 'The vent is within the allowed trap-arm distance.',
+      why: 'A long trap arm runs full as the fixture empties and siphons the water out of the trap; sewer gas then enters the room. A steep long arm also lets the trap seal slug away.',
+      rule: 'Keep the trap arm within the code table — for example 1.5 m (5 ft) for 1¼ in, 1.8 m (6 ft) for 1½ in, 2.4 m (8 ft) for 2 in, 3.7 m (12 ft) for 3 in — at 2 % (¼ in/ft) slope, with the vent above the trap weir.',
+      ref: 'IPC Table 909.1 (maximum distance of fixture trap from vent); UPC Table 1002.2.' },
+    { id: 'doubletrap', d: 'P', title: 'Fixture double-trapped', calcs: ['dfu'],
+      bad: PF_BASIN + PF_P('M70 70V96a10 10 0 0 0 20 0V90H130V106a10 10 0 0 0 20 0V100H230', 'pf-drain') + '<ellipse cx="114" cy="90" rx="10" ry="3" class="pf-air"/>' + PF_X(140, 108, 14) + PF_T(170, 40, 'two traps in series:', 'pf-tb', 'middle') + PF_T(170, 52, 'air lock, slow drain', 'pf-tb', 'middle'),
+      badCap: 'A second trap downstream of the fixture trap.',
+      good: PF_BASIN + PF_P('M70 70V96a10 10 0 0 0 20 0V90H230', 'pf-drain') + PF_P('M180 90V20', 'pf-vent') + PF_T(186, 30, 'vent', 'pf-tg') + PF_OK(80, 96, 13) + PF_T(130, 124, 'one trap per fixture,', 'pf-tg', 'middle') + PF_T(130, 136, 'then vented', 'pf-tg', 'middle'),
+      goodCap: 'One trap, vented, then to the drain.',
+      why: 'Air trapped between two water seals cannot escape. The fixture drains slowly or not at all, and the seals can be blown or siphoned.',
+      rule: 'A fixture must not be double-trapped. Count the trap built into fixtures such as water closets, and do not add another downstream.',
+      ref: 'IPC §1002.1 (fixture traps); UPC §1003.' },
+    { id: 'greasesewer', d: 'P', title: 'Kitchen waste straight to the sewer', calcs: ['greasetrap'],
+      bad: '<path d="M20 40H80V66H20Z" class="pf-box"/>' + PF_T(50, 34, 'kitchen sink', 'pf-t', 'middle') + PF_P('M50 66V100H230', 'pf-drain') + '<path d="M150 96h40" class="pf-grease-blob"/>' + PF_X(170, 100, 18) + PF_T(150, 130, 'grease sets in the sewer', 'pf-tb', 'middle') + PF_T(150, 142, 'and blocks it', 'pf-tb', 'middle'),
+      badCap: 'Grease-laden waste goes directly into the drain.',
+      good: '<path d="M20 40H80V66H20Z" class="pf-box"/>' + PF_T(50, 34, 'kitchen sink', 'pf-t', 'middle') + PF_P('M50 66V100H100', 'pf-drain') + '<rect x="100" y="84" width="60" height="40" class="pf-box"/><path d="M120 84V112M140 96V124" class="pf-thin"/><path d="M104 92h14" class="pf-grease-blob"/>' + PF_P('M160 100H230', 'pf-drain') + PF_T(130, 140, 'grease interceptor', 'pf-tg', 'middle'),
+      goodCap: 'A grease interceptor between the kitchen fixtures and the sewer.',
+      why: 'Fats, oils and grease cool and harden in the drain, building up until the pipe or public sewer blocks — a common cause of sewer overflows.',
+      rule: 'Route food-preparation fixtures that discharge grease through a grease interceptor sized for the flow and retention, with access for cleaning; keep sanitary (toilet) waste out of it.',
+      ref: 'IPC §1003.3 (grease interceptors) and PDI-G101 / ASME A112.14.3; local FOG regulations.' },
+    { id: 'trench', d: 'P', title: 'Water pipe laid beside the sewer in one trench', calcs: ['pipe', 'drain'],
+      bad: '<path d="M10 30H230" class="pf-thin"/><path d="M80 30V140H160V30" class="pf-wallc"/><circle cx="104" cy="120" r="12" class="pf-ret"/><circle cx="134" cy="120" r="8" class="pf-int"/>' + PF_T(104, 100, 'sewer', 'pf-t', 'middle') + PF_T(134, 104, 'water', 'pf-t', 'middle') + PF_X(120, 120, 22) + PF_T(120, 16, 'a sewer leak can be drawn into the water', 'pf-tb', 'middle'),
+      badCap: 'Water service and building sewer side by side.',
+      good: '<path d="M10 30H230" class="pf-thin"/><path d="M30 30V140H74V30M166 30V140H210V30" class="pf-wallc"/><circle cx="52" cy="122" r="12" class="pf-ret"/><circle cx="188" cy="122" r="8" class="pf-int"/>' + PF_T(52, 102, 'sewer', 'pf-t', 'middle') + PF_T(188, 106, 'water', 'pf-t', 'middle') + PF_DIM(64, 70, 180, 70, '', 0, 0) + PF_T(120, 62, '≥ 1.5 m (5 ft)', 'pf-tg', 'middle') + PF_T(120, 90, 'or water on a', 'pf-tg', 'middle') + PF_T(120, 102, 'shelf 305 mm', 'pf-tg', 'middle') + PF_T(120, 114, 'above sewer', 'pf-tg', 'middle'),
+      goodCap: 'Separate trenches, or the water pipe on a shelf well above the sewer.',
+      why: 'Sewers leak. If the water pipe ever loses pressure next to a leaking sewer, contaminated ground water can be drawn in through a joint or crack.',
+      rule: 'Separate the underground water service from the building sewer by at least 1.5 m (5 ft) of undisturbed or compacted earth, or lay the water pipe on a solid shelf at least 305 mm (12 in) above the top of the sewer, as the code allows.',
+      ref: 'IPC §603.2 (separation of water service and building sewer); UPC §609.2.' },
+    { id: 'sprorient', d: 'F', title: 'Upright sprinkler installed pendent', calcs: ['sprinkler'],
+      bad: PF_CEIL + '<path d="M120 16V56" class="pf-pipe pf-fire"/><path d="M112 60Q120 52 128 60" class="pf-thin"/>' + PF_F('M112 58L88 20') + PF_F('M128 58L152 20') + PF_X(120, 58, 13) + PF_T(120, 96, 'an upright (SSU) head', 'pf-tb', 'middle') + PF_T(120, 108, 'hung pendent throws', 'pf-tb', 'middle') + PF_T(120, 120, 'water at the ceiling', 'pf-tb', 'middle'),
+      badCap: 'The deflector is designed for the other way up.',
+      good: PF_CEIL + '<path d="M120 16V56" class="pf-pipe pf-fire"/><path d="M112 58H128" class="pf-thin"/>' + PF_CONE(120, 60, 46, 60) + PF_OK(120, 58, 11) + PF_T(206, 40, 'SSP down,', 'pf-tg', 'middle') + PF_T(206, 52, 'SSU up', 'pf-tg', 'middle'),
+      goodCap: 'A listed pendent (SSP) sprinkler, spraying down.',
+      why: 'The deflector shapes the spray. Mounted the wrong way up, an upright sprinkler sends much of its water to the ceiling instead of the fire, and the design density is not met.',
+      rule: 'Install every sprinkler in the orientation it is listed for — upright (SSU) pointing up, pendent (SSP) pointing down, sidewall as marked — and match the escutcheon and guard to the listing.',
+      ref: 'NFPA 13 (installation in accordance with the listing); NFPA 25 (inspection).' },
+    { id: 'sprpaint', d: 'F', title: 'Sprinkler painted over', calcs: ['sprinkler'],
+      bad: PF_CEIL + PF_SPR(120) + '<circle cx="120" cy="30" r="8" class="pf-paint"/><path d="M60 14l4 6M180 14l4 6" class="pf-thin"/>' + PF_X(120, 30, 14) + PF_T(120, 66, 'paint glues the bulb', 'pf-tb', 'middle') + PF_T(120, 78, 'and deflector: late', 'pf-tb', 'middle') + PF_T(120, 90, 'or no operation', 'pf-tb', 'middle'),
+      badCap: 'The ceiling was painted with the sprinklers uncovered.',
+      good: PF_CEIL + PF_SPR(120) + '<path d="M108 24h24l-4 18h-16z" class="pf-bag"/>' + PF_T(150, 36, 'cover while', 'pf-tg') + PF_T(150, 48, 'painting', 'pf-tg') + PF_T(120, 90, 'replace any painted', 'pf-tg', 'middle') + PF_T(120, 102, 'or loaded sprinkler', 'pf-tg', 'middle'),
+      goodCap: 'Bag the sprinklers before painting; replace any that get paint on them.',
+      why: 'Paint insulates the heat-sensitive element and can glue the cap and deflector, so the sprinkler opens late or not at all, or sprays a poor pattern.',
+      rule: 'Never paint sprinklers (other than factory finishes). Protect them during decorating and replace — do not clean — any sprinkler that is painted, corroded, loaded or damaged.',
+      ref: 'NFPA 13 (sprinkler finishes); NFPA 25 §5.2.1 (sprinklers to be replaced).' },
+    { id: 'firedoor', d: 'F', title: 'Fire door wedged open', calcs: ['egress'],
+      bad: '<path d="M10 140H230M60 20H180" class="pf-thin"/><path d="M60 20V140M180 20V140" class="pf-wallc"/><path d="M60 20L100 34V140L60 140" class="pf-door"/><path d="M104 140l12-8v8z" class="pf-cap"/><path d="M120 60q20-8 40 0M120 80q20-8 40 0" class="pf-smoke"/>' + PF_X(110, 134, 12) + PF_T(206, 60, 'wedged', 'pf-tb', 'middle') + PF_T(206, 72, 'open:', 'pf-tb', 'middle') + PF_T(206, 84, 'smoke', 'pf-tb', 'middle') + PF_T(206, 96, 'spreads', 'pf-tb', 'middle'),
+      badCap: 'A wedge holds the fire door open.',
+      good: '<path d="M10 140H230M60 20H180" class="pf-thin"/><path d="M60 20V140M180 20V140" class="pf-wallc"/><rect x="62" y="22" width="116" height="118" class="pf-door"/><rect x="70" y="24" width="30" height="6" class="pf-box"/><rect x="170" y="70" width="8" height="12" class="pf-valve"/>' + PF_T(120, 60, 'self-closing', 'pf-tg', 'middle') + PF_T(120, 72, 'and latching', 'pf-tg', 'middle') + PF_T(210, 60, 'hold-open', 'pf-tg', 'middle') + PF_T(210, 72, 'only on a', 'pf-tg', 'middle') + PF_T(210, 84, 'fire-alarm', 'pf-tg', 'middle') + PF_T(210, 96, 'release', 'pf-tg', 'middle'),
+      goodCap: 'Self-closing and latching; hold-opens release on alarm.',
+      why: 'A fire door only works closed. Wedged open, it lets smoke and fire into the escape route and the next compartment.',
+      rule: 'Keep fire doors closed and latching with a closer; if they must stand open, use listed hold-open devices that release on smoke detection or fire alarm. Never wedge or tie them open.',
+      ref: 'NFPA 80 (fire doors); IBC §716; NFPA 101 §7.2.1.8.' },
+    { id: 'exitblock', d: 'F', title: 'Exit route blocked by storage', calcs: ['egress'],
+      bad: '<path d="M10 40H200M10 110H200" class="pf-wallc"/><rect x="200" y="50" width="10" height="50" class="pf-door"/><rect x="190" y="26" width="30" height="10" class="pf-exit"/>' + PF_T(205, 22, 'EXIT', 'pf-tg', 'middle') + '<rect x="110" y="48" width="40" height="34" class="pf-box"/><rect x="130" y="76" width="34" height="30" class="pf-box"/>' + PF_F('M20 75H100') + PF_X(140, 76, 22) + PF_T(66, 132, 'boxes in the corridor', 'pf-tb', 'middle') + PF_T(66, 144, 'block the way out', 'pf-tb', 'middle'),
+      badCap: 'Stored goods narrow and block the exit corridor.',
+      good: '<path d="M10 40H200M10 110H200" class="pf-wallc"/><rect x="200" y="50" width="10" height="50" class="pf-door"/><rect x="190" y="26" width="30" height="10" class="pf-exit"/>' + PF_T(205, 22, 'EXIT', 'pf-tg', 'middle') + PF_F('M20 75H192') + PF_T(100, 132, 'clear full width, lit,', 'pf-tg', 'middle') + PF_T(100, 144, 'door opens with travel', 'pf-tg', 'middle'),
+      goodCap: 'A clear corridor, lit exit sign, door opening in the direction of travel.',
+      why: 'In smoke and darkness people follow the corridor to the exit. Anything stored in it slows them, trips them or blocks the way completely.',
+      rule: 'Keep the full required width of exit routes free of storage and obstructions; exit doors unlocked from the inside without a key; exit signs and emergency lighting working.',
+      ref: 'IBC §1003.6 (means of egress continuity); NFPA 101 §7.1.10 (means of egress reliability).' },
+    { id: 'fpvalve', d: 'F', title: 'Butterfly valve in the fire pump suction', calcs: ['firepump'],
+      bad: PF_P('M10 90H166', 'pf-water') + PF_PUMP + PF_BFV(146, 90) + PF_T(146, 74, 'butterfly', 'pf-t', 'middle') + PF_X(146, 90, 16) + PF_T(70, 40, 'disc in the flow just', 'pf-tb', 'middle') + PF_T(70, 52, 'before the pump:', 'pf-tb', 'middle') + PF_T(70, 64, 'turbulence, cavitation', 'pf-tb', 'middle'),
+      badCap: 'A butterfly valve sits right on the suction flange.',
+      good: PF_P('M10 90H166', 'pf-water') + PF_PUMP + PF_VLV(40, 90) + '<path d="M40 84V66M32 66H48" class="pf-thin"/>' + PF_T(40, 58, 'OS&Y gate', 'pf-tg', 'middle') + PF_DIM(48, 116, 166, 116, '', 0, 0) + PF_T(106, 130, 'no other valve within 15 m', 'pf-tg', 'middle') + PF_T(106, 142, '(50 ft) of the suction flange', 'pf-tg', 'middle'),
+      goodCap: 'Only a listed OS&Y gate valve near the suction.',
+      why: 'A butterfly disc sits in the water stream. Close to the pump it disturbs the flow into the impeller, so the pump can cavitate and lose capacity when it is needed most.',
+      rule: 'Use only a listed OS&Y gate valve in the fire pump suction pipe within 15 m (50 ft) of the suction flange; butterfly valves are allowed on the discharge side.',
+      ref: 'NFPA 20 (suction pipe and fittings — valves).' },
+    { id: 'ngbond', d: 'E', title: 'Neutral bonded to ground in a sub-panel', calcs: ['pls', 'egc'],
+      bad: PF_SUB + '<path d="M106 85H134" class="pf-bond"/>' + PF_X(120, 85, 14) + PF_T(10, 60, 'neutral', 'pf-tb') + PF_T(10, 72, 'current on', 'pf-tb') + PF_T(10, 84, 'ground and', 'pf-tb') + PF_T(10, 96, 'metal parts', 'pf-tb'),
+      badCap: 'A bonding strap joins the neutral and ground bars.',
+      good: PF_SUB + PF_T(206, 60, 'bars kept', 'pf-tg', 'middle') + PF_T(206, 72, 'separate;', 'pf-tg', 'middle') + PF_T(206, 84, 'bond only', 'pf-tg', 'middle') + PF_T(206, 96, 'at service', 'pf-tg', 'middle'),
+      goodCap: 'Neutral isolated, ground bonded to the enclosure — bond only at the service.',
+      why: 'Bonding neutral to ground downstream of the service puts normal neutral current onto the grounding conductors, conduits and metal enclosures. It makes shock and fire risks, upsets RCD/GFCI protection and creates electrical noise.',
+      rule: 'Make the neutral-to-ground bond only at the service disconnect (or a separately derived system). In sub-panels, isolate the neutral bar and bond the equipment grounding bar to the enclosure.',
+      ref: 'NEC §250.24(A)(5) and §250.142(B); IEC 60364-5-54.' },
+    { id: 'daisychain', d: 'E', title: 'Power strips daisy-chained to a heater', calcs: ['elec'],
+      bad: '<rect x="14" y="40" width="16" height="22" rx="2" class="pf-outlet"/><path d="M30 51H50" class="pf-cable-thin"/><rect x="50" y="46" width="50" height="10" rx="2" class="pf-box"/><path d="M100 51H120" class="pf-cable-thin"/><rect x="120" y="46" width="50" height="10" rx="2" class="pf-box"/><path d="M170 51Q190 51 190 80" class="pf-cable-thin"/><rect x="170" y="80" width="44" height="40" rx="4" class="pf-ext"/>' + PF_T(192, 136, 'heater', 'pf-t', 'middle') + PF_X(145, 51, 16) + PF_T(14, 96, 'strip into strip:', 'pf-tb') + PF_T(14, 108, 'overloaded,', 'pf-tb') + PF_T(14, 120, 'overheats', 'pf-tb'),
+      badCap: 'One power strip plugged into another, feeding a heater.',
+      good: '<rect x="14" y="40" width="16" height="22" rx="2" class="pf-outlet"/><path d="M30 51Q190 51 190 80" class="pf-cable-thick"/><rect x="170" y="80" width="44" height="40" rx="4" class="pf-ext"/>' + PF_T(192, 136, 'heater', 'pf-t', 'middle') + PF_T(14, 96, 'heavy loads straight', 'pf-tg') + PF_T(14, 108, 'into a wall receptacle', 'pf-tg'),
+      goodCap: 'High-load appliances plugged directly into a fixed receptacle.',
+      why: 'A strip is rated for the current of one receptacle. Chaining strips, or running heaters and kettles from them, overloads the cords and contacts — a common cause of electrical fires.',
+      rule: 'Plug relocatable power taps directly into a permanently installed receptacle, never into another strip or extension cord; do not use them for heaters or other high loads, or as a substitute for fixed wiring.',
+      ref: 'NEC §400.12 (flexible cords not a substitute for fixed wiring); IFC (relocatable power taps); UL 1363.' },
+    { id: 'breakerwire', d: 'E', title: 'Breaker larger than the wire can carry', calcs: ['cable', 'elec'],
+      bad: '<rect x="20" y="40" width="40" height="60" rx="3" class="pf-panel"/>' + PF_T(40, 74, '30 A', 'pf-tb', 'middle') + '<path d="M60 70H220" class="pf-cable-hot"/>' + PF_T(140, 60, '14 AWG / 2.0 mm²', 'pf-t', 'middle') + PF_X(140, 70, 16) + PF_T(140, 104, 'the wire overheats before', 'pf-tb', 'middle') + PF_T(140, 116, 'the breaker trips', 'pf-tb', 'middle'),
+      badCap: 'A 30 A breaker protecting a 15 A wire.',
+      good: '<rect x="20" y="40" width="40" height="60" rx="3" class="pf-panel"/>' + PF_T(40, 74, '15 A', 'pf-tg', 'middle') + '<path d="M60 70H220" class="pf-cable-thin"/>' + PF_T(140, 60, '14 AWG / 2.0 mm²', 'pf-t', 'middle') + PF_T(140, 104, 'breaker matched to the wire:', 'pf-tg', 'middle') + PF_T(140, 116, '15 A · 14 AWG, 20 A · 12 AWG', 'pf-tg', 'middle'),
+      goodCap: 'The breaker rating suits the conductor.',
+      why: 'The breaker protects the wire. If it is larger than the wire\'s ampacity, an overload heats the insulation until it fails, long before the breaker trips — often after someone "fixed" nuisance tripping.',
+      rule: 'Size overcurrent protection to the conductor ampacity after derating: copper 14 AWG at 15 A, 12 AWG at 20 A, 10 AWG at 30 A unless the code allows otherwise (motor circuits follow their own rules).',
+      ref: 'NEC §240.4 and §240.4(D) (small conductors); IEC 60364-4-43.' },
+    { id: 'txvbulb', d: 'R', title: 'Expansion valve bulb on the bottom of the line', calcs: ['shsc', 'evap'],
+      bad: '<circle cx="120" cy="70" r="36" class="pf-tube"/><ellipse cx="120" cy="98" rx="22" ry="4" class="pf-oil"/><rect x="108" y="108" width="24" height="10" rx="4" class="pf-bulb"/>' + PF_X(120, 113, 16) + PF_T(120, 20, 'bulb at 6 o\'clock, in the oil:', 'pf-tb', 'middle') + PF_T(120, 140, 'wrong superheat, hunting', 'pf-tb', 'middle'),
+      badCap: 'The sensing bulb sits under the suction line, in the oil film.',
+      good: '<circle cx="120" cy="70" r="36" class="pf-tube"/><rect x="148" y="88" width="24" height="10" rx="4" class="pf-bulb" transform="rotate(-40 160 93)"/><path d="M146 102a34 34 0 0 0 14-36" class="pf-ins-band"/>' + PF_OK(160, 93, 15) + PF_T(120, 20, '4 or 8 o\'clock on ⅞ in +,', 'pf-tg', 'middle') + PF_T(120, 140, 'top on smaller; clamped, insulated', 'pf-tg', 'middle'),
+      goodCap: 'Bulb at 4 or 8 o\'clock (top on small lines), clamped and insulated.',
+      why: 'The TXV feeds refrigerant by the temperature its bulb feels. On the bottom of the line it reads the oil film; uninsulated it reads the room. Either way the valve over- or under-feeds and hunts.',
+      rule: 'Mount the bulb on a horizontal suction line close to the evaporator outlet, ahead of any trap — at 12 o\'clock on lines under ⅞ in, at 4 or 8 o\'clock on larger lines — clamp it tight on clean copper and insulate it.',
+      ref: 'Expansion-valve manufacturer guidance (e.g. Sporlan Bulletin 10-11); ASHRAE Handbook—Refrigeration Ch. 11.' },
+    { id: 'flarewall', d: 'R', title: 'Flare joint sealed inside a wall', calcs: ['refpipe', 'refsafe'],
+      bad: '<rect x="90" y="10" width="40" height="132" class="pf-box"/>' + PF_P('M10 75H230', 'pf-rfg') + '<rect x="104" y="68" width="12" height="14" rx="2" class="pf-valve"/><path d="M116 64q6-6 10 0M116 86q6 6 10 0" class="pf-leak"/>' + PF_X(110, 75, 16) + PF_T(184, 112, 'joint buried in', 'pf-tb', 'middle') + PF_T(184, 124, 'the wall: a leak', 'pf-tb', 'middle') + PF_T(184, 136, 'cannot be found', 'pf-tb', 'middle'),
+      badCap: 'A flare connection plastered into the wall.',
+      good: '<rect x="90" y="10" width="40" height="132" class="pf-box"/>' + PF_P('M10 75H230', 'pf-rfg') + '<rect x="156" y="68" width="12" height="14" rx="2" class="pf-valve"/>' + PF_OK(162, 75, 14) + PF_T(184, 112, 'brazed through the', 'pf-tg', 'middle') + PF_T(184, 124, 'wall; flares where', 'pf-tg', 'middle') + PF_T(184, 136, 'they can be checked', 'pf-tg', 'middle'),
+      goodCap: 'Continuous or brazed pipe through the wall; flare joints left accessible.',
+      why: 'Flare joints are the most common leak point in split systems, especially if not torqued correctly. Buried in a wall, a leak cannot be traced or repaired, and with flammable refrigerants it is also a safety issue.',
+      rule: 'Keep mechanical (flare) joints accessible for leak testing, tighten them to the manufacturer\'s torque with refrigerant oil on the flare, and braze joints that must be concealed. Follow IEC 60335-2-40 limits on indoor joints for flammable refrigerants.',
+      ref: 'Split / VRF installation manuals; IEC 60335-2-40 and ISO 5149 (refrigerant joints); ASHRAE 15.' },
+    { id: 'frzdrain', d: 'R', title: 'Freezer drain line without heat tape', calcs: ['evap', 'coldroom'],
+      bad: PF_FRZ + PF_P('M120 52V100H200V140', 'pf-water') + '<rect x="132" y="94" width="26" height="12" rx="3" class="pf-ice"/>' + PF_X(145, 100, 16) + PF_T(14, 70, 'drain freezes:', 'pf-tb') + PF_T(14, 82, 'defrost water', 'pf-tb') + PF_T(14, 94, 'floods the pan', 'pf-tb'),
+      badCap: 'A plain drain line through the freezer space.',
+      good: PF_FRZ + PF_P('M120 52V100H200V140', 'pf-water') + '<path d="M120 56V100H170" class="pf-heat"/>' + PF_P('M200 120a8 8 0 0 0 16 0', 'pf-water') + PF_T(14, 70, 'heat-traced and', 'pf-tg') + PF_T(14, 82, 'insulated inside;', 'pf-tg') + PF_T(14, 94, 'trap outside', 'pf-tg') + PF_OK(206, 124, 11),
+      goodCap: 'Heat tape and insulation inside, trap outside the freezer.',
+      why: 'Below 0 °C the defrost water freezes in the drain line. The next defrost has nowhere to go: the pan overflows, ice builds on the coil and floor, and the unit loses capacity.',
+      rule: 'In freezers, heat-trace and insulate the drain line (and pan) inside the cold space, keep it short and steep (at least 2 % / ¼ in per ft), and place the trap outside the freezer in a warm space.',
+      ref: 'Unit-cooler installation manuals; ASHRAE Handbook—Refrigeration Ch. 24.' }
+  ];
+  PITFALLS = PITFALLS.concat(PF_MORE2);
+  // Fourth set of drawing parts: water closet (plan), panel bars, extinguisher label.
+  var PF_WC = function (x, y) { return '<rect x="' + (x - 14) + '" y="' + y + '" width="28" height="10" rx="2" class="pf-box"/><ellipse cx="' + x + '" cy="' + (y + 26) + '" rx="11" ry="15" class="pf-box"/>'; };
+  var PF_PH = function (hs) { return hs.map(function (v, i) { var x = 70 + i * 40, hgt = v * 1.1; return '<rect x="' + x + '" y="' + (120 - hgt) + '" width="24" height="' + hgt + '" class="pf-phase"/>' + PF_T(x + 12, 134, 'L' + (i + 1), 'pf-t', 'middle') + PF_T(x + 12, 114 - hgt, v + ' A', 'pf-t', 'middle'); }).join('') + '<path d="M60 120H200" class="pf-thin"/>'; };
+  var PF_PLEN = '<rect x="10" y="6" width="220" height="10" class="pf-slab"/><rect x="10" y="78" width="220" height="6" class="pf-ceiling"/>' + PF_T(14, 30, 'return-air plenum', 'pf-t');
+  var PF_MORE3 = [
+    { id: 'kitchenmua', d: 'M', title: 'Kitchen hood with no make-up air', calcs: ['mua', 'exh'],
+      bad: '<rect x="10" y="20" width="220" height="120" class="pf-box"/><path d="M20 20L30 44H86L96 20Z" class="pf-box"/>' + PF_D('M48 2H68V20H48Z') + PF_F('M58 18V4') + '<rect x="224" y="80" width="6" height="60" class="pf-door"/><path d="M238 112H214" class="pf-hotflow" marker-end="url(#arr-mini)"/>' + PF_X(220, 112, 13) + PF_T(124, 78, 'no make-up air:', 'pf-tb', 'middle') + PF_T(124, 90, 'negative pressure,', 'pf-tb', 'middle') + PF_T(124, 102, 'doors slam, smoke', 'pf-tb', 'middle') + PF_T(124, 114, 'escapes the hood', 'pf-tb', 'middle'),
+      badCap: 'The hood exhausts but nothing replaces the air.',
+      good: '<rect x="10" y="20" width="220" height="120" class="pf-box"/><path d="M20 20L30 44H86L96 20Z" class="pf-box"/>' + PF_D('M48 2H68V20H48Z') + PF_F('M58 18V4') + '<rect x="110" y="20" width="34" height="6" class="pf-sup"/>' + PF_F('M127 28V56') + PF_OK(127, 40, 12) + PF_T(124, 84, 'make-up air about equal', 'pf-tg', 'middle') + PF_T(124, 96, 'to the exhaust, interlocked', 'pf-tg', 'middle') + PF_T(124, 108, 'with the hood fan', 'pf-tg', 'middle'),
+      goodCap: 'Make-up air supplied near the hood and interlocked with its fan.',
+      why: 'A kitchen hood moves a lot of air. Without make-up air the kitchen goes strongly negative: the hood cannot reach its flow, smoke and heat spill out, doors are hard to open, and gas appliances can backdraft.',
+      rule: 'Supply make-up air about equal to the hood exhaust (part directly near the hood, part transferred from the dining area), tempered as needed and interlocked so it runs whenever the exhaust runs.',
+      ref: 'IMC §508 (commercial kitchen make-up air); ASHRAE Handbook—HVAC Applications Ch. 34 (kitchen ventilation).' },
+    { id: 'gasvent', d: 'M', title: 'Gas vent connector sloping down to the chimney', calcs: ['fuel'],
+      bad: '<rect x="30" y="40" width="60" height="96" rx="6" class="pf-box"/>' + PF_T(60, 90, 'gas', 'pf-t', 'middle') + PF_T(60, 102, 'appliance', 'pf-t', 'middle') + '<rect x="198" y="4" width="20" height="136" class="pf-box"/><path d="M60 40V20L198 38" class="pf-flue"/><path d="M40 30q4-8 8 0M30 36q4-8 8 0" class="pf-leak"/>' + PF_X(130, 30, 14) + PF_T(130, 66, 'slopes down to the flue:', 'pf-tb', 'middle') + PF_T(130, 78, 'gases spill back (CO)', 'pf-tb', 'middle'),
+      badCap: 'The connector falls toward the chimney.',
+      good: '<rect x="30" y="40" width="60" height="96" rx="6" class="pf-box"/>' + PF_T(60, 90, 'gas', 'pf-t', 'middle') + PF_T(60, 102, 'appliance', 'pf-t', 'middle') + '<rect x="198" y="4" width="20" height="136" class="pf-box"/><path d="M60 40V30L198 10" class="pf-flue"/>' + PF_F('M70 32L188 16') + PF_T(130, 60, 'rises ≥ 21 mm per m', 'pf-tg', 'middle') + PF_T(130, 72, '(¼ in per ft), no dips', 'pf-tg', 'middle'),
+      goodCap: 'The connector rises all the way to the chimney.',
+      why: 'Flue gases rise because they are hot. A connector that sags or falls toward the chimney loses draft, so the gases spill out at the draft hood — carbon monoxide in the room.',
+      rule: 'Run vent connectors as short and direct as possible, with no dips or sags, rising toward the chimney or vent at least 21 mm per metre (¼ in per ft), and within the maximum horizontal length for the appliance.',
+      ref: 'NFPA 54 / IFGC Ch. 5 (venting of appliances — vent connectors).' },
+    { id: 'svcclear', d: 'M', title: 'No service clearance in front of a unit', calcs: ['fsup', 'ffa'],
+      bad: '<rect x="40" y="30" width="120" height="60" class="pf-box"/>' + PF_T(100, 64, 'AHU / FCU', 'pf-t', 'middle') + '<path d="M60 90V96M140 90V96" class="pf-thin"/><path d="M20 100H220" class="pf-wallc"/>' + PF_X(100, 96, 16) + PF_T(120, 124, 'filter and coil cannot', 'pf-tb', 'middle') + PF_T(120, 136, 'be pulled out', 'pf-tb', 'middle') + PF_T(20, 20, 'PLAN', 'pf-t'),
+      badCap: 'A wall right against the access side.',
+      good: '<rect x="40" y="30" width="120" height="60" class="pf-box"/>' + PF_T(100, 64, 'AHU / FCU', 'pf-t', 'middle') + '<rect x="40" y="90" width="120" height="44" class="pf-clear"/><path d="M20 138H220" class="pf-wallc"/>' + PF_DIM(176, 92, 176, 134, '', 0, 0) + PF_T(182, 110, '≥ 762 mm', 'pf-tg') + PF_T(182, 122, '(30 in)', 'pf-tg') + PF_T(20, 20, 'PLAN', 'pf-t'),
+      goodCap: 'A level, clear working space on the service side.',
+      why: 'Equipment that cannot be reached is not maintained. Filters stay dirty, coils foul and drains block, and a simple service visit turns into demolition.',
+      rule: 'Keep a level working space at least 762 × 762 mm (30 × 30 in) in front of the control and service side, room to withdraw filters, coils and fans, and access that does not require removing permanent construction.',
+      ref: 'IMC §306 (access and service space); manufacturer clearances.' },
+    { id: 'ductvel', d: 'M', title: 'Duct sized too small — and noisy', calcs: ['dvel', 'duct', 'eqf'],
+      bad: '<path d="M10 140H230" class="pf-thin"/>' + PF_D('M10 20H230V34H10Z') + '<path d="M20 27H210" class="pf-flow" style="animation-duration:.3s" marker-end="url(#arr-mini)"/><path d="M90 44q6 8 0 16M104 44q10 12 0 24M118 44q14 16 0 32" class="pf-leak"/>' + PF_MAN(150, 100) + PF_X(104, 27, 14) + PF_T(14, 66, 'high velocity:', 'pf-tb') + PF_T(14, 78, 'roar and whistle', 'pf-tb') + PF_T(14, 90, 'in the room', 'pf-tb'),
+      badCap: 'A small duct pushing air fast over an occupied room.',
+      good: '<path d="M10 140H230" class="pf-thin"/>' + PF_D('M10 14H230V48H10Z') + PF_F('M20 31H210') + PF_MAN(150, 100) + PF_T(14, 70, 'about 5–7.5 m/s in mains,', 'pf-tg') + PF_T(14, 82, '2.5–3.5 m/s at runouts', 'pf-tg') + PF_T(14, 94, 'over quiet rooms', 'pf-tg'),
+      goodCap: 'A larger duct at moderate velocity.',
+      why: 'Duct noise rises steeply with velocity (roughly the 5th power for generated noise). A duct sized only for space saving can make an office or bedroom miss its NC target by a wide margin.',
+      rule: 'Limit velocity by location and noise criterion — as a guide about 5–7.5 m/s (1,000–1,500 fpm) in mains above ceilings of offices and 2.5–3.5 m/s (500–700 fpm) in final runouts to quiet rooms — and check with the NC tables.',
+      ref: 'ASHRAE Handbook—HVAC Applications Ch. 49 (duct velocity guidelines); SMACNA HVAC Systems Duct Design.' },
+    { id: 'negbldg', d: 'M', title: 'Building pulled negative by its exhaust', calcs: ['bal', 'oa'],
+      bad: '<path d="M20 50L120 14L220 50V140H20Z" class="pf-box"/>' + PF_F('M70 60V30') + PF_F('M170 60V30') + PF_T(70, 72, 'EX', 'pf-t', 'middle') + PF_T(170, 72, 'EX', 'pf-t', 'middle') + '<path d="M2 110H24M238 110H216M2 128H24" class="pf-hotflow" marker-end="url(#arr-mini)"/>' + PF_T(120, 96, 'exhaust > outdoor air:', 'pf-tb', 'middle') + PF_T(120, 108, 'humid, dusty air leaks', 'pf-tb', 'middle') + PF_T(120, 120, 'in at every crack', 'pf-tb', 'middle'),
+      badCap: 'More air is exhausted than is brought in.',
+      good: '<path d="M20 50L120 14L220 50V140H20Z" class="pf-box"/>' + PF_F('M70 60V30') + PF_F('M170 60V30') + PF_T(70, 72, 'EX', 'pf-t', 'middle') + PF_T(170, 72, 'EX', 'pf-t', 'middle') + '<rect x="104" y="60" width="32" height="12" class="pf-int"/>' + PF_F('M120 74V92') + PF_T(120, 56, 'OA', 'pf-t', 'middle') + PF_T(120, 112, 'outdoor air slightly', 'pf-tg', 'middle') + PF_T(120, 124, 'more than exhaust', 'pf-tg', 'middle'),
+      goodCap: 'Outdoor air slightly exceeds exhaust — a small positive pressure.',
+      why: 'Air removed by exhaust is replaced from somewhere. If the system does not bring it in, it leaks through walls, doors and the envelope — unfiltered, untreated and, in humid climates, wet enough to cause condensation and mould inside walls.',
+      rule: 'Balance the building so outdoor air exceeds exhaust by a small margin (slightly positive, a few pascals) in humid climates, and check the balance at each operating mode, including kitchen and toilet fans.',
+      ref: 'ASHRAE 62.1 §5.9 (building pressurization); ASHRAE Handbook—Fundamentals Ch. 16.' },
+    { id: 'trapprimer', d: 'P', title: 'Floor drain with no trap seal protection', calcs: ['dfu'],
+      bad: '<path d="M10 40H230" class="pf-thin"/><rect x="100" y="36" width="40" height="6" class="pf-plug"/>' + PF_P('M120 42V80a14 14 0 0 0 28 0V72H230', 'pf-drain') + '<path d="M122 40q6-10 12 0M132 30q6-10 12 0" class="pf-leak"/>' + PF_X(134, 90, 16) + PF_T(14, 104, 'seldom used:', 'pf-tb') + PF_T(14, 116, 'the trap dries out,', 'pf-tb') + PF_T(14, 128, 'sewer gas comes up', 'pf-tb'),
+      badCap: 'A floor drain that rarely gets water.',
+      good: '<path d="M10 40H230" class="pf-thin"/><rect x="100" y="36" width="40" height="6" class="pf-plug"/>' + PF_P('M120 42V80a14 14 0 0 0 28 0V72H230', 'pf-drain') + '<path d="M122 84a12 12 0 0 0 24 0" class="pf-seal"/>' + PF_P('M40 20V60H110', 'pf-water') + PF_T(14, 16, 'trap primer', 'pf-tg') + PF_OK(134, 90, 14) + PF_T(14, 116, 'primer or seal', 'pf-tg') + PF_T(14, 128, 'device keeps it wet', 'pf-tg'),
+      goodCap: 'A trap primer (or barrier device) keeps the seal.',
+      why: 'The water in a trap is the only thing stopping sewer gas. In floor drains that rarely receive water, it evaporates within weeks, and the smell — and vermin — come straight up.',
+      rule: 'Protect the trap seal of floor drains and other traps subject to evaporation with a trap primer, a deep-seal trap or a listed barrier-type trap seal device.',
+      ref: 'IPC §1002.4 (trap seals — trap seal protection); ASSE 1018 / 1044 / 1072.' },
+    { id: 'rpzpit', d: 'P', title: 'Backflow preventer installed in a pit', calcs: ['wsfu'],
+      bad: '<path d="M10 50H70M170 50H230" class="pf-thin"/><path d="M70 50V140H170V50" class="pf-wallc"/><rect x="72" y="104" width="96" height="34" class="pf-pool"/>' + PF_P('M10 92H230', 'pf-water') + '<rect x="100" y="82" width="40" height="20" rx="3" class="pf-valve"/>' + PF_X(120, 104, 18) + PF_T(120, 20, 'pit floods over the relief', 'pf-tb', 'middle') + PF_T(120, 32, 'port: a path for backflow', 'pf-tb', 'middle'),
+      badCap: 'The RPZ sits below ground where water collects.',
+      good: '<path d="M10 120H230" class="pf-thin"/>' + PF_P('M10 132H40V70H200V132H230', 'pf-water') + '<rect x="100" y="60" width="40" height="20" rx="3" class="pf-valve"/><path d="M120 80V96" class="pf-thin"/><path d="M108 96h24l-6 10h-12z" class="pf-box"/>' + PF_DIM(52, 82, 52, 119, '', 0, 0) + PF_T(58, 98, '≥ 300 mm', 'pf-tg') + PF_T(58, 110, '(12 in)', 'pf-tg') + PF_T(120, 30, 'above grade, drained,', 'pf-tg', 'middle') + PF_T(120, 42, 'accessible for testing', 'pf-tg', 'middle'),
+      goodCap: 'Above grade on a stand, with a drain under the relief port.',
+      why: 'A reduced-pressure-zone assembly protects the water supply by discharging through its relief port. Under water in a flooded pit, that port becomes an inlet for contaminated water.',
+      rule: 'Install RPZ assemblies above grade (not in pits or below the flood level), at a testable height — typically 300 mm–1.5 m (12 in–5 ft) — with a drain or air-gap funnel sized for the relief discharge and frost protection where needed.',
+      ref: 'IPC §608.14 (location of backflow preventers); local water-authority rules.' },
+    { id: 'roofvent', d: 'P', title: 'Vent cut off just above the roof', calcs: ['dfu'],
+      bad: '<path d="M10 90L230 60" class="pf-wallc"/><path d="M10 86L230 56" class="pf-snow"/>' + PF_P('M120 140V78', 'pf-drain') + PF_X(120, 74, 14) + PF_T(120, 22, 'too short: snow, leaves', 'pf-tb', 'middle') + PF_T(120, 34, 'or roof users block it', 'pf-tb', 'middle'),
+      badCap: 'The vent barely clears the roof surface.',
+      good: '<path d="M10 90L230 60" class="pf-wallc"/>' + PF_P('M120 140V30', 'pf-drain') + PF_DIM(136, 30, 136, 74, '', 0, 0) + PF_T(142, 44, '≥ 150 mm', 'pf-tg') + PF_T(142, 56, '(2.1 m on a', 'pf-tg') + PF_T(142, 68, 'used roof)', 'pf-tg') + PF_OK(120, 30, 10),
+      goodCap: 'Extended above the roof by the code height.',
+      why: 'A vent that barely clears the roof is blocked by snow, ice, debris or a roof deck and releases sewer gas where people are; the traps it protects then siphon.',
+      rule: 'Extend vents at least 150 mm (6 in) above the roof — 2.1 m (7 ft) on roofs used for other purposes — and more in snow or frost areas as the local code requires, away from doors, windows and intakes.',
+      ref: 'IPC §903.1 (roof extension) and §903.2 (frost closure).' },
+    { id: 'ejector', d: 'P', title: 'Sewage ejector without check and isolation valves', calcs: ['drain'],
+      bad: '<path d="M10 50H230" class="pf-thin"/><rect x="60" y="64" width="80" height="76" class="pf-box"/><rect x="84" y="112" width="30" height="24" rx="4" class="pf-box"/>' + PF_P('M100 112V30H220', 'pf-drain') + PF_F('M108 40V100') + PF_X(100, 70, 14) + PF_T(178, 80, 'water falls back', 'pf-tb', 'middle') + PF_T(178, 92, 'after each run:', 'pf-tb', 'middle') + PF_T(178, 104, 'short-cycling', 'pf-tb', 'middle'),
+      badCap: 'A plain discharge pipe and an unvented, unsealed basin.',
+      good: '<path d="M10 50H230" class="pf-thin"/><rect x="60" y="64" width="80" height="76" class="pf-box"/><rect x="84" y="112" width="30" height="24" rx="4" class="pf-box"/>' + PF_P('M100 112V30H220', 'pf-drain') + PF_VLV(100, 82) + PF_VLV(150, 30) + PF_P('M126 64V10', 'pf-vent') + PF_T(108, 86, 'check', 'pf-tg') + PF_T(150, 46, 'gate', 'pf-tg', 'middle') + PF_T(132, 14, 'vent', 'pf-tg') + PF_T(178, 98, 'sealed lid,', 'pf-tg', 'middle') + PF_T(178, 110, 'alarm', 'pf-tg', 'middle'),
+      goodCap: 'Check valve and full-open valve on the discharge, sealed and vented basin.',
+      why: 'Without a check valve the column of sewage falls back into the pit every cycle, so the pump runs far more often. Without an isolation valve it cannot be serviced, and an unsealed, unvented basin lets sewer gas into the building.',
+      rule: 'Fit a check valve and a full-open valve on each ejector discharge, a gas-tight lid, a vent to the outdoors, and a high-level alarm; size the pump for the discharge head and the drainage fixture units.',
+      ref: 'IPC §712 (sumps and ejectors).' },
+    { id: 'wcspace', d: 'P', title: 'Toilets set too close together', calcs: ['dfu'],
+      bad: '<path d="M14 14V140M14 14H226" class="pf-wallc"/>' + PF_WC(34, 18) + PF_WC(72, 18) + PF_X(52, 40, 22) + PF_T(140, 96, 'too tight to use', 'pf-tb', 'middle') + PF_T(140, 108, 'or clean; fails code', 'pf-tb', 'middle') + PF_T(200, 140, 'PLAN', 'pf-t'),
+      badCap: 'Water closets crammed against the wall and each other.',
+      good: '<path d="M14 14V140M14 14H226" class="pf-wallc"/>' + PF_WC(58, 18) + PF_WC(150, 18) + PF_DIM(15, 66, 58, 66, '', 0, 0) + PF_DIM(58, 80, 150, 80, '', 0, 0) + PF_T(36, 60, '381', 'pf-tg', 'middle') + PF_T(104, 94, '762 mm (30 in)', 'pf-tg', 'middle') + PF_T(104, 124, '≥ 381 mm (15 in) to a wall', 'pf-tg', 'middle') + PF_T(104, 136, '≥ 533 mm (21 in) in front', 'pf-tg', 'middle'),
+      goodCap: 'Centre-line clearances to walls and between fixtures.',
+      why: 'Fixtures squeezed together are uncomfortable, hard to clean and fail inspection — and moving a drain in a finished slab is expensive.',
+      rule: 'Keep water closet centre lines at least 381 mm (15 in) from side walls or partitions, 762 mm (30 in) between fixtures, with at least 533 mm (21 in) clear in front; accessible toilets need larger clearances.',
+      ref: 'IPC §405.3.1 (water closet clearances); ICC A117.1 / ADA for accessible toilets.' },
+    { id: 'sprheat', d: 'F', title: 'Ordinary-temperature sprinkler beside a heater', calcs: ['sprinkler'],
+      bad: PF_CEIL + PF_SPR(110) + '<circle cx="110" cy="30" r="3" class="pf-bulb-red"/><rect x="130" y="20" width="50" height="26" class="pf-box"/>' + PF_T(155, 37, 'heater', 'pf-t', 'middle') + '<path d="M126 34q-4-6 0-12M120 40q-4-6 0-12" class="pf-heatwave"/>' + PF_X(110, 30, 13) + PF_T(120, 80, 'hot air reaches the bulb:', 'pf-tb', 'middle') + PF_T(120, 92, 'it opens with no fire', 'pf-tb', 'middle'),
+      badCap: 'A 68 °C (155 °F) head right beside a unit heater.',
+      good: PF_CEIL + PF_SPR(60) + '<circle cx="60" cy="30" r="3" class="pf-bulb-green"/><rect x="130" y="20" width="50" height="26" class="pf-box"/>' + PF_T(155, 37, 'heater', 'pf-t', 'middle') + PF_DIM(66, 54, 130, 54, '', 0, 0) + PF_OK(60, 30, 11) + PF_T(120, 80, 'higher rating (intermediate)', 'pf-tg', 'middle') + PF_T(120, 92, 'or more distance, per NFPA 13', 'pf-tg', 'middle'),
+      goodCap: 'An intermediate-rated sprinkler, or one moved farther away.',
+      why: 'A sprinkler opens at its rated temperature, fire or not. Next to heaters, ovens, skylights or hot lights it can operate by itself and flood the space — or fatigue and fail early.',
+      rule: 'Choose the temperature rating for the maximum ceiling temperature and the distance to heat sources from the NFPA 13 tables — intermediate or high ratings near unit heaters, ovens, steam pipes and skylights.',
+      ref: 'NFPA 13 (temperature ratings and distances from heat sources).' },
+    { id: 'pullstation', d: 'F', title: 'Pull station too high and far from the exit', calcs: ['detect', 'egress'],
+      bad: PF_FLOOR + '<rect x="190" y="50" width="30" height="90" class="pf-door"/>' + PF_T(205, 44, 'exit', 'pf-t', 'middle') + '<rect x="40" y="20" width="16" height="20" rx="2" class="pf-pull"/>' + PF_X(48, 30, 16) + PF_T(116, 70, 'too high and', 'pf-tb', 'middle') + PF_T(116, 82, 'far from the door:', 'pf-tb', 'middle') + PF_T(116, 94, 'missed in an escape', 'pf-tb', 'middle'),
+      badCap: 'High on a wall, metres away from the exit.',
+      good: PF_FLOOR + '<rect x="190" y="50" width="30" height="90" class="pf-door"/>' + PF_T(205, 44, 'exit', 'pf-t', 'middle') + '<rect x="160" y="70" width="16" height="20" rx="2" class="pf-pull"/>' + PF_DIM(150, 82, 150, 139, '', 0, 0) + PF_T(144, 104, '1.07–1.22 m', 'pf-tg', 'end') + PF_T(144, 116, '(42–48 in)', 'pf-tg', 'end') + PF_T(70, 44, 'within 1.5 m (5 ft)', 'pf-tg', 'middle') + PF_T(70, 56, 'of each exit door', 'pf-tg', 'middle') + PF_OK(168, 80, 13),
+      goodCap: 'Beside the exit door, at the code height.',
+      why: 'People raise the alarm on their way out. A pull station that is not right at the exit, or out of reach, simply gets passed by.',
+      rule: 'Mount manual fire alarm boxes with the operable part 1.07–1.22 m (42–48 in) above the floor, within 1.5 m (5 ft) of each exit doorway on every floor, and no more than 61 m (200 ft) travel to the nearest one.',
+      ref: 'NFPA 72 Ch. 17 (manual fire alarm boxes); ADA reach ranges.' },
+    { id: 'strobe', d: 'F', title: 'Strobe mounted at the wrong height', calcs: ['detect'],
+      bad: PF_FLOOR + PF_CEIL + '<rect x="70" y="100" width="100" height="40" class="pf-box"/><rect x="110" y="104" width="14" height="10" rx="2" class="pf-strobe"/>' + PF_X(117, 109, 14) + PF_T(120, 50, 'low and behind furniture:', 'pf-tb', 'middle') + PF_T(120, 62, 'deaf occupants miss it', 'pf-tb', 'middle'),
+      badCap: 'A strobe low on the wall, hidden by furniture.',
+      good: PF_FLOOR + PF_CEIL + '<rect x="70" y="100" width="100" height="40" class="pf-box"/><rect x="110" y="40" width="14" height="10" rx="2" class="pf-strobe"/><path d="M104 38l-8-6M130 38l8-6M117 36v-8" class="pf-ray"/>' + PF_DIM(140, 50, 140, 139, '', 0, 0) + PF_T(146, 80, 'lens 2.03–', 'pf-tg') + PF_T(146, 92, '2.44 m', 'pf-tg') + PF_T(146, 104, '(80–96 in)', 'pf-tg') + PF_OK(117, 45, 12),
+      goodCap: 'The whole lens between 2.03 and 2.44 m above the floor.',
+      why: 'Visible alarms are for people who cannot hear the sounders. Mounted low or blocked, the flash is not seen across the room; too high, it is above the field of view.',
+      rule: 'Mount wall strobes with the entire lens between 2.03 and 2.44 m (80–96 in) above the floor (or within 150 mm of a lower ceiling), spaced for the room size and candela rating.',
+      ref: 'NFPA 72 Ch. 18 (visible notification appliance location); ADA.' },
+    { id: 'sprsupport', d: 'F', title: 'Things hung from the sprinkler pipe', calcs: ['fphang'],
+      bad: '<rect x="10" y="6" width="220" height="10" class="pf-slab"/><path d="M50 16V36M190 16V36" class="pf-thin"/><path d="M20 40Q120 62 220 40" class="pf-pipe pf-fire"/><path d="M90 50V80M150 50V70" class="pf-thin"/><rect x="74" y="80" width="32" height="10" class="pf-box"/><path d="M150 70q-10 10 0 20t0 20" class="pf-cable-thin"/>' + PF_X(120, 52, 16) + PF_T(120, 126, 'lights and cables hung from', 'pf-tb', 'middle') + PF_T(120, 138, 'the pipe: it sags and breaks', 'pf-tb', 'middle'),
+      badCap: 'A light and cables are tied to the sprinkler main.',
+      good: '<rect x="10" y="6" width="220" height="10" class="pf-slab"/><path d="M50 16V36M190 16V36" class="pf-thin"/><path d="M20 40H220" class="pf-pipe pf-fire"/><path d="M90 16V80M150 16V70" class="pf-thin"/><rect x="74" y="80" width="32" height="10" class="pf-box"/><path d="M150 70q-10 10 0 20t0 20" class="pf-cable-thin"/>' + PF_T(120, 126, 'every service on its own', 'pf-tg', 'middle') + PF_T(120, 138, 'hangers from the structure', 'pf-tg', 'middle'),
+      goodCap: 'Other services hang from the structure, not the sprinkler pipe.',
+      why: 'Sprinkler hangers are sized only for the water-filled pipe. Extra loads bend the pipe, loosen joints, misalign sprinklers and can pull the system down in a fire.',
+      rule: 'Do not use sprinkler piping or its hangers to support any non-system components — lights, ducts, cables, ceilings. Support those independently from the building structure.',
+      ref: 'NFPA 13 Ch. 17 (sprinkler piping not to support non-system components).' },
+    { id: 'drypitch', d: 'F', title: 'Dry-pipe system installed flat', calcs: ['sprhyd'],
+      bad: PF_CEIL + PF_P('M20 40H120Q140 52 160 40H220', 'pf-fire') + '<ellipse cx="140" cy="46" rx="12" ry="3" class="pf-ice"/>' + PF_X(140, 46, 15) + PF_T(120, 84, 'water trapped in the sag', 'pf-tb', 'middle') + PF_T(120, 96, 'freezes and bursts', 'pf-tb', 'middle') + PF_T(120, 108, 'the pipe', 'pf-tb', 'middle'),
+      badCap: 'A level dry-pipe branch with a low spot.',
+      good: PF_CEIL + PF_P('M20 30L220 50', 'pf-fire') + PF_VLV(220, 62) + PF_P('M220 50V56', 'pf-fire') + PF_T(214, 82, 'aux. drain', 'pf-tg', 'end') + PF_T(120, 104, 'pitched to drain: branch', 'pf-tg', 'middle') + PF_T(120, 116, '≥ 4 mm/m (½ in per 10 ft)', 'pf-tg', 'middle'),
+      goodCap: 'Pitched to drain, with auxiliary drains at low points.',
+      why: 'After a trip test or operation, water left in a dry system has to drain. Any sag holds it, and in an unheated space it freezes and splits the pipe or fitting.',
+      rule: 'Pitch dry-pipe and preaction piping to drain — branch lines at least 4 mm/m (½ in per 10 ft), mains 2 mm/m (¼ in per 10 ft), more in refrigerated areas — with auxiliary drains at every trapped section.',
+      ref: 'NFPA 13 (dry pipe systems — pitch and auxiliary drains); NFPA 25.' },
+    { id: 'extclass', d: 'F', title: 'Wrong extinguisher for the fire', calcs: ['fext'],
+      bad: '<rect x="150" y="30" width="60" height="80" class="pf-panel"/><path d="M178 50l-8 16h10l-8 16" class="pf-bolt"/>' + PF_EXT(40, 60) + PF_T(49, 120, 'WATER', 'pf-tb', 'middle') + '<path d="M62 70Q100 50 146 60" class="pf-hose"/>' + PF_X(148, 62, 14) + PF_T(120, 20, 'water on live electrics:', 'pf-tb', 'middle') + PF_T(120, 136, 'shock and spread', 'pf-tb', 'middle'),
+      badCap: 'A water extinguisher next to an electrical panel.',
+      good: '<rect x="150" y="30" width="60" height="80" class="pf-panel"/>' + PF_EXT(40, 60) + PF_T(49, 120, 'CO₂', 'pf-tg', 'middle') + PF_T(120, 20, 'class matched to the hazard:', 'pf-tg', 'middle') + PF_T(120, 136, 'C / CO₂ electrical, K fryers', 'pf-tg', 'middle'),
+      goodCap: 'A CO₂ or Class C-rated extinguisher by electrical equipment.',
+      why: 'Water conducts electricity and spreads burning oil. The wrong extinguisher can electrocute the user or turn a fryer fire into a fireball.',
+      rule: 'Select extinguishers by hazard class: A ordinary combustibles, B flammable liquids, C energized electrical (CO₂ or clean agent near equipment), D metals, K cooking oils; label the class and place them by the hazard.',
+      ref: 'NFPA 10 (classification, selection and distribution of extinguishers).' },
+    { id: 'plenumcable', d: 'E', title: 'Ordinary cable in a return-air plenum', calcs: ['conduit'],
+      bad: PF_PLEN + '<path d="M20 50H220M20 60H220" class="pf-cable-hot"/><path d="M60 44q8-14 16 0M120 44q8-14 16 0M180 44q8-14 16 0" class="pf-smoke"/>' + PF_X(130, 54, 18) + PF_T(120, 108, 'PVC cable burns with thick', 'pf-tb', 'middle') + PF_T(120, 120, 'smoke — spread by the return', 'pf-tb', 'middle'),
+      badCap: 'General-purpose cable laid loose in the ceiling return.',
+      good: PF_PLEN + '<path d="M20 50H220M20 60H220" class="pf-cable-thin"/>' + PF_T(120, 108, 'plenum-rated cable', 'pf-tg', 'middle') + PF_T(120, 120, '(CMP / CL2P) or metal conduit', 'pf-tg', 'middle') + PF_OK(130, 55, 14),
+      goodCap: 'Plenum-rated cable or cable in metal raceway.',
+      why: 'A ceiling used as a return plenum carries air back to the units — and with it, smoke from anything burning in it. Ordinary PVC-jacketed cable produces dense, toxic smoke that spreads through the building.',
+      rule: 'In spaces used for environmental air, use plenum-rated cables (CMP, CL2P, CMP-OF, etc.) or run cables in metal raceway; keep combustibles out of the plenum.',
+      ref: 'NEC §300.22(C) and Art. 800 / 725 (plenum cable); IMC §602.2 (materials in plenums).' },
+    { id: 'panelcloset', d: 'E', title: 'Panel in a clothes closet or bathroom', calcs: ['pls'],
+      bad: '<rect x="20" y="20" width="200" height="120" class="pf-box"/><rect x="40" y="30" width="18" height="40" class="pf-panel"/><path d="M80 34H200" class="pf-thin"/><path d="M96 34l-8 30h16zM130 34l-8 34h16zM164 34l-8 30h16z" class="pf-cloth"/>' + PF_X(49, 50, 16) + PF_T(120, 100, 'panel behind clothes:', 'pf-tb', 'middle') + PF_T(120, 112, 'fire load, no clear access', 'pf-tb', 'middle') + PF_T(14, 14, 'closet', 'pf-t'),
+      badCap: 'The panelboard is inside a clothes closet.',
+      good: '<rect x="20" y="20" width="200" height="120" class="pf-box"/><rect x="40" y="30" width="18" height="40" class="pf-panel"/><rect x="58" y="24" width="70" height="110" class="pf-clear"/>' + PF_T(170, 70, 'utility area', 'pf-tg', 'middle') + PF_T(170, 82, 'or hall,', 'pf-tg', 'middle') + PF_T(170, 94, 'clear space', 'pf-tg', 'middle') + PF_OK(49, 50, 15),
+      goodCap: 'In a utility space or hall with clear working space.',
+      why: 'Clothes and storage are fuel right next to the breakers, and they block the working space. Bathrooms add water to electrical equipment people must operate.',
+      rule: 'Do not locate overcurrent devices in clothes closets or near easily ignitable material, nor in bathrooms of dwellings; keep the required working space clear in front of the panel.',
+      ref: 'NEC §240.24(D) and (E); §110.26.' },
+    { id: 'alcu', d: 'E', title: 'Aluminium wire on a copper-only terminal', calcs: ['cable'],
+      bad: '<rect x="120" y="40" width="70" height="70" rx="4" class="pf-box"/>' + PF_T(155, 62, 'CU only', 'pf-t', 'middle') + '<path d="M10 80H140" class="pf-al-hot"/><circle cx="142" cy="80" r="8" class="pf-box"/>' + PF_X(142, 80, 16) + PF_T(62, 112, 'loosens, oxidizes,', 'pf-tb', 'middle') + PF_T(62, 124, 'overheats', 'pf-tb', 'middle') + PF_T(60, 70, 'aluminium', 'pf-t', 'middle'),
+      badCap: 'Aluminium conductor in a terminal rated for copper only.',
+      good: '<rect x="120" y="40" width="70" height="70" rx="4" class="pf-box"/>' + PF_T(155, 62, 'AL/CU', 'pf-tg', 'middle') + '<path d="M10 80H140" class="pf-al"/><circle cx="142" cy="80" r="8" class="pf-box"/>' + PF_OK(142, 80, 14) + PF_T(62, 112, 'AL/CU terminal,', 'pf-tg', 'middle') + PF_T(62, 124, 'antioxidant, torque', 'pf-tg', 'middle') + PF_T(60, 70, 'aluminium', 'pf-t', 'middle'),
+      goodCap: 'A terminal marked AL/CU, antioxidant compound, correct torque.',
+      why: 'Aluminium expands more than copper and forms an insulating oxide. In a copper-only terminal the joint loosens and heats with every load cycle until it burns.',
+      rule: 'Terminate aluminium conductors only on terminals marked AL/CU (CO/ALR for 15–20 A devices) or with listed connectors, use antioxidant where specified, and tighten to the marked torque.',
+      ref: 'NEC §110.14 (electrical connections) and §110.14(D) (torque); UL 486A-486B.' },
+    { id: 'phases', d: 'E', title: 'Single-phase loads piled on one phase', calcs: ['pls', 'elec'],
+      bad: PF_PH([80, 30, 20]) + PF_X(82, 60, 16) + PF_T(150, 24, 'L1 overloaded,', 'pf-tb') + PF_T(150, 36, 'neutral heavy,', 'pf-tb') + PF_T(150, 48, 'motors derate', 'pf-tb'),
+      badCap: 'Most circuits landed on the same phase.',
+      good: PF_PH([45, 42, 43]) + PF_T(150, 24, 'phases within', 'pf-tg') + PF_T(150, 36, 'about 10 %', 'pf-tg'),
+      goodCap: 'Circuits spread so the phase currents are close.',
+      why: 'An unbalanced panel overloads one phase while others idle, loads the neutral, and unbalances the voltage — and a few percent of voltage unbalance overheats three-phase motors.',
+      rule: 'Spread single-phase loads across the phases so the currents are within about 10 % of each other; size the feeder for the heaviest phase and watch neutral current with non-linear loads.',
+      ref: 'NEC Art. 220 (load calculation); NEMA MG 1 (motor derating for voltage unbalance).' },
+    { id: 'waterbond', d: 'E', title: 'Metal water pipe not bonded', calcs: ['egc'],
+      bad: '<rect x="150" y="30" width="50" height="70" class="pf-panel"/>' + PF_T(175, 24, 'service', 'pf-t', 'middle') + PF_P('M10 120H130V60', 'pf-cu') + '<path d="M120 90l-6 10h8l-6 10" class="pf-bolt"/>' + PF_X(130, 90, 14) + PF_T(70, 40, 'a fault can leave', 'pf-tb', 'middle') + PF_T(70, 52, 'the pipe live', 'pf-tb', 'middle'),
+      badCap: 'The metal water service has no bond to the electrical system.',
+      good: '<rect x="150" y="30" width="50" height="70" class="pf-panel"/>' + PF_T(175, 24, 'service', 'pf-t', 'middle') + PF_P('M10 120H130V60', 'pf-cu') + '<path d="M130 80H150" class="pf-bondok"/>' + PF_T(70, 40, 'bonding jumper to', 'pf-tg', 'middle') + PF_T(70, 52, 'the service ground', 'pf-tg', 'middle') + PF_OK(140, 80, 12),
+      goodCap: 'A bonding jumper from the water pipe to the service.',
+      why: 'If a live conductor touches a metal water pipe that is not bonded, the pipe and every tap become live with no path to trip the breaker.',
+      rule: 'Bond metal water piping (and other metal piping likely to become energized) to the service equipment enclosure, grounded conductor or grounding electrode conductor with a jumper sized to the code table.',
+      ref: 'NEC §250.104 (bonding of piping systems); IEC 60364-5-54 (protective bonding).' },
+    { id: 'weighcharge', d: 'R', title: 'Refrigerant charged by guesswork', calcs: ['refpipe', 'shsc'],
+      bad: '<rect x="40" y="40" width="40" height="80" rx="12" class="pf-cyl"/><path d="M60 40V24H150V60" class="pf-hose"/><rect x="140" y="60" width="70" height="50" class="pf-box"/>' + PF_T(175, 90, 'unit', 'pf-t', 'middle') + PF_T(60, 140, '?', 'pf-tb', 'middle') + PF_X(60, 80, 22) + PF_T(150, 132, 'over- or undercharged:', 'pf-tb', 'middle') + PF_T(150, 144, 'capacity and life suffer', 'pf-tb', 'middle'),
+      badCap: 'Charging "until it looks right" on the gauges.',
+      good: '<rect x="40" y="40" width="40" height="80" rx="12" class="pf-cyl"/><rect x="30" y="120" width="60" height="14" class="pf-scale-box"/>' + PF_T(60, 131, '2.35 kg', 'pf-tg', 'middle') + '<path d="M60 40V24H150V60" class="pf-hose"/><rect x="140" y="60" width="70" height="50" class="pf-box"/>' + PF_T(175, 90, 'unit', 'pf-t', 'middle') + PF_T(162, 126, 'weigh in the nameplate', 'pf-tg', 'middle') + PF_T(162, 138, '+ line-length charge', 'pf-tg', 'middle'),
+      goodCap: 'Weighed in on a scale, then checked by superheat or subcooling.',
+      why: 'Both over- and undercharge cut capacity and efficiency; overcharge can flood the compressor with liquid, undercharge overheats it. Gauge readings alone vary with the weather and airflow.',
+      rule: 'After evacuation, weigh in the nameplate charge plus the additional charge for the actual line length (charge blends as liquid), then confirm with superheat or subcooling against the manufacturer\'s chart.',
+      ref: 'Manufacturer installation manuals; ASHRAE Handbook—Refrigeration (system practices).' },
+    { id: 'suctpitch', d: 'R', title: 'Suction line sloping away from the compressor', calcs: ['refpipe'],
+      bad: '<rect x="10" y="90" width="50" height="40" class="pf-box"/>' + PF_T(35, 114, 'evap', 'pf-t', 'middle') + '<rect x="180" y="40" width="50" height="40" class="pf-box"/>' + PF_T(205, 64, 'comp.', 'pf-t', 'middle') + PF_P('M60 100H70L180 70', 'pf-rfg') + '<ellipse cx="100" cy="94" rx="10" ry="3" class="pf-oil"/>' + PF_F('M150 86L100 100') + PF_X(100, 94, 14) + PF_T(120, 145, 'oil runs back to the coil', 'pf-tb', 'middle'),
+      badCap: 'The horizontal run rises toward the compressor, so oil drains back.',
+      good: '<rect x="10" y="40" width="50" height="40" class="pf-box"/>' + PF_T(35, 64, 'evap', 'pf-t', 'middle') + '<rect x="180" y="90" width="50" height="40" class="pf-box"/>' + PF_T(205, 114, 'comp.', 'pf-t', 'middle') + PF_P('M60 60H70L180 100', 'pf-rfg') + PF_F('M80 70L170 102') + PF_T(120, 36, 'falls toward the compressor', 'pf-tg', 'middle') + PF_T(120, 145, 'about 1:200 (½ in per 10 ft)', 'pf-tg', 'middle'),
+      goodCap: 'Pitched down toward the compressor so oil returns with the gas.',
+      why: 'At low load the gas may not carry oil uphill. A horizontal suction line that slopes up toward the compressor lets oil collect in the line and the evaporator instead of returning.',
+      rule: 'Pitch horizontal suction (and discharge) lines down in the direction of flow toward the compressor, about 1:200 (½ in per 10 ft), and trap the foot of suction risers.',
+      ref: 'ASHRAE Handbook—Refrigeration Ch. 1 (refrigerant line sizing and oil return).' },
+    { id: 'drier', d: 'R', title: 'System opened without a new filter-drier', calcs: ['shsc'],
+      bad: PF_P('M10 75H230', 'pf-rfg') + '<rect x="96" y="62" width="48" height="26" rx="10" class="pf-drier-old"/>' + PF_T(120, 54, 'old drier', 'pf-t', 'middle') + '<circle cx="60" cy="72" r="2.5" class="pf-drop"/><circle cx="180" cy="78" r="2.5" class="pf-drop"/>' + PF_X(120, 75, 18) + PF_T(120, 116, 'saturated drier: moisture', 'pf-tb', 'middle') + PF_T(120, 128, 'and acid stay in the system', 'pf-tb', 'middle'),
+      badCap: 'The old filter-drier is reused after a repair.',
+      good: PF_P('M10 75H230', 'pf-rfg') + '<rect x="96" y="62" width="48" height="26" rx="10" class="pf-drier"/>' + PF_F('M104 75H136') + PF_T(120, 54, 'new drier', 'pf-tg', 'middle') + PF_T(120, 116, 'replace the liquid-line drier', 'pf-tg', 'middle') + PF_T(120, 128, 'whenever the system is opened', 'pf-tg', 'middle'),
+      goodCap: 'A new liquid-line filter-drier, flow arrow the right way.',
+      why: 'Opening a system lets in air and moisture; the old drier is already loaded and can release what it holds. Moisture and acid then attack the oil, motor windings and valves.',
+      rule: 'Fit a new liquid-line filter-drier (and suction filter after a burnout) every time the circuit is opened, in the flow direction marked, then evacuate and leak-test.',
+      ref: 'ASHRAE Handbook—Refrigeration (moisture and contaminant control); manufacturer service guidance.' },
+    { id: 'reliefvent', d: 'R', title: 'Freezer with no pressure-relief vent', calcs: ['coldroom'],
+      bad: '<path d="M30 20Q90 34 150 20V130Q90 116 30 130Z" class="pf-cold"/><path d="M30 20Q90 34 150 20M30 130Q90 116 150 130" class="pf-wallc"/><path d="M30 20V130M150 20V130" class="pf-wallc"/>' + PF_X(90, 27, 14) + PF_T(196, 60, 'panels pulled', 'pf-tb', 'middle') + PF_T(196, 72, 'in, door', 'pf-tb', 'middle') + PF_T(196, 84, 'sucked shut', 'pf-tb', 'middle'),
+      badCap: 'Cooling air contracts and pulls a vacuum on the room.',
+      good: '<rect x="30" y="20" width="120" height="110" class="pf-cold"/><path d="M30 20H150V130H30Z" class="pf-wallc"/><rect x="146" y="60" width="12" height="14" class="pf-valve"/>' + PF_OK(152, 67, 12) + PF_T(196, 60, 'heated', 'pf-tg', 'middle') + PF_T(196, 72, 'pressure', 'pf-tg', 'middle') + PF_T(196, 84, 'relief vent', 'pf-tg', 'middle'),
+      goodCap: 'A heated pressure-relief port balances the pressure.',
+      why: 'Warm air let in through the door cools and contracts, and defrost warms it again. A tight freezer then sits under vacuum or pressure: doors are hard to open, panels and seals are strained, and joints can fail.',
+      rule: 'Fit freezer and blast-freezer rooms with heated pressure-relief vents sized for the room volume and the door openings, as the panel or vent manufacturer specifies.',
+      ref: 'Cold-room panel and vent manufacturer guidance; ASHRAE Handbook—Refrigeration Ch. 23–24.' }
+  ];
+  PITFALLS = PITFALLS.concat(PF_MORE3);
+  // Fifth set of drawing parts: OS&Y valve (stem height shows open / closed), stove, wall receptacle box.
+  var PF_OSY = function (open) { var top = open ? 30 : 70; return PF_P('M10 110H230', 'pf-fire') + '<path d="M108 98L132 122V98L108 122Z" class="pf-valvesym"/><path d="M110 98V74H130V98" class="pf-thin"/><path d="M120 98V' + top + '" class="pf-stem"/><ellipse cx="120" cy="74" rx="16" ry="4" class="pf-box"/>'; };
+  var PF_STOVE = '<rect x="30" y="100" width="70" height="40" class="pf-box"/><path d="M38 100h20M70 100h20" class="pf-heatwave"/>';
+  var PF_MORE4 = [
+    { id: 'coilvel', d: 'M', title: 'Cooling coil sized for too high a face velocity', calcs: ['cool', 'ffa'],
+      bad: '<rect x="10" y="14" width="220" height="90" class="pf-box"/><rect x="100" y="20" width="16" height="72" class="pf-coilblk"/><rect x="92" y="94" width="32" height="6" class="pf-box"/><path d="M20 56H90" class="pf-flow" style="animation-duration:.3s" marker-end="url(#arr-mini)"/><circle cx="136" cy="46" r="2.5" class="pf-drop"/><circle cx="150" cy="62" r="2.5" class="pf-drop"/><circle cx="166" cy="50" r="2.5" class="pf-drop"/><circle cx="182" cy="66" r="2.5" class="pf-drop"/>' + PF_F('M124 56H210') + PF_X(158, 56, 18) + PF_T(120, 124, 'over 2.5 m/s (500 fpm):', 'pf-tb', 'middle') + PF_T(120, 136, 'water blown into the duct', 'pf-tb', 'middle'),
+      badCap: 'Condensate is torn off the coil and carried downstream.',
+      good: '<rect x="10" y="14" width="220" height="90" class="pf-box"/><rect x="100" y="20" width="16" height="72" class="pf-coilblk"/><rect x="92" y="94" width="32" height="6" class="pf-box"/><path d="M104 98v4M110 98v4" class="pf-drip"/>' + PF_F('M20 56H90') + PF_F('M124 56H210') + PF_T(120, 124, 'face velocity ≤ 2.5 m/s:', 'pf-tg', 'middle') + PF_T(120, 136, 'water stays in the pan', 'pf-tg', 'middle'),
+      goodCap: 'A larger coil face keeps the velocity down; water drains to the pan.',
+      why: 'Above about 2.5 m/s (500 fpm) air strips droplets off a wet coil. The water soaks filters and insulation downstream, rusts the casing and grows microbes in the ductwork.',
+      rule: 'Select cooling coils for a face velocity of about 2.5 m/s (500 fpm) or less (or fit moisture eliminators), with a drain pan that extends under the coil and its headers.',
+      ref: 'ASHRAE Handbook—HVAC Systems & Equipment (air-cooling and dehumidifying coils); ASHRAE 62.1 §5.11 (drain pans).' },
+    { id: 'dryerduct', d: 'M', title: 'Long plastic dryer duct', calcs: ['exh'],
+      bad: '<rect x="14" y="88" width="56" height="52" rx="4" class="pf-box"/>' + PF_T(42, 118, 'dryer', 'pf-t', 'middle') + '<path d="M42 88Q42 40 90 60T150 50Q190 40 180 90T220 60" class="pf-flex"/><ellipse cx="120" cy="58" rx="12" ry="4" class="pf-lint"/>' + PF_X(120, 58, 16) + PF_T(152, 124, 'long, crushed plastic flex:', 'pf-tb', 'middle') + PF_T(152, 136, 'lint builds up — fire risk', 'pf-tb', 'middle'),
+      badCap: 'Plastic foil duct snakes and sags across the ceiling.',
+      good: '<rect x="14" y="88" width="56" height="52" rx="4" class="pf-box"/>' + PF_T(42, 118, 'dryer', 'pf-t', 'middle') + PF_D('M36 88V40H214V54H50V88Z') + '<rect x="214" y="34" width="10" height="26" class="pf-box"/>' + PF_F('M44 80V48H208') + PF_T(140, 84, 'rigid metal, no screws in it,', 'pf-tg', 'middle') + PF_T(140, 96, '≤ 10.7 m less 1.5 m per 90°', 'pf-tg', 'middle'),
+      goodCap: 'Short, smooth rigid metal duct to an outdoor cap.',
+      why: 'Dryer exhaust is full of lint. Plastic or foil flex, long runs, sags and screws through the duct catch it, the airflow drops, and the hot, lint-packed duct becomes a common cause of house fires.',
+      rule: 'Use smooth rigid metal duct (100 mm / 4 in) fastened without screws protruding inside, no longer than 10.7 m (35 ft) minus 0.8 m per 45° and 1.5 m per 90° bend (or the dryer maker\'s limit), ending outdoors at a cap with a backdraft damper and no screen.',
+      ref: 'IMC §504 and IRC §M1502 (clothes dryer exhaust).' },
+    { id: 'vavinlet', d: 'M', title: 'Elbow right at a VAV box inlet', calcs: ['duct', 'dvel'],
+      bad: PF_D('M100 6H124V60H150V84H100Z') + '<rect x="150" y="54" width="70" height="36" class="pf-box"/><path d="M156 66v12M150 72h12" class="pf-thin"/>' + PF_F('M112 12V70H144') + PF_T(185, 76, 'VAV', 'pf-t', 'middle') + PF_X(152, 72, 13) + PF_T(14, 108, 'sensor sees swirl:', 'pf-tb') + PF_T(14, 120, 'wrong airflow,', 'pf-tb') + PF_T(14, 132, 'hunting damper', 'pf-tb'),
+      badCap: 'A square elbow sits directly on the inlet and its flow sensor.',
+      good: PF_D('M10 60H150V84H10Z') + '<rect x="150" y="54" width="70" height="36" class="pf-box"/><path d="M156 66v12M150 72h12" class="pf-thin"/>' + PF_F('M20 72H144') + PF_T(185, 76, 'VAV', 'pf-t', 'middle') + PF_DIM(50, 100, 150, 100, '', 0, 0) + PF_T(100, 114, '≥ 3 D straight inlet', 'pf-tg', 'middle'),
+      goodCap: 'Straight duct before the inlet lets the flow settle.',
+      why: 'The VAV box controls airflow from a pressure sensor at its inlet. Turbulence from an elbow or a flex bend makes the reading wrong, so the room gets too much or too little air and the damper hunts.',
+      rule: 'Give VAV and constant-volume terminals a straight, rigid inlet of at least 3 duct diameters (more if the manufacturer asks), the same size as the inlet collar; avoid flex and elbows right at the inlet.',
+      ref: 'Air-terminal manufacturer guidance; ASHRAE 130 (laboratory testing of air terminals).' },
+    { id: 'flatduct', d: 'M', title: 'Duct squashed to pass under a beam', calcs: ['dar', 'rcd'],
+      bad: '<rect x="90" y="6" width="60" height="40" class="pf-beam"/>' + PF_D('M10 34H80L90 58H150L160 34H230V80H10Z') + PF_F('M20 57H210') + PF_X(120, 68, 16) + PF_T(120, 104, 'squashed under the beam:', 'pf-tb', 'middle') + PF_T(120, 116, 'less area, more loss', 'pf-tb', 'middle') + PF_T(120, 128, 'and noise', 'pf-tb', 'middle'),
+      badCap: 'The duct depth is simply reduced under the beam.',
+      good: '<rect x="90" y="6" width="60" height="40" class="pf-beam"/>' + PF_D('M10 34H80L90 50H150L160 34H230V80H10Z') + PF_F('M20 57H210') + '<rect x="30" y="100" width="34" height="34" class="pf-duct"/><rect x="120" y="108" width="70" height="17" class="pf-duct"/>' + PF_T(47, 144, 'normal', 'pf-t', 'middle') + PF_T(155, 144, 'under beam', 'pf-t', 'middle') + PF_T(92, 120, '=', 'pf-tg', 'middle'),
+      goodCap: 'A wider, shallower section with the same area (aspect ratio ≤ 4:1).',
+      why: 'Crushing the duct to clear a beam cuts its area. Velocity, pressure drop and noise all rise at that point, and the branches beyond it get less air.',
+      rule: 'Where depth is limited, transition to a wider, shallower section of at least the same area (keep the aspect ratio at about 4:1 or less), with gradual transitions; coordinate routes early with the structure.',
+      ref: 'SMACNA HVAC Duct Construction Standards; ASHRAE Handbook—Fundamentals Ch. 21.' },
+    { id: 'condslope', d: 'M', title: 'Condensate line from a split unit laid flat', calcs: ['cond'],
+      bad: '<path d="M200 10V140" class="pf-wallc"/><rect x="30" y="24" width="90" height="30" rx="6" class="pf-box"/>' + PF_T(75, 43, 'indoor unit', 'pf-t', 'middle') + PF_P('M110 54V64H200', 'pf-water') + '<path d="M40 56v8M50 56v12" class="pf-drip"/>' + PF_X(150, 64, 14) + PF_T(110, 100, 'flat or uphill: water backs up', 'pf-tb', 'middle') + PF_T(110, 112, 'and drips from the unit', 'pf-tb', 'middle'),
+      badCap: 'The drain runs level to the wall, so water pools and leaks.',
+      good: '<path d="M200 10V140" class="pf-wallc"/><rect x="30" y="24" width="90" height="30" rx="6" class="pf-box"/>' + PF_T(75, 43, 'indoor unit', 'pf-t', 'middle') + PF_P('M110 54V60L200 76', 'pf-water') + PF_F('M120 64L190 76') + PF_T(110, 100, 'falls ≥ 1 % (⅛ in per ft)', 'pf-tg', 'middle') + PF_T(110, 112, 'to an approved outlet', 'pf-tg', 'middle'),
+      goodCap: 'A steady fall all the way to the outlet.',
+      why: 'Condensate only flows by gravity. A flat or back-falling line holds water, grows slime that blocks it, and the indoor unit drips onto walls and furniture.',
+      rule: 'Run condensate drains at a uniform fall of at least 1 % (⅛ in per ft), supported so they do not sag, to an approved discharge point; use a condensate pump where gravity is not possible.',
+      ref: 'IMC §307.2.2 (condensate drain pipe slope); manufacturer installation manuals.' },
+    { id: 'toiletreturn', d: 'M', title: 'Return grille in a toilet room', calcs: ['exh', 'oa'],
+      bad: '<rect x="10" y="20" width="220" height="110" class="pf-box"/><path d="M110 20V130" class="pf-thin"/>' + PF_T(60, 36, 'toilet', 'pf-t', 'middle') + PF_T(170, 36, 'office', 'pf-t', 'middle') + '<rect x="44" y="54" width="32" height="10" class="pf-ret"/><path d="M60 54Q60 14 170 14Q190 14 190 50" class="pf-hotflow" marker-end="url(#arr-mini)"/>' + PF_X(60, 59, 14) + PF_T(170, 90, 'toilet air', 'pf-tb', 'middle') + PF_T(170, 102, 'recirculated', 'pf-tb', 'middle') + PF_T(170, 114, 'to the office', 'pf-tb', 'middle'),
+      badCap: 'The toilet is on the AHU return, so odours go round the building.',
+      good: '<rect x="10" y="20" width="220" height="110" class="pf-box"/><path d="M110 20V130" class="pf-thin"/>' + PF_T(60, 36, 'toilet', 'pf-t', 'middle') + PF_T(170, 36, 'office', 'pf-t', 'middle') + PF_LV(44, 50, 32, 14, 'pf-exh') + PF_F('M60 48V22') + PF_F('M150 120H118') + PF_T(60, 90, 'exhausted', 'pf-tg', 'middle') + PF_T(60, 102, 'to outdoors', 'pf-tg', 'middle') + PF_T(170, 104, 'transfer air in', 'pf-tg', 'middle'),
+      goodCap: 'Toilets are exhausted outdoors; air transfers in from the office.',
+      why: 'Toilet air is "Class 2" — contaminated and odorous. Returning it to the AHU spreads smells and aerosols to every space the unit serves.',
+      rule: 'Exhaust toilet rooms directly to the outdoors at the code rate, keep them slightly negative, and do not recirculate their air to other spaces.',
+      ref: 'IMC §403.2.1 (recirculation of air); ASHRAE 62.1 §5.16 (air classes) and Table 6-4 (exhaust rates).' },
+    { id: 'hosevb', d: 'P', title: 'Hose bibb without a vacuum breaker', calcs: ['wsfu'],
+      bad: '<path d="M30 10V140" class="pf-wallc"/>' + PF_P('M10 50H44', 'pf-water') + '<rect x="44" y="44" width="12" height="12" class="pf-valve"/>' + PF_P('M56 56Q80 120 150 112', 'pf-hose') + '<path d="M130 90H190V140H130Z" class="pf-box"/><rect x="132" y="106" width="56" height="32" class="pf-chem"/>' + PF_T(160, 84, 'weed killer', 'pf-t', 'middle') + PF_X(150, 116, 14) + PF_T(130, 26, 'chemicals siphon back', 'pf-tb', 'middle') + PF_T(130, 38, 'into the drinking water', 'pf-tb', 'middle'),
+      badCap: 'The hose end sits in a bucket of chemicals.',
+      good: '<path d="M30 10V140" class="pf-wallc"/>' + PF_P('M10 50H44', 'pf-water') + '<rect x="44" y="44" width="12" height="12" class="pf-valve"/><rect x="56" y="42" width="12" height="16" rx="3" class="pf-vb"/>' + PF_P('M68 56Q90 120 150 112', 'pf-hose') + '<path d="M130 90H190V140H130Z" class="pf-box"/><rect x="132" y="106" width="56" height="32" class="pf-chem"/>' + PF_OK(62, 50, 13) + PF_T(130, 26, 'hose-connection vacuum', 'pf-tg', 'middle') + PF_T(130, 38, 'breaker on every bibb', 'pf-tg', 'middle'),
+      goodCap: 'A vacuum breaker on the hose bibb.',
+      why: 'Garden hoses end up in buckets, pools, sprayers and drains. If mains pressure drops, the hose siphons that water back into the building supply.',
+      rule: 'Protect every hose bibb, sillcock and threaded outlet with an atmospheric or hose-connection vacuum breaker (ASSE 1011 / 1052), frost-proof where needed.',
+      ref: 'IPC §608 (protection of potable water — hose connections); ASSE 1011 / 1052.' },
+    { id: 'whpan', d: 'P', title: 'Water heater with no drain pan', calcs: ['hwheat'],
+      bad: '<path d="M10 140H230" class="pf-thin"/><rect x="80" y="30" width="60" height="104" rx="10" class="pf-box"/>' + PF_T(110, 84, 'water', 'pf-t', 'middle') + PF_T(110, 96, 'heater', 'pf-t', 'middle') + '<ellipse cx="110" cy="140" rx="70" ry="5" class="pf-pool"/><path d="M96 120v8M104 124v8" class="pf-drip"/>' + PF_X(150, 136, 14) + PF_T(120, 16, 'a leak floods the', 'pf-tb', 'middle') + PF_T(120, 28, 'finished floor below', 'pf-tb', 'middle'),
+      badCap: 'A tank heater over a finished floor, with nothing to catch a leak.',
+      good: '<path d="M10 140H230" class="pf-thin"/><rect x="80" y="30" width="60" height="100" rx="10" class="pf-box"/>' + PF_T(110, 84, 'water', 'pf-t', 'middle') + PF_T(110, 96, 'heater', 'pf-t', 'middle') + '<path d="M70 124V136H150V124" class="pf-pan"/>' + PF_P('M150 132H210V140', 'pf-water') + PF_T(120, 16, 'pan ≥ 38 mm deep,', 'pf-tg', 'middle') + PF_T(120, 28, '19 mm drain to a safe point', 'pf-tg', 'middle'),
+      goodCap: 'A drained pan under the tank.',
+      why: 'Storage heaters eventually leak — at fittings, the relief valve or a corroded tank. In an attic, ceiling void or upper floor the water damages everything beneath before anyone notices.',
+      rule: 'Where a leak would cause damage, set the tank in a pan at least 38 mm (1½ in) deep with a drain at least 19 mm (¾ in) piped to an indirect waste, floor drain or outdoors.',
+      ref: 'IPC §504.7 (required pan); manufacturer installation instructions.' },
+    { id: 'uvpipe', d: 'P', title: 'Plastic pipe left exposed to sunlight', calcs: ['pipe'],
+      bad: '<circle cx="30" cy="24" r="10" class="pf-sun"/><path d="M42 30L80 60M36 40L66 70M50 24L110 56" class="pf-ray"/>' + PF_P('M10 90H230', 'pf-pvc') + '<path d="M100 86l6 4-6 4 6 4M150 86l6 4-6 4" class="pf-crack"/>' + PF_X(128, 90, 16) + PF_T(120, 126, 'UV makes PVC brittle:', 'pf-tb', 'middle') + PF_T(120, 138, 'it cracks and splits', 'pf-tb', 'middle'),
+      badCap: 'Bare PVC on a roof or wall in full sun.',
+      good: '<circle cx="30" cy="24" r="10" class="pf-sun"/>' + PF_P('M10 90H230', 'pf-pvc') + '<rect x="10" y="80" width="220" height="20" rx="8" class="pf-jacket"/>' + PF_T(120, 126, 'painted, jacketed or', 'pf-tg', 'middle') + PF_T(120, 138, 'UV-rated pipe', 'pf-tg', 'middle'),
+      goodCap: 'Protected with paint, a jacket or insulation — or a UV-rated material.',
+      why: 'Most PVC and CPVC is not made for long sunlight exposure. Ultraviolet light degrades the surface, impact strength falls, and the pipe cracks — often at a fitting under pressure.',
+      rule: 'Protect exposed plastic pipe from sunlight with a compatible water-based paint, insulation jacket or enclosure, or use material rated for UV exposure; also allow for its thermal expansion.',
+      ref: 'Pipe manufacturer installation data; IPC §305 (protection of pipe).' },
+    { id: 'antiscald', d: 'P', title: 'Shower without an anti-scald valve', calcs: ['hwheat'],
+      bad: '<path d="M200 10V140" class="pf-wallc"/>' + PF_P('M200 30H150V44', 'pf-water') + '<path d="M140 44h20l-4 6h-12z" class="pf-box"/><path d="M144 52l-6 22M150 52v24M156 52l6 22" class="pf-hotflow"/><rect x="184" y="80" width="16" height="16" rx="3" class="pf-valve"/>' + PF_X(150, 70, 18) + PF_T(14, 104, 'a toilet flushes:', 'pf-tb') + PF_T(14, 116, 'cold pressure drops,', 'pf-tb') + PF_T(14, 128, 'the shower scalds', 'pf-tb'),
+      badCap: 'A plain two-handle or single mixing valve.',
+      good: '<path d="M200 10V140" class="pf-wallc"/>' + PF_P('M200 30H150V44', 'pf-water') + '<path d="M140 44h20l-4 6h-12z" class="pf-box"/><path d="M144 52l-6 22M150 52v24M156 52l6 22" class="pf-ray"/><rect x="184" y="80" width="16" height="16" rx="3" class="pf-valve"/>' + PF_OK(192, 88, 13) + PF_T(14, 104, 'pressure-balance or', 'pf-tg') + PF_T(14, 116, 'thermostatic valve,', 'pf-tg') + PF_T(14, 128, 'max 49 °C (120 °F)', 'pf-tg'),
+      goodCap: 'A pressure-balancing or thermostatic valve with a high-limit stop.',
+      why: 'When cold-water pressure drops — a toilet flushes, a tap opens — an ordinary mixer suddenly delivers mostly hot water. At 60 °C a serious scald takes seconds.',
+      rule: 'Fit individual shower and tub-shower valves of the pressure-balance, thermostatic or combination type (ASSE 1016), with the high-limit stop set to a maximum of 49 °C (120 °F).',
+      ref: 'IPC §424.3 (individual shower valves); ASSE 1016 / ASME A112.18.1.' },
+    { id: 'wasteinvent', d: 'P', title: 'Waste connected into a dry vent', calcs: ['dfu'],
+      bad: PF_P('M60 140V20', 'pf-drain') + PF_P('M10 140H230', 'pf-drain') + '<path d="M100 40H160Q155 64 130 64Q105 64 100 40Z" class="pf-box"/>' + PF_P('M130 64V76a8 8 0 0 0 16 0V70H90V60H60', 'pf-drain') + PF_T(66, 20, 'dry vent', 'pf-t') + PF_X(66, 60, 13) + PF_T(150, 110, 'waste runs into the vent:', 'pf-tb', 'middle') + PF_T(150, 122, 'it clogs and stops venting', 'pf-tb', 'middle'),
+      badCap: 'A sink drain tied into the dry part of the vent.',
+      good: PF_P('M60 140V20', 'pf-vent') + PF_P('M10 140H230', 'pf-drain') + '<path d="M100 40H160Q155 64 130 64Q105 64 100 40Z" class="pf-box"/>' + PF_P('M130 64V76a8 8 0 0 0 16 0V70H210V140', 'pf-drain') + PF_T(66, 20, 'dry vent', 'pf-t') + PF_T(134, 110, 'fixture to the drain;', 'pf-tg', 'middle') + PF_T(134, 122, 'the vent stays dry', 'pf-tg', 'middle'),
+      goodCap: 'The fixture drains to the drain line; the vent carries only air.',
+      why: 'A dry vent is sized for air. Waste flowing in coats and narrows it, and when it fills, the traps it protects lose their venting and siphon.',
+      rule: 'Connect fixture drains only to drain piping or to vents designed as wet or circuit vents; a dry vent must not receive waste.',
+      ref: 'IPC Ch. 9 (vents — dry, wet and circuit venting).' },
+    { id: 'valvesup', d: 'F', title: 'Sprinkler control valve shut and unsupervised', calcs: ['sprinkler', 'sprhyd'],
+      bad: PF_OSY(false) + PF_X(120, 110, 18) + PF_T(120, 20, 'stem down: valve shut,', 'pf-tb', 'middle') + PF_T(120, 32, 'no tamper switch,', 'pf-tb', 'middle') + PF_T(120, 44, 'nobody knows', 'pf-tb', 'middle'),
+      badCap: 'An OS&Y valve left closed after work, with no supervision.',
+      good: PF_OSY(true) + '<rect x="140" y="80" width="18" height="12" rx="2" class="pf-tamper"/><path d="M158 86H220" class="pf-cond"/>' + PF_T(190, 78, 'to the panel', 'pf-tg', 'middle') + PF_T(60, 40, 'stem up: open,', 'pf-tg', 'middle') + PF_T(60, 52, 'tamper switch', 'pf-tg', 'middle'),
+      goodCap: 'Open, with a tamper switch reporting to the fire alarm panel.',
+      why: 'A closed control valve is the most common reason sprinkler systems fail in real fires. Valves get shut for maintenance and never reopened unless someone is alerted.',
+      rule: 'Supervise every valve controlling water to sprinklers — electrically with tamper switches to the fire alarm (or locked / sealed open where allowed) — and inspect them regularly; restore and test after any work.',
+      ref: 'NFPA 13 (valve supervision); NFPA 25 Ch. 13 (valve inspection, testing and maintenance).' },
+    { id: 'alarmcook', d: 'F', title: 'Smoke alarm right over the stove', calcs: ['detect'],
+      bad: PF_CEIL + PF_STOVE + PF_DET(64) + '<path d="M56 96q-6-20 4-40M72 96q6-20-2-40" class="pf-smoke"/>' + PF_X(64, 24, 13) + PF_T(170, 70, 'cooking sets it off:', 'pf-tb', 'middle') + PF_T(170, 82, 'the battery gets', 'pf-tb', 'middle') + PF_T(170, 94, 'taken out', 'pf-tb', 'middle'),
+      badCap: 'A smoke alarm directly above the cooking appliance.',
+      good: PF_CEIL + PF_STOVE + PF_DET(200) + PF_DIM(66, 34, 194, 34, '', 0, 0) + PF_T(130, 48, '≥ 3 m (10 ft)', 'pf-tg', 'middle') + PF_T(160, 80, 'photoelectric or', 'pf-tg', 'middle') + PF_T(160, 92, 'a heat alarm nearer', 'pf-tg', 'middle'),
+      goodCap: 'Away from the cooking appliance; heat alarm in the kitchen itself.',
+      why: 'Nuisance alarms from cooking are the main reason people disable smoke alarms — leaving the home unprotected when a real fire starts.',
+      rule: 'Keep smoke alarms at least 3 m (10 ft) from fixed cooking appliances (closer only with photoelectric or listed alarms as the code allows); use a heat alarm in the kitchen and interconnect them.',
+      ref: 'NFPA 72 Ch. 29 (smoke alarm location near cooking appliances).' },
+    { id: 'hoodsupp', d: 'F', title: 'Cooking line with no hood fire suppression', calcs: ['exh'],
+      bad: '<path d="M20 20L34 50H186L200 20Z" class="pf-box"/>' + PF_D('M100 2H120V20H100Z') + '<rect x="20" y="96" width="100" height="44" class="pf-box"/>' + PF_T(70, 124, 'fryer · range', 'pf-t', 'middle') + '<path d="M50 96c-8-16 8-22 6-40 12 12 16 26 8 40zM90 96c-8-14 6-20 4-34 10 10 14 22 6 34z" class="pf-flame"/>' + PF_X(110, 40, 16) + PF_T(130, 76, 'no nozzles:', 'pf-tb') + PF_T(130, 88, 'grease fire runs', 'pf-tb') + PF_T(130, 100, 'up the duct', 'pf-tb'),
+      badCap: 'Grease appliances under a hood with no suppression system.',
+      good: '<path d="M20 20L34 50H186L200 20Z" class="pf-box"/>' + PF_D('M100 2H120V20H100Z') + '<rect x="20" y="96" width="100" height="44" class="pf-box"/>' + PF_T(70, 124, 'fryer · range', 'pf-t', 'middle') + '<path d="M50 50v8M90 50v8" class="pf-pipe pf-fire"/><path d="M50 60l-8 30M50 60l8 30M90 60l-8 30M90 60l8 30" class="pf-spray"/>' + PF_T(130, 76, 'UL 300 system,', 'pf-tg') + PF_T(130, 88, 'gas shut-off,', 'pf-tg') + PF_T(130, 100, 'K extinguisher', 'pf-tg'),
+      goodCap: 'A listed wet-chemical system over every appliance, plenum and duct.',
+      why: 'Cooking-oil fires burn hot and re-ignite; water makes them explode. Without a hood system the fire enters the grease duct and spreads through the building.',
+      rule: 'Protect grease-producing appliances, the hood plenum and duct with a listed (UL 300) system, interlocked to shut off fuel and power, with a manual pull on the exit route and a Class K extinguisher nearby.',
+      ref: 'NFPA 96 Ch. 10 (fire-extinguishing equipment); NFPA 17A; UL 300.' },
+    { id: 'concealed', d: 'F', title: 'Combustible concealed space left unsprinklered', calcs: ['sprinkler'],
+      bad: '<rect x="10" y="6" width="220" height="10" class="pf-slab"/><rect x="10" y="80" width="220" height="6" class="pf-ceiling"/><path d="M40 16V80M100 16V80M160 16V80" class="pf-joist"/>' + PF_P('M10 96H230', 'pf-fire') + PF_SPR(120).replace(/16V24/, '96V104').replace(/27H/, '107H') + '<path d="M128 78c-6-14 6-18 4-30 8 8 12 18 6 30z" class="pf-flame"/>' + PF_X(132, 56, 16) + PF_T(120, 130, 'fire in the wooden void,', 'pf-tb', 'middle') + PF_T(120, 142, 'sprinklers only below', 'pf-tb', 'middle'),
+      badCap: 'Wood joists above the ceiling with no sprinklers in the void.',
+      good: '<rect x="10" y="6" width="220" height="10" class="pf-slab"/><rect x="10" y="80" width="220" height="6" class="pf-ceiling"/><path d="M40 16V80M100 16V80M160 16V80" class="pf-joist"/>' + PF_P('M10 30H230', 'pf-fire') + PF_P('M10 96H230', 'pf-fire') + PF_T(120, 130, 'sprinklers in the', 'pf-tg', 'middle') + PF_T(120, 142, 'concealed space too', 'pf-tg', 'middle'),
+      goodCap: 'Sprinklers also protect the combustible concealed space.',
+      why: 'A fire in a combustible ceiling or roof void grows hidden above the sprinklers, which cannot reach it, then breaks out over a large area.',
+      rule: 'Sprinkler concealed spaces of combustible construction or containing combustibles unless an NFPA 13 exception applies (e.g. filled with non-combustible insulation, or small enclosed spaces).',
+      ref: 'NFPA 13 (concealed spaces requiring sprinkler protection).' },
+    { id: 'knockout', d: 'E', title: 'Open knockouts left in a panel', calcs: ['pls'],
+      bad: '<rect x="126" y="20" width="100" height="120" rx="4" class="pf-panel"/><circle cx="152" cy="32" r="6" class="pf-hole"/><circle cx="200" cy="32" r="6" class="pf-hole"/><circle cx="126" cy="100" r="6" class="pf-hole"/>' + PF_X(200, 32, 12) + PF_T(14, 70, 'open holes:', 'pf-tb') + PF_T(14, 82, 'fingers, pests,', 'pf-tb') + PF_T(14, 94, 'arc flash exits', 'pf-tb'),
+      badCap: 'Unused knockouts punched out and left open.',
+      good: '<rect x="126" y="20" width="100" height="120" rx="4" class="pf-panel"/><circle cx="152" cy="32" r="6" class="pf-plugc"/><circle cx="200" cy="32" r="6" class="pf-plugc"/><circle cx="126" cy="100" r="6" class="pf-plugc"/>' + PF_T(14, 70, 'every unused', 'pf-tg') + PF_T(14, 82, 'opening closed', 'pf-tg') + PF_T(14, 94, 'with a plug', 'pf-tg'),
+      goodCap: 'Every unused opening closed with a listed plug or blank.',
+      why: 'An open knockout lets fingers, tools, rodents and insects reach live parts, and lets an arc or burning material out of the enclosure.',
+      rule: 'Close unused cable and raceway openings and breaker spaces with listed plugs, blanks or filler plates equivalent to the enclosure wall.',
+      ref: 'NEC §110.12(A) (unused openings) and §408.7.' },
+    { id: 'nonic', d: 'E', title: 'Non-IC downlight buried in insulation', calcs: ['light'],
+      bad: '<rect x="10" y="90" width="220" height="8" class="pf-ceiling"/><rect x="10" y="40" width="220" height="50" class="pf-fluff"/><path d="M100 90V62H140V90" class="pf-can"/><path d="M110 56q-4-8 0-14M130 56q4-8 0-14" class="pf-heatwave"/>' + PF_X(120, 70, 18) + PF_T(120, 122, 'heat trapped: the fitting', 'pf-tb', 'middle') + PF_T(120, 134, 'overheats, insulation chars', 'pf-tb', 'middle'),
+      badCap: 'A non-IC recessed light covered with insulation.',
+      good: '<rect x="10" y="90" width="220" height="8" class="pf-ceiling"/><rect x="10" y="40" width="70" height="50" class="pf-fluff"/><rect x="160" y="40" width="70" height="50" class="pf-fluff"/><path d="M100 90V62H140V90" class="pf-can"/>' + PF_DIM(80, 54, 100, 54, '', 0, 0) + PF_T(120, 122, 'IC-rated fitting, or 76 mm', 'pf-tg', 'middle') + PF_T(120, 134, '(3 in) clear of insulation', 'pf-tg', 'middle'),
+      goodCap: 'An IC-rated luminaire, or the code clearance kept.',
+      why: 'Recessed luminaires not rated for insulation contact rely on air around them to stay cool. Buried in insulation they overheat, degrade wiring and can ignite nearby material.',
+      rule: 'Use Type IC luminaires where insulation will touch them; otherwise keep insulation at least 76 mm (3 in) away and nothing above that traps heat.',
+      ref: 'NEC §410.116 (clearance and installation of recessed luminaires).' },
+    { id: 'splice', d: 'E', title: 'Taped splice outside a box', calcs: ['conduit'],
+      bad: '<rect x="10" y="6" width="220" height="10" class="pf-slab"/><path d="M10 50H104M136 50H230" class="pf-cond"/><path d="M104 46h32v8h-32z" class="pf-tape-blk"/>' + PF_X(120, 50, 16) + PF_T(120, 90, 'joint taped in the ceiling:', 'pf-tb', 'middle') + PF_T(120, 102, 'no protection, no access,', 'pf-tb', 'middle') + PF_T(120, 114, 'a fire starts here', 'pf-tb', 'middle'),
+      badCap: 'Conductors twisted, taped and left loose above the ceiling.',
+      good: '<rect x="10" y="6" width="220" height="10" class="pf-slab"/><path d="M10 50H106M134 50H230" class="pf-cond"/><rect x="106" y="38" width="28" height="24" class="pf-jbox"/>' + PF_OK(120, 50, 16) + PF_T(120, 90, 'splice in a covered,', 'pf-tg', 'middle') + PF_T(120, 102, 'accessible junction box', 'pf-tg', 'middle'),
+      goodCap: 'Splices made with listed connectors inside an accessible box.',
+      why: 'A splice is the weakest point of a circuit. Outside a box, a loose or overheating joint has nothing to contain an arc, and it is often hidden where nobody can inspect it.',
+      rule: 'Make every splice and termination inside a listed box or enclosure with a cover, using listed connectors, and keep the box accessible.',
+      ref: 'NEC §300.15 (boxes required) and §110.14(B) (splices).' },
+    { id: 'inuse', d: 'E', title: 'Outdoor socket without an in-use cover', calcs: ['elec'],
+      bad: '<path d="M30 10V140" class="pf-wallc"/><path d="M60 6l-3 9M90 6l-3 9M120 6l-3 9M150 6l-3 9" class="pf-rain"/><rect x="30" y="60" width="20" height="28" rx="2" class="pf-outlet"/><path d="M50 60L70 50" class="pf-thin"/><path d="M50 78H120" class="pf-cable-thin"/>' + PF_X(40, 74, 14) + PF_T(140, 100, 'flap open while plugged in:', 'pf-tb', 'middle') + PF_T(140, 112, 'rain in the receptacle', 'pf-tb', 'middle'),
+      badCap: 'A flip cover that only works with nothing plugged in.',
+      good: '<path d="M30 10V140" class="pf-wallc"/><path d="M60 6l-3 9M90 6l-3 9M120 6l-3 9M150 6l-3 9" class="pf-rain"/><rect x="30" y="60" width="20" height="28" rx="2" class="pf-outlet"/><path d="M30 52H64V96H30" class="pf-bubble"/><path d="M50 92H120" class="pf-cable-thin"/>' + PF_OK(40, 74, 14) + PF_T(140, 100, 'in-use (bubble) cover', 'pf-tg', 'middle') + PF_T(140, 112, 'and GFCI protection', 'pf-tg', 'middle'),
+      goodCap: 'An extra-duty in-use cover, weatherproof with a plug inserted.',
+      why: 'Outdoor sockets are used for long-running loads — lights, pumps, tools — often in rain. With an ordinary flap the receptacle is wet the whole time it is in use.',
+      rule: 'In wet locations use weather-resistant receptacles with extra-duty in-use covers that stay weatherproof with a cord plugged in, and GFCI protection.',
+      ref: 'NEC §406.9(B) (receptacles in wet locations) and §210.8.' },
+    { id: 'backfeed', d: 'E', title: 'Generator back-fed through a wall socket', calcs: ['gen'],
+      bad: '<rect x="20" y="96" width="60" height="40" rx="4" class="pf-box"/>' + PF_T(50, 120, 'generator', 'pf-t', 'middle') + '<path d="M80 110H120V70H140" class="pf-cable-hot"/><rect x="140" y="62" width="14" height="18" rx="2" class="pf-outlet"/><path d="M200 10V140M226 10V140" class="pf-thin"/><path d="M154 70H200" class="pf-hotflow" marker-end="url(#arr-mini)"/>' + PF_T(213, 11, 'grid', 'pf-t', 'middle') + PF_X(147, 71, 14) + PF_T(110, 30, 'back-feeds the street:', 'pf-tb', 'middle') + PF_T(110, 42, 'deadly for line workers', 'pf-tb', 'middle'),
+      badCap: 'A double-plug cord pushes generator power into the house wiring.',
+      good: '<rect x="20" y="96" width="60" height="40" rx="4" class="pf-box"/>' + PF_T(50, 120, 'generator', 'pf-t', 'middle') + '<path d="M80 110H140" class="pf-cable-thick"/><rect x="140" y="88" width="36" height="44" rx="3" class="pf-panel"/>' + PF_T(158, 82, 'transfer', 'pf-tg', 'middle') + PF_T(158, 146, 'switch', 'pf-tg', 'middle') + '<path d="M200 10V140M226 10V140" class="pf-thin"/>' + PF_T(213, 11, 'grid', 'pf-t', 'middle') + PF_T(110, 30, 'transfer switch or interlock', 'pf-tg', 'middle') + PF_T(110, 42, 'isolates the utility', 'pf-tg', 'middle'),
+      goodCap: 'A transfer switch or listed interlock separates generator and grid.',
+      why: 'A generator connected through a socket energizes the utility lines through the service transformer — at thousands of volts on the other side — and can kill line workers repairing the outage. It also risks fire when power returns.',
+      rule: 'Connect standby and portable generators to premises wiring only through listed transfer equipment (transfer switch or panel interlock) that prevents paralleling with the utility.',
+      ref: 'NEC §702.5 and §445 (generators and transfer equipment).' },
+    { id: 'liquidlift', d: 'R', title: 'Tall liquid line lift with no subcooling margin', calcs: ['refpipe', 'shsc'],
+      bad: '<rect x="150" y="104" width="70" height="36" class="pf-box"/>' + PF_T(185, 126, 'cond. unit', 'pf-t', 'middle') + '<rect x="20" y="10" width="70" height="30" class="pf-box"/>' + PF_T(55, 29, 'evap', 'pf-t', 'middle') + PF_P('M150 120H120V26H90', 'pf-rfg') + '<circle cx="120" cy="50" r="3" class="pf-air"/><circle cx="116" cy="62" r="2.5" class="pf-air"/><circle cx="123" cy="40" r="2" class="pf-air"/>' + PF_X(118, 48, 16) + PF_T(14, 76, 'liquid flashes', 'pf-tb') + PF_T(14, 88, 'on the way up:', 'pf-tb') + PF_T(14, 100, 'valve starved', 'pf-tb'),
+      badCap: 'The evaporator sits far above the condensing unit.',
+      good: '<rect x="150" y="104" width="70" height="36" class="pf-box"/>' + PF_T(185, 126, 'cond. unit', 'pf-t', 'middle') + '<rect x="20" y="10" width="70" height="30" class="pf-box"/>' + PF_T(55, 29, 'evap', 'pf-t', 'middle') + PF_P('M150 120H120V26H90', 'pf-rfg') + '<circle cx="120" cy="34" r="5" class="pf-glass"/>' + PF_T(14, 66, 'subcooling covers', 'pf-tg') + PF_T(14, 78, 'friction + lift', 'pf-tg') + PF_T(14, 90, '≈ 10–12 kPa/m', 'pf-tg') + PF_T(14, 102, 'clear sight glass', 'pf-tg'),
+      goodCap: 'Enough subcooling for the lift and friction; sight glass clear at the top.',
+      why: 'Every metre of rise costs liquid pressure. Without enough subcooling, the liquid starts to boil (flash gas) before it reaches the expansion valve, which is then starved and the evaporator loses capacity.',
+      rule: 'Check the lift and friction against the available subcooling — liquid loses roughly 10–12 kPa per metre of rise (about 0.5 psi per ft) — stay within the manufacturer\'s height limits, and add subcooling or size the line larger where needed.',
+      ref: 'ASHRAE Handbook—Refrigeration Ch. 1 (liquid lines — pressure drop and lift); manufacturer piping limits.' },
+    { id: 'crankcase', d: 'R', title: 'Compressor started without its crankcase heater', calcs: ['refcycle'],
+      bad: '<rect x="70" y="40" width="100" height="90" rx="20" class="pf-box"/>' + PF_T(120, 60, 'compressor', 'pf-t', 'middle') + '<path d="M72 104H168V128H72Z" class="pf-liquidpool"/>' + PF_T(120, 120, 'liquid refrigerant', 'pf-t', 'middle') + '<path d="M190 30l6 8 6-8 6 8" class="pf-snow"/>' + PF_X(120, 110, 22) + PF_T(120, 20, 'cold start: liquid slugs,', 'pf-tb', 'middle') + PF_T(120, 32, 'oil foams away', 'pf-tb', 'middle'),
+      badCap: 'Refrigerant migrated into the cold crankcase overnight.',
+      good: '<rect x="70" y="40" width="100" height="90" rx="20" class="pf-box"/>' + PF_T(120, 60, 'compressor', 'pf-t', 'middle') + '<path d="M70 118H170" class="pf-heat"/><path d="M70 124H170" class="pf-heat"/>' + PF_T(120, 104, 'crankcase heater', 'pf-tg', 'middle') + PF_T(120, 20, 'heater on for 12–24 h', 'pf-tg', 'middle') + PF_T(120, 32, 'before the first start', 'pf-tg', 'middle'),
+      goodCap: 'The crankcase heater kept energized before and between starts.',
+      why: 'In cold weather refrigerant migrates to the coldest point — often the compressor crankcase — and dissolves in the oil. On start-up it boils violently, the oil foams out and the compressor runs dry or slugs liquid.',
+      rule: 'Keep crankcase heaters energized whenever the unit has power, switch power on 12–24 hours (or as the manufacturer states) before the first start or after a long shutdown, and do not cut the heater with the isolator in winter.',
+      ref: 'Compressor and unit manufacturer instructions; ASHRAE Handbook—Refrigeration (lubricant management).' },
+    { id: 'cylinder', d: 'R', title: 'Refrigerant cylinder heated with a torch', calcs: ['refpipe'],
+      bad: '<rect x="90" y="30" width="56" height="100" rx="16" class="pf-cyl"/><path d="M60 112L92 96" class="pf-pipe pf-steel"/><path d="M92 96c6-10 18-6 20 4-8 2-14 4-20-4z" class="pf-flame"/>' + PF_X(118, 90, 20) + PF_T(184, 70, 'never use', 'pf-tb', 'middle') + PF_T(184, 82, 'a flame:', 'pf-tb', 'middle') + PF_T(184, 94, 'it can burst', 'pf-tb', 'middle'),
+      badCap: 'A torch used to raise the cylinder pressure.',
+      good: '<rect x="90" y="30" width="56" height="100" rx="16" class="pf-cyl"/><path d="M84 60H152M84 100H152" class="pf-chain"/><path d="M60 140H200" class="pf-thin"/>' + PF_T(184, 64, 'upright,', 'pf-tg', 'middle') + PF_T(184, 76, 'secured,', 'pf-tg', 'middle') + PF_T(184, 88, 'below 52 °C', 'pf-tg', 'middle') + PF_T(184, 100, '(125 °F)', 'pf-tg', 'middle'),
+      goodCap: 'Secured upright, kept out of the sun and below 52 °C.',
+      why: 'Cylinder pressure climbs steeply with temperature. Direct flame heats one spot, weakens the steel and can rupture the cylinder or melt its relief device.',
+      rule: 'Never heat a refrigerant cylinder with a flame or direct heat; store and use cylinders upright and secured, out of direct sun, below 52 °C (125 °F); do not refill disposable cylinders.',
+      ref: 'Cylinder labels and DOT / CGA requirements; ASHRAE 15; AHRI safety guidance.' },
+    { id: 'machroom', d: 'R', title: 'Machinery room with no refrigerant detector', calcs: ['refsafe'],
+      bad: '<rect x="10" y="20" width="220" height="120" class="pf-box"/><rect x="40" y="80" width="90" height="56" class="pf-box"/>' + PF_T(85, 112, 'chiller', 'pf-t', 'middle') + '<path d="M130 80q20-20 40 0t40 0M130 96q20-20 40 0t30 0" class="pf-smoke"/>' + PF_MAN(196, 96) + PF_X(170, 86, 18) + PF_T(120, 40, 'a leak fills the room', 'pf-tb', 'middle') + PF_T(120, 52, 'unnoticed', 'pf-tb', 'middle'),
+      badCap: 'A leak builds up with no alarm or ventilation.',
+      good: '<rect x="10" y="20" width="220" height="120" class="pf-box"/><rect x="40" y="80" width="90" height="56" class="pf-box"/>' + PF_T(85, 112, 'chiller', 'pf-t', 'middle') + '<rect x="150" y="110" width="16" height="12" rx="2" class="pf-tamper"/>' + PF_T(158, 104, 'detector', 'pf-tg', 'middle') + PF_LV(196, 30, 30, 18, 'pf-exh') + PF_F('M211 30V8') + PF_T(120, 40, 'detector → alarm', 'pf-tg', 'middle') + PF_T(120, 52, 'and exhaust fan', 'pf-tg', 'middle'),
+      goodCap: 'A refrigerant detector starts the alarm and the emergency exhaust.',
+      why: 'Many refrigerants are heavier than air, odourless and displace oxygen; some are toxic or flammable. A large leak in a closed plant room can overcome anyone who walks in.',
+      rule: 'Fit refrigerant detectors in machinery rooms, set at or below the occupational exposure limit, to sound alarms inside and outside the door and start the mechanical ventilation; keep self-contained breathing apparatus where required.',
+      ref: 'ASHRAE 15 §8.11 (machinery room requirements); EN 378-3; IIAR 2 for ammonia.' }
+  ];
+  PITFALLS = PITFALLS.concat(PF_MORE4);
   var pfFilter = 'all', pfQuery = '', pfText = {};
   function renderPitfalls() {
     var grid = $('#pf-grid'), keys = ['all'].concat(Object.keys(PF_DISC)), wide = window.matchMedia('(min-width: 700px)').matches; // phones start with the explanations folded
@@ -13294,8 +14042,10 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   function applyPitfalls() {
     var words = pfQuery ? pfQuery.split(/\s+/) : [], n = 0;
     $$('#pf-grid .pf-card').forEach(function (c) {
-      var on = (pfFilter === 'all' || c.dataset.d === pfFilter) && words.every(function (w) { return pfText[c.id.slice(3)].indexOf(w) >= 0; });
+      var on = (pfFilter === 'all' || c.dataset.d === pfFilter) && textMatches(pfText[c.id.slice(3)], pfQuery, words);
       c.hidden = !on; if (on) n++;
+      if (on || c.querySelector('mark.hl')) $$('h3, .pf-fig p, .pf-why dd, .pf-ref', c).forEach(function (el) { markWords(el, on ? (words.length > 1 ? [pfQuery].concat(words) : words) : []); });
+      if (on && words.length) $('.pf-more', c).open = true;
     });
     $('#pf-count').textContent = n === PITFALLS.length ? PITFALLS.length + ' pitfalls' : n + ' of ' + PITFALLS.length + ' pitfalls' + (pfQuery ? ' for “' + pfQuery + '”' : '');
     $('#pf-empty').hidden = n > 0;
@@ -13309,6 +14059,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     applyPitfalls();
   });
   $('#pf-q').addEventListener('input', function () { pfQuery = this.value.trim().toLowerCase(); applyPitfalls(); });
+  $('#pf-q').addEventListener('keydown', function (e) { if (e.key === 'Escape' && this.value) { e.stopPropagation(); this.value = ''; pfQuery = ''; applyPitfalls(); } });
   // Pitfalls that apply to a calculator, shown as links in its window header.
   function pitfallsFor(id) { return PITFALLS.filter(function (p) { return p.calcs.indexOf(id) >= 0; }); }
   function showPitfall(pid) {
