@@ -12,6 +12,10 @@ The site works like an app: the header switches between views (Home, Calculators
 
 The Design Pitfalls view shows 116 common design and installation mistakes across HVAC, plumbing, fire protection, electrical and refrigeration — such as a branch duct cut into an elbow, an intake beside an exhaust, an S-trap, a relief valve piped uphill, sprinklers blocked by a wide duct, a socket by a sink without GFCI, or brazing without nitrogen — each drawn beside the right way, with why it matters, the rule, the code reference and the calculator to check it. Search them or filter by discipline (the Codes & Standards view has its own search too); related calculators link to them from their window header.
 
+The Utilities view groups 13 quick tools: unit converter, MEP references, slope converter, drawing scale, wire gauge (AWG ↔ mm²), pipe size data (steel Sch. 40/80, copper K/L/M), air and water properties, duct dimensions, flow and velocity, heat ↔ flow for air and water, Ohm's law and power, pipe and conduit offsets, and tank volume by level.
+
+Three small games sit at the bottom of Utilities, for a break: **Pipe Puzzle** (turn the pieces until water runs from the supply to the drain; the grid grows each level), **Unit Sprint** (60 seconds of HVAC, pressure, flow and temperature conversions) and **Spot the Mistake** (a Design Pitfalls drawing with its labels hidden: right way or mistake?). They work with mouse, touch or keyboard, keep your best scores in the browser, and have optional sound.
+
 The whole site is one self-contained file, `index.html` (vanilla JavaScript, inline CSS and SVG). Vite is used only to serve and build it.
 
 ## Ads (Adsterra)
@@ -46,6 +50,8 @@ Change `data-ad` to move a code to other slots (`home`, `calc-top`, `calc-side`,
 
 - `site.spec.js` — page loads without errors, category filters, compact view, minimize all, search.
 - `navigation.spec.js` — one view at a time, header links and Back, "/" to search, Home category tiles, recently used calculators, inputs beside the result on wide screens, compact list by default.
+- `utilities.spec.js` — known values for the utilities (pipe data, wire gauge, Ohm's law, slope, offset, tank, heat ↔ flow, air and water properties, drawing scale) in SI and IMP.
+- `games.spec.js` — the three games: turning pipe pieces and solving a puzzle, Unit Sprint answers and the 60-second timer, Spot the Mistake labels hidden until you answer.
 - `ads.spec.js` — ad slots stay hidden without codes; pasted codes fill their slots in their own frames, and page-level codes run once.
 - `search.spec.js` — Standards search (references, sources, regional codes, whole-number matching, highlights), Pitfalls search highlights, and "/" focusing the search of the current view.
 - `pitfalls.spec.js` — the Design Pitfalls view: a wrong and a right drawing for each mistake, labels kept inside every drawing, discipline filter and search, links to and from calculators.

@@ -39,6 +39,43 @@ test('floating feedback keeps a draft and needs no calculator', async ({ page })
   await expect(page.locator('#fb-msg')).toHaveValue('Love the BOQ export')
 })
 
+test('feedback is sent to Formspree, with the calculator and reply-to email', async ({ page }) => {
+  const errors = await openSite(page)
+  let sent = null
+  await page.route('https://formspree.io/**', async (route) => { // never reaches the real form
+    sent = route.request().postDataJSON()
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' })
+  })
+  await openCalc(page, 'ach')
+  await page.locator('#calc-fb').click()
+  await page.locator('#fb-msg').fill('Great tool')
+  await page.locator('#fb-email').fill('not-an-email')
+  await page.locator('#fb-send').click()
+  await expect(page.locator('#fb-email-err')).toBeVisible()
+  expect(sent).toBeNull()
+
+  await page.locator('#fb-email').fill('engr@example.com')
+  await page.locator('#fb-send').click()
+  await expect(page.locator('#fb-done')).toHaveText('✓ Sent — thank you!', { timeout: 15000 })
+  expect(sent).toMatchObject({ type: 'Suggestion', message: 'Great tool', email: 'engr@example.com', calculator: 'Air Changes Calculator', _gotcha: '' })
+  expect(sent._subject).toBe('MechToolBox feedback — Suggestion — Air Changes Calculator')
+  expect(sent.details).toContain('--- Calculator ---')
+  await expect(page.locator('#fb-msg')).toHaveValue('') // the message clears, the email stays
+  await expect(page.locator('#fb-email')).toHaveValue('engr@example.com')
+  expect(errors).toEqual([])
+})
+
+test('a failed send keeps the message and says why', async ({ page }) => {
+  await openSite(page)
+  await page.route('https://formspree.io/**', (route) => route.fulfill({ status: 422, contentType: 'application/json', body: '{"errors":[{"message":"Form not found"}]}' }))
+  await page.locator('#fb-fab').click()
+  await page.locator('#fb-msg').fill('Hello')
+  await page.locator('#fb-send').click()
+  await expect(page.locator('#fb-done')).toContainText('Couldn’t send (Form not found)', { timeout: 15000 })
+  await expect(page.locator('#fb-msg')).toHaveValue('Hello')
+  await expect(page.locator('#fb-send')).toBeEnabled()
+})
+
 test('compass turns with the device heading and shows the sun', async ({ page }) => {
   const errors = await openSite(page)
   await page.locator('#cp-btn').click()

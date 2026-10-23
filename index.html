@@ -1295,6 +1295,8 @@ dialog.modal.fb { width: min(640px, calc(100% - 32px)); }
 .fb-prev pre { margin: 10px 0 0; padding: 12px; max-height: 220px; overflow: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--deep); font: 400 12px/1.5 var(--mono); color: var(--muted); white-space: pre-wrap; }
 .fb-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .fb-msg { font: 500 12px/1.4 var(--mono); color: var(--mint); }
+.fb-msg.bad { color: var(--fail); }
+.fb-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .cp.live .cp-live, .cp-panel { animation: none; } }
 
 /* Globe compass */
@@ -1884,6 +1886,80 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
 @media (max-width: 1023px) { .ad-side { display: none !important; } }
 .ad-native { width: 100%; text-align: left; }
 .ad-slot.ad-waiting { display: none !important; } /* a native slot while the banner is shown elsewhere */
+/* Utilities: grouped, separate compact tiles (a short last row looks natural) */
+.util-group { margin: 26px 0 10px; font: 500 12px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.util-group:first-of-type { margin-top: 0; }
+.strip { gap: 10px; background: none; border: 0; border-radius: 0; overflow: visible; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)) !important; }
+.strip button { gap: 5px; padding: 16px 18px !important; border: 1px solid var(--edge); border-radius: 12px; background: var(--surface); overflow: hidden; }
+.strip .code { font-size: 22px; }
+.strip .desc { color: var(--muted); font-size: 13px; line-height: 1.4; }
+.strip .open { margin-top: 4px; }
+@media (max-width: 639px) { .strip { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px; } .strip button { padding: 12px 14px !important; } .strip .code { font-size: 18px; } .strip .desc { display: none; } .strip .label { font-size: 14px; } }
+/* Games */
+.sys[hidden], #modal.game .codeb { display: none; }
+.strip-games .code { color: var(--pass); }
+.gm-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-bottom: 14px; font: 500 12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.gm-stat b { color: var(--text); font-size: 15px; letter-spacing: 0; margin-left: 4px; }
+.gm-sound { margin-left: auto; width: 36px; height: 36px; border: 1px solid var(--edge); border-radius: 10px; background: transparent; font-size: 16px; cursor: pointer; }
+.gm-sound[aria-pressed="true"] { border-color: var(--mint); }
+.gm-msg { min-height: 1.5em; margin: 12px 0 4px; font: 600 15px var(--head); color: var(--pass); text-align: center; }
+.gm-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 6px; }
+.gm-confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 3; }
+.gm-confetti i { position: absolute; top: 40%; width: 8px; height: 12px; border-radius: 2px; animation: gm-pop 1.6s cubic-bezier(.2, .7, .3, 1) forwards; }
+@keyframes gm-pop { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 100% { transform: translate(var(--dx), 160px) rotate(var(--rz)); opacity: 0; } }
+/* Pipe puzzle */
+.pp-wrap { position: relative; width: min(100%, calc(var(--n) * 64px)); margin: 4px auto 0; padding: 0 30px; }
+.pp-grid { display: grid; grid-template-columns: repeat(var(--n), 1fr); gap: 3px; padding: 6px; border: 1px solid var(--edge); border-radius: 12px; background: var(--background); }
+.pp-cell { aspect-ratio: 1; padding: 0; border: 1px solid transparent; border-radius: 8px; background: var(--surface); cursor: pointer; transition: background var(--ease), border-color var(--ease), transform 120ms ease; }
+.pp-cell:hover { border-color: var(--line-2); }
+.pp-cell:active { transform: scale(0.92); }
+.pp-cell:focus-visible { outline: 2px solid var(--mint); outline-offset: 1px; }
+.pp-cell svg { width: 100%; height: 100%; transform: rotate(var(--a)); transition: transform 220ms cubic-bezier(.3, 1.4, .5, 1); }
+.pp-wall { fill: none; stroke: #3A3A3A; stroke-width: 12; stroke-linecap: square; }
+.pp-water { fill: none; stroke: transparent; stroke-width: 6; stroke-linecap: square; transition: stroke 260ms ease; }
+.pp-hub { fill: #3A3A3A; transition: fill 260ms ease; }
+.pp-cell.wet { background: rgba(34, 211, 238, 0.08); }
+.pp-cell.wet .pp-water { stroke: var(--plumbing); }
+.pp-cell.wet .pp-hub { fill: var(--plumbing); }
+.pp-cell:disabled { cursor: default; }
+.pp-io { position: absolute; top: calc(6px + (var(--r) + 0.5) * (100% - 12px) / var(--n)); transform: translateY(-50%); padding: 3px 4px; border-radius: 6px; font: 600 10px var(--mono); letter-spacing: 0.06em; }
+.pp-in { left: 0; background: var(--plumbing); color: var(--deep); }
+.pp-out { right: 0; border: 1px dashed var(--muted); color: var(--muted); transition: all 260ms ease; }
+.pp-out.wet { border-style: solid; border-color: var(--pass); background: var(--pass); color: var(--deep); }
+/* Unit sprint */
+.us-start { position: relative; padding: 26px 10px; text-align: center; }
+.us-start .m-desc { margin: 0 auto 18px; max-width: 46ch; }
+.us-final { margin-bottom: 6px; font: 700 34px var(--head); color: var(--mint); }
+.us-timebar { height: 6px; margin-bottom: 18px; border-radius: 99px; background: var(--panel-2); overflow: hidden; }
+.us-timebar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--fire), var(--accent) 40%, var(--pass)); transition: width 200ms linear; }
+.us-q { margin-bottom: 16px; font: 700 clamp(1.4rem, 4vw, 2rem) var(--head); text-align: center; }
+.us-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.us-choice { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border: 1px solid var(--edge); border-radius: 12px; background: var(--surface); color: var(--text); font: 600 18px var(--mono); cursor: pointer; transition: border-color var(--ease), background var(--ease), transform 120ms ease; }
+.us-choice:hover { border-color: var(--mint); }
+.us-choice:active { transform: scale(0.97); }
+.us-choice kbd { padding: 1px 6px; border: 1px solid var(--line-2); border-radius: 4px; font: 500 11px var(--mono); color: var(--muted); }
+.us-choice.ok { border-color: var(--pass); background: rgba(127, 217, 98, 0.15); }
+.us-choice.bad { border-color: var(--fail); background: rgba(255, 107, 91, 0.15); animation: gm-shake 0.3s; }
+@keyframes gm-shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+/* Spot the mistake */
+.sp-fig { position: relative; max-width: 520px; margin: 8px auto 14px; padding: 10px; border: 1px solid var(--edge); border-radius: 12px; }
+.sp-fig svg { width: 100%; height: auto; border-radius: 6px; background: var(--background); }
+.sp-fig:not(.revealed) text, .sp-fig:not(.revealed) .pf-ring, .sp-fig:not(.revealed) .pf-dim { display: none; }
+.sp-fig.revealed { animation: gm-flip 0.4s ease; }
+@keyframes gm-flip { from { transform: rotateX(25deg); opacity: 0.6; } }
+.sp-choices { display: flex; justify-content: center; gap: 12px; }
+.sp-choice { min-width: 150px; padding: 14px 18px; border-radius: 12px; font: 700 16px var(--head); cursor: pointer; transition: transform 120ms ease, box-shadow var(--ease); }
+.sp-choice:active { transform: scale(0.96); }
+.sp-ok { border: 1px solid var(--pass); background: rgba(127, 217, 98, 0.1); color: var(--pass); }
+.sp-no { border: 1px solid var(--fail); background: rgba(255, 107, 91, 0.1); color: var(--fail); }
+.sp-choice:hover { box-shadow: 0 8px 22px -12px currentColor; }
+.sp-verdict { max-width: 620px; margin: 0 auto 12px; padding: 12px 16px; border-radius: 12px; border: 1px solid; }
+.sp-verdict.ok { border-color: var(--pass); background: rgba(127, 217, 98, 0.08); }
+.sp-verdict.no { border-color: var(--fail); background: rgba(255, 107, 91, 0.08); }
+.sp-verdict b { display: block; margin-bottom: 6px; }
+.sp-verdict p { font-size: 14.5px; }
+.sp-why { margin-top: 6px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .pp-cell svg, .sp-fig.revealed, .us-choice.bad { transition: none; animation: none; } }
 </style>
 </head>
 <body>
@@ -2206,13 +2282,35 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       <div class="section-head reveal">
         <p class="eyebrow">06 — Utilities</p>
         <h2 id="util-title">Small tools. Big time savings.</h2>
-        <p>Quick converters and references you reach for between calculations.</p>
+        <p>Quick converters, data tables and field calculations you reach for between designs — pipe and wire data, slopes, offsets, tanks, heat and fluid properties — and a few small games for a break.</p>
       </div>
+      <h3 class="util-group">Converters &amp; references</h3>
       <div class="strip reveal">
-        <button type="button" data-open="conv"><span class="code">UNIT</span><span class="label">Unit Converter</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
-        <button type="button" data-open="rect"><span class="code">AREA</span><span class="label">Area &amp; Dimensions</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
-        <button type="button" data-open="flow"><span class="code">FLOW</span><span class="label">Flow &amp; Velocity</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
-        <button type="button" data-open="ref"><span class="code">HVAC</span><span class="label">MEP References</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+        <button type="button" data-open="conv"><span class="code">UNIT</span><span class="label">Unit Converter</span><span class="desc">Length, flow, pressure, power, energy and more</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+        <button type="button" data-open="ref"><span class="code">REF</span><span class="label">MEP References</span><span class="desc">Air changes, velocities, fuel and CO₂ tables</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+        <button type="button" data-open="slope"><span class="code">SLOPE</span><span class="label">Slope Converter</span><span class="desc">% ↔ degrees ↔ 1 : n ↔ in/ft, and the fall</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+        <button type="button" data-open="scale"><span class="code">SCALE</span><span class="label">Drawing Scale</span><span class="desc">Real length from a drawing, metric and ¼" = 1'-0"</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+        <button type="button" data-open="awg"><span class="code">AWG</span><span class="label">Wire Gauge (AWG ↔ mm²)</span><span class="desc">Area, kcmil, diameter, resistance, metric size</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+      </div>
+      <h3 class="util-group">Data tables</h3>
+      <div class="strip reveal">
+        <button type="button" data-open="pipedata"><span class="code">PIPE</span><span class="label">Pipe Size Data</span><span class="desc">Steel Sch. 40/80 and copper K/L/M: ID, area, weight</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+        <button type="button" data-open="props"><span class="code">PROPS</span><span class="label">Air &amp; Water Properties</span><span class="desc">Density, viscosity, cp, vapour pressure, boiling point</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+      </div>
+      <h3 class="util-group">Field calculations</h3>
+      <div class="strip reveal">
+        <button type="button" data-open="rect"><span class="code">AREA</span><span class="label">Rectangular Duct Dimensions</span><span class="desc">Area, perimeter, hydraulic and equivalent diameter</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+        <button type="button" data-open="flow"><span class="code">FLOW</span><span class="label">Flow &amp; Velocity</span><span class="desc">Air velocity and velocity pressure in a round duct</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+        <button type="button" data-open="heatflow"><span class="code">HEAT</span><span class="label">Heat ↔ Flow (Air &amp; Water)</span><span class="desc">Q = flow × ΔT, or the flow for a load</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+        <button type="button" data-open="ohm"><span class="code">OHM</span><span class="label">Ohm's Law &amp; Power</span><span class="desc">Amps, kW, kVA and kvar — DC, 1- and 3-phase</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+        <button type="button" data-open="offset"><span class="code">OFFSET</span><span class="label">Pipe &amp; Conduit Offset</span><span class="desc">Travel, advance, multiplier and conduit shrink</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+        <button type="button" data-open="tankvol"><span class="code">TANK</span><span class="label">Tank Volume &amp; Level</span><span class="desc">Volume and % full from the liquid level</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
+      </div>
+      <h3 class="util-group">Games — take a break</h3>
+      <div class="strip strip-games reveal">
+        <button type="button" data-open="pipes"><span class="code">PIPES</span><span class="label">Pipe Puzzle</span><span class="desc">Turn the pipes until water reaches the drain</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
+        <button type="button" data-open="sprint"><span class="code">UNITS</span><span class="label">Unit Sprint</span><span class="desc">60 seconds of quick conversions — beat your best</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
+        <button type="button" data-open="spot"><span class="code">SPOT</span><span class="label">Spot the Mistake</span><span class="desc">Right way or design pitfall? Judge the drawing</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
       </div>
     </div>
   </section>
@@ -2408,9 +2506,15 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
         <div class="input-wrap"><input id="fb-role" placeholder="Mechanical · ABC Consultants"></div>
       </div>
     </div>
+    <div class="field">
+      <label for="fb-email">Email <span class="sym">(optional — if you'd like a reply)</span></label>
+      <div class="input-wrap"><input id="fb-email" type="email" autocomplete="email" placeholder="you@company.com"></div>
+      <p class="err" id="fb-email-err" hidden>That email doesn't look right — fix it or leave it blank.</p>
+    </div>
+    <input type="text" id="fb-gotcha" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="fb-trap">
     <details class="fb-prev"><summary>Preview what will be sent</summary><pre id="fb-preview"></pre></details>
     <div class="fb-actions">
-      <button type="submit" class="btn btn-solid" id="fb-send">Send by email</button>
+      <button type="submit" class="btn btn-solid" id="fb-send">Send feedback</button>
       <button type="button" class="btn btn-outline" id="fb-copy">Copy text</button>
       <a class="btn btn-outline" id="fb-form-link" target="_blank" rel="noopener" hidden>Open feedback form ↗</a>
       <span class="fb-msg" id="fb-done" aria-live="polite"></span>
@@ -3791,7 +3895,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   }
   // Rod rating (kg, with the 1.5 margin applied to the load) → [kg, mm, inch].
   var HANG_ROD = [[270, 10, '3/8 in'], [510, 12, '1/2 in'], [810, 16, '5/8 in'], [1150, 20, '3/4 in'], [1500, 22, '7/8 in'], [1e9, 24, '1 in']];
-  var PIPE_IN = { 15: 0.5, 20: 0.75, 25: 1, 32: 1.25, 40: 1.5, 50: 2, 65: 2.5, 80: 3, 90: 3.5, 100: 4, 125: 5, 150: 6, 200: 8 };
+  var PIPE_IN = { 15: 0.5, 20: 0.75, 25: 1, 32: 1.25, 40: 1.5, 50: 2, 65: 2.5, 80: 3, 90: 3.5, 100: 4, 125: 5, 150: 6, 200: 8, 250: 10, 300: 12 };
   var CU_L_WALL = { 15: 1.02, 20: 1.14, 25: 1.27, 32: 1.40, 40: 1.52, 50: 1.78, 65: 2.03, 80: 2.29, 90: 2.54, 100: 2.79, 125: 3.18, 150: 3.56, 200: 5.08 }; // copper Type L, mm
   var HANG_SIZE_OPTS = function (list) { return list.map(function (dn) { return [String(dn), String(PIPE_IN[dn]).replace('0.5', '½').replace('0.75', '¾').replace('1.25', '1¼').replace('1.5', '1½').replace('2.5', '2½').replace('3.5', '3½') + '"  (DN' + dn + ')']; }); };
   // Filled-pipe weight per metre: [pipe kg/m, water kg/m, OD m] for steel / plastic on NPS sizes, copper tube or no-hub cast iron.
@@ -3885,6 +3989,28 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       spNote: 'by the smallest line, ASHRAE Refrigeration guidance — check the unit manual', clampLabel: 'Insulation saddles', extra: []
     });
   }
+  // Utilities data. Steel pipe walls by NPS (ASME B36.10M), copper tube Types K and M (ASTM B88); Type L walls are CU_L_WALL.
+  var SCH80_WALL = { 15: 3.73, 20: 3.91, 25: 4.55, 32: 4.85, 40: 5.08, 50: 5.54, 65: 7.01, 80: 7.62, 90: 8.08, 100: 8.56, 125: 9.53, 150: 10.97, 200: 12.70, 250: 15.09, 300: 17.48 };
+  var CU_K_WALL = { 15: 1.24, 20: 1.65, 25: 1.65, 32: 1.65, 40: 1.83, 50: 2.11, 65: 2.41, 80: 2.77, 90: 3.05, 100: 3.40, 125: 4.06, 150: 4.88, 200: 6.88, 250: 8.59, 300: 10.29 };
+  var CU_M_WALL = { 15: 0.71, 20: 0.81, 25: 0.89, 32: 1.07, 40: 1.24, 50: 1.47, 65: 1.65, 80: 1.83, 90: 2.11, 100: 2.41, 125: 2.77, 150: 3.10, 200: 4.32, 250: 5.38, 300: 6.45 };
+  var PD_MATS = { s40: ['Steel, Sch. 40', SCH40_WALL, 7850], s80: ['Steel, Sch. 80', SCH80_WALL, 7850], cuk: ['Copper, Type K', CU_K_WALL, 8940], cul: ['Copper, Type L', Object.assign({ 250: 6.35, 300: 7.11 }, CU_L_WALL), 8940], cum: ['Copper, Type M', CU_M_WALL, 8940] };
+  // IEC 60228 standard conductor sizes (mm²) and AWG sizes (n: 1/0 = 0, 2/0 = −1 …).
+  var IEC_MM2 = [0.5, 0.75, 1, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300, 400, 500, 630];
+  var AWG_LIST = ['18', '16', '14', '12', '10', '8', '6', '4', '3', '2', '1', '1/0', '2/0', '3/0', '4/0'];
+  var awgN = function (g) { return g.indexOf('/0') > 0 ? 1 - parseInt(g, 10) : +g; };
+  var awgName = function (n) { return n > 0 ? n + ' AWG' : (1 - n) + '/0 AWG'; };
+  // Length text with more precision than dimTxt (fittings, walls).
+  var lenFine = function (m) { // the tiny nudge rounds exact halves up (2⅛ in = 53.975 mm → 53.98, not 53.97)
+    return sys === 'si' ? fmt(Math.round(m * 1e5 + 1e-6) / 100, 2) + ' mm' : fmt(Math.round(m / 0.0254 * 1000 + 1e-6) / 1000, 3) + ' in';
+  };
+  // Water specific heat (kJ/kg·K) every 10 °C from 0 to 100 °C.
+  var WATER_CP = [4.217, 4.192, 4.182, 4.178, 4.179, 4.181, 4.185, 4.190, 4.197, 4.205, 4.216];
+  var waterCp = function (t) { var i = Math.min(9, Math.max(0, Math.floor(t / 10))), f = (t - i * 10) / 10; return WATER_CP[i] + (WATER_CP[i + 1] - WATER_CP[i]) * f; };
+  // Water vapour pressure (Pa) and boiling point (°C) — Antoine equation, 1–100 °C.
+  var antoineP = function (t) { return Math.pow(10, 8.07131 - 1730.63 / (233.426 + t)) * 133.322; };
+  var antoineT = function (pa) { return 1730.63 / (8.07131 - Math.log10(pa / 133.322)) - 233.426; };
+  var SCALES = [['1', '1 : 1'], ['5', '1 : 5'], ['10', '1 : 10'], ['20', '1 : 20'], ['25', '1 : 25'], ['50', '1 : 50'], ['75', '1 : 75'], ['100', '1 : 100'], ['200', '1 : 200'], ['250', '1 : 250'], ['500', '1 : 500'], ['1000', '1 : 1000'],
+    ['12', '1" = 1\'-0"  (1 : 12)'], ['24', '1/2" = 1\'-0"  (1 : 24)'], ['32', '3/8" = 1\'-0"  (1 : 32)'], ['48', '1/4" = 1\'-0"  (1 : 48)'], ['64', '3/16" = 1\'-0"  (1 : 64)'], ['96', '1/8" = 1\'-0"  (1 : 96)'], ['120', '1" = 10\'  (1 : 120)'], ['240', '1" = 20\'  (1 : 240)']];
   var CALCS = {
     btu: {
       code: 'HVAC / 001', title: 'HVAC BTU Calculator', card: true, disc: 'M',
@@ -7206,6 +7332,234 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       note: 'De is the Huebscher equal-friction equivalent diameter — use it to read round-duct friction charts. Keep aspect ratios at or below 4 : 1 where possible.'
     },
 
+    pipedata: {
+      code: 'UTIL / PIPE', title: 'Pipe Size Data',
+      desc: 'Outside and inside diameter, wall, flow area, water content and weight for steel Sch. 40 / 80 and copper Types K, L and M.',
+      fields: [
+        { k: 'mat', label: 'Pipe', opts: Object.keys(PD_MATS).map(function (k) { return [k, PD_MATS[k][0]]; }), def: ['s40', 's40'] },
+        { k: 'dn', label: 'Nominal size', opts: HANG_SIZE_OPTS([15, 20, 25, 32, 40, 50, 65, 80, 90, 100, 125, 150, 200, 250, 300]), def: ['50', '50'] }
+      ],
+      check: function (v) { return PD_MATS[v.mat][1][+v.dn] ? '' : PD_MATS[v.mat][0] + ' is not listed in this size.'; },
+      formula: function () { return ['ID = OD − 2 × wall', 'Flow area = π·ID² / 4', 'Weight = π·(OD − wall)·wall·ρ_metal  (+ water ρ·area when full)']; },
+      calc: function (v) {
+        var m = PD_MATS[v.mat], dn = +v.dn, steel = v.mat.charAt(0) === 's', od = steel ? NPS_OD[dn] / 1000 : (PIPE_IN[dn] + 0.125) * 0.0254, w = m[1][dn] / 1000, id = od - 2 * w;
+        var A = Math.PI * id * id / 4, kg = Math.PI * (od - w) * w * m[2], water = A * 998, si = sys === 'si';
+        var wt = function (x) { return si ? fmt(x, 2) + ' kg/m' : fmt(x * 0.67197, 2) + ' lb/ft'; };
+        return [
+          ['Inside diameter', lenFine(id), 1, m[0] + ' ' + HANG_SIZE_OPTS([dn])[0][1].split('  ')[0]],
+          ['Outside diameter', lenFine(od), 0],
+          ['Wall thickness', lenFine(w), 0],
+          ['Flow area', si ? fmt(A * 1e6, 0) + ' mm²' : fmt(A / 0.00064516, 3) + ' in²', 0],
+          ['Water content', si ? fmt(A * 1000, 3) + ' L/m' : fmt(A * 0.3048 * 264.172, 3) + ' US gal/ft', 0],
+          ['Weight, empty', wt(kg), 0],
+          ['Weight, full of water', wt(kg + water), 1]
+        ];
+      },
+      note: 'Steel dimensions per ASME B36.10M; copper tube per ASTM B88 (outside diameter = nominal + ⅛ in). Copper Type K is the heaviest wall, M the lightest — check which the code allows for the service.'
+    },
+
+    awg: {
+      code: 'UTIL / AWG', title: 'Wire Gauge (AWG ↔ mm²)',
+      desc: 'Convert between AWG and mm² — area, kcmil, diameter, copper and aluminium resistance, and the next metric size.',
+      fields: [
+        { k: 'mode', label: 'Convert from', opts: [['awg', 'AWG size'], ['mm', 'mm² size']], def: ['awg', 'awg'] },
+        { k: 'g', label: 'AWG size', opts: AWG_LIST.map(function (g) { return [g, g + ' AWG']; }), def: ['12', '12'], show: function (s) { return s.mode === 'awg'; } },
+        { k: 'mm', label: 'Conductor size', q: 'csa', def: [2.5, 4.93], show: function (s) { return s.mode === 'mm'; } }
+      ],
+      formula: function () { return ['d = 0.127 mm × 92^((36 − n) / 39)   (n = gauge; 1/0 = 0, 2/0 = −1 …)', 'A = π·d² / 4;  1 kcmil = 0.5067 mm²', 'R = ρ / A,  ρ_Cu = 0.017241, ρ_Al = 0.028264 Ω·mm²/m at 20 °C']; },
+      calc: function (v) {
+        var A, d, rows = [];
+        if (v.mode === 'awg') { d = 0.127 * Math.pow(92, (36 - awgN(v.g)) / 39); A = Math.PI * d * d / 4; }
+        else { A = v.mm; d = Math.sqrt(4 * A / Math.PI); }
+        var n = Math.round(36 - 39 * Math.log(d / 0.127) / Math.log(92)), next = IEC_MM2.filter(function (s) { return s >= A - 1e-9; })[0];
+        rows.push(['Conductor area', fmt(A, 3) + ' mm²', 1, fmt(A / 0.506707, 2) + ' kcmil']);
+        if (v.mode === 'mm') rows.push(['Nearest AWG', n >= -3 && n <= 40 ? awgName(n) : (A > 107 ? 'above 4/0 — use kcmil' : 'smaller than 40 AWG'), 1, n >= -3 ? 'by diameter' : '']);
+        rows.push(['Diameter (solid)', fmt(d, 3) + ' mm', 0, fmt(d / 25.4, 4) + ' in']);
+        rows.push(['Resistance, copper', fmt(17.241 / A, 4) + ' Ω/km', 0, fmt(17.241 / A * 0.3048, 4) + ' Ω per 1000 ft at 20 °C']);
+        rows.push(['Resistance, aluminium', fmt(28.264 / A, 4) + ' Ω/km', 0, fmt(28.264 / A * 0.3048, 4) + ' Ω per 1000 ft at 20 °C']);
+        rows.push(['Next IEC metric size', next ? next + ' mm²' : 'over 630 mm²', 0, 'equal or larger area (IEC 60228)']);
+        return rows;
+      },
+      note: 'Values for solid round conductors. Stranded conductors have a slightly larger diameter and a few percent higher resistance — use NEC Chapter 9 Table 8 or IEC 60228 for exact figures. Ampacity is a separate check (Cable Sizing calculator).'
+    },
+
+    ohm: {
+      code: 'UTIL / OHM', title: 'Ohm\'s Law & Power',
+      desc: 'Current from power, or power from current — DC, single-phase and three-phase, with kW, kVA, kvar and impedance.',
+      fields: [
+        { k: 'ph', label: 'System', opts: [['dc', 'DC'], ['1', 'Single-phase AC'], ['3', 'Three-phase AC (line-to-line voltage)']], def: ['3', '3'] },
+        { k: 'mode', label: 'Known values', opts: [['vi', 'Voltage and current'], ['vp', 'Voltage and power (kW)']], def: ['vi', 'vi'] },
+        { k: 'v', label: 'Voltage', unit: 'V', def: [400, 480] },
+        { k: 'i', label: 'Current', unit: 'A', def: [100, 100], show: function (s) { return s.mode === 'vi'; } },
+        { k: 'p', label: 'Real power', unit: 'kW', def: [55, 55], show: function (s) { return s.mode === 'vp'; } },
+        { k: 'pf', label: 'Power factor', unit: 'cos φ', def: [0.85, 0.85], max: 1, maxMsg: 'Power factor must be 1 or less.', show: function (s) { return s.ph !== 'dc'; } }
+      ],
+      formula: function () { return ['DC: P = V·I,  R = V / I', '1-phase: S = V·I,  P = S·cos φ', '3-phase: S = √3·V·I,  P = S·cos φ,  Q = S·sin φ']; },
+      calc: function (v) {
+        var dc = v.ph === 'dc', k = v.ph === '3' ? Math.sqrt(3) : 1, pf = dc ? 1 : v.pf;
+        var I = v.mode === 'vi' ? v.i : v.p * 1000 / (k * v.v * pf), S = k * v.v * I, P = S * pf, Q = S * Math.sqrt(Math.max(0, 1 - pf * pf));
+        var Z = (v.ph === '3' ? v.v / Math.sqrt(3) : v.v) / I;
+        var rows = [
+          ['Current', fmt(I, 2) + ' A', v.mode === 'vp' ? 1 : 0, v.ph === '3' ? 'per line' : ''],
+          ['Real power', fmt(P / 1000, 3) + ' kW', v.mode === 'vi' ? 1 : 0, fmt(P / 745.7, 2) + ' hp · ' + fmt(P * 3.41214, 0) + ' BTU/h']
+        ];
+        if (!dc) rows.push(['Apparent power', fmt(S / 1000, 3) + ' kVA', 0], ['Reactive power', fmt(Q / 1000, 3) + ' kvar', 0]);
+        rows.push([dc ? 'Resistance' : 'Impedance per phase', fmt(Z, 4) + ' Ω', 0, dc ? 'R = V / I' : (v.ph === '3' ? 'phase voltage ' + fmt(v.v / Math.sqrt(3), 1) + ' V ÷ line current' : 'V ÷ I')]);
+        return rows;
+      },
+      note: 'For motors, the input power is the shaft rating divided by efficiency; use the Motor Full-Load Current calculator for code-based current.'
+    },
+
+    slope: {
+      code: 'UTIL / SLOPE', title: 'Slope Converter',
+      desc: 'Convert a slope between percent, degrees, 1 : n, inches per foot and millimetres per metre, and get the fall over a run.',
+      fields: [
+        { k: 'ty', label: 'Slope given as', opts: [['pct', 'Percent (%)'], ['deg', 'Degrees (°)'], ['ratio', 'Ratio 1 : n'], ['inft', 'Inches per foot'], ['mmm', 'Millimetres per metre']], def: ['pct', 'pct'] },
+        { k: 'pct', label: 'Slope', unit: '%', def: [2, 2], show: function (s) { return s.ty === 'pct'; } },
+        { k: 'deg', label: 'Slope', unit: '°', def: [1.146, 1.146], max: 89.9, maxMsg: 'Use less than 90°.', show: function (s) { return s.ty === 'deg'; } },
+        { k: 'n', label: 'Slope 1 :', unit: 'n', def: [50, 50], show: function (s) { return s.ty === 'ratio'; } },
+        { k: 'inft', label: 'Slope', unit: 'in/ft', def: [0.25, 0.25], show: function (s) { return s.ty === 'inft'; } },
+        { k: 'mmm', label: 'Slope', unit: 'mm/m', def: [20, 20], show: function (s) { return s.ty === 'mmm'; } },
+        { k: 'run', label: 'Horizontal run (0 to skip)', q: 'len', def: [10, 30], zero: true }
+      ],
+      formula: function () { return ['gradient g = rise / run', '% = 100·g;  angle = atan(g);  1 : (1/g);  in/ft = 12·g;  mm/m = 1000·g', 'Fall = g × run']; },
+      calc: function (v) {
+        var g = { pct: v.pct / 100, deg: Math.tan(v.deg * Math.PI / 180), ratio: 1 / v.n, inft: v.inft / 12, mmm: v.mmm / 1000 }[v.ty];
+        var rows = [
+          ['Percent', fmt(g * 100, 3) + ' %', v.ty !== 'pct' ? 1 : 0],
+          ['Angle', fmt(Math.atan(g) * 180 / Math.PI, 3) + '°', v.ty !== 'deg' ? 1 : 0],
+          ['Ratio', '1 : ' + fmt(1 / g, 1), 0],
+          ['Inches per foot', fmt(g * 12, 3) + ' in/ft', 0, g * 12 >= 0.249 ? '' : 'less than ¼ in/ft'],
+          ['Millimetres per metre', fmt(g * 1000, 1) + ' mm/m', 0]
+        ];
+        if (v.run > 0) rows.push(['Fall over the run', sys === 'si' ? fmt(g * v.run * 1000, 0) + ' mm' : fmt(g * v.run / 0.0254, 2) + ' in', 1, 'over ' + fq(v.run, 'len')]);
+        return rows;
+      },
+      note: 'Common drainage slopes: 2 % ≈ ¼ in/ft (2.08 %) for small drains, 1 % ≈ ⅛ in/ft for 3 in and larger; condensate at least 1 %.'
+    },
+
+    offset: {
+      code: 'UTIL / OFFSET', title: 'Pipe & Conduit Offset',
+      desc: 'Travel, advance and multiplier for an offset with two bends or fittings, with conduit shrink and rolling offsets.',
+      fields: [
+        { k: 'off', label: 'Offset (rise)', q: 'dia', def: [300, 12] },
+        { k: 'roll', label: 'Roll (for a rolling offset, 0 if none)', q: 'dia', def: [0, 0], zero: true },
+        { k: 'ang', label: 'Bend / fitting angle', opts: [['10', '10°'], ['22.5', '22½°'], ['30', '30°'], ['45', '45°'], ['60', '60°']], def: ['45', '45'] }
+      ],
+      formula: function () { return ['True offset = √(rise² + roll²)', 'Travel = offset / sin θ  (multiplier 1 / sin θ)', 'Advance = offset / tan θ;  conduit shrink = offset × (1/sin θ − 1/tan θ)']; },
+      calc: function (v) {
+        var th = +v.ang * Math.PI / 180, t = Math.sqrt(v.off * v.off + v.roll * v.roll);
+        var rows = [
+          ['Travel (between bend centres)', lenFine(t / Math.sin(th)), 1, '× ' + fmt(1 / Math.sin(th), 3) + ' multiplier'],
+          ['Advance (run gained)', lenFine(t / Math.tan(th)), 0],
+          ['Conduit shrink', lenFine(t * (1 / Math.sin(th) - 1 / Math.tan(th))), 0, 'length the run loses — add it when marking']
+        ];
+        if (v.roll > 0) rows.unshift(['True offset', lenFine(t), 1, 'rolling offset: √(rise² + roll²)']);
+        return rows;
+      },
+      note: 'Travel is measured centre to centre of the bends (or fittings). For pipe, subtract the fitting make-up from the travel to get the cut length.'
+    },
+
+    tankvol: {
+      code: 'UTIL / TANK', title: 'Tank Volume & Level',
+      desc: 'Full and partial volume of rectangular, vertical cylinder and horizontal cylinder tanks from the liquid level.',
+      fields: [
+        { k: 'sh', label: 'Tank shape', opts: [['rect', 'Rectangular'], ['vcyl', 'Vertical cylinder'], ['hcyl', 'Horizontal cylinder']], def: ['hcyl', 'hcyl'] },
+        { k: 'l', label: 'Length', q: 'len', def: [5, 16], show: function (s) { return s.sh !== 'vcyl'; } },
+        { k: 'w', label: 'Width', q: 'len', def: [2, 6.5], show: function (s) { return s.sh === 'rect'; } },
+        { k: 'd', label: 'Diameter', q: 'len', def: [2, 6.5], show: function (s) { return s.sh !== 'rect'; } },
+        { k: 'h', label: 'Height', q: 'len', def: [2, 6.5], show: function (s) { return s.sh !== 'hcyl'; } },
+        { k: 'lv', label: 'Liquid level (from the bottom)', q: 'len', def: [1, 3.3], zero: true }
+      ],
+      check: function (v) { var top = v.sh === 'hcyl' ? v.d : v.h; return v.lv > top + 1e-9 ? 'The level cannot be above the top of the tank.' : ''; },
+      formula: function () { return ['Rectangular: V = L·W·level;  vertical cylinder: V = π·D²/4 · level', 'Horizontal cylinder: A = r²·acos((r − h)/r) − (r − h)·√(2rh − h²);  V = A·L']; },
+      calc: function (v) {
+        var full, part;
+        if (v.sh === 'rect') { full = v.l * v.w * v.h; part = v.l * v.w * v.lv; }
+        else if (v.sh === 'vcyl') { full = Math.PI * v.d * v.d / 4 * v.h; part = Math.PI * v.d * v.d / 4 * v.lv; }
+        else { var r = v.d / 2, hh = Math.min(v.lv, v.d); full = Math.PI * r * r * v.l; part = (r * r * Math.acos((r - hh) / r) - (r - hh) * Math.sqrt(Math.max(0, 2 * r * hh - hh * hh))) * v.l; }
+        var L = function (m3) { return sys === 'si' ? fmt(m3 * 1000, 0) + ' L' : fmt(m3 / 0.003785411784, 0) + ' US gal'; };
+        return [
+          ['Volume at this level', fq(part, 'vol'), 1, L(part)],
+          ['Filled', fmt(part / full * 100, 1) + ' %', 1],
+          ['Full volume', fq(full, 'vol'), 0, L(full)],
+          ['Space left', fq(full - part, 'vol'), 0, L(full - part)]
+        ];
+      },
+      note: 'Internal dimensions. Horizontal tanks with dished ends hold a little more than the cylinder alone — add the head volume from the manufacturer.'
+    },
+
+    heatflow: {
+      code: 'UTIL / HEAT', title: 'Heat ↔ Flow (Air & Water)',
+      desc: 'Heat carried by an air or water flow at a temperature difference — or the flow needed for a load.',
+      fields: [
+        { k: 'med', label: 'Medium', opts: [['air', 'Air (1.20 kg/m³, 1.006 kJ/kg·K)'], ['water', 'Water (998 kg/m³, 4.19 kJ/kg·K)']], def: ['air', 'air'] },
+        { k: 'mode', label: 'Find', opts: [['q', 'Heat from flow and ΔT'], ['f', 'Flow from heat and ΔT']], def: ['q', 'q'] },
+        { k: 'fa', label: 'Airflow', q: 'air', def: [3600, 2000], show: function (s) { return s.med === 'air' && s.mode === 'q'; } },
+        { k: 'fw', label: 'Water flow', q: 'liq', def: [1, 16], show: function (s) { return s.med === 'water' && s.mode === 'q'; } },
+        { k: 'q', label: 'Heat load', q: 'power', def: [12, 41000], show: function (s) { return s.mode === 'f'; } },
+        { k: 'dt', label: 'Temperature difference (ΔT)', q: 'dT', def: [10, 18] }
+      ],
+      formula: function () { return ['Q = ρ · cp · V̇ · ΔT', 'Air: Q [W] ≈ 1.21 × L/s × ΔT[K]   ·   Q [BTU/h] ≈ 1.08 × CFM × ΔT[°F]', 'Water: Q [kW] ≈ 4.18 × L/s × ΔT[K]   ·   Q [BTU/h] ≈ 500 × gpm × ΔT[°F]']; },
+      calc: function (v) {
+        var air = v.med === 'air', k = air ? 1.2 * 1.006 : 998 * 4.19; // kW per (m³/s · K)
+        if (v.mode === 'q') {
+          var V = air ? v.fa : v.fw, Q = k * V * v.dt;
+          return [['Heat', fq(Q, 'power'), 1, fmt(Q / 3.51685, 2) + ' TR · ' + fmt(Q * 3412.14, 0) + ' BTU/h'], [air ? 'Airflow' : 'Water flow', fq(V, air ? 'air' : 'liq'), 0, 'at ΔT ' + fq(v.dt, 'dT')]];
+        }
+        var Vn = v.q / (k * v.dt);
+        return [[air ? 'Airflow needed' : 'Water flow needed', fq(Vn, air ? 'air' : 'liq'), 1, air ? fmt(Vn * 1000, 0) + ' L/s · ' + fmt(Vn / 0.000471947, 0) + ' CFM' : fmt(Vn * 1000, 2) + ' L/s · ' + fmt(Vn / 6.30902e-5, 1) + ' gpm'], ['Heat load', fq(v.q, 'power'), 0, 'at ΔT ' + fq(v.dt, 'dT')]];
+      },
+      note: 'Sensible heat only — for air with dehumidification use the Psychrometric Chart (latent heat). For glycol, multiply the water flow by about 1.1–1.2 depending on concentration.'
+    },
+
+    props: {
+      code: 'UTIL / PROPS', title: 'Air & Water Properties',
+      desc: 'Air density and viscosity at any temperature and altitude; water density, specific heat, viscosity, vapour pressure and boiling point.',
+      fields: [
+        { k: 't', label: 'Temperature', q: 'tc', def: [20, 68], neg: true },
+        { k: 'alt', label: 'Altitude above sea level', q: 'len', def: [0, 0], zero: true }
+      ],
+      check: function (v) { return v.t < -40 || v.t > 150 ? 'Use a temperature between −40 and 150 °C.' : v.alt > 5000 ? 'Use an altitude up to 5,000 m.' : ''; },
+      formula: function () { return ['Barometric p = 101 325 × (1 − 2.25577×10⁻⁵·z)^5.2559', 'Air: ρ = p / (287.05·T);  μ = 1.458×10⁻⁶·T^1.5 / (T + 110.4)  (Sutherland)', 'Water: μ = 2.414×10⁻⁵·10^(247.8/(T − 140));  p_sat by the Antoine equation']; },
+      calc: function (v) {
+        var p = psyP(v.alt), T = v.t + 273.15, rho = p / (287.05 * T), mu = 1.458e-6 * Math.pow(T, 1.5) / (T + 110.4), si = sys === 'si';
+        var rows = [
+          ['Air density', si ? fmt(rho, 4) + ' kg/m³' : fmt(rho * 0.062428, 5) + ' lb/ft³', 1, 'dry air at ' + fq(p, 'press')],
+          ['Air dynamic viscosity', fmt(mu * 1e5, 3) + ' × 10⁻⁵ Pa·s', 0, 'kinematic ' + fmt(mu / rho * 1e5, 3) + ' × 10⁻⁵ m²/s'],
+          ['Barometric pressure', fq(p, 'press'), 0, fq(v.alt, 'len') + ' above sea level'],
+          ['Water boils at', tTxtC(antoineT(p)), 1, 'at this pressure']
+        ];
+        if (v.t >= 0 && v.t <= 100) rows.push(
+          ['Water density', si ? fmt(rhoW(v.t), 1) + ' kg/m³' : fmt(rhoW(v.t) * 0.062428, 3) + ' lb/ft³', 0],
+          ['Water specific heat', si ? fmt(waterCp(v.t), 3) + ' kJ/kg·K' : fmt(waterCp(v.t) * 0.238846, 4) + ' BTU/lb·°F', 0],
+          ['Water viscosity', fmt(2.414e-5 * Math.pow(10, 247.8 / (T - 140)) * 1000, 3) + ' mPa·s', 0],
+          ['Water vapour pressure', fq(antoineP(v.t), 'press'), 0, 'saturation at ' + tTxtC(v.t)]
+        );
+        else rows.push(['Water properties', 'liquid water data for 0–100 °C only', 0]);
+        return rows;
+      },
+      note: 'Air treated as dry; humid air is slightly lighter (see the Psychrometric Chart). Correlations are accurate to about 1 % in the ranges shown.'
+    },
+
+    scale: {
+      code: 'UTIL / SCALE', title: 'Drawing Scale',
+      desc: 'Real length from a measurement on a drawing, and the drawing length for a real size — metric and architectural scales.',
+      fields: [
+        { k: 'sc', label: 'Drawing scale', opts: SCALES, def: ['50', '48'] },
+        { k: 'dl', label: 'Length measured on the drawing', q: 'dia', def: [100, 4] },
+        { k: 'rl', label: 'Real length to draw (0 to skip)', q: 'len', def: [5, 16], zero: true }
+      ],
+      formula: function () { return ['Real = drawing × n   (scale 1 : n)', 'Drawing = real ÷ n']; },
+      calc: function (v) {
+        var n = +v.sc, real = v.dl * n, rows = [['Real length', fq(real, 'len'), 1, lenFine(real).replace(/ (mm|in)$/, ' $1')]];
+        if (v.rl > 0) rows.push(['Drawing length for the real size', lenFine(v.rl / n), 1, fq(v.rl, 'len') + ' at 1 : ' + n]);
+        rows.push(['Scale factor', '1 : ' + n, 0, SCALES.filter(function (s) { return s[0] === v.sc; })[0][1]]);
+        return rows;
+      },
+      note: 'Check the scale bar on the sheet — prints and PDFs are often not to scale. 1/4" = 1\'-0" is 1 : 48, 1/8" = 1\'-0" is 1 : 96.'
+    },
+
     flow: {
       code: 'UTIL / FLOW', title: 'Flow & Velocity',
       desc: 'Air velocity and velocity pressure in a round duct from airflow and diameter.',
@@ -7494,6 +7848,15 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     roofdrain: ['Rational method Q = C·i·A', 'Rational method; IPC Chapter 11 (Figure 1106.1 rainfall, Table 1106.2 leader capacity).', 'method'],
     rect:      ['Huebscher equivalent diameter De = 1.30(ab)^0.625/(a+b)^0.25', 'Huebscher (1948); ASHRAE Handbook—Fundamentals Ch. 21.', 'method'],
     flow:      ['V = Q/A; Pv = ½·ρ·V²', 'ASHRAE Handbook—Fundamentals Ch. 21 (velocity pressure).', 'method'],
+    pipedata:  ['ID = OD − 2t; area πID²/4; weight π(OD − t)tρ', 'ASME B36.10M (welded and seamless steel pipe); ASTM B88 (seamless copper water tube).', 'standard'],
+    awg:       ['d = 0.127 mm × 92^((36 − n)/39); R = ρ/A', 'ASTM B258 (AWG definition); IEC 60228 (metric conductor sizes); NEC Ch. 9 Table 8 for stranded conductors.', 'standard'],
+    ohm:       ['P = V·I (DC); S = V·I, √3·V·I; P = S·cos φ', 'Electrical engineering fundamentals (IEEE / IEC terminology).', 'method'],
+    slope:     ['g = rise/run → %, angle, 1:n, in/ft, mm/m', 'Geometry; drainage slopes per IPC Table 704.1.', 'method'],
+    offset:    ['Travel = offset/sin θ; advance = offset/tan θ; shrink = offset(csc θ − cot θ)', 'Trigonometry used in pipefitting and conduit bending practice.', 'method'],
+    tankvol:   ['Prism, cylinder and circular-segment volumes', 'Geometry (circular segment area for horizontal tanks).', 'method'],
+    heatflow:  ['Q = ρ·cp·V̇·ΔT', 'ASHRAE Handbook—Fundamentals (sensible heat of air and water).', 'method'],
+    props:     ['Ideal-gas density; Sutherland viscosity; Vogel water viscosity; Antoine vapour pressure', 'ASHRAE Handbook—Fundamentals Ch. 1 and Ch. 33; standard atmosphere for barometric pressure.', 'method'],
+    scale:     ['Real = drawing × n', 'ISO 5455 (technical drawing scales); US architectural scales.', 'standard'],
     conv:      ['Exact conversion factors', 'NIST Special Publication 811 (Guide for the Use of the SI).', 'standard'],
     ref:       ['Reference tables', 'ACH, duct and pipe velocities: industry guidance (ASHRAE, SMACNA); fuel values typical published data; CO₂ factors consistent with US EPA.', 'typical'],
     plan:      ['Sizes elements from the calculators above; sprinkler spacing capped at 4.6 m (15 ft)', 'Inherits each calculator’s references; 15 ft maximum spacing per NFPA 13 light hazard.', 'method']
@@ -7546,7 +7909,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     var groups = DISC_ORDER.map(function (dk) {
       var ids = cardIds.filter(function (id) { return CALCS[id].disc === dk; });
       return [DISC[dk] + ' calculators', dk, ids];
-    }).concat([['Utilities', 'U', ['conv', 'rect', 'flow', 'ref']]]);
+    }).concat([['Utilities', 'U', ['conv', 'rect', 'flow', 'ref', 'pipedata', 'awg', 'ohm', 'slope', 'offset', 'tankvol', 'heatflow', 'props', 'scale']]]);
     var name = function (id) {
       if (CALCS[id]) return [CALCS[id].title, CALCS[id].code];
       return { conv: ['Unit Converter', 'UTIL / UNIT'], ref: ['MEP References', 'UTIL / HVAC'], plan: ['Plan Overlay', 'Section 03'] }[id];
@@ -11601,6 +11964,231 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     });
   }
 
+  /* ---------- Games (Utilities): Pipe Puzzle, Unit Sprint, Spot the Mistake ---------- */
+  var GAME_KEY = 'mechtoolbox-games', GAME = { best: {}, sound: false };
+  try { var gk = JSON.parse(localStorage.getItem(GAME_KEY) || 'null'); if (gk && gk.best) GAME = gk; } catch (e) {}
+  function gameSave() { try { localStorage.setItem(GAME_KEY, JSON.stringify(GAME)); } catch (e) {} }
+  var gameTimer = 0, gameAudio = null;
+  // Short tones for feedback (off unless the player turns sound on).
+  function blip(freq, ms, delay) {
+    if (!GAME.sound) return;
+    try {
+      gameAudio = gameAudio || new (window.AudioContext || window.webkitAudioContext)();
+      var t0 = gameAudio.currentTime + (delay || 0), o = gameAudio.createOscillator(), g = gameAudio.createGain();
+      o.type = 'triangle'; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.07, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + (ms || 120) / 1000);
+      o.connect(g); g.connect(gameAudio.destination); o.start(t0); o.stop(t0 + (ms || 120) / 1000);
+    } catch (e) {}
+  }
+  var cheer = function () { blip(523, 120); blip(659, 120, 0.1); blip(784, 220, 0.2); };
+  function gameBar(stats) {
+    return '<div class="gm-bar">' + stats.map(function (s) { return '<span class="gm-stat">' + s[0] + ' <b' + (s[2] ? ' id="' + s[2] + '"' : '') + '>' + s[1] + '</b></span>'; }).join('') +
+      '<button type="button" class="gm-sound" data-gm="sound" aria-pressed="' + GAME.sound + '" title="Sound effects">' + (GAME.sound ? '🔊' : '🔈') + '<span class="sr-only">Sound effects</span></button></div>';
+  }
+  function confetti(host) {
+    if (reduceMotion.matches || !host) return;
+    var box = document.createElement('div'), cols = ['var(--accent)', 'var(--pass)', 'var(--mechanical)', 'var(--fire)', 'var(--sanitary)'];
+    box.className = 'gm-confetti'; box.setAttribute('aria-hidden', 'true');
+    for (var i = 0; i < 36; i++) {
+      var s = document.createElement('i');
+      s.style.left = (10 + Math.random() * 80) + '%'; s.style.background = cols[i % 5];
+      s.style.animationDelay = (Math.random() * 0.25) + 's'; s.style.setProperty('--dx', (Math.random() * 160 - 80) + 'px'); s.style.setProperty('--rz', (Math.random() * 720 - 360) + 'deg');
+      box.appendChild(s);
+    }
+    host.appendChild(box);
+    setTimeout(function () { box.remove(); }, 1900);
+  }
+  var shuffle = function (a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
+  var pick1 = function (a) { return a[Math.floor(Math.random() * a.length)]; };
+
+  // --- Pipe Puzzle: openings are bits N 1, E 2, S 4, W 8; a click turns a piece 90° clockwise.
+  var PP = null, PP_DIRS = [[-1, 0, 1, 4], [0, 1, 2, 8], [1, 0, 4, 1], [0, -1, 8, 2]];
+  var ppRot = function (m, k) { for (var i = 0; i < (k % 4); i++) m = ((m << 1) | (m >> 3)) & 15; return m; };
+  var ppMask = function (c) { return ppRot(c.m0, c.rot); };
+  function ppNew(level) {
+    var n = Math.min(4 + level, 8), src = Math.floor(Math.random() * n), path = null;
+    for (var tries = 0; !path && tries < 300; tries++) { // random walk across the grid, left edge to right edge
+      var seen = {}, stack = [[src, 0]], minLen = n + Math.floor(n * 0.8);
+      seen[src + ',0'] = 1;
+      while (stack.length) {
+        var cur = stack[stack.length - 1];
+        if (cur[1] === n - 1 && stack.length >= minLen) { path = stack.slice(); break; }
+        var opts = PP_DIRS.map(function (d) { return [cur[0] + d[0], cur[1] + d[1]]; }).filter(function (q) { return q[0] >= 0 && q[0] < n && q[1] >= 0 && q[1] < n && !seen[q[0] + ',' + q[1]]; });
+        if (!opts.length) { stack.pop(); continue; }
+        var nx = pick1(opts); seen[nx[0] + ',' + nx[1]] = 1; stack.push(nx);
+      }
+    }
+    if (!path) { path = []; for (var c0 = 0; c0 < n; c0++) path.push([src, c0]); }
+    var mask = {}, bit = function (a, b) { for (var k = 0; k < 4; k++) if (a[0] + PP_DIRS[k][0] === b[0] && a[1] + PP_DIRS[k][1] === b[1]) return PP_DIRS[k][2]; return 0; };
+    path.forEach(function (c, i) { mask[c[0] + ',' + c[1]] = (i ? bit(c, path[i - 1]) : 8) | (i < path.length - 1 ? bit(c, path[i + 1]) : 2); });
+    var DECOY = [5, 3, 7, 3, 5, 3, 11], cells = [];
+    for (var r = 0; r < n; r++) for (var c = 0; c < n; c++) cells.push({ m0: mask[r + ',' + c] || pick1(DECOY), rot: Math.floor(Math.random() * 4) });
+    PP = { n: n, level: level, cells: cells, src: src, drain: path[path.length - 1][0], moves: 0, done: false };
+    if (ppFlow().win) PP.cells[path[0][0] * n + path[0][1]].rot++; // never start solved
+  }
+  // Water from the supply: every piece connected through matching openings.
+  function ppFlow() {
+    var n = PP.n, wet = {}, q = [];
+    var start = PP.src * n;
+    if (ppMask(PP.cells[start]) & 8) { wet[start] = 1; q.push(start); }
+    while (q.length) {
+      var i = q.shift(), r = Math.floor(i / n), c = i % n, m = ppMask(PP.cells[i]);
+      PP_DIRS.forEach(function (d) {
+        var rr = r + d[0], cc = c + d[1], j = rr * n + cc;
+        if (!(m & d[2]) || rr < 0 || rr >= n || cc < 0 || cc >= n || wet[j]) return;
+        if (ppMask(PP.cells[j]) & d[3]) { wet[j] = 1; q.push(j); }
+      });
+    }
+    var out = PP.drain * n + n - 1;
+    return { wet: wet, win: !!wet[out] && !!(ppMask(PP.cells[out]) & 2) };
+  }
+  function ppSvg(m) {
+    var ends = { 1: '20 0', 2: '40 20', 4: '20 40', 8: '0 20' }, d = '';
+    [1, 2, 4, 8].forEach(function (b) { if (m & b) d += 'M20 20L' + ends[b]; });
+    return '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="' + d + '" class="pp-wall"/><path d="' + d + '" class="pp-water"/><circle cx="20" cy="20" r="5.5" class="pp-hub"/></svg>';
+  }
+  function renderPipes() {
+    if (!PP) ppNew(1);
+    var n = PP.n, f = ppFlow(), best = GAME.best['pp' + PP.level];
+    mBody.innerHTML = gameBar([['Level', PP.level], ['Moves', PP.moves, 'pp-moves'], ['Best', best ? best + ' moves' : '—']]) +
+      '<p class="m-desc">Turn the pipes so water runs from the supply on the left to the drain on the right. Click or tap a piece to rotate it — or use the arrow keys and Space.</p>' +
+      '<div class="pp-wrap" style="--n:' + n + '"><span class="pp-io pp-in" style="--r:' + PP.src + '">IN</span>' +
+      '<div class="pp-grid" role="grid" aria-label="Pipe puzzle, ' + n + ' by ' + n + '">' + PP.cells.map(function (c, i) {
+        return '<button type="button" class="pp-cell' + (f.wet[i] ? ' wet' : '') + '" data-i="' + i + '" style="--a:' + (c.rot * 90) + 'deg" aria-label="Row ' + (Math.floor(i / n) + 1) + ', column ' + (i % n + 1) + (f.wet[i] ? ', has water' : '') + '"' + (PP.done ? ' disabled' : '') + '>' + ppSvg(c.m0) + '</button>';
+      }).join('') + '</div><span class="pp-io pp-out' + (f.win ? ' wet' : '') + '" style="--r:' + PP.drain + '">OUT</span></div>' +
+      '<p class="gm-msg" id="pp-msg" aria-live="polite">' + (PP.done ? 'Solved in ' + PP.moves + ' moves!' : '') + '</p>' +
+      '<div class="gm-actions"><button type="button" class="btn btn-outline btn-sm" data-gm="pp-new">New puzzle</button>' +
+      (PP.done ? '<button type="button" class="btn btn-solid btn-sm" data-gm="pp-next">Next level →</button>' : '') + '</div>';
+  }
+  function ppTurn(btn) {
+    if (PP.done) return;
+    var i = +btn.dataset.i, c = PP.cells[i];
+    c.rot++; PP.moves++;
+    btn.style.setProperty('--a', (c.rot * 90) + 'deg'); // CSS turns it smoothly
+    $('#pp-moves').textContent = PP.moves;
+    blip(330 + (i % PP.n) * 30, 60);
+    var f = ppFlow();
+    $$('.pp-cell', mBody).forEach(function (b, j) { b.classList.toggle('wet', !!f.wet[j]); });
+    $('.pp-out', mBody).classList.toggle('wet', f.win);
+    if (f.win) {
+      PP.done = true;
+      var key = 'pp' + PP.level; if (!GAME.best[key] || PP.moves < GAME.best[key]) { GAME.best[key] = PP.moves; gameSave(); }
+      setTimeout(function () { renderPipes(); confetti($('.pp-wrap', mBody)); cheer(); var nx = $('[data-gm="pp-next"]', mBody); if (nx) nx.focus(); }, 350);
+    }
+  }
+
+  // --- Unit Sprint: 60 seconds of quick conversions.
+  var US_FACTS = [['TR', 'kW', 3.51685], ['kW', 'BTU/h', 3412.14], ['CFM', 'L/s', 0.471947], ['m³/h', 'L/s', 1 / 3.6], ['psi', 'kPa', 6.89476], ['bar', 'psi', 14.5038],
+    ['in.wg', 'Pa', 249.089], ['ft', 'm', 0.3048], ['in', 'mm', 25.4], ['US gpm', 'L/s', 0.0630902], ['US gal', 'L', 3.78541], ['hp', 'kW', 0.7457], ['ft²', 'm²', 0.092903],
+    ['lb', 'kg', 0.453592], ['kcal/h', 'W', 1.163], ['kWh', 'MJ', 3.6], ['therm', 'kWh', 29.3071], ['fpm', 'm/s', 0.00508], ['m', 'ft', 3.28084], ['kPa', 'm H₂O', 0.101972], ['ft H₂O', 'kPa', 2.98907], ['MBH', 'kW', 0.293071], 'temp', 'temp'];
+  var US = null;
+  function usQuestion() {
+    var f = pick1(US_FACTS), x, ans, text, wrong;
+    if (f === 'temp') {
+      x = pick1([0, 5, 10, 20, 25, 30, 35, 40, 60, 100]); ans = x * 9 / 5 + 32; text = x + ' °C = ? °F';
+      wrong = [x * 9 / 5, ans + 18, (x + 32) * 5 / 9, ans - 10, x * 2 + 30].filter(function (w) { return Math.abs(w - ans) > 0.5; });
+    } else {
+      x = pick1([1, 2, 3, 5, 10, 12, 20, 25, 50, 100]); ans = x * f[2]; text = x + ' ' + f[0] + ' = ? ' + f[1];
+      wrong = [ans * 10, ans / 10, ans * 2, ans / 2, ans * 1.5, ans * 0.3, x / f[2]].filter(function (w) { return Math.abs(w / ans - 1) > 0.08; });
+    }
+    var seen = {}, choices = [ans].concat(shuffle(wrong)).filter(function (v) { var k = fmt(v); if (seen[k]) return false; seen[k] = 1; return true; }).slice(0, 4);
+    US.q = { text: text, ans: ans, choices: shuffle(choices) };
+  }
+  function usLeft() { return Math.max(0, US.end - Date.now()); }
+  function renderSprint() {
+    clearInterval(gameTimer);
+    var best = GAME.best.us || 0;
+    if (!US || US.over || !US.end) {
+      var over = US && US.over;
+      mBody.innerHTML = gameBar([['Best', best + ' correct']]) +
+        '<div class="us-start">' + (over ? '<p class="us-final">' + US.score + ' correct' + (US.score > 0 && US.score >= Math.max(best, GAME.best.us || 0) ? ' — new best!' : '') + '</p><p class="m-desc">' + US.asked + ' answered · best streak ' + US.bestStreak + '</p>'
+          : '<p class="m-desc">60 seconds. Pick the right conversion — HVAC, pressure, flow, power and temperature. Keys 1–4 answer.</p>') +
+        '<button type="button" class="btn btn-solid" data-gm="us-start">' + (over ? 'Play again' : 'Start') + ' ▶</button></div>';
+      if (over && !US.celebrated) { US.celebrated = true; if (US.score > 0 && US.score >= best) { GAME.best.us = US.score; gameSave(); confetti($('.us-start', mBody)); cheer(); } }
+      return;
+    }
+    mBody.innerHTML = gameBar([['Score', US.score, 'us-score'], ['Streak', US.streak, 'us-streak'], ['Time', Math.ceil(usLeft() / 1000) + ' s', 'us-time']]) +
+      '<div class="us-timebar"><i id="us-bar" style="width:' + (usLeft() / 600) + '%"></i></div>' +
+      '<p class="us-q" id="us-q">' + esc(US.q.text) + '</p><div class="us-choices">' + US.q.choices.map(function (v, i) {
+        return '<button type="button" class="us-choice" data-gm="us-pick" data-v="' + v + '"><kbd>' + (i + 1) + '</kbd>' + fmt(v) + '</button>';
+      }).join('') + '</div><p class="gm-msg" id="us-msg" aria-live="polite"></p>';
+    gameTimer = setInterval(function () {
+      var left = usLeft(), bar = $('#us-bar'), t = $('#us-time');
+      if (bar) bar.style.width = (left / 600) + '%';
+      if (t) t.textContent = Math.ceil(left / 1000) + ' s';
+      if (!left) { clearInterval(gameTimer); US.over = true; blip(220, 300); renderSprint(); }
+    }, 200);
+  }
+  function usPick(btn) {
+    if (US.lock || US.over) return;
+    US.lock = true; US.asked++;
+    var v = +btn.dataset.v, ok = Math.abs(v - US.q.ans) < 1e-9 * Math.max(1, Math.abs(US.q.ans));
+    $$('.us-choice', mBody).forEach(function (b) { b.disabled = true; if (Math.abs(+b.dataset.v - US.q.ans) < 1e-9 * Math.max(1, Math.abs(US.q.ans))) b.classList.add('ok'); });
+    if (ok) { US.score++; US.streak++; US.bestStreak = Math.max(US.bestStreak, US.streak); blip(660 + Math.min(US.streak, 8) * 40, 90); }
+    else { btn.classList.add('bad'); US.streak = 0; blip(180, 160); }
+    $('#us-score').textContent = US.score; $('#us-streak').textContent = US.streak;
+    $('#us-msg').textContent = ok ? (US.streak >= 3 ? US.streak + ' in a row!' : 'Correct') : 'It was ' + fmt(US.q.ans);
+    var round = US;
+    setTimeout(function () { if (US === round && !US.over && current === 'sprint') { US.lock = false; usQuestion(); renderSprint(); } }, ok ? 450 : 1100); // skip if the window closed or a new round began
+  }
+
+  // --- Spot the Mistake: a Design Pitfalls drawing without its labels — right way or mistake?
+  var SP = { score: 0, asked: 0, streak: 0 };
+  function spNew() { SP.p = pick1(PITFALLS); SP.bad = Math.random() < 0.5; SP.answer = null; }
+  function renderSpot() {
+    if (!SP.p) spNew();
+    var p = SP.p, shown = SP.answer !== null, right = shown && (SP.answer === 'bad') === SP.bad;
+    mBody.innerHTML = gameBar([['Score', SP.score + ' / ' + SP.asked], ['Streak', SP.streak], ['Best streak', GAME.best.sp || 0]]) +
+      '<p class="m-desc">Is this installation done the right way, or is it a mistake? Keys: <kbd>R</kbd> right way · <kbd>M</kbd> mistake' + (shown ? ' · <kbd>N</kbd> next' : '') + '.</p>' +
+      '<p class="pf-disc" style="--c:' + PF_DISC[p.d][1] + '">' + esc(PF_DISC[p.d][0]) + '</p>' +
+      '<figure class="sp-fig' + (shown ? ' revealed ' + (SP.bad ? 'pf-bad' : 'pf-good') : '') + '"><svg viewBox="0 0 240 150" role="img" aria-label="Installation drawing">' + (SP.bad ? p.bad : p.good) + '</svg></figure>' +
+      (shown ? '<div class="sp-verdict ' + (right ? 'ok' : 'no') + '" role="status"><b>' + (right ? '✓ Correct — ' : '✕ Not quite — ') + (SP.bad ? 'this is the mistake.' : 'this is the right way.') + '</b>' +
+        '<p><strong>' + esc(p.title) + '.</strong> ' + esc(SP.bad ? p.badCap : p.goodCap) + '</p><p class="sp-why">' + esc(p.why) + '</p></div>' +
+        '<div class="gm-actions"><button type="button" class="btn btn-solid btn-sm" data-gm="sp-next">Next drawing →</button><button type="button" class="btn btn-outline btn-sm" data-pitfall="' + p.id + '">See both drawings</button></div>'
+        : '<div class="sp-choices"><button type="button" class="sp-choice sp-ok" data-gm="sp-answer" data-v="good">✓ Right way</button><button type="button" class="sp-choice sp-no" data-gm="sp-answer" data-v="bad">✕ Mistake</button></div>');
+  }
+  function spAnswer(v) {
+    if (SP.answer !== null) return;
+    SP.answer = v; SP.asked++;
+    var right = (v === 'bad') === SP.bad;
+    if (right) { SP.score++; SP.streak++; if (SP.streak > (GAME.best.sp || 0)) { GAME.best.sp = SP.streak; gameSave(); } blip(700, 110); } else { SP.streak = 0; blip(180, 160); }
+    renderSpot();
+    if (right && SP.streak > 0 && SP.streak % 5 === 0) { confetti($('.sp-fig', mBody)); cheer(); }
+    var nx = $('[data-gm="sp-next"]', mBody); if (nx) nx.focus();
+  }
+
+  // One set of listeners for all three games (the window body is re-rendered).
+  mBody.addEventListener('click', function (e) {
+    if (['pipes', 'sprint', 'spot'].indexOf(current) < 0) return;
+    var cell = e.target.closest('.pp-cell'); if (cell) { ppTurn(cell); return; }
+    var b = e.target.closest('[data-gm]'); if (!b) return;
+    var act = b.dataset.gm;
+    if (act === 'sound') { GAME.sound = !GAME.sound; gameSave(); b.setAttribute('aria-pressed', String(GAME.sound)); b.firstChild.textContent = GAME.sound ? '🔊' : '🔈'; blip(600, 80); return; }
+    if (act === 'pp-new') { ppNew(PP.level); renderPipes(); return; }
+    if (act === 'pp-next') { ppNew(PP.level + 1); renderPipes(); var c0 = $('.pp-cell', mBody); if (c0) c0.focus(); return; }
+    if (act === 'us-start') { US = { score: 0, streak: 0, bestStreak: 0, asked: 0, end: Date.now() + 60000 }; usQuestion(); renderSprint(); var ch = $('.us-choice', mBody); if (ch) ch.focus(); return; }
+    if (act === 'us-pick') { usPick(b); return; }
+    if (act === 'sp-answer') { spAnswer(b.dataset.v); return; }
+    if (act === 'sp-next') { spNew(); renderSpot(); var sc = $('.sp-choice', mBody); if (sc) sc.focus(); }
+  });
+  modal.addEventListener('keydown', function (e) { // on the whole window, so the keys work wherever focus is
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (current === 'pipes') {
+      var cell = e.target.closest && e.target.closest('.pp-cell'); if (!cell) return;
+      var i = +cell.dataset.i, n = PP.n, mv = { ArrowUp: -n, ArrowDown: n, ArrowLeft: -1, ArrowRight: 1 }[e.key];
+      if (mv == null) return;
+      var j = i + mv; if (j < 0 || j >= n * n || (e.key === 'ArrowLeft' && i % n === 0) || (e.key === 'ArrowRight' && i % n === n - 1)) return;
+      e.preventDefault(); $$('.pp-cell', mBody)[j].focus();
+    } else if (current === 'sprint' && US && US.end && !US.over && /^[1-4]$/.test(e.key)) {
+      var ch = $$('.us-choice', mBody)[+e.key - 1]; if (ch) { e.preventDefault(); usPick(ch); }
+    } else if (current === 'spot') {
+      var k = e.key.toLowerCase();
+      if (k === 'r' || k === 'm') { e.preventDefault(); spAnswer(k === 'm' ? 'bad' : 'good'); }
+      else if (k === 'n' && SP.answer !== null) { e.preventDefault(); spNew(); renderSpot(); var sc = $('.sp-choice', mBody); if (sc) sc.focus(); }
+    }
+  });
+  modal.addEventListener('close', function () { clearInterval(gameTimer); if (US && US.end && !US.over) US = null; }); // a sprint left halfway starts over next time
+
   var SPECIAL = {
     diff:  { code: CALCS.diff.code, title: 'Diffuser Selection & Layout', render: renderDF, sys: true },
     ductd: { code: CALCS.ductd.code, title: 'HVAC Duct Designer', render: renderDD, sys: true },
@@ -11610,7 +12198,10 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     pcl:  { code: CALCS.pcl.code, title: 'Precise Cooling Load', render: renderCL, sys: true },
     psy:  { code: CALCS.psy.code, title: 'Psychrometric Chart', render: renderPsy, sys: true },
     pls:  { code: CALCS.pls.code, title: 'Panel Load Schedule', render: renderPls, sys: true },
-    ecost: { code: CALCS.ecost.code, title: 'Appliance Energy Cost', render: renderEcost, sys: false }
+    ecost: { code: CALCS.ecost.code, title: 'Appliance Energy Cost', render: renderEcost, sys: false },
+    pipes: { code: 'GAME / PIPES', title: 'Pipe Puzzle', render: renderPipes, sys: false },
+    sprint: { code: 'GAME / UNITS', title: 'Unit Sprint', render: renderSprint, sys: false },
+    spot: { code: 'GAME / SPOT', title: 'Spot the Mistake', render: renderSpot, sys: false }
   };
 
   function render(id) {
@@ -11618,6 +12209,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     $('#m-code').textContent = d.code;
     $('#m-title').textContent = d.title;
     $('#m-sys').hidden = !!sp && !sp.sys;
+    modal.classList.toggle('game', !!sp && d.code.indexOf('GAME') === 0); // no code basis or units in a game
     modal.classList.toggle('split', !sp);
     modal.classList.toggle('wide', id === 'pcl' || id === 'phl' || id === 'ductd' || id === 'diff' || id === 'psy' || id === 'pls' || id === 'ecost');
     $('#m-close').setAttribute('aria-label', 'Close ' + d.title);
@@ -14859,21 +15451,22 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   }
 
   /* ---------- Feedback ---------- */
-  // Where feedback goes: set FEEDBACK_TO to your email and/or FEEDBACK_FORM to a Google Form / Tally link.
+  // Where feedback goes: FEEDBACK_ENDPOINT receives it (Formspree); FEEDBACK_FORM can add a link to a Google Form / Tally.
   var APP_VERSION = 'v0.9';
-  var FEEDBACK_TO = '';
+  var FEEDBACK_ENDPOINT = 'https://formspree.io/f/xqppkwrz';
   var FEEDBACK_FORM = '';
   var FB_DRAFT = 'mechtoolbox-feedback';
   var fb = $('#fb'), fbMsg = $('#fb-msg'), fbCtxCalc = null, fbCtxText = '', fbOpener = null;
   $('#fb-ver').textContent = APP_VERSION;
   $('#foot-ver').textContent = APP_VERSION + ' beta';
   if (FEEDBACK_FORM) { $('#fb-form-link').href = FEEDBACK_FORM; $('#fb-form-link').hidden = false; }
-  try { var fbd = JSON.parse(localStorage.getItem(FB_DRAFT) || 'null'); if (fbd) { fbMsg.value = fbd.msg || ''; $('#fb-name').value = fbd.name || ''; $('#fb-role').value = fbd.role || ''; } } catch (e) {}
+  try { var fbd = JSON.parse(localStorage.getItem(FB_DRAFT) || 'null'); if (fbd) { fbMsg.value = fbd.msg || ''; $('#fb-name').value = fbd.name || ''; $('#fb-role').value = fbd.role || ''; $('#fb-email').value = fbd.email || ''; } } catch (e) {}
   function fbText() {
     var type = ($('input[name="fb-type"]:checked', fb) || {}).value || 'Suggestion';
     var who = [$('#fb-name').value.trim(), $('#fb-role').value.trim()].filter(Boolean).join(' — ');
     var lines = ['Type: ' + type, '', fbMsg.value.trim() || '(no message yet)', ''];
     if (who) lines.push('From: ' + who);
+    if ($('#fb-email').value.trim()) lines.push('Email: ' + $('#fb-email').value.trim());
     if (fbCtxCalc && $('#fb-attach').checked && fbCtxText) lines.push('', '--- Calculator ---', fbCtxText);
     lines.push('', '--- Context ---', 'MechToolBox ' + APP_VERSION + ' · units ' + sys.toUpperCase() + ' · code basis ' + codeBasis.toUpperCase() + ' · screen ' + window.innerWidth + '×' + window.innerHeight);
     if (location.protocol !== 'file:') lines.push('Page: ' + location.origin + location.pathname);
@@ -14881,7 +15474,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   }
   function fbRefresh() {
     $('#fb-preview').textContent = fbText();
-    try { localStorage.setItem(FB_DRAFT, JSON.stringify({ msg: fbMsg.value, name: $('#fb-name').value, role: $('#fb-role').value })); } catch (e) {}
+    try { localStorage.setItem(FB_DRAFT, JSON.stringify({ msg: fbMsg.value, name: $('#fb-name').value, role: $('#fb-role').value, email: $('#fb-email').value })); } catch (e) {}
   }
   function fbOpen(calcId, trigger) {
     fbOpener = trigger || document.activeElement;
@@ -14889,7 +15482,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     fbCtxText = calcId ? lastCopy : '';
     $('#fb-ctx').hidden = !calcId;
     if (calcId) $('#fb-calc').textContent = CALCS[calcId] ? CALCS[calcId].title : calcId;
-    $('#fb-err').hidden = true; $('#fb-done').textContent = '';
+    $('#fb-err').hidden = true; $('#fb-email-err').hidden = true; fbDone('');
     fbRefresh();
     if (typeof fb.showModal === 'function') fb.showModal(); else fb.setAttribute('open', '');
     document.body.classList.add('modal-open');
@@ -14912,19 +15505,33 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     if (!ok) fbMsg.focus();
     return ok;
   }
+  function fbDone(text, bad) { var d = $('#fb-done'); d.textContent = text; d.classList.toggle('bad', !!bad); }
   $('#fb-form').addEventListener('submit', function (e) {
     e.preventDefault();
-    if (!fbCheck()) return;
+    var send = $('#fb-send');
+    if (send.disabled || !fbCheck()) return;
+    var email = $('#fb-email').value.trim(), emailOk = !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    $('#fb-email-err').hidden = emailOk;
+    if (!emailOk) { $('#fb-email').focus(); return; }
     var type = ($('input[name="fb-type"]:checked', fb) || {}).value || 'Suggestion';
-    var subject = 'MechToolBox feedback — ' + type + (fbCtxCalc && CALCS[fbCtxCalc] ? ' — ' + CALCS[fbCtxCalc].title : '');
-    var body = fbText();
-    if (body.length > 1800) body = body.slice(0, 1800) + '\n… (trimmed — use Copy text for the full version)';
-    window.location.href = 'mailto:' + encodeURIComponent(FEEDBACK_TO) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-    $('#fb-done').textContent = FEEDBACK_TO ? '✓ Opening your email app…' : '✓ Opening your email app — add the address to send to';
+    var calc = fbCtxCalc && CALCS[fbCtxCalc] ? CALCS[fbCtxCalc].title : '';
+    var data = { _subject: 'MechToolBox feedback — ' + type + (calc ? ' — ' + calc : ''), type: type, message: fbMsg.value.trim(),
+      name: $('#fb-name').value.trim(), company: $('#fb-role').value.trim(), calculator: calc, details: fbText(), _gotcha: $('#fb-gotcha').value };
+    if (email) data.email = email; // Formspree uses it as the reply-to address
+    send.disabled = true; send.textContent = 'Sending…'; fbDone('');
+    fetch(FEEDBACK_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) })
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (j) {
+          if (!r.ok) throw new Error((j.errors || []).map(function (x) { return x.message; }).join(' ') || 'error ' + r.status);
+        });
+      })
+      .then(function () { fbMsg.value = ''; fbRefresh(); fbDone('✓ Sent — thank you!'); }, // name and email stay for next time
+        function (err) { fbDone('✕ Couldn’t send (' + (navigator.onLine === false ? 'you’re offline' : err.message) + '). Your text is kept — try again, or use Copy text.', true); })
+      .then(function () { send.disabled = false; send.textContent = 'Send feedback'; });
   });
   $('#fb-copy').addEventListener('click', function () {
     if (!fbCheck()) return;
-    var t = fbText(), done = function () { $('#fb-done').textContent = '✓ Copied — paste it into an email or chat'; };
+    var t = fbText(), done = function () { fbDone('✓ Copied — paste it into an email or chat'); };
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(done, function () { fbFallbackCopy(t); done(); });
     else { fbFallbackCopy(t); done(); }
   });
