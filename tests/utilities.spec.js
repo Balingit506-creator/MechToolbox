@@ -10,9 +10,9 @@ async function openUtil(page, id) {
 test.describe('utilities — known values (SI)', () => {
   test.beforeEach(async ({ page }) => { await openSite(page, 'utilities') })
 
-  test('the Utilities view lists 13 tools in three groups, then 3 games', async ({ page }) => {
-    await expect(page.locator('#utilities .strip button')).toHaveCount(16)
-    await expect(page.locator('#utilities .strip-games button')).toHaveCount(3)
+  test('the Utilities view lists 13 tools in three groups, then 6 games', async ({ page }) => {
+    await expect(page.locator('#utilities .strip button')).toHaveCount(19)
+    await expect(page.locator('#utilities .strip-games button')).toHaveCount(6)
     await expect(page.locator('#utilities .util-group')).toHaveText(['Converters & references', 'Data tables', 'Field calculations', 'Games — take a break'])
   })
 

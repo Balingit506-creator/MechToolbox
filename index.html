@@ -1944,7 +1944,14 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
 /* Spot the mistake */
 .sp-fig { position: relative; max-width: 520px; margin: 8px auto 14px; padding: 10px; border: 1px solid var(--edge); border-radius: 12px; }
 .sp-fig svg { width: 100%; height: auto; border-radius: 6px; background: var(--background); }
-.sp-fig:not(.revealed) text, .sp-fig:not(.revealed) .pf-ring, .sp-fig:not(.revealed) .pf-dim { display: none; }
+.sp-fig:not(.revealed) .pf-tb, .sp-fig:not(.revealed) .pf-tg, .sp-fig:not(.revealed) .sp-only, .sp-fig:not(.revealed) .pf-ring, .sp-fig:not(.revealed) .pf-dim { display: none; }
+.sp-scene, .sp-look { max-width: 620px; margin: 0 auto 10px; font-size: 14.5px; line-height: 1.5; color: var(--muted); }
+.sp-scene b, .sp-look b { margin-right: 6px; font: 600 11px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--mint); }
+.sp-look { margin: 0 auto 12px; text-align: center; color: var(--text); }
+.sp-scene { max-width: none; margin: 0 0 10px; }
+.sp-key { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 10px 0 0; padding: 0; list-style: none; font: 500 11.5px var(--mono); color: var(--muted); }
+.sp-key li { display: inline-flex; align-items: center; gap: 6px; }
+.sp-key svg { width: 28px; height: 14px; overflow: visible; border-radius: 0; background: none; }
 .sp-fig.revealed { animation: gm-flip 0.4s ease; }
 @keyframes gm-flip { from { transform: rotateX(25deg); opacity: 0.6; } }
 .sp-choices { display: flex; justify-content: center; gap: 12px; }
@@ -1960,6 +1967,60 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
 .sp-verdict p { font-size: 14.5px; }
 .sp-why { margin-top: 6px; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .pp-cell svg, .sp-fig.revealed, .us-choice.bad { transition: none; animation: none; } }
+/* Symbol match */
+.mm-grid { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 8px; max-width: 560px; margin: 0 auto; }
+.mm-card { aspect-ratio: 4 / 3; padding: 0; border: 0; background: none; cursor: pointer; perspective: 600px; }
+.mm-card:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; border-radius: 10px; }
+.mm-inner { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 320ms cubic-bezier(.3, 1.2, .5, 1); }
+.mm-card.open .mm-inner { transform: rotateY(180deg); }
+.mm-back, .mm-front { position: absolute; inset: 0; display: grid; place-items: center; padding: 6px; border: 1px solid var(--edge); border-radius: 10px; backface-visibility: hidden; }
+.mm-back { background: repeating-linear-gradient(45deg, var(--panel-2) 0 6px, var(--surface) 6px 12px); }
+.mm-back::after { content: '?'; font: 700 22px var(--mono); color: var(--accent); opacity: 0.55; }
+.mm-card:hover .mm-back { border-color: var(--mint); }
+.mm-front { transform: rotateY(180deg); background: var(--surface); color: var(--text); }
+.mm-card.done .mm-front { border-color: var(--pass); background: rgba(127, 217, 98, 0.1); }
+.mm-card:disabled { cursor: default; }
+.mm-svg { width: 80%; max-height: 100%; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.mm-svg .mm-fill { fill: currentColor; }
+.mm-svg .mm-txt { fill: currentColor; stroke: none; font: 700 11px var(--mono); }
+.mm-name { font: 600 clamp(11px, 2.6vw, 14px)/1.25 var(--head); text-align: center; }
+/* Phase balance */
+.pb-tray { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-height: 52px; padding: 10px; border: 1px dashed var(--line-2); border-radius: 12px; transition: border-color var(--ease); }
+.pb-empty { align-self: center; font: 500 12px var(--mono); color: var(--muted); }
+.pb-panel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+.pb-col { display: flex; flex-direction: column; gap: 8px; min-height: 180px; padding: 10px; border: 1px solid var(--edge); border-radius: 12px; background: var(--surface); cursor: pointer; transition: border-color var(--ease); }
+.pb-col.over, .pb-tray.over { border-color: var(--mint); }
+.pb-head { display: flex; justify-content: space-between; align-items: baseline; font: 600 13px var(--mono); }
+.pb-head b { color: var(--mint); }
+.pb-bar { height: 44px; display: flex; align-items: flex-end; border-radius: 6px; background: var(--panel-2); overflow: hidden; }
+.pb-bar i { display: block; width: 100%; background: linear-gradient(0deg, var(--accent), var(--warning)); transition: height 260ms ease; }
+.pb-list { display: flex; flex-direction: column; gap: 6px; }
+.pb-load { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--edge); border-radius: 10px; background: var(--panel-2); color: var(--text); font: 500 12.5px var(--head); text-align: left; cursor: grab; transition: border-color var(--ease), transform 120ms ease; }
+.pb-load b { font: 600 12px var(--mono); color: var(--accent); white-space: nowrap; }
+.pb-load:hover { border-color: var(--line-2); }
+.pb-load.sel { border-color: var(--mint); box-shadow: 0 0 0 2px rgba(255, 176, 0, 0.25); transform: translateY(-1px); }
+.pb-load:disabled { cursor: default; }
+.gm-msg.pb-warn { color: var(--accent); }
+.gm-msg.bad { color: var(--fail); }
+/* Term scramble */
+.ts-clue { margin: 4px 0 16px; font: 600 clamp(1.05rem, 3vw, 1.3rem)/1.4 var(--head); text-align: center; }
+.ts-clue span { font: 500 12px var(--mono); color: var(--muted); }
+.ts-slots, .ts-pool { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.ts-slots { margin-bottom: 14px; }
+.ts-slot, .ts-tile { width: 38px; height: 44px; padding: 0; border-radius: 8px; font: 700 20px var(--mono); }
+.ts-slot { border: 0; border-bottom: 2px solid var(--line-2); background: var(--panel-2); color: var(--text); }
+.ts-slot.full { border-bottom-color: var(--mint); cursor: pointer; }
+.ts-slot:disabled { cursor: default; }
+.ts-slots.win .ts-slot { border-bottom-color: var(--pass); color: var(--pass); }
+.ts-slots.skip .ts-slot { color: var(--accent); }
+.ts-slots.bad { animation: gm-shake 0.3s; }
+.ts-slots.bad .ts-slot { border-bottom-color: var(--fail); }
+.ts-tile { border: 1px solid var(--edge); background: var(--surface); color: var(--text); cursor: pointer; transition: transform 120ms ease, opacity var(--ease), border-color var(--ease); }
+.ts-tile:hover { border-color: var(--mint); }
+.ts-tile:active { transform: scale(0.92); }
+.ts-tile:disabled { opacity: 0.2; cursor: default; }
+@media (max-width: 480px) { .pb-panel { gap: 6px; } .pb-col { padding: 8px 6px; } .pb-load { flex-direction: column; align-items: flex-start; gap: 2px; padding: 6px 8px; } .ts-slot, .ts-tile { width: 30px; height: 38px; font-size: 17px; } }
+@media (prefers-reduced-motion: reduce) { .mm-inner, .pb-bar i { transition: none; } .ts-slots.bad { animation: none; } }
 </style>
 </head>
 <body>
@@ -2311,6 +2372,9 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
         <button type="button" data-open="pipes"><span class="code">PIPES</span><span class="label">Pipe Puzzle</span><span class="desc">Turn the pipes until water reaches the drain</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
         <button type="button" data-open="sprint"><span class="code">UNITS</span><span class="label">Unit Sprint</span><span class="desc">60 seconds of quick conversions — beat your best</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
         <button type="button" data-open="spot"><span class="code">SPOT</span><span class="label">Spot the Mistake</span><span class="desc">Right way or design pitfall? Judge the drawing</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
+        <button type="button" data-open="match"><span class="code">MATCH</span><span class="label">Symbol Match</span><span class="desc">Pair drawing symbols with their names</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
+        <button type="button" data-open="phase"><span class="code">PHASE</span><span class="label">Phase Balance</span><span class="desc">Share the loads across L1, L2 and L3</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
+        <button type="button" data-open="scramble"><span class="code">WORDS</span><span class="label">Term Scramble</span><span class="desc">Unscramble MEP terms from a clue</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
       </div>
     </div>
   </section>
@@ -12135,17 +12199,47 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   // --- Spot the Mistake: a Design Pitfalls drawing without its labels — right way or mistake?
   var SP = { score: 0, asked: 0, streak: 0 };
   function spNew() { SP.p = pick1(PITFALLS); SP.bad = Math.random() < 0.5; SP.answer = null; }
+  // Symbol key: [class in the drawing, name, sample]. Only symbols on both drawings are listed, so the key gives nothing away.
+  var spLine = function (cls) { return '<path d="M4 7H24" class="pf-pipe ' + cls + '"/>'; }, spRect = function (cls) { return '<rect x="3" y="2" width="22" height="10" class="' + cls + '"/>'; };
+  var SP_KEY = [['pf-duct', 'Duct', spRect('pf-duct')], ['pf-flex', 'Flexible duct', '<path d="M4 7H24" class="pf-flex" style="stroke-width:8"/>'],
+    ['pf-water', 'Water pipe', spLine('pf-water')], ['pf-drain', 'Drain / waste pipe', spLine('pf-drain')], ['pf-vent', 'Vent pipe', spLine('pf-vent')],
+    ['pf-storm', 'Storm-water pipe', spLine('pf-storm')], ['pf-fire', 'Fire / sprinkler pipe', spLine('pf-fire')], ['pf-rfg', 'Refrigerant pipe', spLine('pf-rfg')],
+    ['pf-cu', 'Copper pipe', spLine('pf-cu')], ['pf-steel', 'Steel pipe', spLine('pf-steel')], ['pf-flexc', 'Flexible connector', '<path d="M3 7l3-5 4 10 4-10 4 10 4-10 3 5" class="pf-flexc"/>'],
+    ['pf-flow', 'Flow direction', '<path d="M3 7H23" class="pf-flow" marker-end="url(#arr-mini)"/>'], ['pf-hotflow', 'Hot gas / smoke', '<path d="M3 7H25" class="pf-hotflow"/>'],
+    ['pf-valve', 'Valve', '<rect x="9" y="2" width="10" height="10" class="pf-valve"/>'], ['pf-valvesym', 'Valve', '<path d="M8 2L20 12V2L8 12Z" class="pf-valvesym"/>'],
+    ['pf-damper', 'Damper', spRect('pf-damper') + '<path d="M8 10L20 4" class="pf-blade"/>'], ['pf-sup', 'Supply air outlet', spRect('pf-sup')], ['pf-ret', 'Return air grille', spRect('pf-ret')],
+    ['pf-exh', 'Exhaust', spRect('pf-exh')], ['pf-int', 'Air intake', spRect('pf-int')], ['pf-filter', 'Filter', '<path d="M6 2l4 10 4-10 4 10 4-10" class="pf-filter"/>'],
+    ['pf-coil', 'Coil', '<path d="M4 7H24" class="pf-coil"/>'], ['pf-ins', 'Insulation', spRect('pf-ins')], ['pf-insul', 'Insulation', spRect('pf-insul')],
+    ['pf-firewall', 'Fire-rated wall', spRect('pf-firewall')], ['pf-slab', 'Slab / structure', spRect('pf-slab')], ['pf-ceiling', 'Ceiling', spRect('pf-ceiling')],
+    ['pf-door', 'Door', spRect('pf-door')], ['pf-win', 'Window', spRect('pf-win')], ['pf-cond', 'Conduit', '<path d="M4 7H24" class="pf-cond"/>'],
+    ['pf-cable-thin', 'Cable', '<path d="M4 7H24" class="pf-cable-thin"/>'], ['pf-cable-thick', 'Cable', '<path d="M5 7H23" class="pf-cable-thick"/>'],
+    ['pf-panel', 'Electrical panel', spRect('pf-panel')], ['pf-jbox', 'Junction box', '<rect x="8" y="2" width="12" height="10" class="pf-jbox"/>'], ['pf-outlet', 'Socket outlet', '<rect x="8" y="2" width="12" height="10" class="pf-outlet"/>'],
+    ['pf-det', 'Smoke detector', '<path d="M8 3h12v3a6 5 0 0 1-12 0z" class="pf-det"/>'], ['pf-ext', 'Fire extinguisher', '<rect x="10" y="1" width="8" height="12" rx="3" class="pf-ext"/>'],
+    ['pf-hydrant', 'Fire hydrant', '<path d="M9 13V6a5 5 0 0 1 10 0V13Z" class="pf-hydrant"/>'], ['pf-tstat', 'Thermostat', '<rect x="10" y="1" width="8" height="12" rx="2" class="pf-tstat"/>']];
+  var spHas = function (svg, cls) { return new RegExp('class="(?:[^"]*\\s)?' + cls + '(?=[\\s"])').test(svg); };
+  function spKey(p) {
+    var seen = {};
+    return SP_KEY.filter(function (k) { if (seen[k[1]] || !spHas(p.bad, k[0]) || !spHas(p.good, k[0])) return false; seen[k[1]] = 1; return true; })
+      .map(function (k) { return '<li><svg viewBox="0 0 28 14" aria-hidden="true">' + k[2] + '</svg>' + k[1] + '</li>'; }).join('');
+  }
+  var spLabels = function (svg) { return (svg.match(/<text[^>]*class="pf-t"[^>]*>[^<]*/g) || []).map(function (t) { return t.replace(/^[^>]*>/, '').replace(/&(amp|lt|gt|quot);/g, function (m, e) { return { amp: '&', lt: '<', gt: '>', quot: '"' }[e]; }); }); };
   function renderSpot() {
     if (!SP.p) spNew();
-    var p = SP.p, shown = SP.answer !== null, right = shown && (SP.answer === 'bad') === SP.bad;
+    var p = SP.p, shown = SP.answer !== null, right = shown && (SP.answer === 'bad') === SP.bad, info = PF_INFO[p.id] || {}, key = spKey(p);
     mBody.innerHTML = gameBar([['Score', SP.score + ' / ' + SP.asked], ['Streak', SP.streak], ['Best streak', GAME.best.sp || 0]]) +
       '<p class="m-desc">Is this installation done the right way, or is it a mistake? Keys: <kbd>R</kbd> right way · <kbd>M</kbd> mistake' + (shown ? ' · <kbd>N</kbd> next' : '') + '.</p>' +
       '<p class="pf-disc" style="--c:' + PF_DISC[p.d][1] + '">' + esc(PF_DISC[p.d][0]) + '</p>' +
-      '<figure class="sp-fig' + (shown ? ' revealed ' + (SP.bad ? 'pf-bad' : 'pf-good') : '') + '"><svg viewBox="0 0 240 150" role="img" aria-label="Installation drawing">' + (SP.bad ? p.bad : p.good) + '</svg></figure>' +
+      (info.scene ? '<p class="sp-scene"><b>In the picture</b> ' + esc(info.scene) + '</p>' : '') +
+      '<figure class="sp-fig' + (shown ? ' revealed ' + (SP.bad ? 'pf-bad' : 'pf-good') : '') + '"><svg viewBox="0 0 240 150" role="img" aria-label="' + esc(info.scene || 'Installation drawing') + '">' + pfSvg(p, SP.bad ? 'bad' : 'good', true) + '</svg>' +
+        (key ? '<ul class="sp-key" aria-label="Symbols in the drawing">' + key + '</ul>' : '') + '</figure>' +
       (shown ? '<div class="sp-verdict ' + (right ? 'ok' : 'no') + '" role="status"><b>' + (right ? '✓ Correct — ' : '✕ Not quite — ') + (SP.bad ? 'this is the mistake.' : 'this is the right way.') + '</b>' +
         '<p><strong>' + esc(p.title) + '.</strong> ' + esc(SP.bad ? p.badCap : p.goodCap) + '</p><p class="sp-why">' + esc(p.why) + '</p></div>' +
         '<div class="gm-actions"><button type="button" class="btn btn-solid btn-sm" data-gm="sp-next">Next drawing →</button><button type="button" class="btn btn-outline btn-sm" data-pitfall="' + p.id + '">See both drawings</button></div>'
-        : '<div class="sp-choices"><button type="button" class="sp-choice sp-ok" data-gm="sp-answer" data-v="good">✓ Right way</button><button type="button" class="sp-choice sp-no" data-gm="sp-answer" data-v="bad">✕ Mistake</button></div>');
+        : (info.look ? '<p class="sp-look"><b>Look at</b> ' + esc(info.look) + '</p>' : '') +
+          '<div class="sp-choices"><button type="button" class="sp-choice sp-ok" data-gm="sp-answer" data-v="good">✓ Right way</button><button type="button" class="sp-choice sp-no" data-gm="sp-answer" data-v="bad">✕ Mistake</button></div>');
+    // a name drawn on only one of the two pictures (e.g. "hot gas layer") would give the answer away, so it waits for the reveal
+    var other = spLabels(SP.bad ? p.good : p.bad).concat((info.parts || []).concat(info[SP.bad ? 'good' : 'bad'] || []).map(function (l) { return l[2]; }));
+    $$('.sp-fig text.pf-t:not(.pf-tp)', mBody).forEach(function (t) { if (other.indexOf(t.textContent) < 0) t.classList.add('sp-only'); });
   }
   function spAnswer(v) {
     if (SP.answer !== null) return;
@@ -12157,10 +12251,212 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     var nx = $('[data-gm="sp-next"]', mBody); if (nx) nx.focus();
   }
 
-  // One set of listeners for all three games (the window body is re-rendered).
+  // A redraw removes the focused button; put focus back inside the window so the keys keep working.
+  var gmKeepFocus = function (sel) { if (!mBody.contains(document.activeElement)) { var f = $(sel, mBody); if (f) f.focus(); } };
+
+  // --- Symbol Match: memory game pairing drawing symbols with their names (48 × 32 symbols, stroke in currentColor).
+  var MM_SYMS = [
+    ['Gate valve', '<path d="M4 16H12M36 16H44"/><path d="M12 8L36 24V8L12 24Z"/>'],
+    ['Ball valve', '<path d="M4 16H12M36 16H44"/><path d="M12 8L36 24V8L12 24Z"/><circle cx="24" cy="16" r="4.5" class="mm-fill"/>'],
+    ['Check valve', '<path d="M4 16H14M34 16H44M14 7V25M34 7V25M14 7L34 25"/>'],
+    ['Butterfly valve', '<path d="M4 16H14M34 16H44M14 6V26M34 6V26"/><path d="M15 25L33 7"/><circle cx="24" cy="16" r="2.2" class="mm-fill"/>'],
+    ['Pump', '<path d="M2 16H12M36 16H46"/><circle cx="24" cy="16" r="12"/><path d="M19 9L32 16L19 23Z" class="mm-fill"/>'],
+    ['Y-strainer', '<path d="M4 12H44M20 12L32 26M26 29L38 23"/>'],
+    ['Union', '<path d="M4 16H20M28 16H44M20 8V24M28 8V24M24 10V22"/>'],
+    ['Reducer', '<path d="M4 16H14M34 16H44M14 7L34 12V20L14 25Z"/>'],
+    ['Flexible connector', '<path d="M4 16H10l3-7 4 14 4-14 4 14 4-14 4 14 3-7H44"/>'],
+    ['Pressure gauge', '<path d="M24 30V24"/><circle cx="24" cy="13" r="10"/><path d="M24 13L30 7"/>'],
+    ['Thermometer', '<path d="M22 4h4v18h-4z"/><circle cx="24" cy="25" r="5" class="mm-fill"/>'],
+    ['P-trap', '<path d="M8 4V18A8 8 0 0 0 24 18V12H40"/>'],
+    ['Floor drain', '<circle cx="24" cy="16" r="11"/><path d="M16 12H32M14 16H34M16 20H32"/>'],
+    ['Sprinkler head', '<path d="M24 2V10"/><circle cx="24" cy="16" r="6" class="mm-fill"/><path d="M14 26L18 22M34 26L30 22M24 30V25"/>'],
+    ['Smoke detector', '<circle cx="24" cy="16" r="11"/><text x="24" y="20" text-anchor="middle" class="mm-txt">SD</text>'],
+    ['Thermostat', '<circle cx="24" cy="16" r="11"/><text x="24" y="20.5" text-anchor="middle" class="mm-txt">T</text>'],
+    ['Duplex socket', '<circle cx="24" cy="16" r="9"/><path d="M8 13H40M8 19H40"/>'],
+    ['Ceiling diffuser', '<rect x="12" y="4" width="24" height="24"/><path d="M12 4L36 28M36 4L12 28"/>'],
+    ['Return grille', '<rect x="12" y="4" width="24" height="24"/><path d="M12 28L36 4"/>'],
+    ['Fire damper', '<path d="M2 8H46M2 24H46"/><path d="M18 8V24M30 8V24"/><path d="M18 24L30 8"/><path d="M21 8l3 5 3-5" class="mm-fill"/>'],
+    ['Fan', '<circle cx="24" cy="16" r="12"/><path d="M24 16c0-7 5-8 7-6M24 16c6 3 5 9 2 9M24 16c-6 4-10 0-9-3"/>'],
+    ['Light switch', '<path d="M10 22L30 10"/><circle cx="10" cy="22" r="2.5" class="mm-fill"/><text x="38" y="21" text-anchor="middle" class="mm-txt">S</text>']];
+  var MM = null;
+  function mmNew(level) {
+    var pairs = Math.min(4 + level * 2, 10), pick = shuffle(MM_SYMS.slice()).slice(0, pairs), cards = [];
+    pick.forEach(function (s) { cards.push({ k: s[0], sym: true }); cards.push({ k: s[0], sym: false }); });
+    MM = { level: level, pairs: pairs, cards: shuffle(cards), first: null, lock: false, moves: 0, found: 0, done: false };
+  }
+  var mmFace = function (c) { return c.sym ? '<svg viewBox="0 0 48 32" aria-hidden="true" class="mm-svg">' + MM_SYMS.filter(function (s) { return s[0] === c.k; })[0][1] + '</svg>' : '<span class="mm-name">' + esc(c.k) + '</span>'; };
+  function renderMatch() {
+    if (!MM) mmNew(1);
+    var best = GAME.best['mm' + MM.level];
+    mBody.innerHTML = gameBar([['Level', MM.level], ['Pairs', MM.found + ' / ' + MM.pairs, 'mm-found'], ['Moves', MM.moves, 'mm-moves'], ['Best', best ? best + ' moves' : '—']]) +
+      '<p class="m-desc">Flip two cards at a time and match each drawing symbol with its name. Fewer moves is better.</p>' +
+      '<div class="mm-grid" style="--cols:' + (MM.pairs > 8 ? 5 : 4) + '">' + MM.cards.map(function (c, i) {
+        return '<button type="button" class="mm-card' + (c.done ? ' open done' : '') + '" data-i="' + i + '" aria-label="' + (c.done ? esc(c.k) + (c.sym ? ' symbol' : '') + ', matched' : 'Card ' + (i + 1) + ', face down') + '"' + (c.done ? ' disabled' : '') + '>' +
+          '<span class="mm-inner"><span class="mm-back" aria-hidden="true"></span><span class="mm-front">' + mmFace(c) + '</span></span></button>';
+      }).join('') + '</div>' +
+      '<p class="gm-msg" id="mm-msg" aria-live="polite">' + (MM.done ? 'All matched in ' + MM.moves + ' moves!' : '') + '</p>' +
+      '<div class="gm-actions"><button type="button" class="btn btn-outline btn-sm" data-gm="mm-new">New game</button>' +
+      (MM.done ? '<button type="button" class="btn btn-solid btn-sm" data-gm="mm-next">Next level →</button>' : '') + '</div>';
+  }
+  function mmFlip(btn) {
+    var i = +btn.dataset.i, c = MM.cards[i];
+    if (MM.lock || MM.done || c.done || MM.first === i) return;
+    btn.classList.add('open'); btn.setAttribute('aria-label', c.k + (c.sym ? ' symbol' : ''));
+    blip(440, 50);
+    if (MM.first === null) { MM.first = i; return; }
+    var j = MM.first, d = MM.cards[j], other = $('.mm-card[data-i="' + j + '"]', mBody);
+    MM.first = null; MM.moves++; $('#mm-moves').textContent = MM.moves;
+    if (d.k === c.k) {
+      c.done = d.done = true; MM.found++;
+      $('#mm-found').textContent = MM.found + ' / ' + MM.pairs;
+      [btn, other].forEach(function (b) { b.classList.add('done'); b.disabled = true; b.setAttribute('aria-label', b.getAttribute('aria-label') + ', matched'); });
+      $('#mm-msg').textContent = c.k;
+      blip(660, 80); blip(880, 110, 0.08);
+      if (MM.found === MM.pairs) {
+        MM.done = true;
+        var key = 'mm' + MM.level; if (!GAME.best[key] || MM.moves < GAME.best[key]) { GAME.best[key] = MM.moves; gameSave(); }
+        setTimeout(function () { if (current !== 'match') return; renderMatch(); confetti($('.mm-grid', mBody)); cheer(); var nx = $('[data-gm="mm-next"]', mBody); if (nx) nx.focus(); }, 500);
+      }
+    } else {
+      MM.lock = true; blip(200, 120);
+      var round = MM;
+      setTimeout(function () {
+        if (MM !== round) return;
+        MM.lock = false;
+        [btn, other].forEach(function (b) { b.classList.remove('open'); b.setAttribute('aria-label', 'Card ' + (+b.dataset.i + 1) + ', face down'); });
+      }, 850);
+    }
+  }
+
+  // --- Phase Balance: share single-phase loads across L1, L2 and L3; imbalance = (highest − average) ÷ average.
+  var PB_NAMES = ['Lighting', 'Sockets', 'Water heater', 'Split AC', 'Pump', 'Oven', 'Dryer', 'Fan coil', 'Signage', 'Hand dryer', 'Server rack', 'Lift lobby', 'Kettle bank', 'Heat tape', 'Exhaust fan', 'Wall heater'];
+  var PB = null;
+  var pbSums = function (loads) { var s = [0, 0, 0]; loads.forEach(function (l) { if (l.ph !== null) s[l.ph] += l.a; }); return s; };
+  var pbImb = function (s) { var avg = (s[0] + s[1] + s[2]) / 3; return avg ? (Math.max.apply(null, s) - avg) / avg * 100 : 0; };
+  function pbNew(level) {
+    var n = Math.min(5 + level, 11), names = shuffle(PB_NAMES.slice()), loads = [];
+    for (var i = 0; i < n; i++) loads.push({ name: names[i], a: pick1([4, 6, 8, 10, 12, 15, 16, 18, 20, 24, 25, 30, 32]), ph: null });
+    var best = Infinity, s = [0, 0, 0];
+    (function go(k) { // every way to split the loads (3^11 at most) for the best possible imbalance
+      if (k === n) { var v = pbImb(s); if (v < best) best = v; return; }
+      for (var p = 0; p < 3; p++) { if (k === 0 && p) break; s[p] += loads[k].a; go(k + 1); s[p] -= loads[k].a; }
+    })(0);
+    PB = { level: level, loads: loads, sel: null, best: best, moves: 0, done: false };
+  }
+  function renderPhase(focusI) {
+    if (!PB) pbNew(1);
+    var s = pbSums(PB.loads), all = PB.loads.every(function (l) { return l.ph !== null; }), imb = pbImb(s), top = Math.max(1, Math.max.apply(null, s));
+    var card = function (l, i) { return '<button type="button" class="pb-load' + (PB.sel === i ? ' sel' : '') + '" data-i="' + i + '" draggable="true" aria-pressed="' + (PB.sel === i) + '"' + (PB.done ? ' disabled' : '') + '><span>' + esc(l.name) + '</span><b>' + l.a + ' A</b></button>'; };
+    var col = function (p) {
+      return '<div class="pb-col" data-ph="' + p + '"><div class="pb-head"><b>L' + (p + 1) + '</b><span>' + s[p] + ' A</span></div><div class="pb-bar"><i style="height:' + (s[p] / top * 100) + '%"></i></div>' +
+        '<div class="pb-list">' + PB.loads.map(function (l, i) { return l.ph === p ? card(l, i) : ''; }).join('') + '</div></div>';
+    };
+    var tray = PB.loads.map(function (l, i) { return l.ph === null ? card(l, i) : ''; }).join('');
+    mBody.innerHTML = gameBar([['Level', PB.level], ['Imbalance', all ? imb.toFixed(1) + ' %' : '—'], ['Best possible', PB.best.toFixed(1) + ' %']]) +
+      '<p class="m-desc">Put every load on a phase so the three phases carry about the same current. Tap a load, then tap L1, L2 or L3 — or drag it. Keys: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> place the picked load, <kbd>0</kbd> takes it off.</p>' +
+      '<div class="pb-tray" data-ph="tray" aria-label="Unassigned loads">' + (tray || '<span class="pb-empty">All loads placed</span>') + '</div>' +
+      '<div class="pb-panel">' + col(0) + col(1) + col(2) + '</div>' +
+      '<p class="gm-msg' + (all && !PB.done ? ' pb-warn' : '') + '" id="pb-msg" aria-live="polite">' + (PB.done ? 'Balanced — ' + imb.toFixed(1) + ' % imbalance, the best possible!' : all ? imb.toFixed(1) + ' % imbalance — the best split gets ' + PB.best.toFixed(1) + ' %. Keep moving loads.' : '') + '</p>' +
+      '<div class="gm-actions"><button type="button" class="btn btn-outline btn-sm" data-gm="pb-new">New panel</button>' +
+      (PB.done ? '<button type="button" class="btn btn-solid btn-sm" data-gm="pb-next">Next level →</button>' : '') + '</div>';
+    var f = focusI != null && $('.pb-load[data-i="' + focusI + '"]', mBody); if (f) f.focus();
+    gmKeepFocus('.pb-load:not(:disabled), [data-gm="pb-next"]');
+  }
+  function pbPlace(i, ph) { // ph: 0–2, or null for the tray
+    if (PB.done || i === null || i === undefined) return;
+    var l = PB.loads[i];
+    if (l.ph !== ph) { l.ph = ph; PB.moves++; blip(ph === null ? 260 : 380 + ph * 90, 60); }
+    PB.sel = null;
+    var s = pbSums(PB.loads);
+    if (PB.loads.every(function (x) { return x.ph !== null; }) && pbImb(s) <= PB.best + 1e-9) {
+      PB.done = true;
+      var key = 'pb' + PB.level; if (!GAME.best[key] || PB.moves < GAME.best[key]) { GAME.best[key] = PB.moves; gameSave(); }
+      renderPhase(); confetti($('.pb-panel', mBody)); cheer();
+      var nx = $('[data-gm="pb-next"]', mBody); if (nx) nx.focus();
+      return;
+    }
+    renderPhase(i);
+  }
+
+  // --- Term Scramble: unscramble an MEP term from its clue.
+  var TS_WORDS = [['DAMPER', 'Blades in a duct that set or shut off the airflow'], ['DIFFUSER', 'Ceiling outlet that spreads supply air into the room'], ['PLENUM', 'Air chamber — often the space above a ceiling'],
+    ['CHILLER', 'Machine that makes chilled water for air-conditioning'], ['COMPRESSOR', 'Raises refrigerant gas from low to high pressure'], ['CONDENSER', 'Where refrigerant gives up its heat and turns to liquid'],
+    ['EVAPORATOR', 'Coil where refrigerant boils and absorbs heat'], ['SPRINKLER', 'Heat-opened head that sprays water on a fire'], ['BACKFLOW', 'Water flowing the wrong way into the supply'],
+    ['CLEANOUT', 'Access fitting for rodding a blocked drain'], ['BREAKER', 'Opens a circuit on overload or short circuit'], ['CONDUIT', 'Tube that protects electrical wires'],
+    ['HANGER', 'Support that holds a pipe or duct from above'], ['INSULATION', 'Keeps heat in or out and stops condensation'], ['THERMOSTAT', 'Senses room temperature and switches the system'],
+    ['REFRIGERANT', 'Fluid that carries heat around a cooling cycle'], ['HUMIDITY', 'Amount of water vapour in the air'], ['ENTHALPY', 'Total heat content of air, per kilogram'],
+    ['SUBCOOLING', 'How far a liquid is below its saturation temperature'], ['SUPERHEAT', 'How far a vapour is above its saturation temperature'], ['IMPELLER', 'Spinning part of a pump that moves the water'],
+    ['STRAINER', 'Catches dirt before it reaches the equipment'], ['LOUVRE', 'Slatted opening that lets air in and keeps rain out'], ['GRILLE', 'Slatted cover over a return or exhaust opening'],
+    ['FIRESTOP', 'Seal that restores a fire wall around a pipe or cable'], ['HYDRANT', 'Outdoor fire-water outlet for the fire service'], ['STANDPIPE', 'Fire riser with hose valves on each floor'],
+    ['MANIFOLD', 'Header that feeds several branches'], ['NEUTRAL', 'Conductor that carries the return current'], ['TRANSFORMER', 'Steps voltage up or down'],
+    ['AMPACITY', 'Current a conductor can carry continuously'], ['REDUCER', 'Fitting that changes the pipe or duct size'], ['UNION', 'Fitting that lets a pipe be taken apart'],
+    ['DUCTWORK', 'The sheet-metal air distribution network'], ['CHIMNEY', 'Carries flue gases up and out'], ['ELBOW', 'Fitting that turns a pipe or duct'],
+    ['VOLUTE', 'Spiral casing around a pump or fan wheel'], ['TRAP', 'Water seal that keeps sewer gas out of a room'], ['VENT', 'Pipe that lets air into the drainage system'],
+    ['SEWER', 'Pipe that carries waste away from buildings'], ['GAUGE', 'Sheet-metal thickness — or a pressure dial'], ['DEHUMIDIFIER', 'Takes moisture out of the air'],
+    ['ANEMOMETER', 'Instrument that measures air velocity'], ['MANOMETER', 'Instrument that measures pressure difference'], ['BALLAST', 'Limits the current to a fluorescent lamp'],
+    ['GENERATOR', 'Standby source of power when the grid fails'], ['SWITCHBOARD', 'Main assembly that distributes power in a building'], ['AQUIFER', 'Underground layer that holds water for a well']];
+  var TS = { score: 0, streak: 0, asked: 0 };
+  function tsNew() {
+    var w = pick1(TS_WORDS.filter(function (x) { return !TS.word || x[0] !== TS.word; })), letters;
+    do { letters = shuffle(w[0].split('')); } while (letters.join('') === w[0]);
+    TS.word = w[0]; TS.clue = w[1]; TS.pool = letters.map(function (ch) { return { ch: ch, used: false }; }); TS.typed = []; TS.hints = 0; TS.state = 'play';
+  }
+  function renderScramble() {
+    if (!TS.word) tsNew();
+    var n = TS.word.length, play = TS.state === 'play';
+    mBody.innerHTML = gameBar([['Solved', TS.score + ' / ' + TS.asked], ['Streak', TS.streak], ['Best streak', GAME.best.ts || 0]]) +
+      '<p class="m-desc">Unscramble the term. Tap the letters in order — or just type. <kbd>Backspace</kbd> takes one back, <kbd>Enter</kbd> goes to the next word.</p>' +
+      '<p class="ts-clue">' + esc(TS.clue) + ' <span>(' + n + ' letters)</span></p>' +
+      '<div class="ts-slots' + (TS.state === 'win' ? ' win' : TS.state === 'skip' ? ' skip' : '') + '" id="ts-slots">' + TS.word.split('').map(function (ch, i) {
+        var t = TS.typed[i], letter = TS.state === 'skip' ? ch : t !== undefined ? TS.pool[t].ch : '';
+        return '<button type="button" class="ts-slot' + (letter ? ' full' : '') + '" data-gm="ts-back" data-n="' + i + '"' + (play && t !== undefined ? '' : ' disabled') + ' aria-label="' + (letter ? letter : 'Empty') + '">' + letter + '</button>';
+      }).join('') + '</div>' +
+      '<div class="ts-pool">' + TS.pool.map(function (p, i) { return '<button type="button" class="ts-tile" data-gm="ts-pick" data-i="' + i + '"' + (p.used || !play ? ' disabled' : '') + '>' + p.ch + '</button>'; }).join('') + '</div>' +
+      '<p class="gm-msg' + (TS.state === 'skip' ? ' pb-warn' : '') + '" id="ts-msg" aria-live="polite">' + (TS.state === 'win' ? (TS.hints ? 'Solved — with ' + TS.hints + ' hint' + (TS.hints > 1 ? 's' : '') : TS.streak >= 3 ? TS.streak + ' in a row!' : 'Correct!') : TS.state === 'skip' ? 'It was ' + TS.word : '') + '</p>' +
+      '<div class="gm-actions">' + (play ? '<button type="button" class="btn btn-outline btn-sm" data-gm="ts-hint">Hint</button><button type="button" class="btn btn-outline btn-sm" data-gm="ts-shuffle">Shuffle</button><button type="button" class="btn btn-outline btn-sm" data-gm="ts-skip">Show answer</button>'
+        : '<button type="button" class="btn btn-solid btn-sm" data-gm="ts-next">Next word →</button>') + '</div>';
+    gmKeepFocus('.ts-tile:not(:disabled), [data-gm="ts-next"], [data-gm="ts-hint"]');
+  }
+  function tsCheck() {
+    if (TS.typed.length < TS.word.length) { renderScramble(); return; }
+    var guess = TS.typed.map(function (t) { return TS.pool[t].ch; }).join('');
+    if (guess === TS.word) {
+      TS.state = 'win'; TS.score++; TS.asked++;
+      if (TS.hints) TS.streak = 0; else { TS.streak++; if (TS.streak > (GAME.best.ts || 0)) { GAME.best.ts = TS.streak; gameSave(); } }
+      renderScramble(); blip(660, 90); blip(880, 120, 0.09);
+      if (TS.streak && TS.streak % 5 === 0) { confetti($('.ts-slots', mBody)); cheer(); }
+      var nx = $('[data-gm="ts-next"]', mBody); if (nx) nx.focus();
+    } else {
+      renderScramble(); blip(180, 160);
+      $('#ts-slots').classList.add('bad'); var tm = $('#ts-msg'); tm.classList.add('bad'); tm.textContent = 'Not quite — tap a letter to take it back';
+    }
+  }
+  function tsPick(i) {
+    if (TS.state !== 'play' || TS.pool[i].used) return;
+    TS.pool[i].used = true; TS.typed.push(i); blip(500 + TS.typed.length * 25, 40);
+    tsCheck();
+  }
+  function tsBack(n) { // take back the letter in slot n and everything after it
+    if (TS.state !== 'play') return;
+    TS.typed.splice(n).forEach(function (t) { TS.pool[t].used = false; });
+    renderScramble();
+  }
+  function tsHint() {
+    if (TS.state !== 'play') return;
+    var k = 0; while (k < TS.typed.length && TS.pool[TS.typed[k]].ch === TS.word[k]) k++;
+    tsBack(k); // keep the correct start, then add the next right letter
+    for (var i = 0; i < TS.pool.length; i++) if (!TS.pool[i].used && TS.pool[i].ch === TS.word[k]) { TS.hints++; tsPick(i); return; }
+  }
+  function tsNext() { tsNew(); renderScramble(); var t = $('.ts-tile', mBody); if (t) t.focus(); }
+
+  // One set of listeners for all the games (the window body is re-rendered).
+  var GAMES = ['pipes', 'sprint', 'spot', 'match', 'phase', 'scramble'];
   mBody.addEventListener('click', function (e) {
-    if (['pipes', 'sprint', 'spot'].indexOf(current) < 0) return;
+    if (GAMES.indexOf(current) < 0) return;
     var cell = e.target.closest('.pp-cell'); if (cell) { ppTurn(cell); return; }
+    var card = e.target.closest('.mm-card'); if (card) { mmFlip(card); return; }
+    var load = e.target.closest('.pb-load'); if (load) { if (!PB.done) { var li = +load.dataset.i; PB.sel = PB.sel === li ? null : li; renderPhase(li); } return; }
+    var zone = e.target.closest('[data-ph]'); if (zone && PB && PB.sel !== null) { pbPlace(PB.sel, zone.dataset.ph === 'tray' ? null : +zone.dataset.ph); return; }
     var b = e.target.closest('[data-gm]'); if (!b) return;
     var act = b.dataset.gm;
     if (act === 'sound') { GAME.sound = !GAME.sound; gameSave(); b.setAttribute('aria-pressed', String(GAME.sound)); b.firstChild.textContent = GAME.sound ? '🔊' : '🔈'; blip(600, 80); return; }
@@ -12169,8 +12465,21 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     if (act === 'us-start') { US = { score: 0, streak: 0, bestStreak: 0, asked: 0, end: Date.now() + 60000 }; usQuestion(); renderSprint(); var ch = $('.us-choice', mBody); if (ch) ch.focus(); return; }
     if (act === 'us-pick') { usPick(b); return; }
     if (act === 'sp-answer') { spAnswer(b.dataset.v); return; }
-    if (act === 'sp-next') { spNew(); renderSpot(); var sc = $('.sp-choice', mBody); if (sc) sc.focus(); }
+    if (act === 'sp-next') { spNew(); renderSpot(); var sc = $('.sp-choice', mBody); if (sc) sc.focus(); return; }
+    if (act === 'mm-new' || act === 'mm-next') { mmNew(MM.level + (act === 'mm-next' ? 1 : 0)); renderMatch(); var m0 = $('.mm-card', mBody); if (m0) m0.focus(); return; }
+    if (act === 'pb-new' || act === 'pb-next') { pbNew(PB.level + (act === 'pb-next' ? 1 : 0)); renderPhase(0); return; }
+    if (act === 'ts-pick') { tsPick(+b.dataset.i); return; }
+    if (act === 'ts-back') { tsBack(+b.dataset.n); return; }
+    if (act === 'ts-hint') { tsHint(); return; }
+    if (act === 'ts-shuffle') { var keep = TS.typed.map(function (t) { return TS.pool[t]; }); TS.pool = shuffle(TS.pool); TS.typed = keep.map(function (q) { return TS.pool.indexOf(q); }); renderScramble(); return; }
+    if (act === 'ts-skip') { TS.state = 'skip'; TS.asked++; TS.streak = 0; renderScramble(); return; }
+    if (act === 'ts-next') tsNext();
   });
+  // Phase Balance also takes drag and drop (mouse); taps work everywhere.
+  mBody.addEventListener('dragstart', function (e) { var l = current === 'phase' && e.target.closest && e.target.closest('.pb-load'); if (l) { PB.sel = +l.dataset.i; e.dataTransfer.setData('text/plain', l.dataset.i); e.dataTransfer.effectAllowed = 'move'; } });
+  mBody.addEventListener('dragover', function (e) { var z = current === 'phase' && e.target.closest && e.target.closest('[data-ph]'); if (z) { e.preventDefault(); $$('[data-ph]', mBody).forEach(function (x) { x.classList.toggle('over', x === z); }); } });
+  mBody.addEventListener('drop', function (e) { var z = current === 'phase' && e.target.closest && e.target.closest('[data-ph]'); if (!z) return; e.preventDefault(); pbPlace(+e.dataTransfer.getData('text/plain'), z.dataset.ph === 'tray' ? null : +z.dataset.ph); });
+  mBody.addEventListener('dragend', function () { $$('[data-ph].over', mBody).forEach(function (x) { x.classList.remove('over'); }); });
   modal.addEventListener('keydown', function (e) { // on the whole window, so the keys work wherever focus is
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (current === 'pipes') {
@@ -12185,6 +12494,14 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       var k = e.key.toLowerCase();
       if (k === 'r' || k === 'm') { e.preventDefault(); spAnswer(k === 'm' ? 'bad' : 'good'); }
       else if (k === 'n' && SP.answer !== null) { e.preventDefault(); spNew(); renderSpot(); var sc = $('.sp-choice', mBody); if (sc) sc.focus(); }
+    } else if (current === 'phase' && PB && PB.sel !== null && /^([0-3]|Backspace)$/.test(e.key)) {
+      e.preventDefault(); pbPlace(PB.sel, e.key === '0' || e.key === 'Backspace' ? null : +e.key - 1);
+    } else if (current === 'scramble' && TS.word) {
+      if (TS.state !== 'play') { if (e.key === 'Enter' && !(e.target.closest && e.target.closest('button'))) { e.preventDefault(); tsNext(); } return; }
+      if (e.key === 'Backspace' && TS.typed.length) { e.preventDefault(); tsBack(TS.typed.length - 1); return; }
+      var ch = e.key.length === 1 && e.key.toUpperCase();
+      if (!ch || !/[A-Z]/.test(ch)) return;
+      for (var q = 0; q < TS.pool.length; q++) if (!TS.pool[q].used && TS.pool[q].ch === ch) { e.preventDefault(); tsPick(q); return; }
     }
   });
   modal.addEventListener('close', function () { clearInterval(gameTimer); if (US && US.end && !US.over) US = null; }); // a sprint left halfway starts over next time
@@ -12201,7 +12518,10 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     ecost: { code: CALCS.ecost.code, title: 'Appliance Energy Cost', render: renderEcost, sys: false },
     pipes: { code: 'GAME / PIPES', title: 'Pipe Puzzle', render: renderPipes, sys: false },
     sprint: { code: 'GAME / UNITS', title: 'Unit Sprint', render: renderSprint, sys: false },
-    spot: { code: 'GAME / SPOT', title: 'Spot the Mistake', render: renderSpot, sys: false }
+    spot: { code: 'GAME / SPOT', title: 'Spot the Mistake', render: renderSpot, sys: false },
+    match: { code: 'GAME / MATCH', title: 'Symbol Match', render: renderMatch, sys: false },
+    phase: { code: 'GAME / PHASE', title: 'Phase Balance', render: renderPhase, sys: false },
+    scramble: { code: 'GAME / WORDS', title: 'Term Scramble', render: renderScramble, sys: false }
   };
 
   function render(id) {
@@ -14696,6 +15016,131 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       ref: 'ASHRAE 15 §8.11 (machinery room requirements); EN 378-3; IIAR 2 for ammonia.' }
   ];
   PITFALLS = PITFALLS.concat(PF_MORE4);
+  // Part names drawn on the pictures, and what each picture shows (Spot the Mistake reads these too).
+  // A label is [x, y, text, anchor?]: `parts` go on both drawings, `bad` / `good` on that one only.
+  var PF_INFO = {
+    ductelbow: { scene: "A rectangular supply duct (blue outline) that turns down through a 90° elbow, with a smaller branch duct taken off it. Arrows show the airflow.", look: "Where is the branch taken off the main duct?", bad: [[14, 26, "main duct"], [184, 76, "branch"], [176, 120, "elbow"]], good: [[14, 88, "main duct"], [104, 20, "branch duct"], [196, 116, "elbow"]] },
+    fanelbow: { scene: "A fan (box with a round wheel) at the bottom blows air up into a duct that turns 90° through an elbow and runs off to the right.", look: "How far is the elbow from the fan outlet?", bad: [[98, 126, "fan"], [150, 34, "outlet duct", "middle"], [4, 60, "elbow"]], good: [[98, 130, "fan"], [150, 66, "outlet duct", "middle"], [4, 44, "elbow"]] },
+    sqelbow: { scene: "A rectangular duct (blue outline) turning 90° downward. Arrows show the airflow through the turn.", look: "Look at the shape of the turn — how is the air guided round it?", parts: [[14, 24, "duct"]], bad: [[146, 40, "elbow"]], good: [[168, 60, "elbow"]] },
+    transition: { scene: "A small duct on the left joins a larger duct on the right. Arrows show the air flowing from small to large.", look: "How does the duct change from the small size to the large one?", parts: [[12, 54, "small duct"], [232, 24, "large duct", "end"]] },
+    flex: { scene: "A flexible duct (wide, pale blue, ribbed) runs from the left to a ceiling diffuser (small box) on the right.", look: "Follow the flex duct — how does it run to the diffuser?", bad: [[20, 24, "flex duct"], [203, 128, "diffuser", "middle"]], good: [[14, 60, "flex duct"], [180, 120, "diffuser", "middle"], [124, 22, "hanger"]] },
+    santee: { scene: "A plan view (seen from above) of a horizontal drain pipe (purple) with a horizontal branch joining it. Arrows show the flow direction.", look: "Which fitting joins the branch to the main drain, and at what angle?", parts: [[14, 92, "main drain"]], bad: [[126, 40, "branch drain"]], good: [[80, 40, "branch drain"]] },
+    strap: { scene: "A wash basin with its drain pipe (purple) going down through a U-shaped trap that holds a water seal.", look: "Where does the pipe go after the trap, and is there a vent?", parts: [[80, 24, "basin", "middle"], [50, 100, "trap"]], bad: [[14, 136, "floor"]] },
+    airgap: { scene: "A basin (cyan outline) partly filled with water, with a water supply pipe coming in above it. The tops of the basin walls are the flood rim.", look: "Where does the water outlet end compared with the flood rim?", parts: [[166, 26, "water supply"], [198, 60, "flood rim", "end"]], bad: [[66, 80, "hose"]] },
+    slope: { scene: "A horizontal drain pipe (purple) carrying waste from left to right.", look: "Which way does the pipe fall along its length?", bad: [[14, 54, "drain pipe"], [156, 80, "solids"]], good: [[20, 36, "drain pipe"]] },
+    obstruct: { scene: "A section under a ceiling: a sprinkler (red) sprays down onto a wide rectangular duct. The dashed cone shows the spray pattern.", look: "Does the spray reach the floor area under the duct?", parts: [[14, 26, "ceiling"], [182, 72, "duct"], [128, 24, "sprinkler"]] },
+    deflector: { scene: "A sprinkler (red drop pipe with a flat deflector) hangs from the ceiling. The orange band under the ceiling is the hot gas layer from a fire.", look: "How far below the ceiling is the sprinkler deflector?", parts: [[14, 26, "ceiling"]], bad: [[104, 94, "sprinkler", "end"]], good: [[106, 40, "sprinkler", "end"]] },
+    conduit: { scene: "Cross-section of an electrical conduit (large circle) with the insulated wires inside it shown as small yellow circles.", look: "How much of the conduit is filled by the wires?", parts: [[178, 40, "conduit"]] },
+    panel: { scene: "A wall-mounted electrical panel (yellow box) on the left wall, seen from the side, with the floor space in front of it.", look: "What is in front of and above the panel?", parts: [[50, 58, "panel"], [4, 130, "wall"]], bad: [[130, 16, "water pipe"]] },
+    oiltrap: { scene: "A refrigeration suction line (green) runs from a low evaporator up a tall riser to a condensing unit above. Arrows show the gas flow.", look: "Look at the bottom of the riser — what shape is the pipe there?", parts: [[126, 60, "suction riser"]] },
+    condtrap: { scene: "An air-handling unit (box) whose cooling coil sits under fan suction. A condensate drain pipe (cyan) leaves the bottom of the unit.", look: "Follow the drain pipe — what shape is it below the unit?", parts: [[160, 24, "air handler"]], bad: [[100, 130, "drain", "end"]], good: [[204, 113, "drain"]] },
+    shortcircuit: { scene: "A section through a room showing a supply diffuser (blue) and a return grille (purple). The arrow shows where the supply air goes.", look: "Where is the return grille relative to the supply diffuser?", parts: [[232, 14, "ceiling", "end"], [14, 136, "floor"]] },
+    intake: { scene: "An outside wall of a building with two louvres: an exhaust outlet (orange) and a fresh-air intake (blue).", look: "How far apart are the exhaust and the intake?", parts: [[14, 136, "building wall"]] },
+    firedamper: { scene: "A duct (blue) passes through a fire-rated wall (orange band) with a fire on one side. Arrows show air moving through the duct.", look: "What is in the duct where it passes through the fire wall?", parts: [[14, 56, "duct"], [68, 130, "fire"]] },
+    damperloc: { scene: "A main duct with a branch dropping down to a ceiling diffuser. The amber line with a dot is a balancing damper blade.", look: "Where along the branch is the damper placed?", parts: [[14, 52, "main duct"], [162, 126, "diffuser", "middle"]], bad: [[178, 100, "damper"]], good: [[178, 52, "damper"]] },
+    vapour: { scene: "A cold duct (blue) wrapped in insulation (yellow band), seen from the side.", look: "Look along the insulation — does it cover the duct all the way?", parts: [[14, 34, "insulation"], [14, 110, "cold duct"]], good: [[160, 34, "tape", "middle"]] },
+    grease: { scene: "A kitchen hood with its grease exhaust duct (wide grey band) rising and then running off to the right.", look: "Follow the duct — which way does it slope along its run?", bad: [[58, 48, "grease duct"]], good: [[12, 46, "grease duct"]] },
+    tstat: { scene: "A room section with a window on the right wall (sun outside) and a supply diffuser in the ceiling. The small box with a dial is the thermostat.", look: "Where is the thermostat mounted, and what is near it?", parts: [[146, 24, "supply diffuser", "end"], [212, 110, "window", "end"]], bad: [[176, 74, "thermostat", "end"]], good: [[52, 74, "thermostat"]] },
+    tpvalve: { scene: "A storage water heater standing on the floor. The orange square on its side is the temperature & pressure (T&P) relief valve, and the cyan line is its discharge pipe.", look: "Follow the discharge pipe — where does it run, and how does it end?", parts: [[96, 48, "T&P valve", "end"]], bad: [[190, 24, "cap"]], good: [[142, 114, "drain"]] },
+    ventterm: { scene: "The outside wall of a building with a window. The purple pipe is a plumbing vent rising up the wall.", look: "Where does the vent pipe end, compared with the window?", parts: [[155, 56, "window", "middle"], [104, 130, "vent pipe", "end"], [232, 26, "roof", "end"]] },
+    cleanout: { scene: "A drain stack (purple) comes down, turns and runs along as a horizontal building drain, then turns down again.", look: "Where could you get a drain rod into this pipe?", parts: [[46, 24, "stack"], [120, 140, "building drain", "middle"]], good: [[24, 132, "plug", "middle"], [216, 132, "plug", "middle"]] },
+    dielectric: { scene: "A copper pipe (orange-brown) on the left joined to a galvanized steel pipe (grey) on the right.", look: "Look at the joint — what is between the two metals?", parts: [[120, 46, "joint", "middle"]] },
+    dryvent: { scene: "A basin drains through a trap into a waste pipe (purple). A vent pipe rises from the waste pipe and runs off to the right. The dashed line is the basin's flood rim.", look: "How high does the vent rise before it turns sideways?", parts: [[70, 56, "basin", "middle"], [60, 104, "trap", "end"], [186, 120, "drain"]], bad: [[200, 54, "vent"]], good: [[200, 16, "vent"]] },
+    pumpsuct: { scene: "A pump (circle) driven by a motor (box), with its suction pipe (cyan) bringing water into the pump inlet.", look: "What is the suction pipe doing just before the pump inlet?", parts: [[188, 124, "pump", "middle"], [221, 72, "motor", "middle"]], bad: [[146, 30, "suction pipe"]], good: [[14, 72, "suction pipe"]] },
+    storm: { scene: "A building with rain falling on its roof. The cyan downpipe carries the roof drain water down; the purple pipe is the sanitary sewer.", look: "Where does the roof downpipe discharge?", parts: [[75, 60, "building", "middle"], [110, 13, "rain"], [128, 100, "downpipe", "end"]] },
+    extinguisher: { scene: "A portable fire extinguisher (the red cylinder with a short hose) hung on a wall above the floor, drawn with whatever is stored around it.", look: "How high is the extinguisher, and can you see and reach it?", parts: [[14, 136, "floor"]], bad: [[94, 30, "extinguisher", "end"], [76, 122, "boxes", "end"]], good: [[98, 96, "extinguisher", "end"]] },
+    sprclose: { scene: "A ceiling with sprinkler heads hanging from it (the short red drops). The pale cones are their water spray patterns.", look: "How far apart are the sprinkler heads?", parts: [[226, 12, "ceiling", "end"]], bad: [[92, 24, "sprinkler", "end"]], good: [[58, 24, "sprinkler"], [184, 24, "sprinkler", "end"]] },
+    storage: { scene: "A warehouse bay with a ceiling sprinkler (red drop) above stacked storage boxes. The pale cone shows the sprinkler's water spray.", look: "How much space is left between the top of the storage and the sprinkler?", parts: [[226, 12, "ceiling", "end"], [104, 26, "sprinkler", "end"], [64, 120, "storage", "end"]] },
+    detdiff: { scene: "A ceiling with a supply-air diffuser (the flat bar) and a smoke detector (the small dome). The grey wisp rising from below is smoke from a fire.", look: "Where is the smoke detector compared with the supply diffuser?", parts: [[50, 128, "smoke", "end"]], bad: [[90, 14, "supply diffuser", "middle"], [146, 50, "smoke detector", "middle"]], good: [[66, 30, "smoke detector"], [230, 14, "supply diffuser", "end"]] },
+    firestop: { scene: "A water pipe (cyan) passing through a fire-rated wall (the thick band), with a fire burning on one side. The patch around the pipe is the opening in the wall.", look: "What fills the opening around the pipe where it crosses the wall?", parts: [[100, 30, "fire wall", "end"], [210, 68, "pipe", "middle"], [42, 94, "fire", "middle"]] },
+    hydrant: { scene: "A fire hydrant (the red post with side outlets) at ground level beside an access road, drawn with what is around it.", look: "Can the fire crew reach and connect to the hydrant freely?", bad: [[110, 84, "hydrant", "middle"], [168, 98, "car", "middle"], [66, 118, "shrub", "end"]], good: [[96, 100, "hydrant", "end"]] },
+    gfci: { scene: "A kitchen worktop with a sink and tap (cyan). The small box on the wall just above the worktop is an electrical socket outlet.", look: "What kind of socket is fitted this close to the sink?", parts: [[112, 54, "socket", "end"], [70, 124, "sink", "middle"], [64, 88, "tap", "end"], [200, 120, "worktop", "middle"]] },
+    jbox: { scene: "Electrical conduit runs below the concrete floor slab to a junction box, in the space above a fixed (plastered) ceiling.", look: "Could an electrician get to the junction box later?", parts: [[14, 28, "floor slab"], [14, 48, "conduit"], [148, 44, "junction box"], [14, 86, "ceiling"]], good: [[124, 84, "access panel", "middle"]] },
+    vdroplong: { scene: "An electrical panel (left) feeds a motor (the circle marked M, right) through a long cable run.", look: "Is the cable right for a run this long to a motor?", parts: [[29, 102, "panel", "middle"], [206, 36, "motor", "middle"], [86, 32, "cable", "middle"]] },
+    oduclear: { scene: "An air-conditioning outdoor unit (box with a fan) on the ground, with nearby walls or slabs drawn as thick lines. Arrows show air moving.", look: "Can the unit's hot discharge air get away freely?", parts: [[156, 132, "outdoor unit"]], bad: [[40, 96, "wall", "end"], [97, 54, "overhead slab", "middle"]], good: [[36, 96, "wall", "end"]] },
+    linewrap: { scene: "Cross-section of a refrigerant line set: the large copper tube is the suction line, the small one the liquid line, and the yellow-outlined areas are insulation.", look: "How is the insulation arranged around the two lines?", bad: [[86, 44, "insulation", "end"]], good: [[60, 50, "insulation", "end"]] },
+    nitrogen: { scene: "A copper refrigerant pipe (orange walls) shown cut open lengthwise, with a fitting being brazed; the pointed red shape below is the torch flame.", look: "What is inside the pipe while the joint is brazed?", parts: [[14, 50, "copper pipe"], [142, 48, "fitting"], [100, 124, "torch flame", "end"]] },
+    vacuum: { scene: "A vacuum (micron) gauge, left, connected by a hose to the refrigerant system (box) before charging. The needle swings left as the vacuum gets deeper.", look: "How deep is the vacuum, and is the system dry inside?", parts: [[70, 28, "vacuum gauge", "middle"], [135, 70, "hose", "middle"], [190, 46, "system", "middle"]] },
+    stripcurtain: { scene: "Side view of a cold-room doorway: the pale blue area is the cold room, and the opening below the header is the doorway. Arrows show air moving.", look: "What is in the doorway, and how does air move through it?", parts: [[176, 28, "cold room", "middle"], [114, 30, "doorway", "end"]] },
+    exhvoid: { scene: "A bathroom exhaust fan grille in the ceiling, with its duct rising into the void between the ceiling and the roof.", look: "Where does the exhaust duct end?", parts: [[136, 50, "duct"], [146, 72, "exhaust fan"], [196, 32, "ceiling void", "middle"]] },
+    ductleak: { scene: "A run of rectangular supply duct with two transverse joints where the sections meet. The arrow shows air flowing along it.", look: "What is happening at the duct joints?", parts: [[14, 48, "duct"], [80, 108, "joint", "middle"], [160, 46, "joint", "middle"]] },
+    draught: { scene: "A room with a supply diffuser (the bar on the ceiling) above a person standing at a desk. Arrows show where the supply air jet goes.", look: "Where does the supply air go after leaving the diffuser?", parts: [[136, 12, "supply diffuser"], [167, 132, "desk", "middle"], [100, 126, "person", "end"]] },
+    transfer: { scene: "A toilet-room door seen face-on, with an exhaust grille high on the wall pulling air out of the room. The bottom line is the floor.", look: "How can replacement air get into the room past the door?", parts: [[128, 34, "door", "middle"], [205, 60, "toilet", "middle"]] },
+    filterbypass: { scene: "Inside an air-handling unit: the zigzag is the filter in its frame and the vertical band on the right is the cooling coil. Arrows show the air path.", look: "Does all the air pass through the filter?", parts: [[120, 14, "air handler", "middle"], [126, 50, "filter"], [182, 50, "coil"]] },
+    airvent: { scene: "A chilled-water pipe (cyan) that rises up and over an obstruction and back down again, making a high point at the top.", look: "What is fitted at the pipe's high and low points?", parts: [[14, 112, "CHW pipe"], [174, 34, "high point"]], good: [[136, 18, "air vent"], [50, 140, "drain valve"]] },
+    exptank: { scene: "A closed water loop (cyan) with a circulating pump (circle; its arrowhead shows the flow direction) and an expansion tank (rounded box) piped into the loop.", look: "Which side of the pump is the expansion tank connected to?", parts: [[120, 144, "pump", "middle"]], bad: [[192, 96, "tank"]], good: [[48, 96, "tank", "end"]] },
+    pumpflex: { scene: "A pump (circle) on its base, with water pipes (cyan) connected on both sides.", look: "What sits between the pump and the pipes on each side?", parts: [[120, 66, "pump", "middle"], [152, 118, "pump base"]] },
+    thermexp: { scene: "A water heater with its cold-water feed pipe (cyan) coming in from the left through a check valve.", look: "Where can the water go when it expands as it heats up?", parts: [[14, 74, "cold in"]], bad: [[190, 96, "gauge", "middle"]] },
+    traparm: { scene: "A basin drains through a U-shaped trap and a horizontal trap arm (purple pipe) to a vertical vent stack.", look: "How far is the trap from the vent?", parts: [[70, 34, "basin", "middle"], [52, 104, "trap", "end"], [98, 84, "trap arm"]], bad: [[216, 20, "vent stack", "end"]], good: [[144, 20, "vent stack", "end"]] },
+    doubletrap: { scene: "A basin draining through a purple waste pipe to the drain on the right. Each U-shaped dip in the pipe is a trap.", look: "How many traps does the water pass through?", parts: [[70, 34, "basin", "middle"], [52, 104, "trap", "end"]], bad: [[158, 120, "trap"], [200, 94, "drain", "middle"]], good: [[174, 50, "vent pipe", "end"], [205, 104, "drain", "middle"]] },
+    greasesewer: { scene: "A commercial kitchen sink drains through a purple waste pipe toward the building sewer on the right.", look: "What does the kitchen waste pass through before the sewer?", parts: [[222, 92, "sewer", "end"], [56, 80, "waste pipe"]], good: [[96, 124, "interceptor", "end"]] },
+    trench: { scene: "Cross-section through the ground showing the building sewer (large circle), the water service pipe (small circle) and the trench walls around them.", look: "How are the water pipe and the sewer separated?", bad: [[120, 52, "trench", "middle"], [14, 42, "ground"]], good: [[52, 52, "trench", "middle"], [188, 52, "trench", "middle"], [14, 27, "ground"]] },
+    sprorient: { scene: "A fire sprinkler hanging down on a red pipe below the ceiling. The curved or flat bar at its tip is the deflector; arrows or a cone show where water goes.", look: "Which way does the deflector throw the water?", parts: [[14, 26, "ceiling"], [136, 70, "deflector"]] },
+    sprpaint: { scene: "A fire sprinkler head (red) just below a ceiling that is being painted.", look: "What is on or over the sprinkler head?", parts: [[226, 12, "ceiling", "end"], [102, 30, "sprinkler", "end"]], bad: [[100, 44, "paint", "end"]], good: [[100, 44, "bag", "end"]] },
+    firedoor: { scene: "A fire door in a wall opening, seen from the front, with the floor line at the bottom. Small shapes at the door head, frame or floor are door hardware or objects touching the door.", look: "Is the door shut or open, and what is keeping it that way?", parts: [[62, 16, "fire door"]], bad: [[126, 128, "wedge"], [140, 98, "smoke", "middle"]], good: [[104, 31, "closer"], [166, 90, "hold-open", "end"]] },
+    exitblock: { scene: "Plan of an exit corridor between two walls, leading to an exit door (right) under a green EXIT sign. The orange dashed arrow is the escape path.", look: "Can people use the full corridor width all the way to the door?", parts: [[14, 52, "corridor"], [214, 70, "door"], [186, 34, "exit sign", "end"]], bad: [[168, 52, "boxes"]] },
+    fpvalve: { scene: "A fire pump (circle) with its motor (square), fed from the left by a cyan suction pipe. The symbol on the pipe is a valve.", look: "What kind of valve is on the suction pipe, and how close to the pump?", parts: [[221, 114, "motor", "middle"], [12, 106, "suction pipe"]], bad: [[178, 128, "fire pump", "middle"]], good: [[50, 80, "gate valve"], [188, 64, "fire pump", "middle"]] },
+    ngbond: { scene: "Inside a sub-panel (fed from the main service, not the service itself): the neutral bar N (grey) and the ground bar G (green) side by side.", look: "Is anything connecting the N and G bars inside this sub-panel?", parts: [[95, 44, "neutral", "middle"], [145, 44, "ground", "middle"]], bad: [[120, 66, "bond", "middle"]] },
+    daisychain: { scene: "A wall outlet (small box, left) supplies a portable heater (orange box, right). Yellow lines are cords; long flat bars are power strips.", look: "How does power get from the outlet to the heater — through what?", parts: [[12, 76, "outlet"]], bad: [[75, 40, "power strip", "middle"], [100, 72, "power strip", "middle"]], good: [[110, 44, "cord", "middle"]] },
+    breakerwire: { scene: "A circuit breaker (yellow box, left) protecting a branch-circuit wire whose size is marked above it: 14 AWG / 2.0 mm².", look: "Does the breaker rating suit that wire size?", bad: [[40, 34, "30 A breaker", "middle"]], good: [[40, 34, "15 A breaker", "middle"]] },
+    txvbulb: { scene: "Cross-section of a copper refrigerant suction line (brown circle). The small yellow capsule is the expansion valve's sensing bulb strapped to the pipe.", look: "Where around the pipe is the bulb, and what is it touching?", parts: [[14, 70, "suction line"]], bad: [[141, 118, "bulb"], [150, 104, "oil"]], good: [[178, 104, "bulb"], [166, 66, "insulation"]] },
+    flarewall: { scene: "A green refrigerant line passes through a wall (tall beige box). The orange square on the line is a flare joint.", look: "Where is the flare joint — could anyone reach it later?", parts: [[94, 20, "wall"], [14, 66, "refrigerant"]], bad: [[134, 56, "flare joint"]], good: [[162, 56, "flare joint", "middle"]] },
+    frzdrain: { scene: "A walk-in freezer: the evaporator's defrost water drains through a cyan pipe that runs down, across and out through the freezer wall.", look: "What is done to the drain pipe inside the cold space, and outside?", parts: [[126, 66, "drain"], [178, 24, "outside"]], bad: [[145, 126, "ice", "middle"]], good: [[116, 110, "heat tape", "end"], [236, 108, "trap", "end"]] },
+    kitchenmua: { scene: "Section through a commercial kitchen. The trapezoid is the cooking hood with its blue exhaust duct up through the roof; orange arrows show air moving.", look: "Where does the air the hood removes get replaced from?", parts: [[58, 56, "hood", "middle"], [72, 13, "exhaust"]], bad: [[218, 76, "door", "end"]], good: [[148, 34, "diffuser"]] },
+    gasvent: { scene: "A gas appliance (left) connected by a grey vent connector to a chimney (tall box, right).", look: "Which way does the vent connector slope on its way to the chimney?", parts: [[194, 130, "chimney", "end"]], bad: [[100, 52, "vent connector"]], good: [[14, 18, "vent connector"]] },
+    svcclear: { scene: "Plan view of an air-handling or fan-coil unit. Its service side (filter and coil access) faces down; the thick beige line is a wall.", look: "How much room is there in front of the service side?", parts: [[164, 88, "service side"]], bad: [[200, 112, "wall"]], good: [[186, 134, "wall"]] },
+    ductvel: { scene: "Section through a room: a blue supply duct runs along the ceiling above a person. The orange dashed arrow shows air moving through the duct.", look: "How big is the duct for the air it carries over the room?", parts: [[162, 112, "occupant"]], bad: [[160, 46, "supply duct"]], good: [[236, 60, "supply duct", "end"]] },
+    negbldg: { scene: "Section through a building with two exhaust fans (EX) blowing air out through the roof. Orange arrows show where air moves in or out.", look: "Compare the air going out with the air being brought in.", parts: [[120, 40, "building", "middle"]] },
+    trapprimer: { scene: "Section through a floor drain: the green grate sits in the floor and the purple pipe drops into a U-shaped trap, then runs off to the sewer.", look: "Is there anything that keeps water in the trap when it is rarely used?", parts: [[150, 34, "floor drain"], [154, 100, "trap"], [190, 64, "to sewer"]], good: [[46, 52, "water line"]] },
+    rpzpit: { scene: "A reduced-pressure-zone (RPZ) backflow preventer (orange box) on a cyan water main, shown against the ground surface (grade) line.", look: "Where is the RPZ relative to the ground, and where can water collect?", bad: [[120, 76, "RPZ valve", "middle"], [14, 46, "grade"], [150, 66, "pit"], [120, 132, "water", "middle"]], good: [[120, 54, "RPZ valve", "middle"], [150, 132, "grade"], [136, 104, "drain"]] },
+    roofvent: { scene: "A purple plumbing vent pipe rising through a sloped roof (beige line).", look: "How far does the vent extend above the roof surface?", parts: [[24, 102, "roof"], [126, 130, "vent pipe"]], bad: [[190, 54, "snow"]] },
+    ejector: { scene: "A sewage ejector: a pump sits in a basin below the floor and pushes waste up a purple discharge pipe that turns toward the sewer.", look: "Look at the discharge pipe and the basin — what is fitted to them?", parts: [[14, 46, "floor"], [64, 104, "basin"], [160, 24, "discharge"]] },
+    wcspace: { scene: "Plan view of a toilet room: two water closets (tank and bowl outlines) along the top wall, with a side wall on the left.", look: "How much room is there beside and between the toilets?", parts: [[180, 24, "wall"]], bad: [[92, 40, "toilets"]], good: [[80, 30, "toilets"]] },
+    sprheat: { scene: "A ceiling with a sprinkler head and a unit heater (box) hung below it. The coloured dot on the sprinkler is its glass bulb; the colour marks its temperature rating.", look: "How close is the sprinkler to the heater, and what is its rating?", parts: [[196, 12, "ceiling"]], bad: [[110, 58, "sprinkler", "middle"]], good: [[12, 50, "sprinkler"]] },
+    pullstation: { scene: "Elevation of a wall with an exit door (right) and a red manual fire-alarm pull station, floor line at the bottom.", look: "Where is the pull station — how high, and how far from the door?", bad: [[72, 32, "pull station"]], good: [[152, 72, "pull station", "end"]] },
+    strobe: { scene: "Elevation of a room wall from floor to ceiling, with a low cabinet against it and a visual fire-alarm strobe (small light) on the wall.", look: "How high is the strobe, and can it be seen across the room?", parts: [[174, 136, "cabinet"], [196, 26, "ceiling"]], bad: [[117, 133, "strobe", "middle"]], good: [[100, 50, "strobe", "end"]] },
+    sprsupport: { scene: "Section under a concrete slab: a red sprinkler pipe hangs on rods, with a light fixture and a yellow cable also hung nearby.", look: "What is each item hanging from?", parts: [[54, 34, "hanger"], [95, 32, "sprinkler"], [110, 89, "light"], [162, 100, "cable"]] },
+    drypitch: { scene: "Side view of a red dry-pipe sprinkler branch under the ceiling. A dry-pipe system holds air; water enters only when it operates or is tested.", look: "Can all the water drain out of this pipe afterwards?", parts: [[196, 12, "ceiling"], [20, 58, "dry-pipe branch"]], bad: [[158, 54, "ice"]], good: [[209, 66, "drain valve", "end"]] },
+    extclass: { scene: "A portable fire extinguisher (red cylinder) next to an electrical panel (yellow box). The small label above the extinguisher names its type.", look: "Is this extinguisher type right for an electrical fire?", parts: [[180, 122, "electrical panel", "middle"]], bad: [[12, 56, "water type"]], good: [[12, 56, "CO₂ type"]] },
+    plenumcable: { scene: "Section through a ceiling void used as a return-air plenum, between the slab above and the ceiling below. Two cables run through the void.", look: "What kind of cable is this, and is it allowed in the plenum?", parts: [[14, 46, "cables"], [14, 75, "ceiling"]] },
+    panelcloset: { scene: "Plan of a small room with an electrical panelboard (yellow) on its wall. The room's use is named at the top-left corner.", look: "What room is the panel in, and is the space in front of it clear?", parts: [[56, 82, "panel", "end"]], bad: [[130, 80, "clothes", "middle"]], good: [[14, 14, "utility room"], [62, 128, "work space"]] },
+    alcu: { scene: "An aluminium conductor (left) landing on a screw terminal inside a device box. Text on the box is the terminal's rating marking.", look: "What conductor material is this terminal rated for?", parts: [[155, 121, "terminal", "middle"]], good: [[155, 104, "AL/CU", "middle"]] },
+    phases: { scene: "A bar chart of the current on each of the three phases (L1, L2, L3) of a panel feeding many single-phase circuits.", look: "How evenly is the load shared between the three phases?", parts: [[64, 134, "phase", "end"]] },
+    waterbond: { scene: "A copper water service pipe (the orange line) enters the building and rises next to the electrical service panel, the yellow box on the right.", look: "Look at what links the water pipe and the electrical service.", parts: [[20, 113, "water pipe"]], good: [[124, 84, "jumper", "end"]] },
+    weighcharge: { scene: "A refrigerant cylinder (left) is connected by a charging hose to a condensing unit (right) to add refrigerant to the system.", look: "How is the amount of refrigerant going in being measured?", parts: [[86, 50, "cylinder"], [105, 20, "hose", "middle"]], good: [[60, 145, "scale", "middle"]] },
+    suctpitch: { scene: "A refrigerant suction line runs between the evaporator coil and the compressor. Look at the heights of the two ends.", look: "Which way does the suction line slope between the two units?", bad: [[140, 66, "suction line", "end"]], good: [[120, 56, "suction line"]] },
+    drier: { scene: "A refrigerant liquid line (the long horizontal pipe) with a filter-drier, the rounded capsule in the middle, fitted after a repair.", look: "Look at the filter-drier in the line: what state is it in?", parts: [[14, 92, "liquid line"]] },
+    reliefvent: { scene: "A walk-in freezer in section: the shaded box is the cold room, enclosed by its insulated wall panels.", look: "Look at the freezer walls: how is pressure inside the room handled?", parts: [[90, 80, "freezer", "middle"], [90, 145, "wall panels", "middle"]], good: [[136, 70, "vent", "end"]] },
+    coilvel: { scene: "Inside an air-handling unit: air flows left to right through a cooling coil (the dashed blue block), with a drain pan under the coil.", look: "Where does the water that condenses on the coil end up?", parts: [[20, 26, "air handler"], [120, 30, "cooling coil"], [88, 100, "drain pan", "end"]] },
+    dryerduct: { scene: "A clothes dryer (the box, lower left) with its exhaust duct running up and across the ceiling toward the outside.", look: "What is the dryer duct made of, and how does it run?", bad: [[100, 30, "exhaust duct"]], good: [[130, 34, "exhaust duct", "middle"], [219, 70, "cap", "middle"]] },
+    vavinlet: { scene: "A VAV terminal box (right) fed by a supply duct. The small cross at the box inlet is its airflow sensor.", look: "Look at the duct just before the VAV box inlet.", parts: [[150, 48, "flow sensor"]], bad: [[130, 30, "duct"]], good: [[40, 56, "duct"]] },
+    flatduct: { scene: "A rectangular supply duct (with an airflow arrow) has to pass under a structural beam, the solid block at the top.", look: "How has the duct been shaped to get under the beam?", parts: [[86, 20, "beam", "end"], [20, 28, "duct"]] },
+    condslope: { scene: "A wall-mounted indoor split unit (left) with its condensate drain pipe (cyan) running to the outside wall on the right.", look: "Follow the drain pipe from the unit to the wall: how does it run?", parts: [[204, 20, "wall"]], bad: [[196, 57, "drain", "end"]], good: [[140, 84, "drain", "middle"]] },
+    toiletreturn: { scene: "A floor plan of a toilet room (left) next to an office (right). The bar in the toilet is a ceiling air grille; arrows show where its air goes.", look: "Where does the air taken out of the toilet end up?", bad: [[60, 82, "grille", "middle"]], good: [[60, 74, "grille", "middle"]] },
+    hosevb: { scene: "An outdoor hose bibb (the orange square on the wall) with a garden hose running into a bucket of garden chemicals.", look: "Look closely at where the hose connects to the bibb.", parts: [[90, 124, "hose", "middle"]], good: [[160, 84, "weed killer", "middle"]] },
+    whpan: { scene: "A tank water heater standing on the floor (the line at the bottom), in a space above a finished room.", look: "Look at the base of the water heater and the floor around it.", parts: [[14, 136, "floor"]], good: [[60, 120, "pan", "end"], [180, 126, "drain", "middle"]] },
+    uvpipe: { scene: "A PVC pipe (the white line) runs across an outdoor roof or wall in full sun (the yellow circle, top left).", look: "Look at the pipe surface where the sun hits it.", parts: [[46, 20, "sun"], [14, 76, "PVC pipe"]] },
+    antiscald: { scene: "A shower: the head hangs from a pipe off the wall, and the orange square on the wall is the shower valve that mixes hot and cold.", look: "What kind of valve controls the shower water temperature?", parts: [[134, 40, "shower head", "end"], [204, 20, "wall"], [182, 106, "valve", "end"]] },
+    wasteinvent: { scene: "A sink with its trap (the U-bend). The vertical pipe on the left is the vent; the pipe along the bottom is the building drain.", look: "Follow the sink's waste pipe after the trap: where does it connect?", parts: [[130, 36, "sink", "middle"], [154, 88, "trap"], [14, 133, "drain"]] },
+    valvesup: { scene: "A sprinkler main with an OS&Y gate valve: the handwheel sits on a yoke, and the height of the rising stem shows how far the valve is open.", look: "Read the valve stem, and see what is attached to the valve.", parts: [[120, 136, "OS&Y valve", "middle"], [100, 72, "handwheel", "end"], [14, 102, "sprinkler main"]], good: [[140, 104, "switch"]] },
+    alarmcook: { scene: "A home kitchen in section: the stove sits on the floor and the smoke alarm is the small dome on the ceiling line.", look: "Where is the smoke alarm placed relative to the stove?", parts: [[65, 124, "stove", "middle"]], bad: [[84, 32, "smoke alarm"]], good: [[200, 60, "smoke alarm", "middle"]] },
+    hoodsupp: { scene: "A commercial kitchen hood (the wide trapezoid) over a fryer and range, with its exhaust duct rising from the top of the hood.", look: "Look between the hood and the cooking surface: what is there?", parts: [[170, 38, "hood", "middle"], [126, 14, "duct"]] },
+    concealed: { scene: "A section through a ceiling void: concrete slab on top, wooden joists, and a suspended ceiling below. Red lines are sprinkler pipes.", look: "Which spaces do the sprinkler pipes protect?", parts: [[44, 50, "joist"], [44, 76, "ceiling"], [14, 110, "sprinkler pipe"]] },
+    knockout: { scene: "An electrical panel (the box on the right) with three round knockout openings for cable entries: two on top, one on the side.", look: "Look at the unused knockout openings in the panel.", parts: [[176, 84, "panel", "middle"], [176, 57, "knockouts", "middle"]] },
+    nonic: { scene: "A recessed downlight (the can) set into a ceiling, with loose attic insulation (the fluffy band) on the ceiling around it.", look: "How close is the insulation to the light, and what type of light is it?", parts: [[120, 36, "downlight", "middle"], [14, 36, "insulation"], [14, 107, "ceiling"]] },
+    splice: { scene: "Electrical conductors (the yellow line) run above a ceiling, under the slab, with a splice joining them in the middle.", look: "How is the splice in the middle made and protected?", parts: [[14, 30, "slab"], [14, 44, "cable"], [120, 76, "splice", "middle"]] },
+    inuse: { scene: "An outdoor wall receptacle in the rain, with a cord plugged into it (the yellow line running right). Over the socket is its weather cover.", look: "Look at the receptacle cover while the cord is plugged in.", parts: [[26, 20, "wall", "end"], [160, 14, "rain"], [72, 68, "receptacle"]] },
+    backfeed: { scene: "A portable generator (lower left) supplying power to a house during an outage; the two vertical lines at the right are the utility grid supply.", look: "How does the generator's power get into the house wiring?", bad: [[128, 96, "wall socket"], [100, 104, "cord", "middle"]], good: [[158, 126, "panel", "middle"], [100, 104, "cable", "middle"]] },
+    liquidlift: { scene: "An evaporator (top left) sits well above the condensing unit (bottom right), joined by a tall refrigerant liquid line riser.", look: "What state is the refrigerant in as it climbs the riser?", parts: [[126, 90, "liquid line"]], good: [[128, 30, "sight glass"]] },
+    crankcase: { scene: "A refrigeration compressor seen in section; the lower part of its shell is the crankcase, where the oil sits.", look: "Look at the bottom of the compressor: what is in the crankcase?", parts: [[120, 84, "crankcase", "middle"]] },
+    cylinder: { scene: "A refrigerant cylinder (the tall rounded blue tank) on a job site.", look: "Look at what is being done to the cylinder, or how it is held.", parts: [[118, 24, "cylinder", "middle"]], bad: [[56, 128, "torch", "middle"]], good: [[78, 64, "chain", "end"], [60, 136, "floor"]] },
+    machroom: { scene: "A refrigeration machinery room in section, with a chiller standing on the floor.", look: "Look around the room: what would happen if the chiller leaked?", parts: [[16, 70, "machine room"]], good: [[211, 60, "fan", "middle"], [158, 133, "sensor", "middle"]] }
+  };
+  function pfSvg(p, side, quiz) { // quiz: the game hides the captions, so it keeps labels that repeat a caption
+    var f = PF_INFO[p.id] || {};
+    return p[side] + (f.parts || []).concat(f[side] || []).filter(function (l) { return quiz || p[side].indexOf('>' + esc(l[2]) + '</text>') < 0; })
+      .map(function (l) { return PF_T(l[0], l[1], l[2], 'pf-t pf-tp', l[3]); }).join('');
+  }
   var pfFilter = 'all', pfQuery = '', pfText = {};
   function renderPitfalls() {
     var grid = $('#pf-grid'), keys = ['all'].concat(Object.keys(PF_DISC)), wide = window.matchMedia('(min-width: 700px)').matches; // phones start with the explanations folded
@@ -14706,11 +15151,11 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     var fig = function (kind, p) {
       var bad = kind === 'bad';
       return '<figure class="pf-fig pf-' + kind + '"><figcaption>' + (bad ? '<span aria-hidden="true">✕</span> Don\'t' : '<span aria-hidden="true">✓</span> Do') + '</figcaption>' +
-        '<svg viewBox="0 0 240 150" role="img" aria-label="' + esc((bad ? 'Wrong: ' + p.badCap : 'Right: ' + p.goodCap)) + '">' + (bad ? p.bad : p.good) + '</svg>' +
+        '<svg viewBox="0 0 240 150" role="img" aria-label="' + esc((bad ? 'Wrong: ' + p.badCap : 'Right: ' + p.goodCap)) + '">' + pfSvg(p, kind) + '</svg>' +
         '<p>' + esc(bad ? p.badCap : p.goodCap) + '</p></figure>';
     };
     grid.innerHTML = PITFALLS.map(function (p) {
-      pfText[p.id] = [p.title, p.why, p.rule, p.badCap, p.goodCap, p.ref, PF_DISC[p.d][0]].join(' ').toLowerCase();
+      pfText[p.id] = [p.title, p.why, p.rule, p.badCap, p.goodCap, p.ref, PF_DISC[p.d][0], (PF_INFO[p.id] || {}).scene].join(' ').toLowerCase();
       return '<article class="pf-card" id="pf-' + p.id + '" data-d="' + p.d + '" style="--c:' + PF_DISC[p.d][1] + '">' +
         '<p class="pf-disc">' + esc(PF_DISC[p.d][0]) + '</p><h3>' + esc(p.title) + '</h3>' +
         '<div class="pf-pair">' + fig('bad', p) + fig('good', p) + '</div>' +

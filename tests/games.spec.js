@@ -82,10 +82,14 @@ test.describe('games', () => {
     await expect(page.locator('#pp-moves')).toHaveText('0')
   })
 
-  test('spot the mistake — the labels stay hidden until you answer', async ({ page }) => {
+  test('spot the mistake — parts are named, the verdict notes wait until you answer', async ({ page }) => {
     await openGame(page, 'spot')
-    await expect(page.locator('.sp-fig text').first()).toBeHidden()
+    await expect(page.locator('.sp-scene')).toContainText('In the picture')
+    await expect(page.locator('.sp-look')).toBeVisible()
+    await expect(page.locator('.sp-fig .pf-tp').first()).toBeVisible()
+    for (const t of await page.locator('.sp-fig :is(.pf-tb, .pf-tg, .sp-only)').all()) await expect(t).toBeHidden()
     await page.keyboard.press('m')
+    await expect(page.locator('.sp-fig :is(.pf-tb, .pf-tg)').first()).toBeVisible()
     await expect(page.locator('.sp-verdict')).toBeVisible()
     await expect(page.locator('.sp-verdict b')).toHaveText(/^(✓ Correct|✕ Not quite) — this is the (mistake|right way)\.$/)
     await expect(page.locator('.gm-bar')).toContainText(/Score [01] \/ 1/)
@@ -93,6 +97,79 @@ test.describe('games', () => {
     await expect(page.locator('.sp-verdict')).toHaveCount(0)
     await page.locator('[data-gm="sp-answer"][data-v="good"]').click()
     await expect(page.locator('.gm-bar')).toContainText('/ 2')
+  })
+
+  test('symbol match — a wrong pair turns back, and remembering every card clears the board', async ({ page }) => {
+    await openGame(page, 'match')
+    const cards = page.locator('.mm-card')
+    await expect(cards).toHaveCount(12)
+    // a flipped card's label names it ("Gate valve symbol" or "Gate valve"), so play like someone with a perfect memory
+    const name = async (i) => (await cards.nth(i).getAttribute('aria-label')).replace(/, matched$/, '').replace(/ symbol$/, '')
+    const seen = new Map(), done = new Set() // seen: card → name, for cards turned back face down
+    const flip = async (i) => { await cards.nth(i).click(); await expect(cards.nth(i)).toHaveClass(/open/); return name(i) }
+    const partner = (n, not) => [...seen].find(([k, v]) => v === n && k !== not && !done.has(k))
+    const pair = async (i, j) => { await flip(i); await flip(j); done.add(i).add(j); seen.delete(i); seen.delete(j) }
+    while (done.size < 12) {
+      const known = [...seen].find(([k, v]) => partner(v, k)) // a pair already remembered
+      if (known) { await pair(known[0], partner(known[1], known[0])[0]); continue }
+      const i = [...Array(12).keys()].find((k) => !done.has(k) && !seen.has(k))
+      const a = await flip(i)
+      const p = partner(a, i)
+      if (p) { await flip(p[0]); done.add(i).add(p[0]); seen.delete(p[0]); continue }
+      const j = [...Array(12).keys()].find((k) => k !== i && !done.has(k) && !seen.has(k))
+      const b = await flip(j)
+      if (a === b) { done.add(i).add(j); continue }
+      await expect(cards.nth(i)).not.toHaveClass(/open/) // no match: both turn back
+      seen.set(i, a).set(j, b)
+    }
+    await expect(page.locator('#mm-msg')).toContainText('All matched in')
+    await page.locator('[data-gm="mm-next"]').click()
+    await expect(cards).toHaveCount(16) // level 2: 8 pairs
+  })
+
+  test('phase balance — loads move between phases, and the best split wins', async ({ page }) => {
+    await openGame(page, 'phase')
+    const loads = await page.locator('.pb-tray .pb-load').evaluateAll((bs) => bs.map((b) => ({ i: +b.dataset.i, a: parseInt(b.querySelector('b').textContent, 10) })))
+    expect(loads.length).toBe(6)
+    // tap a load, tap L2 — then take it back off with 0
+    await page.locator(`.pb-load[data-i="${loads[0].i}"]`).click()
+    await page.locator('.pb-col[data-ph="1"]').click()
+    await expect(page.locator('.pb-col[data-ph="1"] .pb-load')).toHaveCount(1)
+    await page.locator(`.pb-load[data-i="${loads[0].i}"]`).click()
+    await page.keyboard.press('0')
+    await expect(page.locator('.pb-tray .pb-load')).toHaveCount(6)
+    // the best split, found the long way
+    let best = null
+    for (let m = 0; m < 3 ** loads.length; m++) {
+      const s = [0, 0, 0], ph = []
+      for (let k = 0, x = m; k < loads.length; k++, x = Math.floor(x / 3)) { ph.push(x % 3); s[x % 3] += loads[k].a }
+      const avg = (s[0] + s[1] + s[2]) / 3, v = (Math.max(...s) - avg) / avg
+      if (!best || v < best.v - 1e-12) best = { v, ph }
+    }
+    for (let k = 0; k < loads.length; k++) {
+      await page.locator(`.pb-load[data-i="${loads[k].i}"]`).click()
+      await page.keyboard.press(String(best.ph[k] + 1))
+    }
+    await expect(page.locator('#pb-msg')).toContainText('the best possible')
+    await page.locator('[data-gm="pb-next"]').click()
+    await expect(page.locator('.pb-tray .pb-load')).toHaveCount(7)
+  })
+
+  test('term scramble — typing, a wrong order, showing the answer and hints', async ({ page }) => {
+    await openGame(page, 'scramble')
+    await expect(page.locator('.ts-clue')).toContainText('letters)')
+    const pool = (await page.locator('.ts-tile').allTextContents()).join('')
+    await page.keyboard.type(pool.toLowerCase()) // the scrambled order is never the answer
+    await expect(page.locator('#ts-msg')).toHaveText('Not quite — tap a letter to take it back')
+    await page.keyboard.press('Backspace')
+    await expect(page.locator('.ts-slot.full')).toHaveCount(pool.length - 1)
+    await page.locator('[data-gm="ts-skip"]').click()
+    await expect(page.locator('#ts-msg')).toHaveText(/^It was [A-Z]+$/)
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.ts-slot.full')).toHaveCount(0)
+    while (await page.locator('[data-gm="ts-hint"]').count()) await page.locator('[data-gm="ts-hint"]').click()
+    await expect(page.locator('#ts-msg')).toHaveText(/^Solved — with \d+ hints?$/)
+    await expect(page.locator('.gm-bar')).toContainText('Solved 1 / 2')
   })
 })
 

@@ -24,6 +24,13 @@ test('every drawing label stays inside its 240 × 150 canvas', async ({ page }) 
   expect(outside).toEqual([])
 })
 
+test('every drawing names at least one of its parts', async ({ page }) => {
+  await openSite(page, 'pitfalls')
+  const unnamed = await page.locator('#pf-grid .pf-fig svg').evaluateAll((svgs) => svgs.filter((svg) => !svg.querySelector('text.pf-t')).map((svg) => svg.closest('.pf-card').id))
+  expect(unnamed).toEqual([])
+  await expect(page.locator('#pf-tpvalve .pf-bad .pf-tp', { hasText: 'T&P valve' })).toHaveCount(1)
+})
+
 test('pitfalls filter by discipline and search', async ({ page }) => {
   await openSite(page, 'pitfalls')
   await page.locator('#pf-filters [data-pf="F"]').click()
