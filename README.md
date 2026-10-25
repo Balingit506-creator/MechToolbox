@@ -12,7 +12,7 @@ Hanger and support take-offs cover chilled water, ductwork, plumbing (IPC Table 
 
 The site works like an app: the header switches between views (Home, Calculators, Guide, Projects, Estimate, Utilities, Standards, About, and What's new from the footer) instead of one long page. Each view has its own address (`#calculators`, `#projects`…), so links and the Back button work. Calculators are grouped in a sidebar by category, open in a two-column window (inputs beside the result), and the last six you used are listed on Home and in the sidebar. **Share link** (next to Copy result) copies an address that opens the same calculator with the same inputs, unit system and code basis (`?calc=duct&sys=si&code=ph&q=2400…`; values are written in the built-in unit, so the receiver's own unit choices don't matter).
 
-**Sun mode** (sun button in the header, or in the phone menu) switches to a light theme that stays readable outdoors; the choice is remembered. The site also installs as an app (an **Install app** button appears when the browser offers it) and keeps working offline once opened — a small "Offline" notice shows when the connection drops.
+**Sun mode** (sun button in the header, or in the phone menu) switches to a light theme that stays readable outdoors; the choice is remembered.
 
 The Design Pitfalls view shows 116 common design and installation mistakes across HVAC, plumbing, fire protection, electrical and refrigeration — such as a branch duct cut into an elbow, an intake beside an exhaust, an S-trap, a relief valve piped uphill, sprinklers blocked by a wide duct, a socket by a sink without GFCI, or brazing without nitrogen — each drawn beside the right way, with why it matters, the rule, the code reference and the calculator to check it. Search them or filter by discipline (the Codes & Standards view has its own search too); related calculators link to them from their window header.
 
@@ -26,14 +26,25 @@ The source is one self-contained file, `index.html` (vanilla JavaScript, inline 
 
 - moves the CSS and JavaScript into minified, cached files (`dist/assets/app-<hash>.css/.js`), so pages after the first load in about 16 KB;
 - writes one page per calculator, `dist/calculators/<name>/` (e.g. `calculators/duct-size-calculator/`), with its own title, description, heading, formula and inputs for search engines — it opens that calculator;
-- fills in the offline worker (`public/sw.js`) and writes `robots.txt`; the app manifest and icons are in `public/`.
+- puts the **site lock** at the top of the script (see below) and writes `robots.txt`; the favicon and share icons are in `public/icons/`.
 
 ## Going live — two settings
 
 | Setting | Where | What it does |
 |---|---|---|
-| `SITE_URL` | top of `scripts/postbuild.mjs`, or the `SITE_URL` environment variable on your host | The live address, e.g. `https://mechtoolbox.com/`. Adds canonical links and social tags to every page and writes `sitemap.xml` (submit it in Google Search Console). Left empty, they are skipped. |
+| `SITE_URL` | top of `scripts/postbuild.mjs`, or the `SITE_URL` environment variable on your host | The live address, e.g. `https://mechtoolbox.com/`. Adds canonical links and social tags to every page, writes `sitemap.xml` (submit it in Google Search Console) and locks the site to that domain. Left empty, they are skipped and the lock only blocks saved copies and framing. |
 | `CF_ANALYTICS_TOKEN` | `index.html`, search for `Visitor stats` | Cloudflare Web Analytics token (free, no cookies). Counts visits and each view; only loads on the live https site. |
+
+## Online only — copy protection
+
+The site does not install as an app or work offline (an earlier build's offline worker is removed from any browser that picked it up). The production build also guards against copying:
+
+- **Site lock** — the built script starts with a check: opened from a saved file (Save Page As, HTTrack, …), inside another site's frame, or — once `SITE_URL` is set — on any other domain, the page is replaced by "MechToolBox only runs online at …" with a link to your site. `localhost` stays allowed for `npm run preview`; add hosting-preview domains with the `ALLOWED_HOSTS` environment variable (comma-separated). The source `index.html` is not locked, so editing and tests work as before.
+- **Ctrl+S / ⌘S** shows "bookmark it instead" rather than saving the page.
+- **robots.txt** tells website copiers (HTTrack, WebCopier, Wget, Offline Explorer and others) to stay out.
+- A copyright line heads the minified script.
+
+No website can be made impossible to copy — what a browser shows has been downloaded to it, and determined people can edit the code. These steps stop casual copying and make saved or mirrored copies useless. Right-click and developer tools are left alone: blocking them gets in the way of normal use and is easy to get around.
 
 ## What's new and updates
 
@@ -64,8 +75,8 @@ Change `data-ad` to move a code to other slots (`home`, `calc-top`, `calc-side`,
 |---|---|
 | `npm install` | Install the dev tools (Vite, Playwright, Oxlint). |
 | `npm run dev` | Start a local server with live reload at http://localhost:5173. Add `-- --host` to open it from a phone on the same Wi-Fi. |
-| `npm run build` | Build `dist/` for hosting: the site, minified assets, calculator pages, offline worker, robots.txt (and sitemap.xml when `SITE_URL` is set). |
-| `npm run preview` | Serve the built `dist` folder at http://localhost:4173 (the offline worker also runs here). |
+| `npm run build` | Build `dist/` for hosting: the site, minified and locked assets, calculator pages, robots.txt (and sitemap.xml when `SITE_URL` is set). |
+| `npm run preview` | Serve the built `dist` folder at http://localhost:4173. |
 | `npm test` | Run the browser tests (uses the installed Microsoft Edge). |
 | `npm run lint` | Lint with Oxlint. |
 
@@ -80,7 +91,7 @@ Change `data-ad` to move a code to other slots (`home`, `calc-top`, `calc-side`,
 - `share.spec.js` — Share link: the copied address opens the same calculator, inputs, unit system and code basis in another browser, also when the sender picked a different unit.
 - `more-calcs.spec.js` — known values for kitchen hood exhaust, cable tray fill, earth electrode resistance, feeder voltage drop, STP sizing and compressed-air pipe sizing.
 - `extras.spec.js` — sun mode (switch, remembered after reload, phone menu), What's new and its sign-up form, and the four cheat sheets.
-- `build.spec.js` — runs `npm run build` and checks the minified assets, the 131 calculator pages, the offline worker and robots.txt.
+- `build.spec.js` — runs `npm run build` and checks the minified assets, the 131 calculator pages and robots.txt, that there is no offline app, and the site lock: a saved copy and a mirror domain show the online-only notice, another site cannot frame it, Ctrl+S is caught.
 - `ads.spec.js` — ad slots stay hidden without codes; pasted codes fill their slots in their own frames, and page-level codes run once.
 - `search.spec.js` — Standards search (references, sources, regional codes, whole-number matching, highlights), Pitfalls search highlights, and "/" focusing the search of the current view.
 - `pitfalls.spec.js` — the Design Pitfalls view: a wrong and a right drawing for each mistake, labels kept inside every drawing, discipline filter and search, links to and from calculators.

@@ -49,6 +49,7 @@ test.describe('games', () => {
   test.beforeEach(async ({ page }) => { await openSite(page, 'utilities') })
 
   test('pipe puzzle — clicks turn pieces, and the solved puzzle offers the next level', async ({ page }) => {
+    test.setTimeout(120_000) // solving a random puzzle takes many clicks
     await openGame(page, 'pipes')
     await expect(page.locator('#m-sys')).toBeHidden() // no units or code basis in a game
     await expect(page.locator('#modal .codeb')).toBeHidden()

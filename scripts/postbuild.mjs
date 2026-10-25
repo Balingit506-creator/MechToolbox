@@ -1,9 +1,11 @@
-// After `vite build`: split the page's CSS and JS into minified, cached files, add search-engine tags,
-// write one page per calculator (calculators/<name>/), a sitemap and robots.txt, and set up the offline cache.
+// After `vite build`: split the page's CSS and JS into minified, cached files, lock the code to the website,
+// add search-engine tags, and write one page per calculator (calculators/<name>/), a sitemap and robots.txt.
 //
 // Set the live address here (or as the SITE_URL environment variable) once the site is online — canonical
-// links, social tags and sitemap.xml are only written when it is set.
+// links, social tags and sitemap.xml are only written when it is set, and the site lock then also refuses to run
+// on any other domain. Extra domains that may run it (e.g. a hosting preview) go in ALLOWED_HOSTS, comma-separated.
 const SITE_URL = process.env.SITE_URL || ''
+const ALLOWED_HOSTS = (process.env.ALLOWED_HOSTS || '').split(',').map((s) => s.trim()).filter(Boolean)
 
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs'
 import { createHash } from 'node:crypto'
@@ -30,7 +32,19 @@ const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
 const app = scripts.reduce((a, b) => (b[1].length > a[1].length ? b : a))
 const min = await minify('app.js', app[1], { compress: true, mangle: true })
 if (min.errors && min.errors.length) throw new Error('JS minify failed: ' + JSON.stringify(min.errors[0]))
-const jsOut = min.code
+// Site lock, run before anything else: a saved copy (file://), another site's frame or — once SITE_URL is set —
+// another domain gets a short notice instead of the tools. localhost stays allowed for `npm run preview`.
+const lockHosts = site ? [new URL(site).hostname].concat(ALLOWED_HOSTS) : ALLOWED_HOSTS
+const lockHosts2 = lockHosts.concat(lockHosts.filter((x) => !/^www\./.test(x)).map((x) => 'www.' + x))
+const guard = '/*! MechToolBox (c) ' + new Date().getFullYear() + ' JAB. All rights reserved. Free to use online' + (site ? ' at ' + site : '') + '; copying, saving or re-hosting the site is not permitted. */\n' +
+  '(function(){var H=' + JSON.stringify(lockHosts2) + ',S=' + JSON.stringify(site) + ',l=location,h=l.hostname,ok=l.protocol!=="file:"&&(!H.length||H.indexOf(h)>=0||h==="localhost"||h==="127.0.0.1");' +
+  'try{if(ok&&window.top!==window.self){window.top.location.replace(l.href);ok=false}}catch(e){ok=false}' +
+  'if(ok)return;document.documentElement.innerHTML=\'<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MechToolBox</title></head>' +
+  '<body style="margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:#0B0B0B;color:#F2E8CF;font:16px/1.6 system-ui,sans-serif;text-align:center"><div>' +
+  '<p style="margin:0 0 10px;font:700 24px system-ui,sans-serif">MECH<span style="color:#A39A80"> / </span><span style="color:#FFB000">TOOLBOX</span></p>' +
+  '<p id="mt-lock">MechToolBox only runs online\'+(S?\' at <a style="color:#FFB000" href="\'+S+\'">\'+S.replace(/^https?:\\/\\//,"").replace(/\\/$/,"")+\'</a>\':\' from its website\')+\'. Please open it there.</p></div></body>\';' +
+  'throw new Error("MechToolBox only runs on its own website")})();\n'
+const jsOut = guard + min.code
 
 const cssName = 'assets/app-' + hash(cssOut) + '.css', jsName = 'assets/app-' + hash(jsOut) + '.js'
 mkdirSync(join(DIST, 'assets'), { recursive: true })
@@ -82,33 +96,27 @@ for (const c of calcs) {
     (c.fields.length ? '<p><strong>Inputs:</strong> ' + esc(c.fields.join(' · ')) + '</p>' : '') + (c.note ? '<p>' + esc(c.note) + '</p>' : '') +
     '<p><button type="button" class="btn btn-solid btn-sm" data-open="' + c.id + '">Open the calculator →</button> <a class="btn btn-outline btn-sm" href="../../#calculators">All calculators</a></p></div>'
   let page = home
-    .replace('<html lang="en">', '<html lang="en" data-calc="' + c.id + '" data-root="../../">')
+    .replace('<html lang="en">', '<html lang="en" data-calc="' + c.id + '">')
     .replace(/<title>[^<]*<\/title>/, '<title>' + esc(title) + '</title>')
     .replace(/<meta name="description" content="[^"]*">/, '<meta name="description" content="' + esc(description) + '">')
     .replace(/<link rel="canonical"[^>]*>\n?|<meta property="og:[^>]*>\n?|<meta name="twitter:card"[^>]*>\n?|<script type="application\/ld\+json">[\s\S]*?<\/script>\n?/g, '')
     .replace('</head>', social(title, description, url) + '\n' + ld({ '@context': 'https://schema.org', '@type': 'WebApplication', name: c.title, description: c.desc, applicationCategory: 'EngineeringApplication', operatingSystem: 'Any', isPartOf: { '@type': 'WebSite', name: 'MechToolBox', ...(site ? { url: site } : {}) }, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, ...(url ? { url } : {}) }) + '\n</head>')
     .replace(headRe, intro)
     .replace(/(href|src)="(assets|icons)\//g, '$1="../../$2/')
-    .replace('href="manifest.webmanifest"', 'href="../../manifest.webmanifest"')
   mkdirSync(join(DIST, c.path), { recursive: true })
   writeFileSync(join(DIST, c.path, 'index.html'), page)
 }
 
-// ---- 5. Offline cache: version and the files to keep from the first visit
-const sw = readFileSync(join(DIST, 'sw.js'), 'utf8')
-  .replace("'__VERSION__'", JSON.stringify(hash(cssOut + jsOut + home)))
-  .replace('const PRECACHE = __PRECACHE__', () => 'const PRECACHE = ' + JSON.stringify(['./', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', cssName, jsName]))
-new Function(sw) // fail the build if the worker no longer parses
-writeFileSync(join(DIST, 'sw.js'), sw)
-
-// ---- 6. Sitemap and robots.txt
+// ---- 5. Sitemap and robots.txt (website copiers are asked to stay out; polite ones obey)
 if (site) {
   const day = new Date().toISOString().slice(0, 10)
   writeFileSync(join(DIST, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
     [site].concat(calcs.map((c) => site + c.path)).map((u) => '  <url><loc>' + u + '</loc><lastmod>' + day + '</lastmod></url>').join('\n') + '\n</urlset>\n')
 }
-writeFileSync(join(DIST, 'robots.txt'), 'User-agent: *\nAllow: /\n' + (site ? 'Sitemap: ' + site + 'sitemap.xml\n' : ''))
+const COPIERS = ['HTTrack', 'WebCopier', 'WebZIP', 'Offline Explorer', 'Teleport', 'TeleportPro', 'WebStripper', 'SiteSnagger', 'Website Downloader', 'Wget', 'WebReaper', 'Web Downloader']
+writeFileSync(join(DIST, 'robots.txt'), COPIERS.map((a) => 'User-agent: ' + a + '\nDisallow: /\n').join('\n') + '\nUser-agent: *\nAllow: /\n' + (site ? 'Sitemap: ' + site + 'sitemap.xml\n' : ''))
 
 const kb = (n) => Math.round(n / 1024) + ' KB'
 console.log('postbuild: ' + cssName + ' ' + kb(cssOut.length) + ', ' + jsName + ' ' + kb(jsOut.length) + ', index.html ' + kb(home.length) +
-  ', ' + calcs.length + ' calculator pages' + (site ? ', sitemap.xml for ' + site : ' — set SITE_URL to add canonical links and sitemap.xml'))
+  ', ' + calcs.length + ' calculator pages, locked to ' + (lockHosts2.length ? lockHosts2.join(', ') : 'any website (not saved copies)') +
+  (site ? ', sitemap.xml for ' + site : ' — set SITE_URL to add canonical links, sitemap.xml and the domain lock'))
