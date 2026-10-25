@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { openSite } from './helpers.js'
+import { openSite, SITE } from './helpers.js'
 
 async function openGame(page, id) {
   await page.locator(`#utilities [data-open="${id}"]`).click()
@@ -199,4 +199,37 @@ test('unit sprint — answer with the keys, and the round ends after 60 s', asyn
   await expect(page.locator('[data-gm="us-start"]')).toHaveText(/Play again|Start/)
   await expect(page.locator('.us-choice')).toHaveCount(0)
   expect(errors).toEqual([])
+})
+
+test('spot the mistake — the daily challenge is the same five drawings for everyone, once a day', async ({ page, browser }) => {
+  await page.clock.setFixedTime(new Date('2026-10-25T09:00:00'))
+  const errors = await openSite(page, 'utilities')
+  await page.locator('#utilities [data-open="spot"]').click()
+  await page.locator('[data-gm="sp-mode"][data-m="daily"]').click()
+  await expect(page.locator('.gm-bar')).toContainText('2026-10-25')
+  const titles = []
+  for (let i = 0; i < 5; i++) {
+    await expect(page.locator('.gm-bar')).toContainText(`${i + 1} / 5`)
+    await page.keyboard.press('m')
+    titles.push((await page.locator('.sp-verdict strong').textContent()).replace(/\.$/, ''))
+    await page.keyboard.press('n')
+  }
+  await expect(page.locator('.sp-day-score')).toHaveText(/^[0-5] \/ 5$/)
+  await expect(page.locator('.sp-day-grid')).toHaveText(/^[🟩🟥]{5}$/u)
+  expect((await page.locator('.sp-day-list li .linkish').allTextContents())).toEqual(titles)
+  // one try a day: reopening shows the result, not a new round
+  await page.evaluate(() => document.getElementById('modal').close())
+  await page.locator('#utilities [data-open="spot"]').click()
+  await expect(page.locator('.sp-day-score')).toBeVisible()
+  expect(errors).toEqual([])
+
+  // someone else on the same day gets the same drawings, straight from a shared link
+  const other = await browser.newContext()
+  const p2 = await other.newPage()
+  await p2.clock.setFixedTime(new Date('2026-10-25T20:00:00'))
+  await p2.goto(SITE + '?play=daily')
+  await expect(p2.locator('#m-title')).toHaveText('Spot the Mistake')
+  await p2.keyboard.press('r')
+  await expect(p2.locator('.sp-verdict strong')).toHaveText(titles[0] + '.')
+  await other.close()
 })

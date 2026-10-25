@@ -8,17 +8,23 @@
 <meta name="theme-color" content="#0B0B0B">
 <script>
   document.documentElement.classList.add('js');
+  try { if (localStorage.getItem('mechtoolbox-theme') === 'sun') document.documentElement.setAttribute('data-theme', 'sun'); } catch (e) {}
   window.addEventListener('error', function (e) {
-    if (e && (e.message === 'Script error.' || (e.filename && e.filename.split('#')[0] !== location.href.split('#')[0]))) return; // errors from other sites' scripts (ads) are not ours
+    if (e && (e.message === 'Script error.' || (e.filename && e.filename.split(/[?#]/)[0] !== location.href.split(/[?#]/)[0] && e.filename.indexOf('/assets/app-') < 0))) return; // errors from other sites' scripts (ads) are not ours
     document.documentElement.classList.remove('js');
   });
 </script>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2307110F'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%232DD4A8' stroke-width='5' stroke-dasharray='3.534 3.534'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%232DD4A8' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%232DD4A8'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MechToolBox">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
 <style>
 :root {
+  --donate: var(--accent);
   --background: #0B0B0B;
   --surface: #151515;
   --border: #2E2A1F;
@@ -1898,6 +1904,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
 /* Games */
 .sys[hidden], #modal.game .codeb { display: none; }
 .strip-games .code { color: var(--pass); }
+.strip-sheets .code { color: var(--mechanical); }
 .gm-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-bottom: 14px; font: 500 12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 .gm-stat b { color: var(--text); font-size: 15px; letter-spacing: 0; margin-left: 4px; }
 .gm-sound { margin-left: auto; width: 36px; height: 36px; border: 1px solid var(--edge); border-radius: 10px; background: transparent; font-size: 16px; cursor: pointer; }
@@ -1967,6 +1974,18 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
 .sp-verdict p { font-size: 14.5px; }
 .sp-why { margin-top: 6px; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .pp-cell svg, .sp-fig.revealed, .us-choice.bad { transition: none; animation: none; } }
+/* Spot the Mistake: modes and the daily result */
+.sp-modes { display: inline-flex; margin: 0 0 14px; padding: 3px; border: 1px solid var(--edge); border-radius: 999px; }
+.sp-modes button { padding: 7px 14px; border: 0; border-radius: 999px; background: none; color: var(--muted); font: 600 12px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
+.sp-modes button[aria-pressed="true"] { background: var(--grad-mint); color: var(--deep); }
+.sp-day { position: relative; padding: 8px 0 4px; text-align: center; }
+.sp-day-score { margin: 0; font: 700 44px/1 var(--head); color: var(--mint); }
+.sp-day-grid { margin: 10px 0 8px; font-size: 26px; letter-spacing: 4px; }
+.sp-day-list { display: inline-grid; gap: 4px; margin: 6px auto 16px; padding: 0; list-style: none; text-align: left; font-size: 14.5px; }
+.sp-day-list span { display: inline-block; width: 1.2em; font-weight: 700; }
+.sp-day-list .linkish { padding: 0; border: 0; background: none; color: var(--text); font: inherit; text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; cursor: pointer; }
+.sp-day-list .linkish:hover { color: var(--mint); }
+.sp-day-next { margin: 10px 0 0; font: 500 12px var(--mono); letter-spacing: 0.06em; color: var(--muted); }
 /* Symbol match */
 .mm-grid { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 8px; max-width: 560px; margin: 0 auto; }
 .mm-card { aspect-ratio: 4 / 3; padding: 0; border: 0; background: none; cursor: pointer; perspective: 600px; }
@@ -2021,6 +2040,141 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
 .ts-tile:disabled { opacity: 0.2; cursor: default; }
 @media (max-width: 480px) { .pb-panel { gap: 6px; } .pb-col { padding: 8px 6px; } .pb-load { flex-direction: column; align-items: flex-start; gap: 2px; padding: 6px 8px; } .ts-slot, .ts-tile { width: 30px; height: 38px; font-size: 17px; } }
 @media (prefers-reduced-motion: reduce) { .mm-inner, .pb-bar i { transition: none; } .ts-slots.bad { animation: none; } }
+/* Donate */
+.donate[hidden] { display: none !important; }
+.donate-head { width: 36px; height: 36px; color: var(--donate); border-color: rgba(255, 176, 0, 0.35); }
+.donate-head:hover { color: var(--donate); border-color: var(--donate); }
+.donate-head:hover .donate-heart, .donate-foot:hover .donate-heart { fill: currentColor; animation: donate-beat 0.9s ease-in-out; }
+@media (max-width: 420px) { .donate-head { display: none; } }
+.nav-mobile a.donate-menu { display: flex; align-items: center; gap: 8px; color: var(--donate); }
+.donate-foot { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border: 1px solid rgba(255, 176, 0, 0.4); border-radius: 999px; color: var(--donate); font: 600 13px var(--body); text-decoration: none; white-space: nowrap; transition: background var(--ease), border-color var(--ease); }
+.donate-foot:hover { border-color: var(--donate); background: rgba(255, 176, 0, 0.1); }
+.donate-heart { flex-shrink: 0; transform-origin: center; }
+dialog.modal.dn { width: min(460px, calc(100% - 32px)); }
+.dn-body { display: grid; gap: 16px; }
+.dn-body .m-desc { margin: 0; }
+.dn-cur { justify-self: start; display: inline-flex; padding: 3px; border: 1px solid var(--edge); border-radius: 999px; }
+.dn-cur button { padding: 7px 14px; border: 0; border-radius: 999px; background: none; color: var(--muted); font: 600 12px var(--mono); letter-spacing: 0.06em; cursor: pointer; transition: background var(--ease), color var(--ease); }
+.dn-cur button[aria-pressed="true"] { background: var(--grad-mint); color: var(--deep); }
+.dn-amts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.dn-amt { display: flex; align-items: center; justify-content: center; min-height: 54px; padding: 10px; border: 1px solid rgba(255, 176, 0, 0.35); border-radius: 12px; background: rgba(255, 176, 0, 0.06); color: var(--text); font: 700 18px var(--head); text-decoration: none; transition: border-color var(--ease), background var(--ease), transform 120ms ease; }
+.dn-amt:hover { border-color: var(--donate); background: rgba(255, 176, 0, 0.14); }
+.dn-amt:active { transform: scale(0.97); }
+.dn-amt:focus-visible, .dn-own:focus-visible { outline: 2px solid var(--donate); outline-offset: 2px; }
+.dn-own { justify-self: center; color: var(--donate); font-size: 14px; text-decoration: none; }
+.dn-own:hover { text-decoration: underline; text-underline-offset: 3px; }
+#dn-done { min-height: 1.4em; text-align: center; color: var(--donate); }
+@keyframes donate-beat { 30% { transform: scale(1.25); } 60% { transform: scale(0.95); } }
+@media (prefers-reduced-motion: reduce) { .donate-heart { animation: none !important; } }
+/* Desktop header: the links sit in one bar, the tools in a tight group on the right */
+@media (min-width: 1200px) {
+  .site-header .wrap { gap: 6px; }
+  .nav-desktop { gap: 2px; margin-right: 12px; padding: 4px; border: 1px solid var(--edge); border-radius: 999px; background: rgba(21, 21, 21, 0.6); }
+  .nav-desktop a { padding: 7px 13px; border-radius: 999px; font-size: 14px; line-height: 1.2; transition: color var(--ease), background var(--ease); }
+  .nav-desktop a::after { display: none; }
+  .nav-desktop a:hover { transform: none; color: var(--text); background: rgba(242, 232, 207, 0.06); }
+  .nav-desktop a.active, .nav-desktop a[aria-current="page"] { color: var(--accent); background: rgba(255, 176, 0, 0.12); }
+  .site-header .head-search, .site-header .donate-head { width: 36px; height: 36px; border-color: transparent; border-radius: 999px; }
+  .site-header .head-search:hover { border-color: transparent; background: rgba(242, 232, 207, 0.06); }
+  .site-header .donate-head:hover { border-color: transparent; background: rgba(255, 176, 0, 0.12); }
+  .site-header .sys { margin-left: 4px; }
+}
+/* Footer: brand, links and support on top; the note and copyright under a divider */
+.site-footer .wrap { display: block; }
+.ft-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 32px; }
+.ft-brand { display: grid; gap: 10px; }
+.site-footer .ft-tag { margin: 0; font-size: 13.5px; }
+.ft-links { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.ft-links a { color: var(--muted); font-size: 14px; text-decoration: none; transition: color var(--ease); }
+.ft-links a:hover { color: var(--text); }
+.ft-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--edge); }
+.site-footer .ft-note { margin: 0; font-size: 13px; }
+.site-footer .ft-bottom .copy { margin: 0; }
+@media (max-width: 640px) { .ft-top { flex-direction: column; align-items: flex-start; } }
+@media (max-width: 1279px) { .site-footer { padding-bottom: 170px; } } /* below this the floating tools on the left reach the footer text */
+/* SUN-AUTO */
+/* Generated: light versions of hard-coded dark backgrounds (scratchpad sungen.py) */
+html[data-theme="sun"] .nav-mobile { background: rgba(255, 253, 248, 0.97); }
+html[data-theme="sun"] .sys, html[data-theme="sun"] .codeb, html[data-theme="sun"] .view-toggle { background: rgba(255, 253, 248, 0.8); }
+html[data-theme="sun"] .hero-stats li { background: rgba(255, 253, 248, 0.6); }
+html[data-theme="sun"] .card-art { background: rgba(255, 253, 248, 0.7); }
+html[data-theme="sun"] .filters button, html[data-theme="sun"] .gd-tab, html[data-theme="sun"] .pj-tab, html[data-theme="sun"] .cv-tab, html[data-theme="sun"] .es-tab, html[data-theme="sun"] .min-all { background: rgba(255, 253, 248, 0.75); }
+html[data-theme="sun"] .input-wrap { background: rgba(255, 253, 248, 0.85); }
+html[data-theme="sun"] .pj-table thead th { background: rgba(255, 253, 248, 0.95); }
+html[data-theme="sun"] .m-head { background: rgba(255, 253, 248, 0.9); }
+html[data-theme="sun"] .bp-chip { background: rgba(255, 253, 248, 0.6); }
+html[data-theme="sun"] .hero-badge { background: rgba(255, 253, 248, 0.82); }
+html[data-theme="sun"] .cp-btn { background: rgba(255, 253, 248, 0.85); }
+html[data-theme="sun"] .cp-panel { background: rgba(255, 253, 248, 0.94); }
+html[data-theme="sun"] .fb-types span { background: rgba(255, 253, 248, 0.7); }
+html[data-theme="sun"] .cp-btn { background: radial-gradient(circle at 50% 40%, rgba(255, 253, 248, 0.6), rgba(255, 253, 248, 0.92)); }
+html[data-theme="sun"] .cp-center { background: rgba(255, 253, 248, 0.9); }
+html[data-theme="sun"] .es-hin { background: rgba(255, 253, 248, 0.35); }
+html[data-theme="sun"] .cv-btn { background: radial-gradient(circle at 50% 35%, rgba(255, 253, 248, 0.6), rgba(255, 253, 248, 0.92)); }
+html[data-theme="sun"] .cv-panel { background: rgba(255, 253, 248, 0.96); }
+html[data-theme="sun"] .cv-cat { background: rgba(255, 253, 248, 0.6); }
+html[data-theme="sun"] .cv-swap { background: rgba(255, 253, 248, 0.7); }
+html[data-theme="sun"] .cv-cell { background: rgba(255, 253, 248, 0.5); }
+html[data-theme="sun"] .cs-ul li { background: rgba(255, 253, 248, 0.45); }
+html[data-theme="sun"] .psy-wrap { background: rgba(255, 253, 248, 0.6); }
+html[data-theme="sun"] .es-revs li { background: rgba(255, 253, 248, 0.45); }
+html[data-theme="sun"] .ec-row { background: rgba(255, 253, 248, 0.45); }
+html[data-theme="sun"] .cv-head { background: rgba(255, 253, 248, 0.98); }
+html[data-theme="sun"] .dock-tab { background: rgba(255, 253, 248, 0.9); }
+html[data-theme="sun"] .nav-mobile { background: #FFFDF8 !important; }
+html[data-theme="sun"] .hq-tile:hover { background: #FFFDF8; }
+html[data-theme="sun"] .recent-chip { background: rgba(255, 253, 248, 0.75); }
+html[data-theme="sun"] .pf-filters button { background: rgba(255, 253, 248, 0.75); }
+@media (min-width: 1200px) { html[data-theme="sun"] .nav-desktop { background: rgba(255, 253, 248, 0.6); } }
+/* /SUN-AUTO */
+/* What's new */
+.wn-grid { display: grid; gap: 24px; align-items: start; }
+@media (min-width: 900px) { .wn-grid { grid-template-columns: minmax(0, 1fr) 320px; } }
+.wn-log { position: relative; margin: 0; padding: 0 0 0 22px; list-style: none; border-left: 1px solid var(--edge); }
+.wn-log > li { position: relative; padding: 0 0 26px; }
+.wn-log > li::before { content: ""; position: absolute; left: -28px; top: 5px; width: 11px; height: 11px; border-radius: 50%; background: var(--grad-mint); box-shadow: 0 0 0 4px var(--deep); }
+.wn-log time { font: 500 12px var(--mono); letter-spacing: 0.1em; color: var(--mint); }
+.wn-log h3 { margin: 4px 0 8px; font-size: 19px; }
+.wn-log ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 15px; line-height: 1.6; }
+.wn-log ul strong { color: var(--text); }
+.wn-notify { position: sticky; top: 90px; display: grid; gap: 10px; padding: 20px; border: 1px solid var(--edge); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+.wn-notify h3 { margin: 0; font-size: 18px; }
+.wn-notify p { margin: 0; color: var(--muted); font-size: 14px; }
+.wn-notify .input-wrap input { width: 100%; }
+.wn-notify .btn { justify-self: start; }
+/* Offline notice and install */
+.offline-pill { position: fixed; left: 50%; bottom: 18px; z-index: 45; transform: translateX(-50%); margin: 0; padding: 8px 14px; border: 1px solid var(--edge); border-radius: 999px; background: var(--panel-2); color: var(--text); font: 500 12px var(--mono); letter-spacing: 0.04em; box-shadow: var(--shadow); }
+.offline-pill[hidden], .install-btn[hidden] { display: none !important; }
+/* Sun mode: light colours with deeper accents so text keeps its contrast in daylight */
+.theme-btn .i-moon { display: none; }
+html[data-theme="sun"] .theme-btn .i-sun { display: none; }
+html[data-theme="sun"] .theme-btn .i-moon { display: inline; }
+@media (min-width: 1200px) { .site-header .theme-btn { width: 36px; height: 36px; border-color: transparent; border-radius: 999px; } .site-header .theme-btn:hover { border-color: transparent; background: rgba(242, 232, 207, 0.06); } }
+@media (max-width: 420px) { .site-header .theme-btn { display: none; } }
+.nav-mobile .theme-menu { display: flex; align-items: center; gap: 8px; width: 100%; padding: 16px 0; border: 0; background: none; color: var(--text); font: inherit; font-size: 18px; text-align: left; cursor: pointer; }
+html[data-theme="sun"] {
+  color-scheme: light;
+  --background: #F7F3EA; --deep: #F7F3EA; --panel: #FFFFFF; --panel-2: #EFE9DB;
+  --surface: linear-gradient(180deg, #FFFFFF, #FBF8F1);
+  --text: #1D1A13; --muted: #5C5442; --line: #DCD2BC; --line-2: #C5B894; --border: #DCD2BC;
+  --edge: rgba(122, 88, 10, 0.18); --glass: rgba(250, 247, 240, 0.88);
+  --accent: #A86400; --mint: #A86400; --mint-dark: #8A5200; --mint-hover: #C27A00; --donate: #A86400;
+  --result: #8A5A00; --amber: #8A5A00; --warning: #8A5A00; --warn: #8A5A00;
+  --pass: #2F8A1E; --ok: #2F8A1E; --fail: #C2352A; --danger: #C2352A;
+  --mechanical: #0279B8; --electrical: #9A6A00; --plumbing: #0A86A3; --fire: #C9420E; --sanitary: #6D3FD8; --hvac: #178F45;
+  --accent-soft: rgba(168, 100, 0, 0.1); --result-soft: rgba(168, 100, 0, 0.08);
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 14px 30px -22px rgba(80, 60, 20, 0.35);
+  --shadow-hi: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 20px 44px -26px rgba(168, 100, 0, 0.45);
+}
+html[data-theme="sun"] body { background-image: radial-gradient(900px 520px at 85% -8%, rgba(255, 176, 0, 0.16), transparent 60%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M40 0H0V40' fill='none' stroke='%23A86400' stroke-opacity='0.07'/%3E%3C/svg%3E"); background-repeat: no-repeat, repeat; }
+html[data-theme="sun"] .nav-mobile { background: rgba(247, 243, 234, 0.98); }
+html[data-theme="sun"] .section-head h2 { background: linear-gradient(180deg, #1D1A13 30%, #5C5442); -webkit-background-clip: text; background-clip: text; }
+html[data-theme="sun"] .nav-mobile { background: #F7F3EA !important; }
+html[data-theme="sun"] .site-header.scrolled { box-shadow: 0 12px 28px -22px rgba(80, 60, 20, 0.5); }
+html[data-theme="sun"] ::selection { background: rgba(168, 100, 0, 0.25); color: #000; }
+html[data-theme="sun"] dialog.modal::backdrop { background: rgba(60, 50, 30, 0.35); }
+html[data-theme="sun"] .nav-desktop { background: rgba(255, 255, 255, 0.7); }
+html[data-theme="sun"] .nav-desktop a:hover, html[data-theme="sun"] .site-header .head-search:hover, html[data-theme="sun"] .site-header .theme-btn:hover { background: rgba(60, 50, 30, 0.07); }
 </style>
 </head>
 <body>
@@ -2075,6 +2229,8 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       <a href="#standards">Standards</a>
       <a href="#about">About</a>
     </nav>
+    <a class="icon-btn donate donate-head" href="#" target="_blank" rel="noopener" aria-label="Donate with PayPal (opens in a new tab)" title="Support MechToolBox — donate with PayPal" hidden><svg class="donate-heart" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.5S3.5 12.6 3.5 8.2A3.3 3.3 0 0 1 10 6.6a3.3 3.3 0 0 1 6.5 1.6c0 4.4-6.5 8.3-6.5 8.3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></a>
+    <button type="button" class="icon-btn theme-btn" aria-pressed="false" aria-label="Sun mode (light theme for bright daylight)" title="Sun mode — light theme for bright daylight"><svg class="i-sun" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 1.8v2.2M10 16v2.2M1.8 10H4M16 10h2.2M4.2 4.2l1.6 1.6M14.2 14.2l1.6 1.6M4.2 15.8l1.6-1.6M14.2 5.8l1.6-1.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><svg class="i-moon" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M16.5 12.6A7 7 0 0 1 7.4 3.5a7 7 0 1 0 9.1 9.1Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
     <button type="button" class="icon-btn head-search" id="head-search" aria-label="Search" title="Search (/)">
       <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     </button>
@@ -2098,6 +2254,10 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       <li><a href="#utilities">Utilities</a></li>
       <li><a href="#standards">Standards</a></li>
       <li><a href="#about">About</a></li>
+      <li><a href="#whatsnew">What's new</a></li>
+      <li><button type="button" class="theme-btn theme-menu" aria-pressed="false"><svg class="i-sun" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 1.8v2.2M10 16v2.2M1.8 10H4M16 10h2.2M4.2 4.2l1.6 1.6M14.2 14.2l1.6 1.6M4.2 15.8l1.6-1.6M14.2 5.8l1.6-1.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><svg class="i-moon" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M16.5 12.6A7 7 0 0 1 7.4 3.5a7 7 0 1 0 9.1 9.1Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg> <span>Sun mode</span></button></li>
+      <li><button type="button" class="theme-btn install-btn install-menu" hidden><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v9M6.5 8.5 10 12l3.5-3.5M4 15.5h12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> <span>Install app</span></button></li>
+      <li><a class="donate donate-menu" href="#" target="_blank" rel="noopener" hidden><svg class="donate-heart" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.5S3.5 12.6 3.5 8.2A3.3 3.3 0 0 1 10 6.6a3.3 3.3 0 0 1 6.5 1.6c0 4.4-6.5 8.3-6.5 8.3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg> Donate with PayPal</a></li>
     </ul>
   </nav>
 </header>
@@ -2343,7 +2503,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       <div class="section-head reveal">
         <p class="eyebrow">06 — Utilities</p>
         <h2 id="util-title">Small tools. Big time savings.</h2>
-        <p>Quick converters, data tables and field calculations you reach for between designs — pipe and wire data, slopes, offsets, tanks, heat and fluid properties — and a few small games for a break.</p>
+        <p>Quick converters, data tables and field calculations you reach for between designs — pipe and wire data, slopes, offsets, tanks, heat and fluid properties — printable cheat sheets, and a few small games for a break.</p>
       </div>
       <h3 class="util-group">Converters &amp; references</h3>
       <div class="strip reveal">
@@ -2367,11 +2527,18 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
         <button type="button" data-open="offset"><span class="code">OFFSET</span><span class="label">Pipe &amp; Conduit Offset</span><span class="desc">Travel, advance, multiplier and conduit shrink</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
         <button type="button" data-open="tankvol"><span class="code">TANK</span><span class="label">Tank Volume &amp; Level</span><span class="desc">Volume and % full from the liquid level</span><span class="open" aria-hidden="true">Open tool <span class="arr">→</span></span></button>
       </div>
+      <h3 class="util-group">Cheat sheets — print or save as PDF</h3>
+      <div class="strip strip-sheets reveal">
+        <button type="button" data-sheet="hvac"><span class="code">HVAC</span><span class="label">HVAC Quick Reference</span><span class="desc">Air changes, duct and pipe velocities, equivalents</span><span class="open" aria-hidden="true">Print / PDF <span class="arr">→</span></span></button>
+        <button type="button" data-sheet="pipe"><span class="code">PIPE</span><span class="label">Pipe Size Data</span><span class="desc">Steel Sch. 40/80 and copper K/L/M — OD, wall, ID</span><span class="open" aria-hidden="true">Print / PDF <span class="arr">→</span></span></button>
+        <button type="button" data-sheet="wire"><span class="code">WIRE</span><span class="label">Wire & Breaker Table</span><span class="desc">AWG / mm², ampacity 75/90 °C, breaker sizes</span><span class="open" aria-hidden="true">Print / PDF <span class="arr">→</span></span></button>
+        <button type="button" data-sheet="check"><span class="code">CHECK</span><span class="label">Design Pitfall Checklist</span><span class="desc">All 116 rules as a tick-box review list</span><span class="open" aria-hidden="true">Print / PDF <span class="arr">→</span></span></button>
+      </div>
       <h3 class="util-group">Games — take a break</h3>
       <div class="strip strip-games reveal">
         <button type="button" data-open="pipes"><span class="code">PIPES</span><span class="label">Pipe Puzzle</span><span class="desc">Turn the pipes until water reaches the drain</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
         <button type="button" data-open="sprint"><span class="code">UNITS</span><span class="label">Unit Sprint</span><span class="desc">60 seconds of quick conversions — beat your best</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
-        <button type="button" data-open="spot"><span class="code">SPOT</span><span class="label">Spot the Mistake</span><span class="desc">Right way or design pitfall? Judge the drawing</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
+        <button type="button" data-open="spot"><span class="code">SPOT</span><span class="label">Spot the Mistake</span><span class="desc">Right way or design pitfall? Plus a daily challenge</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
         <button type="button" data-open="match"><span class="code">MATCH</span><span class="label">Symbol Match</span><span class="desc">Pair drawing symbols with their names</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
         <button type="button" data-open="phase"><span class="code">PHASE</span><span class="label">Phase Balance</span><span class="desc">Share the loads across L1, L2 and L3</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
         <button type="button" data-open="scramble"><span class="code">WORDS</span><span class="label">Term Scramble</span><span class="desc">Unscramble MEP terms from a clue</span><span class="open" aria-hidden="true">Play <span class="arr">→</span></span></button>
@@ -2444,15 +2611,48 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       </dl>
     </div>
   </section>
+
+  <section class="section" id="whatsnew" aria-labelledby="whatsnew-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">09 — What's new</p>
+        <h2 id="whatsnew-title">Always growing.</h2>
+        <p>New calculators, drawings and tools land here first. Have an idea? Use the Feedback button.</p>
+      </div>
+      <div class="wn-grid">
+        <ol class="wn-log"><li><time datetime="2026-10-25">2026-10-25</time><h3>Daily challenge, sun mode and shareable results</h3><ul><li>Spot the Mistake has a <strong>daily challenge</strong> — the same five drawings for everyone, with a shareable score.</li><li><strong>Sun mode</strong>: a light theme that stays readable outdoors (sun button in the header).</li><li><strong>Share link</strong> on every calculator sends your exact inputs to a colleague.</li><li>Six new calculators, printable cheat sheets, and the site installs as an app that works offline.</li><li>Tidier header and footer, and a way to support the site.</li></ul></li><li><time datetime="2026-10-24">2026-10-24</time><h3>Three more games and named parts in every pitfall</h3><ul><li>New games: Symbol Match, Phase Balance and Term Scramble.</li><li>Every Design Pitfalls drawing names its parts and says what it shows.</li></ul></li><li><time datetime="2026-10-23">2026-10-23</time><h3>Design Pitfalls, utilities and games</h3><ul><li>Design Pitfalls: 116 drawn do / don’t examples with the rule and the why.</li><li>Utilities: pipe and wire data, slopes, offsets, tanks, air and water properties.</li><li>Search in Codes &amp; Standards and Pitfalls; feedback goes straight to the developer.</li><li>App-style navigation and 17 new MEP calculators.</li></ul></li><li><time datetime="2026-10-13">2026-10-13</time><h3>More calculators across MEPFS</h3><ul><li>New calculators in refrigeration, plumbing, fire protection and electrical — 85 in total at the time.</li><li>Design suggestions for the new calculators and a cleaner phone menu.</li></ul></li><li><time datetime="2026-10-12">2026-10-12</time><h3>Price list, revisions and the design basis report</h3><ul><li>Six new calculators, a price list and revisions for estimates, the design basis report and the amber theme.</li></ul></li><li><time datetime="2026-10-08">2026-10-08</time><h3>Design Guide, BOQ estimates and floating tools</h3><ul><li>Design Guide: step-by-step workflows for HVAC, electrical, plumbing and fire.</li><li>Manual BOQ / BOM estimates, the floating unit converter and the ball compass with sun position.</li><li>A ✓ Pass / ⚠ Warning design check on 28 more calculators.</li></ul></li><li><time datetime="2026-10-07">2026-10-07</time><h3>Projects and bills of quantities</h3><ul><li>Projects: rooms for every discipline, with a BOQ / BOM in the standard QS format.</li></ul></li></ol>
+        <form class="wn-notify" id="wn-notify" novalidate>
+          <h3>Get notified</h3>
+          <p>One short email when new tools are added. No spam, unsubscribe any time.</p>
+          <div class="input-wrap"><input id="wn-email" type="email" autocomplete="email" placeholder="you@company.com" aria-label="Your email"></div>
+          <input type="text" id="wn-gotcha" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="fb-trap">
+          <button type="submit" class="btn btn-solid btn-sm" id="wn-send">Notify me</button>
+          <p class="fb-msg" id="wn-msg" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer class="site-footer">
   <div class="wrap">
-    <a class="logo" href="#top" aria-label="MechToolBox, back to top"><span>MECH</span><span class="slash">/</span><span class="tools">TOOLBOX</span></a>
-    <p>Results are preliminary estimates. Verify against applicable codes with a qualified engineer.</p>
+    <div class="ft-top">
+      <div class="ft-brand">
+        <a class="logo" href="#top" aria-label="MechToolBox, back to top"><span>MECH</span><span class="slash">/</span><span class="tools">TOOLBOX</span></a>
+        <p class="ft-tag">Free MEP calculators, design checks and references.</p>
+      </div>
+      <nav class="ft-links" aria-label="Footer">
+        <a href="#calculators">Calculators</a><a href="#pitfalls">Pitfalls</a><a href="#utilities">Utilities</a><a href="#standards">Standards</a><a href="#whatsnew">What's new</a><a href="#about">About</a>
+      </nav>
+      <button type="button" class="btn btn-outline btn-sm install-btn" hidden>Install app</button>
+      <a class="donate donate-foot" href="#" target="_blank" rel="noopener" hidden><svg class="donate-heart" width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16.5S3.5 12.6 3.5 8.2A3.3 3.3 0 0 1 10 6.6a3.3 3.3 0 0 1 6.5 1.6c0 4.4-6.5 8.3-6.5 8.3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg> Support with PayPal</a>
+    </div>
+    <div class="ft-bottom">
+    <p class="ft-note">Results are preliminary estimates. Verify against applicable codes with a qualified engineer.</p>
     <p class="copy">© 2026 MechToolBox · <span class="ver" id="foot-ver"></span> · Built by
       <button type="button" class="sig" aria-label="JAB"><span class="sig-gear" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="currentColor" stroke-width="6" stroke-dasharray="3.93 3.93"/><circle cx="16" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="3"/></svg></span><span class="sig-l" style="--i:0" aria-hidden="true">J</span><span class="sig-l" style="--i:1" aria-hidden="true">A</span><span class="sig-l" style="--i:2" aria-hidden="true">B</span></button>
     </p>
+    </div>
   </div>
 </footer>
 
@@ -2525,6 +2725,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   </div>
 </div>
 
+<p class="offline-pill" id="offline-pill" role="status" hidden>Offline — calculators still work</p>
 <button type="button" class="fb-fab" id="fb-fab" aria-haspopup="dialog">
   <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 4.5h13v9h-7l-4 3v-3h-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 8h6M7 10.8h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
   <span>Feedback</span>
@@ -2584,6 +2785,30 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       <span class="fb-msg" id="fb-done" aria-live="polite"></span>
     </div>
   </form>
+</dialog>
+
+<dialog class="modal dn" id="dn" aria-labelledby="dn-title">
+  <div class="m-head">
+    <div>
+      <p class="eyebrow">Free to use · no account</p>
+      <h2 id="dn-title">Support MechToolBox</h2>
+    </div>
+    <div class="m-tools">
+      <button type="button" class="icon-btn" id="dn-close" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="m-body dn-body">
+    <p class="m-desc">MechToolBox is built and kept free by one engineer. If it saves you time, a small tip pays for hosting and new calculators. Pick an amount — PayPal opens in a new tab.</p>
+    <div class="dn-cur" role="group" aria-label="Currency">
+      <button type="button" data-cur="USD" aria-pressed="true">USD $</button>
+      <button type="button" data-cur="PHP" aria-pressed="false">PHP ₱</button>
+    </div>
+    <div class="dn-amts" id="dn-amts"></div>
+    <a class="dn-own" id="dn-own" href="#" target="_blank" rel="noopener">Choose your own amount on PayPal →</a>
+    <p class="fb-msg" id="dn-done" aria-live="polite"></p>
+  </div>
 </dialog>
 
 <!-- ===================================== ADSTERRA ADS =====================================
@@ -2816,6 +3041,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   };
   var PH_REFS = {
     septic: 'Code on Sanitation of the Philippines (PD 856) and IRR; NPCP.',
+    stp: 'DENR DAO 2016-08 effluent standards; Clean Water Act (RA 9275); PD 856 sanitation code.', earthrod: 'PEC 2017 Art. 2.50 (grounding electrodes, 25 Ω single-rod rule).', tray: 'PEC 2017 Art. 3.92 (cable trays).', vdfeed: 'PEC 2017 Sec. 2.10.2.19 / 2.15.2.2 FPN — 3 % / 5 % voltage drop.', khood: 'Philippine Mechanical Engineering Code; Fire Code of the Philippines (RA 9514) for kitchen hood suppression.',
     roofdrain: 'NPCP storm drainage — use the PAGASA rainfall intensity for the site.',
     exh: 'PMEC (PSME); kitchen exhaust per RA 9514 RIRR and NFPA 96.',
     fexh: 'PMEC (PSME); kitchen and smoke exhaust fans per RA 9514 RIRR (NFPA 96 / NFPA 92).',
@@ -2888,6 +3114,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   };
   var AU_REFS = {
     septic: 'AS/NZS 1547 on-site domestic wastewater management; local council approval.',
+    khood: 'AS 1668.1 / AS 1668.2 kitchen exhaust hoods.', earthrod: 'AS/NZS 3000 Section 5 (earthing); AS/NZS 1768 for lightning earths.', tray: 'AS/NZS 3008.1.1 installation methods for cables on trays.', vdfeed: 'AS/NZS 3000 Clause 3.6 — 5 % from the point of supply.',
     roofdrain: 'AS/NZS 3500.3 stormwater drainage — use BoM rainfall intensity (IFD) for the site.',
     exh: 'AS 1668.2 (exhaust rates, kitchen exhaust) and AS 1668.1; NCC Part F6.',
     fexh: 'AS 1668.1 (smoke and kitchen exhaust fans) and AS 1668.2; NCC Section J (Part J6) fan power.',
@@ -2971,6 +3198,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   };
   var US_REFS = {
     septic: 'State / county onsite-wastewater rules; US EPA Onsite Wastewater Treatment Systems Manual.',
+    khood: 'IMC 507 / 508; NFPA 96.', earthrod: 'NEC 250.50–250.56.', tray: 'NEC Article 392.', stp: 'State NPDES permit limits; US EPA secondary treatment standards (40 CFR 133).',
     roofdrain: 'IPC Ch. 11 (or UPC Ch. 11) storm drainage — NOAA Atlas 14 rainfall intensity.',
     exh: 'IMC Table 403.3.1.1 exhaust rates and §501–507; kitchen hoods IMC 507 and NFPA 96.',
     fexh: 'IMC 506–507 and NFPA 96 (UL 762 kitchen fans); NFPA 92 / IBC 909 smoke control.',
@@ -3797,6 +4025,12 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     solar: '<path d="M20 70l20-44h80l20 44z" class="ink"/><path d="M60 26l-8 44M100 26l8 44M30 48h100" class="ink-m"/><circle cx="132" cy="16" r="8" class="ink a-flicker"/>',
     sccur: '<path d="M20 40h40M100 40h40" class="ink"/><path d="M60 40l10-16 10 32 10-16" class="ink a-flicker"/><circle cx="140" cy="40" r="6" class="ink-m"/><text x="40" y="76" class="ink-t">I_sc · kA</text>',
     conduit: '<circle cx="80" cy="45" r="32" class="ink"/><circle cx="68" cy="38" r="9" class="ink-m"/><circle cx="90" cy="36" r="9" class="ink-m"/><circle cx="72" cy="58" r="9" class="ink-m"/><circle cx="94" cy="57" r="9" class="ink a-flicker"/>',
+    khood: '<path d="M30 40h100l-12-22H42z" class="ink"/><path d="M74 18V4h12v14" class="ink"/><path d="M80 30v-24" class="ink a-march" marker-end="url(#arr-mini)"/><rect x="40" y="58" width="80" height="20" class="ink-m"/><text x="44" y="88" class="ink-t">CFM/ft</text>',
+    tray: '<path d="M14 34v30h132V34" class="ink"/><circle cx="34" cy="54" r="9" class="ink-m"/><circle cx="56" cy="54" r="9" class="ink-m"/><circle cx="78" cy="54" r="9" class="ink-m"/><circle cx="98" cy="57" r="6" class="ink-m"/><text x="110" y="26" class="ink-t">fill %</text>',
+    earthrod: '<path d="M10 30h140" class="ink-m"/><path d="M50 18v62M110 18v62" class="ink"/><path d="M50 18h60" class="ink a-march"/><text x="58" y="60" class="ink-t">Ω</text>',
+    vdfeed: '<rect x="8" y="30" width="18" height="30" class="ink"/><path d="M26 44h124" class="ink a-march"/><path d="M62 44v18M100 44v18M140 44v18" class="ink-m"/><text x="58" y="78" class="ink-t">ΔV₁ ΔV₂ ΔV₃</text>',
+    stp: '<rect x="10" y="34" width="40" height="36" class="ink"/><rect x="58" y="34" width="50" height="36" class="ink"/><circle cx="132" cy="52" r="18" class="ink"/><path d="M68 62v-6M78 62v-10M88 62v-6M98 62v-10" class="ink-m a-bob"/><text x="12" y="24" class="ink-t">EQ · AER · CLAR</text>',
+    cair: '<rect x="8" y="30" width="34" height="40" rx="8" class="ink"/><path d="M42 44h108" class="ink a-march"/><path d="M96 44v24M130 44v24" class="ink-m"/><text x="52" y="34" class="ink-t">7 bar</text>',
     egc: '<path d="M80 14v40" class="ink"/><path d="M58 54h44M64 62h32M70 70h20M76 78h8" class="ink a-flicker"/><text x="104" y="28" class="ink-t">EGC</text>',
     motor: '<rect x="40" y="26" width="64" height="40" rx="6" class="ink"/><path d="M104 46h28" class="ink a-march"/><circle cx="72" cy="46" r="10" class="ink-m a-flicker"/><text x="44" y="82" class="ink-t">FLC · OL</text>',
     ups: '<rect x="40" y="18" width="80" height="56" rx="4" class="ink"/><rect x="52" y="30" width="40" height="18" class="ink-m"/><path d="M54 32h20v14H54z" class="ink a-flicker"/><text x="52" y="66" class="ink-t">UPS</text>',
@@ -4075,6 +4309,34 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   var antoineT = function (pa) { return 1730.63 / (8.07131 - Math.log10(pa / 133.322)) - 233.426; };
   var SCALES = [['1', '1 : 1'], ['5', '1 : 5'], ['10', '1 : 10'], ['20', '1 : 20'], ['25', '1 : 25'], ['50', '1 : 50'], ['75', '1 : 75'], ['100', '1 : 100'], ['200', '1 : 200'], ['250', '1 : 250'], ['500', '1 : 500'], ['1000', '1 : 1000'],
     ['12', '1" = 1\'-0"  (1 : 12)'], ['24', '1/2" = 1\'-0"  (1 : 24)'], ['32', '3/8" = 1\'-0"  (1 : 32)'], ['48', '1/4" = 1\'-0"  (1 : 48)'], ['64', '3/16" = 1\'-0"  (1 : 64)'], ['96', '1/8" = 1\'-0"  (1 : 96)'], ['120', '1" = 10\'  (1 : 120)'], ['240', '1" = 20\'  (1 : 240)']];
+  // IMC 507.13 minimum exhaust (CFM per foot of hood) by duty and hood type; null = not allowed.
+  var KH_RATE = {
+    xheavy: { wall: 550, single: 700, double: 550, eyebrow: null, back: null },
+    heavy: { wall: 400, single: 600, double: 400, eyebrow: null, back: 400 },
+    medium: { wall: 300, single: 500, double: 300, eyebrow: 250, back: 300 },
+    light: { wall: 200, single: 400, double: 250, eyebrow: 250, back: 250 }
+  };
+  // IEEE 142 Table 4-5: combining factor for n rods in a line, spaced about one rod length apart.
+  var ROD_F = [[1, 1], [2, 1.16], [3, 1.29], [4, 1.36], [8, 1.68], [12, 1.8], [16, 1.92], [20, 2], [24, 2.16]];
+  function rodF(n) {
+    for (var i = 1; i < ROD_F.length; i++) if (n <= ROD_F[i][0]) { var a = ROD_F[i - 1], b = ROD_F[i]; return a[1] + (b[1] - a[1]) * (n - a[0]) / (b[0] - a[0]); }
+    return ROD_F[ROD_F.length - 1][1];
+  }
+  // Voltage drop along a feeder with loads tapped at distances from the panel.
+  function vdFeed(v) {
+    var K = v.ph === '3' ? Math.sqrt(3) : 2, r = (v.mat === 'cu' ? 0.0225 : 0.036) / v.a, taps = [];
+    [1, 2, 3, 4].forEach(function (k) { if (v['l' + k] > 0 && v['i' + k] > 0) taps.push({ k: k, l: v['l' + k], i: v['i' + k] }); });
+    taps.sort(function (a, b) { return a.l - b.l; });
+    var left = taps.reduce(function (s, t) { return s + t.i; }, 0), total = left, at = 0, dv = 0, worst = 0, rows = [];
+    taps.forEach(function (t) {
+      dv += K * left * (t.l - at) * r; at = t.l; left -= t.i;
+      var pct = dv / v.v * 100; worst = Math.max(worst, pct);
+      rows.push(['Load ' + t.k + ' at ' + fq(t.l, 'len'), fmt(dv, 2) + ' V · ' + fmt(pct, 2) + ' %', 0, fmt(t.i) + ' A']);
+    });
+    rows.unshift(['Current leaving the panel', fmt(total) + ' A']);
+    rows.push(['Worst drop', fmt(worst, 2) + ' %', 1, 'at the farthest load']);
+    return { rows: rows, worst: worst };
+  }
   var CALCS = {
     btu: {
       code: 'HVAC / 001', title: 'HVAC BTU Calculator', card: true, disc: 'M',
@@ -5239,6 +5501,160 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
         ];
       },
       note: 'Add freeboard (about 300 mm / 12 in) above the liquid depth. Many codes set minimum tank sizes by bedrooms or users — use the larger value.'
+    },
+
+    khood: {
+      code: 'VENT / 034', title: 'Kitchen Hood Exhaust', card: true, disc: 'M',
+      desc: 'Exhaust airflow for a commercial kitchen hood by hood type and cooking duty (IMC 507.13), with make-up air and the grease duct size.',
+      fields: [
+        { k: 'len', label: 'Hood length', q: 'len', def: [3, 10] },
+        { k: 'type', label: 'Hood type', opts: [['wall', 'Wall-mounted canopy'], ['single', 'Single island canopy'], ['double', 'Double island canopy'], ['eyebrow', 'Eyebrow'], ['back', 'Backshelf / pass-over']], def: ['wall', 'wall'] },
+        { k: 'duty', label: 'Cooking appliance duty', opts: [['light', 'Light — ovens, steamers, kettles'], ['medium', 'Medium — ranges, griddles, fryers'], ['heavy', 'Heavy — broilers, woks, charbroilers'], ['xheavy', 'Extra-heavy — solid fuel (wood, charcoal)']], def: ['medium', 'medium'] },
+        { k: 'mua', label: 'Make-up air share', unit: '%', def: [85, 85], max: 100, maxMsg: 'Make-up air share must be 100 % or less.' },
+        { k: 'v', label: 'Grease duct velocity', q: 'vduct', def: [7.5, 1500] }
+      ],
+      check: function (v) { return KH_RATE[v.duty][v.type] ? null : 'IMC 507.13 does not allow this hood type over ' + (v.duty === 'xheavy' ? 'extra-heavy' : v.duty) + '-duty appliances — choose a canopy hood.'; },
+      formula: function () { return ['Q = rate per length × hood length   (IMC 507.13)', 'Make-up = Q × share   ·   A = Q / V,  D = √(4A / π)']; },
+      calc: function (v) {
+        var rate = KH_RATE[v.duty][v.type], q = rate * (v.len / 0.3048) * 0.000471947443, A = q / v.v, D = Math.sqrt(4 * A / Math.PI);
+        return [
+          ['Exhaust airflow', fq(q, 'air'), 1, (sys === 'si' ? fmt(rate * 1.5484, 0) + ' L/s per m' : rate + ' CFM per ft') + ' of hood'],
+          ['Make-up air', fq(q * v.mua / 100, 'air'), 0, 'supplied near the hood — ' + fmt(v.mua, 0) + ' %'],
+          ['Transfer air from the dining area', fq(q * (1 - v.mua / 100), 'air')],
+          ['Grease duct area', fq(A, 'area')],
+          ['Round grease duct', 'Ø ' + fq(D, 'dia'), 1]
+        ];
+      },
+      note: 'Rates are the IMC 507.13 minimums for unlisted hoods; a listed hood (UL 710) may use its tested airflow. Hoods overhang open sides of the cooking surface by at least 150 mm (6 in). Interlock the make-up air with the exhaust fan, and keep the kitchen slightly negative to the dining room.'
+    },
+
+    tray: {
+      code: 'ELEC / 028', title: 'Cable Tray Fill', card: true, disc: 'E',
+      desc: 'Fill of a ladder or ventilated-trough tray with multiconductor cables (NEC 392.22(A)), with the single-layer check.',
+      fields: [
+        { k: 'w', label: 'Tray inside width', opts: [['6', '150 mm (6 in)'], ['9', '225 mm (9 in)'], ['12', '300 mm (12 in)'], ['18', '450 mm (18 in)'], ['24', '600 mm (24 in)'], ['30', '750 mm (30 in)'], ['36', '900 mm (36 in)']], def: ['12', '12'] },
+        { k: 'n1', label: 'Cables, group 1 (count)', unit: 'cables', def: [10, 10] },
+        { k: 'd1', label: 'Cable outside diameter, group 1', q: 'dia', def: [25, 1] },
+        { k: 'n2', label: 'Cables, group 2 (0 = none)', unit: 'cables', def: [0, 0], zero: true },
+        { k: 'd2', label: 'Cable outside diameter, group 2', q: 'dia', def: [15, 0.6] }
+      ],
+      formula: function () { return ['Cable area = Σ n × π d² / 4', 'Allowable area (NEC Table 392.22(A), col. 1) = 7/6 in² per inch of width']; },
+      calc: function (v) {
+        var W = +v.w, allow = W * 7 / 6 * 645.16, area = (v.n1 * Math.PI * Math.pow(v.d1 * 1000, 2) + v.n2 * Math.PI * Math.pow(v.d2 * 1000, 2)) / 4;
+        var sumD = v.n1 * v.d1 + v.n2 * v.d2, pct = area / allow * 100;
+        var a2 = function (mm2) { return sys === 'si' ? fmt(mm2, 0) + ' mm²' : fmt(mm2 / 645.16, 2) + ' in²'; };
+        var fits = [6, 9, 12, 18, 24, 30, 36].filter(function (x) { return x * 7 / 6 * 645.16 >= area; })[0];
+        return [
+          ['Cable area', a2(area)],
+          ['Allowable fill area', a2(allow), 0, 'NEC Table 392.22(A), column 1'],
+          ['Tray fill', fmt(pct, 0) + ' %', 1],
+          ['Single layer (Σ diameters)', fq(sumD, 'dia') + ' of ' + fq(W * 0.0254, 'dia'), 0, sumD <= W * 0.0254 + 1e-9 ? 'fits in one layer' : 'needs more than one layer'],
+          ['Narrowest tray that fits', fits ? (sys === 'si' ? Math.round(fits * 25) + ' mm' : fits + ' in') : 'over 900 mm (36 in) — use two trays', 1]
+        ];
+      },
+      note: 'Column 1 applies to multiconductor cables smaller than 4/0 AWG in ladder or ventilated-trough tray. Cables 4/0 AWG and larger are laid in a single layer (sum of diameters ≤ tray width). Leave about 25 % spare for future cables; IEC practice often limits fill to 40–50 % of the tray cross-section.'
+    },
+
+    earthrod: {
+      code: 'ELEC / 029', title: 'Earth Electrode Resistance', card: true, disc: 'E',
+      desc: 'Resistance of a driven earth rod (Dwight’s formula), rods in a line, and how many rods reach a target resistance.',
+      fields: [
+        { k: 'rho', label: 'Soil resistivity (ρ)', unit: 'Ω·m', def: [100, 100] },
+        { k: 'l', label: 'Rod length (L)', q: 'len', def: [3, 10] },
+        { k: 'd', label: 'Rod diameter (d)', q: 'dia', def: [16, 0.625] },
+        { k: 'n', label: 'Number of rods in a line', unit: 'rods', def: [1, 1] },
+        { k: 't', label: 'Target resistance', unit: 'Ω', def: [25, 25] }
+      ],
+      check: function (v) { return v.l <= v.d * 10 ? 'Rod length must be much longer than its diameter.' : null; },
+      formula: function () { return ['R₁ = ρ / (2π L) × (ln(8L / d) − 1)   (Dwight)', 'Rₙ = R₁ × F / n   (F from IEEE 142, rods ≥ one rod length apart)']; },
+      calc: function (v) {
+        var R1 = v.rho / (2 * Math.PI * v.l) * (Math.log(8 * v.l / v.d) - 1), n = Math.max(1, Math.round(v.n)), Rn = R1 * rodF(n) / n;
+        var need = 0; for (var k = 1; k <= 24; k++) if (R1 * rodF(k) / k <= v.t + 1e-9) { need = k; break; }
+        return [
+          ['Resistance, one rod', fmt(R1, 1) + ' Ω', n === 1],
+          ['With ' + n + (n === 1 ? ' rod' : ' rods in a line'), fmt(Rn, 1) + ' Ω', n > 1, n > 1 ? 'combining factor ' + fmt(rodF(n), 2) : ''],
+          ['Rods to reach ' + fmt(v.t) + ' Ω', need ? need + (need === 1 ? ' rod' : ' rods') : 'more than 24 — use a ground ring, plate or chemical rods', 1, need > 1 ? 'spaced at least ' + fq(v.l, 'len') + ' apart' : '']
+        ];
+      },
+      note: 'For a single rod in uniform soil; measure the resistivity with a Wenner four-pin test first. NEC 250.53(A)(2) and the PEC: a single rod over 25 Ω needs a second rod at least 1.8 m (6 ft) away. Substations and sensitive equipment typically aim for 1–5 Ω (IEEE 142).'
+    },
+
+    vdfeed: {
+      code: 'ELEC / 030', title: 'Feeder Voltage Drop (Several Loads)', card: true, disc: 'E',
+      desc: 'Voltage drop at each load tapped along one feeder — the current falls after every tap.',
+      fields: [
+        { k: 'ph', label: 'System', opts: [['3', 'Three-phase'], ['1', 'Single-phase']], def: ['1', '3'], reg: { ph: '1' } },
+        { k: 'mat', label: 'Conductor', opts: [['cu', 'Copper'], ['al', 'Aluminium']], def: ['cu', 'cu'] },
+        { k: 'a', label: 'Conductor size (A)', q: 'csa', def: [16, 41.74] },
+        { k: 'v', label: 'Supply voltage (V)', unit: 'V', def: [230, 480], reg: { ph: 230, au: 400, us: 480 } },
+        { k: 'lim', label: 'Allowed drop', unit: '%', def: [3, 3] },
+        { k: 'l1', label: 'Load 1 — distance from the panel', q: 'len', def: [20, 60] },
+        { k: 'i1', label: 'Load 1 — current', unit: 'A', def: [15, 15] },
+        { k: 'l2', label: 'Load 2 — distance (0 = none)', q: 'len', def: [35, 110], zero: true },
+        { k: 'i2', label: 'Load 2 — current', unit: 'A', def: [10, 10], zero: true },
+        { k: 'l3', label: 'Load 3 — distance (0 = none)', q: 'len', def: [50, 160], zero: true },
+        { k: 'i3', label: 'Load 3 — current', unit: 'A', def: [10, 10], zero: true },
+        { k: 'l4', label: 'Load 4 — distance (0 = none)', q: 'len', def: [0, 0], zero: true },
+        { k: 'i4', label: 'Load 4 — current', unit: 'A', def: [0, 0], zero: true }
+      ],
+      formula: function () { return ['ΔV at a tap = K × ρ / A × Σ (segment current × segment length)', 'K = 2 single-phase, √3 three-phase; ρ Cu 0.0225, Al 0.036 Ω·mm²/m']; },
+      calc: function (v) { return vdFeed(v).rows; },
+      note: 'Resistive drop with the conductor at about 70 °C; reactance is ignored, which is fine for cables up to about 50 mm² (1/0 AWG). Taps with zero distance or current are skipped. PEC / NEC guidance: 3 % on a branch or feeder, 5 % from the service to the farthest outlet.'
+    },
+
+    stp: {
+      code: 'SAN / 023', title: 'Sewage Treatment Plant (STP) Sizing', card: true, disc: 'S',
+      desc: 'Flows, BOD load and tank sizes for an extended-aeration package sewage treatment plant.',
+      fields: [
+        { k: 'n', label: 'Population equivalent', unit: 'people', def: [500, 500] },
+        { k: 'q', label: 'Wastewater per person', q: 'lpd', def: [150, 40] },
+        { k: 'bod', label: 'BOD per person', unit: 'g/day', def: [54, 54] },
+        { k: 'pf', label: 'Peak factor', unit: '×', def: [2.5, 2.5] },
+        { k: 'eq', label: 'Equalization time', unit: 'h', def: [6, 6] },
+        { k: 'lv', label: 'Aeration loading', unit: 'kg BOD/m³·d', def: [0.3, 0.3] },
+        { k: 'sor', label: 'Clarifier overflow rate', unit: 'm³/m²·d', def: [16, 16] }
+      ],
+      formula: function () { return ['Q = people × flow   ·   BOD = people × g/person', 'V aeration = BOD / loading   ·   A clarifier = Q / overflow rate', 'V equalization = Q × time / 24   ·   chlorine contact = peak flow × 30 min']; },
+      calc: function (v) {
+        var Qd = v.n * v.q / 1000, Qpk = Qd / 86400 * v.pf, bod = v.n * v.bod / 1000, Va = bod / v.lv, hrt = Va / Qd * 24, Ac = Qd / v.sor;
+        var vol = function (m3) { return sys === 'si' ? fmt(m3, 1) + ' m³' : fmt(m3 / 0.003785411784, 0) + ' gal'; };
+        return [
+          ['Average daily flow', sys === 'si' ? fmt(Qd, 1) + ' m³/day' : fmt(Qd / 0.003785411784, 0) + ' gal/day', 1],
+          ['Peak flow', fq(Qpk, 'liq')],
+          ['BOD load', fmt(bod, 1) + ' kg/day'],
+          ['Equalization tank', vol(Qd * v.eq / 24)],
+          ['Aeration tank', vol(Va), 1, 'aeration time ' + fmt(hrt, 1) + ' h'],
+          ['Clarifier surface', fq(Ac, 'area') + ' · Ø ' + fq(Math.sqrt(4 * Ac / Math.PI), 'len'), 1],
+          ['Chlorine contact tank', vol(Qpk * 1800), 0, '30 min at peak flow'],
+          ['Oxygen demand', fmt(2 * bod, 0) + ' kg O₂/day', 0, 'about 2 kg O₂ per kg BOD']
+        ];
+      },
+      note: 'Early sizing for domestic sewage; the package-plant supplier confirms the process design. Effluent must meet the discharge standard for the receiving water — in the Philippines DENR DAO 2016-08 and the Clean Water Act (RA 9275).'
+    },
+
+    cair: {
+      code: 'PLMB / 027', title: 'Compressed Air Pipe Sizing', card: true, disc: 'P',
+      desc: 'Inside diameter for a compressed-air line from flow, pressure, length and allowed pressure drop, with the next steel pipe size.',
+      fields: [
+        { k: 'q', label: 'Free air delivery (FAD)', q: 'air', def: [300, 175] },
+        { k: 'p', label: 'Working pressure (gauge)', q: 'pbar', def: [7, 100] },
+        { k: 'l', label: 'Equivalent pipe length', q: 'len', def: [100, 300] },
+        { k: 'dp', label: 'Allowed pressure drop', q: 'pbar', def: [0.1, 1.5] }
+      ],
+      formula: function () { return ['Δp = 450 × q^1.85 × L / (d⁵ × p)   (Atlas Copco; q L/s FAD, d mm, p bar abs)', 'd = (450 × q^1.85 × L / (Δp × p))^(1/5)']; },
+      calc: function (v) {
+        var q = v.q * 1000, pa = v.p + 1.013, d = Math.pow(450 * Math.pow(q, 1.85) * v.l / (v.dp * pa), 0.2);
+        var pick = Object.keys(NPS_OD).map(Number).filter(function (dn) { return SCH40_WALL[dn] && NPS_OD[dn] - 2 * SCH40_WALL[dn] >= d; }).sort(function (a, b) { return a - b; })[0];
+        var rows = [['Required inside diameter', fq(d / 1000, 'dia'), 1], ['Absolute pressure', fq(pa, 'pbar') + ' abs']];
+        if (!pick) return rows.concat([['Suggested pipe', 'larger than DN 300 — split the flow or allow more drop', 1]]);
+        var id = NPS_OD[pick] - 2 * SCH40_WALL[pick], dpA = 450 * Math.pow(q, 1.85) * v.l / (Math.pow(id, 5) * pa), vel = q / 1000 * (1.013 / pa) / (Math.PI * Math.pow(id / 1000, 2) / 4);
+        return rows.concat([
+          ['Suggested pipe', 'DN ' + pick + ' (' + (PIPE_IN[pick] || '') + ' in) Sch. 40 steel', 1, 'inside ' + fq(id / 1000, 'dia')],
+          ['Pressure drop with it', fq(dpA, 'pbar')],
+          ['Air velocity in the pipe', fq(vel, 'vpipe')]
+        ]);
+      },
+      note: 'Use the equivalent length including fittings. Keep the drop from the compressor to the farthest point under about 0.1 bar (1.5 psi) on mains, velocity at or below 6 m/s (20 ft/s) in mains and 15 m/s in drops, and slope mains 1 : 100 to drain points.'
     },
 
     roofdrain: {
@@ -7681,7 +8097,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   /* ---------- Cards ---------- */
   var grid = $('#card-grid');
   // HVAC sub-groups (a calculator can belong to more than one); these cards also stay under Mechanical.
-  var HVAC_TAGS = { psy: ['AC'], refpipe: ['AC', 'R'], chwins: ['AC'], chhang: ['AC'], coldroom: ['R'], refcycle: ['AC', 'R'], shsc: ['R'], refpt: ['R'], freeze: ['R'], evap: ['R'], refsafe: ['R'], rfhang: ['R'], icestore: ['AC', 'R'], ctower: ['AC'], expt: ['AC', 'H'], cond: ['AC'], pmv: ['AC'], erv: ['V'], carpark: ['V'], stairp: ['V'], leak: ['DD'], chw: ['AC'], pump: ['AC', 'H'], hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
+  var HVAC_TAGS = { psy: ['AC'], refpipe: ['AC', 'R'], chwins: ['AC'], chhang: ['AC'], coldroom: ['R'], refcycle: ['AC', 'R'], shsc: ['R'], refpt: ['R'], freeze: ['R'], evap: ['R'], refsafe: ['R'], rfhang: ['R'], icestore: ['AC', 'R'], ctower: ['AC'], expt: ['AC', 'H'], cond: ['AC'], pmv: ['AC'], erv: ['V'], carpark: ['V'], stairp: ['V'], khood: ['V'], leak: ['DD'], chw: ['AC'], pump: ['AC', 'H'], hwflow: ['H'], heat: ['H'], phl: ['H'], fuel: ['H'], cost: ['H'], ach: ['V'], geom: ['V'],
                     oa: ['V'], vbz: ['V'], voz: ['V'], exh: ['V'], mua: ['V'], xfer: ['V'], bal: ['V'], vcmp: ['V'],
                     sdiff: ['GRL'], rgrille: ['GRL'], egrille: ['GRL'], louv: ['GRL'], fvel: ['GRL'], farea: ['GRL'], ndiff: ['GRL'], cfmd: ['GRL'], tsd: ['GRL'],
                     fexh: ['FAN'], fsup: ['FAN'], ffa: ['FAN'], fsp: ['FAN'], ftp: ['FAN'], fpow: ['FAN'], feff: ['FAN'], fop: ['FAN'],
@@ -7690,11 +8106,11 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   var HVAC_NAMES = { H: 'Heating', V: 'Ventilation', AC: 'Air Conditioning', R: 'Refrigeration', DD: 'Duct Design' };
   // Display order: Mechanical by group (air conditioning, refrigeration, heating, ventilation, duct design, fans), then E, P, F, S.
   var CARD_ORDER = ['btu', 'cool', 'pcl', 'psy', 'pmv', 'heat', 'phl', 'hwflow', 'chw', 'chwins', 'chhang', 'ctower', 'icestore', 'expt', 'cond', 'pump', 'refpipe', 'rfhang', 'coldroom', 'freeze', 'evap', 'refcycle', 'refpt', 'shsc', 'refsafe', 'fuel', 'cost',
-    'ach', 'geom', 'oa', 'vbz', 'voz', 'exh', 'mua', 'xfer', 'bal', 'vcmp', 'erv', 'carpark', 'stairp',
+    'ach', 'geom', 'oa', 'vbz', 'voz', 'exh', 'mua', 'khood', 'xfer', 'bal', 'vcmp', 'erv', 'carpark', 'stairp',
     'duct', 'rdc', 'rcd', 'dvel', 'eqf', 'sreg', 'dfric', 'eqlen', 'fitl', 'tpl', 'dar', 'dsheet', 'insul', 'hanger', 'leak', 'dins', 'ductd', 'diff',
     'fexh', 'fsup', 'ffa', 'fsp', 'ftp', 'fpow', 'feff', 'fop',
     'sdiff', 'rgrille', 'egrille', 'louv', 'fvel', 'farea', 'ndiff', 'cfmd', 'tsd',
-    'elec', 'pls', 'ecost', 'vdrop', 'cable', 'sccur', 'conduit', 'egc', 'motor', 'gen', 'ups', 'pfc', 'solar', 'evc', 'payback', 'light', 'lpd', 'pipe', 'tank', 'hwheat', 'hwrec', 'booster', 'przone', 'lpg', 'exloop', 'hammer', 'plhang', 'wsfu', 'pool', 'sprinkler', 'sprhyd', 'firepump', 'hazen', 'fphang', 'hydrant', 'fext', 'standpipe', 'firetank', 'foam', 'cleanagent', 'detect', 'fabatt', 'smoke', 'egress', 'drain', 'dfu', 'septic', 'greasetrap', 'rainwater', 'roofdrain'];
+    'elec', 'pls', 'ecost', 'vdrop', 'vdfeed', 'cable', 'sccur', 'conduit', 'tray', 'egc', 'earthrod', 'motor', 'gen', 'ups', 'pfc', 'solar', 'evc', 'payback', 'light', 'lpd', 'pipe', 'tank', 'hwheat', 'hwrec', 'booster', 'przone', 'lpg', 'cair', 'exloop', 'hammer', 'plhang', 'wsfu', 'pool', 'sprinkler', 'sprhyd', 'firepump', 'hazen', 'fphang', 'hydrant', 'fext', 'standpipe', 'firetank', 'foam', 'cleanagent', 'detect', 'fabatt', 'smoke', 'egress', 'drain', 'dfu', 'septic', 'stp', 'greasetrap', 'rainwater', 'roofdrain'];
   var statCalcs = document.getElementById('stat-calcs');
   if (statCalcs) statCalcs.textContent = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).length;
   var cardIds = Object.keys(CALCS).filter(function (id) { return CALCS[id].card; }).sort(function (a, b) {
@@ -7899,6 +8315,12 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     ductd:     ['Velocity or equal-friction sizing; Altshul–Tsal friction; Huebscher rectangular equivalent; fitting losses Σ C·Pv + component Δp; insulation by surface-temperature (dew-point) balance. Gauges, velocity ranges and insulation can be replaced by your project standards.', 'ASHRAE Handbook—Fundamentals Ch. 21 (Duct Design; typical fitting coefficients — the ASHRAE Duct Fitting Database gives exact values) and Ch. 23 (Insulation for Mechanical Systems); SMACNA HVAC Duct Construction Standards (gauges and seal classes, simplified); ASHRAE 90.1 Table 6.8.3 (duct insulation R-values); NFPA 96 (kitchen grease ducts); NFPA 90A (fire dampers); NFPA 92 / EN 12101 (smoke control); ASHRAE 62.1 (exhaust rates, intake separation).', 'method'],
     phl:       ['Σ (U+ΔU)·A·ΔT + slab perimeter F·P·ΔT + infiltration + ventilation × (1 − recovery)', 'EN 12831-1 (thermal-bridge allowance, structure); ASHRAE Handbook—Fundamentals Ch. 14 (99.6 % heating design) and Ch. 18 (slab perimeter method); EN ISO 6946.', 'method'],
     elec:      ['P_dem = n·P·DF; I = P / (√3·V·PF)', 'Three-phase power relation; demand-factor approach as in NFPA 70 (NEC) Art. 220 / IEC 60364. PF 0.85 assumed.', 'method'],
+    khood: ['Q = rate × hood length (CFM/ft by duty and hood type)', 'IMC 507.13 (exhaust rates), IMC 506.3.4 / NFPA 96 (grease duct ≥ 500 fpm), IMC 508 (make-up air).', 'method'],
+    tray: ['Σ cable area ≤ Table 392.22(A) column 1', 'NEC 392.22(A)(1); single layer for 4/0 AWG and larger.', 'method'],
+    earthrod: ['R = ρ/(2πL)·(ln(8L/d) − 1); Rₙ = R₁·F/n', 'Dwight (1936); IEEE 142 (Green Book) Ch. 4; NEC 250.53(A)(2).', 'method'],
+    vdfeed: ['ΔV = K·ρ/A·Σ I·ℓ per segment', 'Resistive drop; 3 % / 5 % per NEC 210.19(A) / 215.2 informational notes and PEC 2017.', 'method'],
+    stp: ['Extended aeration: loading 0.1–0.4 kg BOD/m³·d, clarifier 8–16 m³/m²·d', 'Metcalf & Eddy, Wastewater Engineering; DENR DAO 2016-08 effluent standards (PH).', 'typical'],
+    cair: ['Δp = 450·q^1.85·L / (d⁵·p)', 'Atlas Copco Compressed Air Manual (pipe sizing); ISO 8573 for air quality.', 'method'],
     vdrop:     ['ΔV = √3·I·L·ρ/A (3φ), 2·I·L·ρ/A (1φ)', 'Resistive voltage drop; 3 % / 5 % limits per NEC 210.19(A) informational note and IEC 60364-5-52 Annex G guidance.', 'method'],
     pipe:      ['Darcy–Weisbach with Swamee–Jain friction factor', 'Darcy–Weisbach; Swamee & Jain (1976) explicit form of Colebrook; roughness and water properties typical.', 'method'],
     tank:      ['Demand = people × use; storage = demand × days', 'Per-capita use is typical design data — local plumbing code (e.g. IPC, UPC, Revised National Plumbing Code of the Philippines) governs.', 'typical'],
@@ -8082,7 +8504,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     sdiff: 'supply diffuser neck size nc ceiling', rgrille: 'return grille register free area face velocity', egrille: 'exhaust grille toilet register',
     louv: 'louver louvre fresh air intake rain amca weather', fvel: 'face velocity core velocity grille louver filter', farea: 'free area grille louver size',
     ndiff: 'number of diffusers how many count', cfmd: 'cfm per diffuser airflow each balancing', tsd: 'throw spread drop adpi t50 draught draft jet',
-    septic: 'septic tank sewage', roofdrain: 'rain storm roof drain gutter downpipe leader'
+    septic: 'septic tank sewage', stp: 'sewage treatment plant stp wastewater activated sludge aeration bod clarifier denr effluent', khood: 'kitchen hood exhaust canopy grease duct restaurant cooking make up air', tray: 'cable tray ladder fill nec 392 wires cables', earthrod: 'earthing grounding rod electrode resistance soil resistivity ground', vdfeed: 'voltage drop feeder several loads distributed taps busway', cair: 'compressed air pipe size compressor pneumatic pressure drop fad scfm', roofdrain: 'rain storm roof drain gutter downpipe leader'
   };
   var TAG_NAMES = { H: 'heating', V: 'ventilation', AC: 'air conditioning aircon', R: 'refrigeration cold chain', DD: 'duct design', FAN: 'fan mechanical', GRL: 'diffuser grille louver louvre air terminal mechanical' };
   var filterBtns = $$('.filters button'), cards = $$('.card', grid), activeFilter = 'all', query = '';
@@ -9709,6 +10131,12 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   var dens = function (w, a) { return sys === 'si' ? fmt(w / a, 0) + ' W/m²' : fmt(w / a * 0.316998, 1) + ' BTU/h·ft²'; };
   var sfpOk = function (txt) { var m = /SFP (\d)/.exec(txt || ''); return m ? [+m[1] <= 3, 'SFP ' + m[1] + (+m[1] <= 3 ? ' — within' : ' — above') + ' the SFP 3 benchmark (EN 16798-3)'] : null; };
   var CHECKS = {
+    khood: function (v) { var ok = v.v >= 2.54 - 1e-9 && v.v <= 12.7 + 1e-9; return [ok, 'grease duct velocity ' + fq(v.v, 'vduct') + (ok ? ' — within 500–2,500 fpm (2.5–12.7 m/s)' : v.v < 2.54 ? ' — below the 500 fpm (2.5 m/s) minimum for grease ducts' : ' — above 2,500 fpm (12.7 m/s); noisy and high loss')]; },
+    tray: function (v) { var a = (v.n1 * v.d1 * v.d1 + v.n2 * v.d2 * v.d2) * Math.PI / 4 * 1e6, pct = a / (+v.w * 7 / 6 * 645.16) * 100; return [pct <= 100, 'fill ' + fmt(pct, 0) + ' % of the NEC allowable area' + (pct <= 100 ? (pct > 75 ? ' — allowed, but little room for future cables' : ' — within the limit') : ' — over the limit; use a wider tray or a second tray')]; },
+    earthrod: function (v) { var R1 = v.rho / (2 * Math.PI * v.l) * (Math.log(8 * v.l / v.d) - 1), n = Math.max(1, Math.round(v.n)), Rn = R1 * rodF(n) / n; return [Rn <= v.t + 1e-9, fmt(Rn, 1) + ' Ω with ' + n + (n === 1 ? ' rod' : ' rods') + (Rn <= v.t + 1e-9 ? ' — meets the ' + fmt(v.t) + ' Ω target' : ' — above the ' + fmt(v.t) + ' Ω target; add rods or use longer rods')]; },
+    vdfeed: function (v) { var w = vdFeed(v).worst; return [w <= v.lim + 1e-9, 'worst drop ' + fmt(w, 2) + ' %' + (w <= v.lim + 1e-9 ? ' — within ' + fmt(v.lim) + ' %' : ' — over ' + fmt(v.lim) + ' %; use a larger conductor or feed from the middle')]; },
+    stp: function (v) { var h = v.n * v.bod / 1000 / v.lv / (v.n * v.q / 1000) * 24; return [h >= 18 && h <= 36, 'aeration time ' + fmt(h, 1) + ' h' + (h >= 18 && h <= 36 ? ' — within the usual 18–36 h for extended aeration' : h < 18 ? ' — short for extended aeration; lower the loading' : ' — long; the tank may be oversized')]; },
+    cair: function (v, rows) { var vel = inSI(rowVal(rows, 'Air velocity in the pipe'), 'vpipe'); if (!(vel > 0)) return null; return [vel <= 6 + 1e-9, 'velocity ' + fq(vel, 'vpipe') + (vel <= 6 + 1e-9 ? ' — at or below 6 m/s (20 ft/s) for mains' : ' — above 6 m/s (20 ft/s); use the next size up for a main')]; },
     btu: function (v, rows) { var w = numIn(rowVal(rows, 'Cooling load')) / 3.41214, d = w / v.area; return [d >= 80 && d <= 250, 'load density ' + dens(w, v.area) + (d >= 80 && d <= 250 ? ' — typical range' : ' — outside the typical 80–250 W/m² (25–80 BTU/h·ft²); confirm with a load calculation')]; },
     cool: function (v) { var r = coolLoad(v), d = r.total / v.area; return [d >= 80 && d <= 250, 'load density ' + dens(r.total, v.area) + (d >= 80 && d <= 250 ? ' — typical range' : ' — outside the typical 80–250 W/m²; check glazing, people and equipment inputs')]; },
     heat: function (v) { var w = heatLoad(v).total, d = w / v.area; return [d <= 120, 'heat loss ' + dens(w, v.area) + (d <= 120 ? ' — reasonable' : ' — high; improve insulation or reduce infiltration')]; },
@@ -9767,6 +10195,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
       '<button type="button" class="btn btn-outline btn-sm" id="pdf-btn" aria-expanded="false" aria-controls="report-panel">' +
       '<svg width="13" height="13" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h7l3.5 3.5v11.5H5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 8.5v6M7.5 12l2.5 2.5 2.5-2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF report</button>' +
       '<button type="button" class="btn btn-outline btn-sm" id="copy-btn">Copy result</button>' +
+      '<button type="button" class="btn btn-outline btn-sm" id="share-btn" hidden>Share link</button>' +
       '<button type="button" class="btn btn-outline btn-sm" id="calc-fb">Feedback</button></div></div>';
   }
 
@@ -9833,8 +10262,9 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     });
     var formula = d.formula(sys);
     $('#r-formula').textContent = formula.join('\n');
-    var rowsEl = $('#r-rows'), err = $('#r-err'), btn = $('#copy-btn');
+    var rowsEl = $('#r-rows'), err = $('#r-err'), btn = $('#copy-btn'), share = $('#share-btn');
     var dz = $('#calc-draw');
+    if (share) { share.hidden = false; share.disabled = bad; }
     if (bad) {
       rowsEl.innerHTML = ''; err.textContent = msg; err.hidden = false; btn.disabled = true; lastCopy = '';
       if (dz) dz.innerHTML = '<figcaption>Live drawing</figcaption><p class="dd-help">Enter valid values to see the drawing.</p>';
@@ -12197,8 +12627,57 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   }
 
   // --- Spot the Mistake: a Design Pitfalls drawing without its labels — right way or mistake?
-  var SP = { score: 0, asked: 0, streak: 0 };
+  var SP = { score: 0, asked: 0, streak: 0, mode: 'practice' };
   function spNew() { SP.p = pick1(PITFALLS); SP.bad = Math.random() < 0.5; SP.answer = null; }
+  // Daily challenge: five drawings picked from the date, the same for everyone; one try per day.
+  var spDay = function (d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  function spDailyPicks(date) {
+    var s = 0; for (var i = 0; i < date.length; i++) s = (Math.imul(s, 31) + date.charCodeAt(i)) >>> 0;
+    var rnd = function () { s = (s + 0x6D2B79F5) >>> 0; var t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    var ids = PITFALLS.map(function (q) { return q.id; }).sort(), picks = [];
+    while (picks.length < 5) { var id = ids[Math.floor(rnd() * ids.length)], bad = rnd() < 0.5; if (picks.every(function (q) { return q.id !== id; })) picks.push({ id: id, bad: bad }); }
+    return picks;
+  }
+  var DY = null;
+  function spDailyLoad() {
+    var today = spDay(), saved = GAME.day && GAME.day.date === today ? GAME.day.ans : [];
+    DY = { date: today, picks: spDailyPicks(today), ans: saved.slice() };
+    if (DY.ans.length < 5) spDailyTake();
+  }
+  function spDailyTake() { var q = DY.picks[DY.ans.length]; SP.p = PITFALLS.filter(function (x) { return x.id === q.id; })[0]; SP.bad = q.bad; SP.answer = null; }
+  function spSetMode(m) {
+    SP.mode = m;
+    if (m === 'daily') spDailyLoad(); else spNew();
+    renderSpot();
+    var f = $('.sp-choice, [data-gm="sp-share"]', mBody); if (f) f.focus();
+  }
+  function spNext() {
+    if (SP.mode === 'daily') { if (DY.ans.length < 5) spDailyTake(); else SP.answer = null; } else spNew();
+    renderSpot();
+    var f = $('.sp-choice, [data-gm="sp-share"]', mBody); if (f) f.focus();
+  }
+  var spShareText = function () {
+    var n = DY.ans.filter(Boolean).length;
+    return 'MechToolBox · Spot the Mistake ' + DY.date + '\n' + n + '/5 ' + DY.ans.map(function (r) { return r ? '🟩' : '🟥'; }).join('') + '\n' + location.href.split(/[?#]/)[0] + '?play=daily';
+  };
+  function renderDailyResult() {
+    var n = DY.ans.filter(Boolean).length, st = GAME.dayStreak || { n: 0 };
+    var mid = new Date(); mid.setHours(24, 0, 0, 0);
+    var mins = Math.max(1, Math.round((mid - new Date()) / 60000));
+    mBody.innerHTML = spModes() + gameBar([['Daily', DY.date], ['Day streak', st.n + (st.n === 1 ? ' day' : ' days')]]) +
+      '<div class="sp-day">' +
+        '<p class="sp-day-score">' + n + ' / 5</p><p class="sp-day-grid" aria-label="' + n + ' of 5 right">' + DY.ans.map(function (r) { return r ? '🟩' : '🟥'; }).join('') + '</p>' +
+        '<p class="m-desc">' + (n === 5 ? 'Perfect — every drawing right.' : n >= 3 ? 'Good eye. ' : 'Tricky one today. ') + (n < 5 ? 'Each drawing is in Design Pitfalls with the why and the rule.' : '') + '</p>' +
+        '<ol class="sp-day-list">' + DY.picks.map(function (q, i) { var x = PITFALLS.filter(function (y) { return y.id === q.id; })[0]; return '<li><span aria-hidden="true">' + (DY.ans[i] ? '✓' : '✕') + '</span> <button type="button" class="linkish" data-pitfall="' + q.id + '">' + esc(x.title) + '</button></li>'; }).join('') + '</ol>' +
+        '<div class="gm-actions"><button type="button" class="btn btn-solid btn-sm" data-gm="sp-share">Share result</button><button type="button" class="btn btn-outline btn-sm" data-gm="sp-mode" data-m="practice">Keep practising</button></div>' +
+        '<p class="gm-msg" id="sp-day-msg" aria-live="polite"></p>' +
+        '<p class="sp-day-next">Next challenge in ' + (mins >= 60 ? Math.floor(mins / 60) + ' h ' : '') + (mins % 60) + ' min</p>' +
+      '</div>';
+  }
+  var spModes = function () {
+    return '<div class="sp-modes" role="group" aria-label="Mode"><button type="button" data-gm="sp-mode" data-m="practice" aria-pressed="' + (SP.mode === 'practice') + '">Practice</button>' +
+      '<button type="button" data-gm="sp-mode" data-m="daily" aria-pressed="' + (SP.mode === 'daily') + '">Daily challenge</button></div>';
+  };
   // Symbol key: [class in the drawing, name, sample]. Only symbols on both drawings are listed, so the key gives nothing away.
   var spLine = function (cls) { return '<path d="M4 7H24" class="pf-pipe ' + cls + '"/>'; }, spRect = function (cls) { return '<rect x="3" y="2" width="22" height="10" class="' + cls + '"/>'; };
   var SP_KEY = [['pf-duct', 'Duct', spRect('pf-duct')], ['pf-flex', 'Flexible duct', '<path d="M4 7H24" class="pf-flex" style="stroke-width:8"/>'],
@@ -12224,9 +12703,12 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   }
   var spLabels = function (svg) { return (svg.match(/<text[^>]*class="pf-t"[^>]*>[^<]*/g) || []).map(function (t) { return t.replace(/^[^>]*>/, '').replace(/&(amp|lt|gt|quot);/g, function (m, e) { return { amp: '&', lt: '<', gt: '>', quot: '"' }[e]; }); }); };
   function renderSpot() {
+    if (SP.mode === 'daily') { if (!DY || DY.date !== spDay()) spDailyLoad(); if (DY.ans.length >= 5 && SP.answer === null) { renderDailyResult(); return; } }
     if (!SP.p) spNew();
-    var p = SP.p, shown = SP.answer !== null, right = shown && (SP.answer === 'bad') === SP.bad, info = PF_INFO[p.id] || {}, key = spKey(p);
-    mBody.innerHTML = gameBar([['Score', SP.score + ' / ' + SP.asked], ['Streak', SP.streak], ['Best streak', GAME.best.sp || 0]]) +
+    var p = SP.p, shown = SP.answer !== null, right = shown && (SP.answer === 'bad') === SP.bad, info = PF_INFO[p.id] || {}, key = spKey(p), daily = SP.mode === 'daily';
+    var lastDaily = daily && DY.ans.length >= 5;
+    mBody.innerHTML = spModes() + (daily ? gameBar([['Daily', DY.date], ['Drawing', Math.min(DY.ans.length + (shown ? 0 : 1), 5) + ' / 5'], ['Day streak', (GAME.dayStreak || { n: 0 }).n]])
+      : gameBar([['Score', SP.score + ' / ' + SP.asked], ['Streak', SP.streak], ['Best streak', GAME.best.sp || 0]])) +
       '<p class="m-desc">Is this installation done the right way, or is it a mistake? Keys: <kbd>R</kbd> right way · <kbd>M</kbd> mistake' + (shown ? ' · <kbd>N</kbd> next' : '') + '.</p>' +
       '<p class="pf-disc" style="--c:' + PF_DISC[p.d][1] + '">' + esc(PF_DISC[p.d][0]) + '</p>' +
       (info.scene ? '<p class="sp-scene"><b>In the picture</b> ' + esc(info.scene) + '</p>' : '') +
@@ -12234,7 +12716,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
         (key ? '<ul class="sp-key" aria-label="Symbols in the drawing">' + key + '</ul>' : '') + '</figure>' +
       (shown ? '<div class="sp-verdict ' + (right ? 'ok' : 'no') + '" role="status"><b>' + (right ? '✓ Correct — ' : '✕ Not quite — ') + (SP.bad ? 'this is the mistake.' : 'this is the right way.') + '</b>' +
         '<p><strong>' + esc(p.title) + '.</strong> ' + esc(SP.bad ? p.badCap : p.goodCap) + '</p><p class="sp-why">' + esc(p.why) + '</p></div>' +
-        '<div class="gm-actions"><button type="button" class="btn btn-solid btn-sm" data-gm="sp-next">Next drawing →</button><button type="button" class="btn btn-outline btn-sm" data-pitfall="' + p.id + '">See both drawings</button></div>'
+        '<div class="gm-actions"><button type="button" class="btn btn-solid btn-sm" data-gm="sp-next">' + (lastDaily ? 'See your result →' : 'Next drawing →') + '</button><button type="button" class="btn btn-outline btn-sm" data-pitfall="' + p.id + '">See both drawings</button></div>'
         : (info.look ? '<p class="sp-look"><b>Look at</b> ' + esc(info.look) + '</p>' : '') +
           '<div class="sp-choices"><button type="button" class="sp-choice sp-ok" data-gm="sp-answer" data-v="good">✓ Right way</button><button type="button" class="sp-choice sp-no" data-gm="sp-answer" data-v="bad">✕ Mistake</button></div>');
     // a name drawn on only one of the two pictures (e.g. "hot gas layer") would give the answer away, so it waits for the reveal
@@ -12243,8 +12725,22 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   }
   function spAnswer(v) {
     if (SP.answer !== null) return;
-    SP.answer = v; SP.asked++;
+    if (SP.mode === 'daily' && (!DY || DY.ans.length >= 5)) return;
+    SP.answer = v;
     var right = (v === 'bad') === SP.bad;
+    if (SP.mode === 'daily') {
+      DY.ans.push(right); GAME.day = { date: DY.date, ans: DY.ans.slice() };
+      if (DY.ans.length === 5) {
+        var st = GAME.dayStreak || { last: '', n: 0 }, y = new Date(); y.setDate(y.getDate() - 1);
+        GAME.dayStreak = { last: DY.date, n: st.last === DY.date ? st.n : st.last === spDay(y) ? st.n + 1 : 1 };
+        if (DY.ans.every(Boolean)) setTimeout(function () { confetti($('.sp-fig', mBody)); cheer(); }, 50);
+      }
+      gameSave(); blip(right ? 700 : 180, right ? 110 : 160);
+      renderSpot();
+      var dn = $('[data-gm="sp-next"]', mBody); if (dn) dn.focus();
+      return;
+    }
+    SP.asked++;
     if (right) { SP.score++; SP.streak++; if (SP.streak > (GAME.best.sp || 0)) { GAME.best.sp = SP.streak; gameSave(); } blip(700, 110); } else { SP.streak = 0; blip(180, 160); }
     renderSpot();
     if (right && SP.streak > 0 && SP.streak % 5 === 0) { confetti($('.sp-fig', mBody)); cheer(); }
@@ -12465,7 +12961,14 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     if (act === 'us-start') { US = { score: 0, streak: 0, bestStreak: 0, asked: 0, end: Date.now() + 60000 }; usQuestion(); renderSprint(); var ch = $('.us-choice', mBody); if (ch) ch.focus(); return; }
     if (act === 'us-pick') { usPick(b); return; }
     if (act === 'sp-answer') { spAnswer(b.dataset.v); return; }
-    if (act === 'sp-next') { spNew(); renderSpot(); var sc = $('.sp-choice', mBody); if (sc) sc.focus(); return; }
+    if (act === 'sp-next') { spNext(); return; }
+    if (act === 'sp-mode') { spSetMode(b.dataset.m); return; }
+    if (act === 'sp-share') {
+      var txt = spShareText(), say = function (m) { var el = $('#sp-day-msg'); if (el) el.textContent = m; };
+      if (navigator.share && window.matchMedia('(pointer: coarse)').matches) { navigator.share({ text: txt }).catch(function () {}); return; }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(function () { say('✓ Copied — paste it anywhere'); }, function () { say(txt); }); else say(txt);
+      return;
+    }
     if (act === 'mm-new' || act === 'mm-next') { mmNew(MM.level + (act === 'mm-next' ? 1 : 0)); renderMatch(); var m0 = $('.mm-card', mBody); if (m0) m0.focus(); return; }
     if (act === 'pb-new' || act === 'pb-next') { pbNew(PB.level + (act === 'pb-next' ? 1 : 0)); renderPhase(0); return; }
     if (act === 'ts-pick') { tsPick(+b.dataset.i); return; }
@@ -12480,8 +12983,9 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   mBody.addEventListener('dragover', function (e) { var z = current === 'phase' && e.target.closest && e.target.closest('[data-ph]'); if (z) { e.preventDefault(); $$('[data-ph]', mBody).forEach(function (x) { x.classList.toggle('over', x === z); }); } });
   mBody.addEventListener('drop', function (e) { var z = current === 'phase' && e.target.closest && e.target.closest('[data-ph]'); if (!z) return; e.preventDefault(); pbPlace(+e.dataTransfer.getData('text/plain'), z.dataset.ph === 'tray' ? null : +z.dataset.ph); });
   mBody.addEventListener('dragend', function () { $$('[data-ph].over', mBody).forEach(function (x) { x.classList.remove('over'); }); });
-  modal.addEventListener('keydown', function (e) { // on the whole window, so the keys work wherever focus is
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
+  document.addEventListener('keydown', function (e) { // on the whole page, so the keys work wherever focus is (even if it slipped off the window)
+    if (!modal.open || e.ctrlKey || e.metaKey || e.altKey || document.querySelector('dialog[open]:not(#modal)')) return;
+    if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable]')) return;
     if (current === 'pipes') {
       var cell = e.target.closest && e.target.closest('.pp-cell'); if (!cell) return;
       var i = +cell.dataset.i, n = PP.n, mv = { ArrowUp: -n, ArrowDown: n, ArrowLeft: -1, ArrowRight: 1 }[e.key];
@@ -12493,7 +12997,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     } else if (current === 'spot') {
       var k = e.key.toLowerCase();
       if (k === 'r' || k === 'm') { e.preventDefault(); spAnswer(k === 'm' ? 'bad' : 'good'); }
-      else if (k === 'n' && SP.answer !== null) { e.preventDefault(); spNew(); renderSpot(); var sc = $('.sp-choice', mBody); if (sc) sc.focus(); }
+      else if (k === 'n' && SP.answer !== null) { e.preventDefault(); spNext(); }
     } else if (current === 'phase' && PB && PB.sel !== null && /^([0-3]|Backspace)$/.test(e.key)) {
       e.preventDefault(); pbPlace(PB.sel, e.key === '0' || e.key === 'Backspace' ? null : +e.key - 1);
     } else if (current === 'scramble' && TS.word) {
@@ -12605,6 +13109,34 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(lastCopy).then(done, fallback);
     else fallback();
+  });
+
+  // Share link: ?calc=<id>&sys=<si|imp>&code=<basis>&<field>=<value>… Values are written in the built-in unit of
+  // that system, so the link reads the same whatever units the receiver has picked.
+  function shareUrl(id) {
+    var p = ['calc=' + id, 'sys=' + sys, 'code=' + codeBasis];
+    CALCS[id].fields.forEach(function (f) {
+      if (f.show && !f.show(vals[id])) return;
+      var x = vals[id][f.k], n = num(x);
+      if (f.q && f.q !== 'tc' && n !== null) x = roundU(n * Q[f.q][sys][1] / Q_DEF[f.q][sys][1]);
+      p.push(encodeURIComponent(f.k) + '=' + encodeURIComponent(x));
+    });
+    return location.href.split(/[?#]/)[0] + '?' + p.join('&') + '#calculators';
+  }
+  mBody.addEventListener('click', function (e) {
+    var btn = e.target.closest('#share-btn');
+    if (!btn || !current || !CALCS[current]) return;
+    var url = shareUrl(current), d = CALCS[current];
+    var done = function () { btn.textContent = 'Link copied ✓'; btn.classList.add('copied'); setTimeout(function () { if (btn.isConnected) { btn.textContent = 'Share link'; btn.classList.remove('copied'); } }, 1800); };
+    if (navigator.share && window.matchMedia('(pointer: coarse)').matches) { navigator.share({ title: d.title + ' — MechToolBox', url: url }).catch(function () {}); return; }
+    var fallback = function () {
+      var ta = document.createElement('textarea');
+      ta.value = url; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      modal.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch (err) {}
+      modal.removeChild(ta); btn.focus();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, fallback); else fallback();
   });
 
   document.addEventListener('click', function (e) {
@@ -15204,7 +15736,7 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
   /* ---------- Ads (Adsterra): each code pasted into a <template data-ad> fills the matching .ad-slot ---------- */
   (function () {
     if (navigator.webdriver) return; // never in automated test browsers
-    var codeOf = function (t) { return t.innerHTML.replace(/<!--[\s\S]*?-->/g, '').trim(); }; // the placeholder comment does not count
+    var codeOf = function (t) { return t.innerHTML.replace(/<[!]--[\s\S]*?--[>]/g, '').trim(); }; // the placeholder comment does not count ([!] and [>] keep a literal comment marker out of the script)
     var mobile = window.matchMedia('(max-width: 799px)').matches; // below 800 px a 728-wide banner does not fit the content
     var tpls = $$('#ad-codes template[data-ad]').filter(function (t) { var m = t.dataset.media || 'all'; return codeOf(t) && (m === 'all' || (m === 'mobile') === mobile); });
     var pick = function (slot) { return tpls.filter(function (t) { return t.dataset.ad.split(/\s+/).indexOf(slot) >= 0; })[0]; };
@@ -15895,6 +16427,177 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     esRender();
   }
 
+  /* ---------- Shared links and calculator pages: open the calculator they name, with their inputs ---------- */
+  (function () {
+    var q = new URLSearchParams(location.search), id = q.get('calc') || document.documentElement.getAttribute('data-calc'), play = q.get('play');
+    if (play) {
+      var g = play === 'daily' ? 'spot' : play;
+      if (GAMES.indexOf(g) < 0) return;
+      if (play === 'daily') SP.mode = 'daily';
+      history.replaceState(null, '', location.pathname + '#utilities');
+      route(); openModal(g); keepFocus();
+      return;
+    }
+    if (!id || !CALCS[id] || (SPECIAL[id] && q.get('calc'))) return; // a calculator page may open the wide tools; shared inputs are for the regular ones
+    if (q.get('calc')) {
+      if (/^(intl|ph|au|us)$/.test(q.get('code') || '')) setCode(q.get('code'));
+      if (/^(si|imp)$/.test(q.get('sys') || '')) setSys(q.get('sys'));
+      ensureVals(id);
+      CALCS[id].fields.forEach(function (f) {
+        if (!q.has(f.k)) return;
+        var x = q.get(f.k), n = num(x);
+        if (f.opts) { if (f.opts.some(function (o) { return o[0] === x; })) vals[id][f.k] = x; return; }
+        if (f.q && f.q !== 'tc' && n !== null) x = roundU(n * Q_DEF[f.q][sys][1] / Q[f.q][sys][1]);
+        vals[id][f.k] = String(x).slice(0, 80);
+      });
+      history.replaceState(null, '', location.pathname + (location.hash || '#calculators')); // tidy the address once applied
+    }
+    if (!location.hash) history.replaceState(null, '', location.pathname + '#calculators');
+    route();
+    openModal(id); keepFocus();
+    // opened while the page is still loading, focus can land back on the page; keys must reach the window
+    function keepFocus() { setTimeout(function () { if (modal.open && !modal.contains(document.activeElement)) { var f = $('.sp-choice, form.fields input, form.fields select', mBody) || $('#m-close'); f.focus(); } }, 0); }
+  })();
+
+  /* ---------- Sun mode: a light theme that stays readable outdoors ---------- */
+  function setTheme(sun) {
+    if (sun) document.documentElement.setAttribute('data-theme', 'sun'); else document.documentElement.removeAttribute('data-theme');
+    $$('.theme-btn').forEach(function (b) { b.setAttribute('aria-pressed', String(sun)); });
+    $$('.theme-menu span').forEach(function (s) { s.textContent = sun ? 'Dark mode' : 'Sun mode'; });
+    var tc = $('meta[name="theme-color"]'); if (tc) tc.setAttribute('content', sun ? '#F7F3EA' : '#0B0B0B');
+    try { localStorage.setItem('mechtoolbox-theme', sun ? 'sun' : 'dark'); } catch (e) {}
+  }
+  setTheme(document.documentElement.getAttribute('data-theme') === 'sun');
+  $$('.theme-btn').forEach(function (b) { b.addEventListener('click', function () { setTheme(document.documentElement.getAttribute('data-theme') !== 'sun'); }); });
+
+
+  /* ---------- Cheat sheets: one-page references that print or save as PDF ---------- */
+  function csTable(head, rows, wrap) { // wrap: long text cells instead of right-aligned numbers
+    return '<table><thead><tr>' + head.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      rows.map(function (r) { return '<tr>' + r.map(function (x, i) { return '<td' + (i && !wrap ? ' class="n"' : '') + '>' + x + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>';
+  }
+  var csIn = function (x) { var w = Math.floor(x), f = { 0.25: '¼', 0.5: '½', 0.75: '¾' }[x - w] || ''; return (w || !f ? w : '') + f + ' in'; };
+  var CS = {
+    hvac: ['HVAC Quick Reference', function () {
+      return '<div class="cols"><section><h2>Typical air change rates</h2>' + csTable(['Space', 'ACH'], [['Offices', '4 – 6'], ['Classrooms', '5 – 7'], ['Conference rooms', '6 – 10'], ['Toilets', '6 – 10'], ['Commercial kitchens', '15 – 30'], ['Car parks', '6 – 8'], ['Warehouses', '2 – 4'], ['Plant rooms', '10 – 15']]) + '</section>' +
+        '<section><h2>Duct velocities</h2>' + csTable(['Duct', 'm/s', 'fpm'], [['Main supply (low velocity)', '5 – 8', '1,000 – 1,600'], ['Branch supply', '3 – 5', '600 – 1,000'], ['Return / exhaust main', '4 – 6', '800 – 1,200'], ['Residential', '2.5 – 4', '500 – 800'], ['Outdoor air louvre (face)', '2 – 2.5', '400 – 500']]) +
+        '<p class="tip">Friction rate for low-velocity design: about 0.8 – 1.2 Pa/m (0.1 – 0.15 in.wg/100 ft).</p></section>' +
+        '<section><h2>Water pipe velocities</h2>' + csTable(['Service', 'm/s', 'ft/s'], [['Pipes ≤ 50 mm (2 in)', '0.6 – 1.2', '2 – 4'], ['Pipes > 50 mm', '1.2 – 2.4', '4 – 8'], ['Pump suction', '0.6 – 1.5', '2 – 5'], ['Domestic water (max)', '≤ 2.0', '≤ 6.5']]) + '</section>' +
+        '<section><h2>Useful equivalents</h2>' + csTable(['Quantity', 'Equivalent'], [['1 TR', '12,000 BTU/h = 3.517 kW'], ['1 kW', '3,412 BTU/h'], ['1 CFM', '1.699 m³/h = 0.472 L/s'], ['1 m/s', '196.85 fpm'], ['1 US gpm', '0.0631 L/s'], ['1 psi', '6.895 kPa'], ['1 in.wg', '249.1 Pa'], ['1 hp', '0.746 kW']], true) + '</section>' +
+        '<section><h2>Quick formulas</h2>' + csTable(['What', 'Formula'], [['Sensible heat, air', 'Q (kW) = 1.21 × L/s × ΔT ÷ 1,000'], ['', 'Q (BTU/h) = 1.08 × CFM × ΔT (°F)'], ['Latent heat, air', 'Q (kW) = 3.0 × L/s × Δw (g/kg) ÷ 1,000'], ['Water heat', 'Q (kW) = 4.19 × L/s × ΔT'], ['', 'Q (BTU/h) = 500 × gpm × ΔT (°F)'], ['Duct area', 'A = Q ÷ V'], ['Fan power', 'P (kW) = Q (m³/s) × Δp (Pa) ÷ (1,000 × η)']], true) + '</section></div>';
+    }],
+    pipe: ['Pipe Size Data', function () {
+      var dns = Object.keys(PIPE_IN).map(Number).sort(function (a, b) { return a - b; });
+      var steel = dns.filter(function (d) { return NPS_OD[d]; }).map(function (d) {
+        var od = NPS_OD[d], w40 = SCH40_WALL[d], w80 = SCH80_WALL[d];
+        return [csIn(PIPE_IN[d]) + ' · DN ' + d, fmt(od, 1), w40 ? fmt(w40, 2) : '—', w40 ? fmt(od - 2 * w40, 1) : '—', w80 ? fmt(w80, 2) : '—', w80 ? fmt(od - 2 * w80, 1) : '—'];
+      });
+      var cuL = PD_MATS.cul[1];
+      var copper = dns.filter(function (d) { return CU_K_WALL[d] || cuL[d] || CU_M_WALL[d]; }).map(function (d) {
+        var od = (PIPE_IN[d] + 0.125) * 25.4, cell = function (w) { return w ? fmt(od - 2 * w, 1) : '—'; };
+        return [csIn(PIPE_IN[d]) + ' · DN ' + d, fmt(od, 2), cell(CU_K_WALL[d]), cell(cuL[d]), cell(CU_M_WALL[d])];
+      });
+      return '<section><h2>Steel pipe (ASME B36.10) — mm</h2>' + csTable(['Size', 'OD', 'Wall Sch. 40', 'ID Sch. 40', 'Wall Sch. 80', 'ID Sch. 80'], steel) + '</section>' +
+        '<section><h2>Copper tube (ASTM B88) — inside diameter, mm</h2>' + csTable(['Size', 'OD', 'ID Type K', 'ID Type L', 'ID Type M'], copper) +
+        '<p class="tip">Copper tube OD is the nominal size + ⅛ in. 1 in = 25.4 mm.</p></section>';
+    }],
+    wire: ['Wire & Breaker Table', function () {
+      var rows = AWG.map(function (a, i) { return [a[0], fmt(a[1]), AMP_TBL.cu75[i] + ' A', AMP_TBL.cu90[i] + ' A', AMP_TBL.al75[i] == null ? '—' : AMP_TBL.al75[i] + ' A']; });
+      return '<div class="cols"><section><h2>Conductor ampacity (NEC Table 310.16, 30 °C, ≤ 3 conductors)</h2>' + csTable(['Size', 'mm²', 'Cu 75 °C', 'Cu 90 °C', 'Al 75 °C'], rows) +
+        '<p class="tip">Small conductors: 14 AWG ≤ 15 A, 12 AWG ≤ 20 A, 10 AWG ≤ 30 A breaker (NEC 240.4(D)). Philippine sizes: 2.0 mm² ≈ 14 AWG, 3.5 ≈ 12, 5.5 ≈ 10, 8.0 ≈ 8 AWG.</p></section>' +
+        '<section><h2>Standard breaker ratings</h2>' + csTable(['Standard', 'Ratings (A)'], [['IEC / PEC', BREAKER_A.join(', ')], ['NEC 240.6(A)', '15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 125, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1200, 1600, 2000']], true) + '</section>' +
+        '<section><h2>Voltage drop</h2>' + csTable(['Supply', 'Formula'], [['Single-phase', 'Vd = 2 × L × I × R'], ['Three-phase', 'Vd = √3 × L × I × R'], ['Limit (typical)', '3 % branch, 5 % feeder + branch']], true) +
+        '<p class="tip">R in Ω per metre (per foot) of one conductor; L is the one-way length.</p></section>' +
+        '<section><h2>Derating</h2>' + csTable(['Current-carrying conductors', 'Factor'], [['4 – 6', '0.80'], ['7 – 9', '0.70'], ['10 – 20', '0.50'], ['21 – 30', '0.45'], ['31 – 40', '0.40']]) +
+        csTable(['Ambient', '75 °C', '90 °C'], AMB_STEPS.slice(1, 6).map(function (t, i) { return [t + ' °C', AMB_F['75'][i + 1], AMB_F['90'][i + 1]]; })) + '</section></div>';
+    }],
+    check: ['Design Pitfall Checklist', function () {
+      return Object.keys(PF_DISC).map(function (d) {
+        var list = PITFALLS.filter(function (q) { return q.d === d; });
+        return '<section class="chk"><h2>' + esc(PF_DISC[d][0]) + ' (' + list.length + ')</h2><ol>' + list.map(function (q) { return '<li><b>' + esc(q.title) + '.</b> ' + esc(q.rule) + '</li>'; }).join('') + '</ol></section>';
+      }).join('');
+    }]
+  };
+  function csOpen(k) {
+    var s = CS[k], now = new Date();
+    var css = '@page{size:A4;margin:12mm}*{box-sizing:border-box}body{margin:0;font:9.5pt/1.4 Arial,Helvetica,sans-serif;color:#111}' +
+      '.page{max-width:190mm;margin:0 auto;padding:10px}header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #111;padding-bottom:6px;margin-bottom:10px}' +
+      '.logo{font:700 14pt Arial,sans-serif}.logo i{font-style:normal;color:#999;margin:0 2px}.logo b{color:#B87400}h1{margin:0;font-size:13pt}.meta{font-size:8pt;color:#555;text-align:right}' +
+      'h2{margin:12px 0 4px;font-size:10.5pt}table{width:100%;border-collapse:collapse;margin:0 0 4px}th,td{border:1px solid #999;padding:3px 5px;text-align:left;vertical-align:top}th{background:#eee;font-size:8.5pt}td.n{text-align:right;white-space:nowrap}' +
+      '.cols{column-count:2;column-gap:18px}.cols section{break-inside:avoid}.tip{margin:2px 0 0;font-size:8pt;color:#444}' +
+      '.chk ol{margin:0;padding-left:0;list-style:none;counter-reset:c}.chk li{position:relative;padding:3px 0 3px 26px;border-bottom:1px solid #ddd;break-inside:avoid;font-size:8.6pt}.chk li::before{content:"";position:absolute;left:2px;top:5px;width:11px;height:11px;border:1.4px solid #111}' +
+      'footer{margin-top:12px;border-top:1px solid #999;padding-top:4px;font-size:7.5pt;color:#555}.bar{position:sticky;top:0;display:flex;gap:8px;padding:8px;background:#f4f4f4;border-bottom:1px solid #ccc}.bar button{padding:7px 14px;border:0;border-radius:6px;background:#FFB000;font-weight:700;cursor:pointer}.bar .o{background:#ddd}@media print{.bar{display:none}}';
+    rpOpen('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(s[0]) + ' — MechToolBox cheat sheet</title><style>' + css + '</style></head><body>' +
+      '<div class="bar"><button type="button" onclick="window.print()">Print / Save as PDF</button><button type="button" class="o" onclick="window.close()">Close</button></div>' +
+      '<div class="page"><header><div><div class="logo">MECH<i>/</i><b>TOOLBOX</b></div><h1>' + esc(s[0]) + '</h1></div><div class="meta">Cheat sheet · ' + now.toISOString().slice(0, 10) + '<br>Typical values for early sizing</div></header>' +
+      s[1]() + '<footer>Preliminary reference values — project codes and the authority having jurisdiction govern. Free calculators at MechToolBox.</footer></div></body></html>');
+  }
+  document.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-sheet]'); if (b && CS[b.dataset.sheet]) csOpen(b.dataset.sheet); });
+
+  /* ---------- Works offline: service worker, install button, offline notice ---------- */
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.port === '4173') && !navigator.webdriver) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register((document.documentElement.getAttribute('data-root') || '') + 'sw.js').catch(function () {}); });
+  }
+  var installEvt = null;
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installEvt = e; $$('.install-btn').forEach(function (b) { b.hidden = false; }); });
+  window.addEventListener('appinstalled', function () { installEvt = null; $$('.install-btn').forEach(function (b) { b.hidden = true; }); });
+  $$('.install-btn').forEach(function (b) {
+    b.addEventListener('click', function () { if (!installEvt) return; installEvt.prompt(); installEvt.userChoice.then(function () { installEvt = null; $$('.install-btn').forEach(function (x) { x.hidden = true; }); }); });
+  });
+  var offlineSync = function () { $('#offline-pill').hidden = navigator.onLine !== false; };
+  window.addEventListener('online', offlineSync); window.addEventListener('offline', offlineSync); offlineSync();
+
+  /* ---------- Visitor stats (Cloudflare Web Analytics: free, no cookies) ---------- */
+  // Paste the token from Cloudflare → Analytics & Logs → Web Analytics → your site → "JS snippet" (the "token" value).
+  var CF_ANALYTICS_TOKEN = '';
+  if (CF_ANALYTICS_TOKEN && location.protocol === 'https:' && !navigator.webdriver) {
+    var cfb = document.createElement('script');
+    cfb.defer = true; cfb.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+    cfb.setAttribute('data-cf-beacon', JSON.stringify({ token: CF_ANALYTICS_TOKEN, spa: true })); // spa: counts each view (#calculators, #pitfalls…)
+    document.head.appendChild(cfb);
+  }
+
+  /* ---------- Donations ---------- */
+  // Your PayPal.me link, e.g. 'https://paypal.me/yourname'. The donate buttons stay hidden while it is empty.
+  var DONATE_URL = 'https://paypal.me/JuarenBalingit';
+  // The choices in the window: [amount, label]. PayPal.me fills the amount in from /<amount><currency>.
+  var DONATE_AMOUNTS = { USD: [[3, '☕ $3'], [5, '$5'], [10, '$10'], [25, '$25']], PHP: [[100, '☕ ₱100'], [250, '₱250'], [500, '₱500'], [1000, '₱1,000']] };
+  var dn = $('#dn'), dnCur = codeBasis === 'ph' ? 'PHP' : 'USD', dnOpener = null;
+  function dnRender() {
+    $$('.dn-cur button', dn).forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.cur === dnCur)); });
+    $('#dn-amts').innerHTML = DONATE_AMOUNTS[dnCur].map(function (a) {
+      return '<a class="dn-amt" href="' + DONATE_URL + '/' + a[0] + dnCur + '" target="_blank" rel="noopener">' + a[1] + '</a>';
+    }).join('');
+    $('#dn-own').href = DONATE_URL;
+  }
+  function dnOpen(trigger) {
+    dnOpener = trigger; $('#dn-done').textContent = '';
+    dnRender();
+    if (typeof dn.showModal === 'function') dn.showModal(); else dn.setAttribute('open', '');
+    document.body.classList.add('modal-open');
+    var first = $('.dn-amt', dn); if (first) first.focus();
+  }
+  $$('.donate').forEach(function (a) {
+    if (DONATE_URL) a.href = DONATE_URL; // still works as a plain link (new tab, middle click)
+    a.hidden = !DONATE_URL;
+    a.addEventListener('click', function (e) {
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.button) return;
+      e.preventDefault();
+      var nav = $('#nav-mobile'); if (nav && !nav.hidden) $('.menu-btn').click(); // close the phone menu first
+      dnOpen(a);
+    });
+  });
+  $('.dn-cur', dn).addEventListener('click', function (e) { var b = e.target.closest('[data-cur]'); if (b) { dnCur = b.dataset.cur; dnRender(); b.focus(); } });
+  dn.addEventListener('click', function (e) {
+    if (e.target === dn) { dn.close(); return; }
+    if (e.target.closest('.dn-amt, .dn-own')) $('#dn-done').textContent = '♥ Thank you! PayPal opened in a new tab.';
+  });
+  $('#dn-close').addEventListener('click', function () { dn.close(); });
+  dn.addEventListener('close', function () {
+    if (!modal.open) document.body.classList.remove('modal-open');
+    if (dnOpener && dnOpener.focus && dnOpener.offsetParent !== null) dnOpener.focus();
+  });
+
   /* ---------- Feedback ---------- */
   // Where feedback goes: FEEDBACK_ENDPOINT receives it (Formspree); FEEDBACK_FORM can add a link to a Google Form / Tally.
   var APP_VERSION = 'v0.9';
@@ -15987,6 +16690,21 @@ dialog.modal.split { width: min(1160px, calc(100% - 32px)); }
     try { document.execCommand('copy'); } catch (e) {}
     ta.remove();
   }
+
+  $('#wn-notify').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var em = $('#wn-email').value.trim(), msg = $('#wn-msg'), b = $('#wn-send');
+    var say = function (t, bad) { msg.textContent = t; msg.classList.toggle('bad', !!bad); };
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { say('Enter a valid email address.', true); $('#wn-email').focus(); return; }
+    if (b.disabled) return;
+    b.disabled = true; say('Sending…');
+    fetch(FEEDBACK_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ _subject: 'MechToolBox — notify me of new tools', type: 'Notify me', email: em, message: 'Please email me when new tools are added.', _gotcha: $('#wn-gotcha').value }) })
+      .then(function (r) { if (!r.ok) throw new Error('error ' + r.status); say('✓ Thanks — you are on the list.'); $('#wn-email').value = ''; },
+        function () { say('Could not send — check your connection and try again.', true); })
+      .catch(function (err) { say('Could not send (' + err.message + ').', true); })
+      .then(function () { b.disabled = false; });
+  });
 
   /* ---------- Ball compass: a floating dashboard compass; the heading band turns about the vertical axis ---------- */
   var cp = $('#compass'), cpBtn = $('#cp-btn'), cpPanel = $('#cp-panel');

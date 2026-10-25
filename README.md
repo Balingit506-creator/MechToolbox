@@ -6,17 +6,42 @@ Refrigeration tools include cold-room load, product freezing load and time (blas
 
 Plumbing adds hot water recirculation, high-rise pressure zones (PRV), water hammer surge and swimming pool circulation and heating. Fire protection adds clean agent quantity (NFPA 2001), fire alarm battery standby, detector spacing and count (NFPA 72), occupant load and egress (IBC) and foam concentrate quantity (NFPA 11 / 16).
 
+Also included: kitchen hood exhaust (IMC 507.13), cable tray fill (NEC 392.22), earth electrode resistance (Dwight / IEEE 142), voltage drop along a feeder with several loads, sewage treatment plant sizing (extended aeration) and compressed-air pipe sizing.
+
 Hanger and support take-offs cover chilled water, ductwork, plumbing (IPC Table 308.5 spacing, riser clamps), fire sprinkler piping (NFPA 13 spacing and rod sizes, seismic sway braces) and refrigerant line sets (insulated liquid + suction lines, supports at bends) — supports, rod sizes and lengths, angle bar, clamps or saddles, anchors and cost.
 
-The site works like an app: the header switches between views (Home, Calculators, Guide, Projects, Estimate, Utilities, Standards, About) instead of one long page. Each view has its own address (`#calculators`, `#projects`…), so links and the Back button work. Calculators are grouped in a sidebar by category, open in a two-column window (inputs beside the result), and the last six you used are listed on Home and in the sidebar.
+The site works like an app: the header switches between views (Home, Calculators, Guide, Projects, Estimate, Utilities, Standards, About, and What's new from the footer) instead of one long page. Each view has its own address (`#calculators`, `#projects`…), so links and the Back button work. Calculators are grouped in a sidebar by category, open in a two-column window (inputs beside the result), and the last six you used are listed on Home and in the sidebar. **Share link** (next to Copy result) copies an address that opens the same calculator with the same inputs, unit system and code basis (`?calc=duct&sys=si&code=ph&q=2400…`; values are written in the built-in unit, so the receiver's own unit choices don't matter).
+
+**Sun mode** (sun button in the header, or in the phone menu) switches to a light theme that stays readable outdoors; the choice is remembered. The site also installs as an app (an **Install app** button appears when the browser offers it) and keeps working offline once opened — a small "Offline" notice shows when the connection drops.
 
 The Design Pitfalls view shows 116 common design and installation mistakes across HVAC, plumbing, fire protection, electrical and refrigeration — such as a branch duct cut into an elbow, an intake beside an exhaust, an S-trap, a relief valve piped uphill, sprinklers blocked by a wide duct, a socket by a sink without GFCI, or brazing without nitrogen — each drawn beside the right way, with why it matters, the rule, the code reference and the calculator to check it. Search them or filter by discipline (the Codes & Standards view has its own search too); related calculators link to them from their window header.
 
 The Utilities view groups 13 quick tools: unit converter, MEP references, slope converter, drawing scale, wire gauge (AWG ↔ mm²), pipe size data (steel Sch. 40/80, copper K/L/M), air and water properties, duct dimensions, flow and velocity, heat ↔ flow for air and water, Ohm's law and power, pipe and conduit offsets, and tank volume by level.
 
-Six small games sit at the bottom of Utilities, for a break: **Pipe Puzzle** (turn the pieces until water runs from the supply to the drain; the grid grows each level), **Unit Sprint** (60 seconds of HVAC, pressure, flow and temperature conversions), **Spot the Mistake** (a Design Pitfalls drawing with its parts named and the verdict notes hidden: right way or mistake?), **Symbol Match** (memory game pairing drawing symbols such as valves, pumps and detectors with their names), **Phase Balance** (share single-phase loads across L1, L2 and L3 until the imbalance is the lowest possible) and **Term Scramble** (unscramble MEP terms from a clue). They work with mouse, touch or keyboard, keep your best scores in the browser, and have optional sound.
+**Cheat sheets** (also in Utilities) open as one-page printable references — HVAC quick reference, pipe size data, wire & breaker table, and the full design pitfall checklist — ready to print or save as PDF.
 
-The whole site is one self-contained file, `index.html` (vanilla JavaScript, inline CSS and SVG). Vite is used only to serve and build it.
+Six small games sit at the bottom of Utilities, for a break: **Pipe Puzzle** (turn the pieces until water runs from the supply to the drain; the grid grows each level), **Unit Sprint** (60 seconds of HVAC, pressure, flow and temperature conversions), **Spot the Mistake** (a Design Pitfalls drawing with its parts named and the verdict notes hidden: right way or mistake? — plus a **daily challenge**: the same five drawings for everyone each day, one try, a shareable 🟩🟥 result and a day streak; `?play=daily` opens it), **Symbol Match** (memory game pairing drawing symbols such as valves, pumps and detectors with their names), **Phase Balance** (share single-phase loads across L1, L2 and L3 until the imbalance is the lowest possible) and **Term Scramble** (unscramble MEP terms from a clue). They work with mouse, touch or keyboard, keep your best scores in the browser, and have optional sound.
+
+The source is one self-contained file, `index.html` (vanilla JavaScript, inline CSS and SVG). Vite serves it; `npm run build` then runs `scripts/postbuild.mjs`, which:
+
+- moves the CSS and JavaScript into minified, cached files (`dist/assets/app-<hash>.css/.js`), so pages after the first load in about 16 KB;
+- writes one page per calculator, `dist/calculators/<name>/` (e.g. `calculators/duct-size-calculator/`), with its own title, description, heading, formula and inputs for search engines — it opens that calculator;
+- fills in the offline worker (`public/sw.js`) and writes `robots.txt`; the app manifest and icons are in `public/`.
+
+## Going live — two settings
+
+| Setting | Where | What it does |
+|---|---|---|
+| `SITE_URL` | top of `scripts/postbuild.mjs`, or the `SITE_URL` environment variable on your host | The live address, e.g. `https://mechtoolbox.com/`. Adds canonical links and social tags to every page and writes `sitemap.xml` (submit it in Google Search Console). Left empty, they are skipped. |
+| `CF_ANALYTICS_TOKEN` | `index.html`, search for `Visitor stats` | Cloudflare Web Analytics token (free, no cookies). Counts visits and each view; only loads on the live https site. |
+
+## What's new and updates
+
+The What's new view (`#whatsnew`, linked from the footer and the phone menu) is a dated list in `index.html` — add an entry at the top when you ship something. Its "Get notified" form sends the email to the same Formspree form as Feedback, with the subject "MechToolBox — notify me of new tools".
+
+## Donations
+
+Set `DONATE_URL` in `index.html` (search for `/* ---------- Donations`) to your PayPal.me link, e.g. `'https://paypal.me/yourname'`. That shows a small heart button in the header, a "Donate with PayPal" item in the phone menu and a support line in the footer. Each opens a Support window with amounts to choose from (USD $3/5/10/25 or PHP ₱100/250/500/1,000, PHP first when the code basis is PH) plus "Choose your own amount"; the amounts are set in `DONATE_AMOUNTS` and open `paypal.me/<name>/<amount><currency>` in a new tab. While `DONATE_URL` is empty the buttons stay hidden.
 
 ## Ads (Adsterra)
 
@@ -39,8 +64,8 @@ Change `data-ad` to move a code to other slots (`home`, `calc-top`, `calc-side`,
 |---|---|
 | `npm install` | Install the dev tools (Vite, Playwright, Oxlint). |
 | `npm run dev` | Start a local server with live reload at http://localhost:5173. Add `-- --host` to open it from a phone on the same Wi-Fi. |
-| `npm run build` | Build `dist/index.html` for hosting. |
-| `npm run preview` | Serve the built `dist` folder. |
+| `npm run build` | Build `dist/` for hosting: the site, minified assets, calculator pages, offline worker, robots.txt (and sitemap.xml when `SITE_URL` is set). |
+| `npm run preview` | Serve the built `dist` folder at http://localhost:4173 (the offline worker also runs here). |
 | `npm test` | Run the browser tests (uses the installed Microsoft Edge). |
 | `npm run lint` | Lint with Oxlint. |
 
@@ -51,7 +76,11 @@ Change `data-ad` to move a code to other slots (`home`, `calc-top`, `calc-side`,
 - `site.spec.js` — page loads without errors, category filters, compact view, minimize all, search.
 - `navigation.spec.js` — one view at a time, header links and Back, "/" to search, Home category tiles, recently used calculators, inputs beside the result on wide screens, compact list by default.
 - `utilities.spec.js` — known values for the utilities (pipe data, wire gauge, Ohm's law, slope, offset, tank, heat ↔ flow, air and water properties, drawing scale) in SI and IMP.
-- `games.spec.js` — the six games: solving a pipe puzzle, Unit Sprint answers and the 60-second timer, Spot the Mistake parts named but verdict notes hidden until you answer, clearing a Symbol Match board, finding the best Phase Balance split, and Term Scramble typing, answers and hints.
+- `games.spec.js` — the six games and the daily challenge (same drawings for everyone, one try a day, `?play=daily`): solving a pipe puzzle, Unit Sprint answers and the 60-second timer, Spot the Mistake parts named but verdict notes hidden until you answer, clearing a Symbol Match board, finding the best Phase Balance split, and Term Scramble typing, answers and hints.
+- `share.spec.js` — Share link: the copied address opens the same calculator, inputs, unit system and code basis in another browser, also when the sender picked a different unit.
+- `more-calcs.spec.js` — known values for kitchen hood exhaust, cable tray fill, earth electrode resistance, feeder voltage drop, STP sizing and compressed-air pipe sizing.
+- `extras.spec.js` — sun mode (switch, remembered after reload, phone menu), What's new and its sign-up form, and the four cheat sheets.
+- `build.spec.js` — runs `npm run build` and checks the minified assets, the 131 calculator pages, the offline worker and robots.txt.
 - `ads.spec.js` — ad slots stay hidden without codes; pasted codes fill their slots in their own frames, and page-level codes run once.
 - `search.spec.js` — Standards search (references, sources, regional codes, whole-number matching, highlights), Pitfalls search highlights, and "/" focusing the search of the current view.
 - `pitfalls.spec.js` — the Design Pitfalls view: a wrong and a right drawing for each mistake, labels kept inside every drawing, discipline filter and search, links to and from calculators.

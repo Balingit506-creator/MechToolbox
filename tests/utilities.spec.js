@@ -10,10 +10,11 @@ async function openUtil(page, id) {
 test.describe('utilities — known values (SI)', () => {
   test.beforeEach(async ({ page }) => { await openSite(page, 'utilities') })
 
-  test('the Utilities view lists 13 tools in three groups, then 6 games', async ({ page }) => {
-    await expect(page.locator('#utilities .strip button')).toHaveCount(19)
+  test('the Utilities view lists 13 tools in three groups, 4 cheat sheets and 6 games', async ({ page }) => {
+    await expect(page.locator('#utilities .strip button')).toHaveCount(23)
+    await expect(page.locator('#utilities .strip-sheets button')).toHaveCount(4)
     await expect(page.locator('#utilities .strip-games button')).toHaveCount(6)
-    await expect(page.locator('#utilities .util-group')).toHaveText(['Converters & references', 'Data tables', 'Field calculations', 'Games — take a break'])
+    await expect(page.locator('#utilities .util-group')).toHaveText(['Converters & references', 'Data tables', 'Field calculations', 'Cheat sheets — print or save as PDF', 'Games — take a break'])
   })
 
   test('pipe data — 2 in Sch. 40 steel, then copper Type L', async ({ page }) => {
