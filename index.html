@@ -2153,12 +2153,12 @@ html[data-theme="sun"] {
   color-scheme: light;
   --background: #F7F3EA; --deep: #F7F3EA; --panel: #FFFFFF; --panel-2: #EFE9DB;
   --surface: linear-gradient(180deg, #FFFFFF, #FBF8F1);
-  --text: #1D1A13; --muted: #5C5442; --line: #DCD2BC; --line-2: #C5B894; --border: #DCD2BC;
-  --edge: rgba(122, 88, 10, 0.18); --glass: rgba(250, 247, 240, 0.88);
-  --accent: #A86400; --mint: #A86400; --mint-dark: #8A5200; --mint-hover: #C27A00; --donate: #A86400;
-  --result: #8A5A00; --amber: #8A5A00; --warning: #8A5A00; --warn: #8A5A00;
-  --pass: #2F8A1E; --ok: #2F8A1E; --fail: #C2352A; --danger: #C2352A;
-  --mechanical: #0279B8; --electrical: #9A6A00; --plumbing: #0A86A3; --fire: #C9420E; --sanitary: #6D3FD8; --hvac: #178F45;
+  --text: #0F0D08; --muted: #3A3427; --line: #CFC3A6; --line-2: #B3A47C; --border: #CFC3A6;
+  --edge: rgba(90, 64, 8, 0.28); --glass: rgba(250, 247, 240, 0.92);
+  --accent: #7F4600; --mint: #7F4600; --mint-dark: #663800; --mint-hover: #965400; --donate: #7F4600;
+  --result: #6E3F00; --amber: #6E3F00; --warning: #6B4600; --warn: #6B4600;
+  --pass: #1D6416; --ok: #1D6416; --fail: #9C241B; --danger: #9C241B;
+  --mechanical: #00577F; --electrical: #6B4600; --plumbing: #005F73; --fire: #9E330A; --sanitary: #4F27A8; --hvac: #0B6230;
   --accent-soft: rgba(168, 100, 0, 0.1); --result-soft: rgba(168, 100, 0, 0.08);
   --shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 14px 30px -22px rgba(80, 60, 20, 0.35);
   --shadow-hi: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 20px 44px -26px rgba(168, 100, 0, 0.45);
@@ -2172,6 +2172,25 @@ html[data-theme="sun"] ::selection { background: rgba(168, 100, 0, 0.25); color:
 html[data-theme="sun"] dialog.modal::backdrop { background: rgba(60, 50, 30, 0.35); }
 html[data-theme="sun"] .nav-desktop { background: rgba(255, 255, 255, 0.7); }
 html[data-theme="sun"] .nav-desktop a:hover, html[data-theme="sun"] .site-header .head-search:hover, html[data-theme="sun"] .site-header .theme-btn:hover { background: rgba(60, 50, 30, 0.07); }
+/* Sun mode, readability: dark text on amber, deeper gradient text, and drawing colours that suit a light page */
+html[data-theme="sun"] .sys button[aria-pressed="true"], html[data-theme="sun"] .codeb button[aria-pressed="true"], html[data-theme="sun"] .btn-solid, html[data-theme="sun"] .gd-tab[aria-pressed="true"] .gd-pill, html[data-theme="sun"] .gd-step.done .gd-n, html[data-theme="sun"] .view-toggle button[aria-pressed="true"], html[data-theme="sun"] .search-x:hover, html[data-theme="sun"] .search-chips button[aria-pressed="true"], html[data-theme="sun"] .filters button[aria-pressed="true"] .f-n, html[data-theme="sun"] #copy-btn.copied, html[data-theme="sun"] .fb-fab, html[data-theme="sun"] .boq-div .es-hin input, html[data-theme="sun"] .boq-div .es-ib, html[data-theme="sun"] .cv-cat[aria-pressed="true"], html[data-theme="sun"] .pf-filters button[aria-pressed="true"] .f-n, html[data-theme="sun"] .pp-in, html[data-theme="sun"] .pp-out.wet, html[data-theme="sun"] .sp-modes button[aria-pressed="true"], html[data-theme="sun"] .dn-cur button[aria-pressed="true"] { color: #1D1A13; }
+html[data-theme="sun"] .hero h1 .mint, html[data-theme="sun"] .hero-stats b { background: linear-gradient(135deg, #9A5A00 0%, #804400 55%, #6A3200 100%); -webkit-background-clip: text; background-clip: text; text-shadow: none; }
+html[data-theme="sun"] .btn-solid { box-shadow: 0 8px 20px -10px rgba(168, 100, 0, 0.6); }
+html[data-theme="sun"] .blueprint [fill="#0B0B0B"] { fill: #FFFDF8; }
+html[data-theme="sun"] .blueprint [fill="#433D2B"] { fill: #C9BC98; }
+html[data-theme="sun"] .blueprint [stroke="#433D2B"] { stroke: #B8A87E; }
+html[data-theme="sun"] .blueprint::before { display: none; }
+html[data-theme="sun"] .eyebrow { color: #6E3F00; }
+html[data-theme="sun"] ::placeholder { color: #6B6250; opacity: 1; }
+html[data-theme="sun"] body { -webkit-font-smoothing: auto; }
+/* SUN-INK */
+/* Sun mode: amber text reads poorly on cream — text set in amber becomes dark ink, key values deep blue (scratchpad sunink.py) */
+html[data-theme="sun"] .eyebrow, html[data-theme="sun"] .mint, html[data-theme="sun"] .logo-gear, html[data-theme="sun"] .std-ph h4, html[data-theme="sun"] .btn-outline, html[data-theme="sun"] .btn-outline:hover, html[data-theme="sun"] .gd-k, html[data-theme="sun"] .gd-link:hover, html[data-theme="sun"] .gd-step.cur .gd-n, html[data-theme="sun"] .pj-form-t, html[data-theme="sun"] .pj-pick:hover, html[data-theme="sun"] .pj-done, html[data-theme="sun"] .boq-no, html[data-theme="sun"] .boq-grp td, html[data-theme="sun"] .boq-sec th, html[data-theme="sun"] .boq-table tfoot .boq-grand td, html[data-theme="sun"] .pj-bar-k, html[data-theme="sun"] .pj-bar-msg, html[data-theme="sun"] .min-note strong, html[data-theme="sun"] .min-all .ma-ico, html[data-theme="sun"] .card-cta, html[data-theme="sun"] .search-wrap:focus-within .search-ico, html[data-theme="sun"] .search-count, html[data-theme="sun"] mark.hl, html[data-theme="sun"] .empty-ico, html[data-theme="sun"] .filters .f-key, html[data-theme="sun"] .disc-chip, html[data-theme="sun"] .cl-row-head h4, html[data-theme="sun"] .cl-builder summary, html[data-theme="sun"] .cl-hourly summary, html[data-theme="sun"] .cl-peak-row td, html[data-theme="sun"] .dd-draw figcaption, html[data-theme="sun"] .dd-h4, html[data-theme="sun"] .std-standard, html[data-theme="sun"] .strip .code, html[data-theme="sun"] .strip button:hover .open, html[data-theme="sun"] .icon-btn:hover, html[data-theme="sun"] .input-wrap select.unit-sel:hover, html[data-theme="sun"] .input-wrap select.unit-sel:focus, html[data-theme="sun"] .result-head h3, html[data-theme="sun"] .formula, html[data-theme="sun"] .rows .strong dd, html[data-theme="sun"] .rp-title, html[data-theme="sun"] .sugg-title, html[data-theme="sun"] .ref h3, html[data-theme="sun"] .info div:hover dt, html[data-theme="sun"] .sig:hover .sig-l, html[data-theme="sun"] .sig:focus-visible .sig-l, html[data-theme="sun"] .sig:hover .sig-gear, html[data-theme="sun"] .sig:focus-visible .sig-gear, html[data-theme="sun"] .sig.burst .sig-gear, html[data-theme="sun"] .sig-spark.g, html[data-theme="sun"] .sig-pop, html[data-theme="sun"] .sig.overdrive .sig-gear, html[data-theme="sun"] .sig.overdrive .sig-l, html[data-theme="sun"] .hb-ico, html[data-theme="sun"] .hero-codes span, html[data-theme="sun"] .cp-k, html[data-theme="sun"] .cp-link, html[data-theme="sun"] .fb-msg, html[data-theme="sun"] .cp-center, html[data-theme="sun"] .es-grp .es-hin input, html[data-theme="sun"] .es-addbtn:hover, html[data-theme="sun"] .cv-btn, html[data-theme="sun"] .cv-out, html[data-theme="sun"] .cv-swap, html[data-theme="sun"] .cv-k, html[data-theme="sun"] .cs-g, html[data-theme="sun"] .cs-v, html[data-theme="sun"] .cs-alt, html[data-theme="sun"] .cv-msg, html[data-theme="sun"] .pl-phv, html[data-theme="sun"] .es-msg, html[data-theme="sun"] .es-revn, html[data-theme="sun"] .es-reva [aria-pressed="true"], html[data-theme="sun"] .es-c-added td:first-child, html[data-theme="sun"] .dock-tab:hover, html[data-theme="sun"] body.dock-hidden .dock-tab, html[data-theme="sun"] .nav-mobile a.active, html[data-theme="sun"] .nav-mobile a:hover, html[data-theme="sun"] .hq-head a, html[data-theme="sun"] .hq-head a:hover, html[data-theme="sun"] .hq-k, html[data-theme="sun"] .hq-tile:hover .hq-n, html[data-theme="sun"] .recent-chip:hover, html[data-theme="sun"] .std-src summary::after, html[data-theme="sun"] .pf-more summary, html[data-theme="sun"] .pf-why dt, html[data-theme="sun"] .us-final, html[data-theme="sun"] .sp-scene b, html[data-theme="sun"] .sp-look b, html[data-theme="sun"] .sp-day-score, html[data-theme="sun"] .sp-day-list .linkish:hover, html[data-theme="sun"] .mm-back::after, html[data-theme="sun"] .pb-head b, html[data-theme="sun"] .pb-load b, html[data-theme="sun"] .gm-msg.pb-warn, html[data-theme="sun"] .ts-slots.skip .ts-slot, html[data-theme="sun"] .nav-desktop a.active, html[data-theme="sun"] .nav-desktop a[aria-current="page"], html[data-theme="sun"] .wn-log time { color: #1A1508; text-shadow: none; }
+html[data-theme="sun"] .rows .strong dd, html[data-theme="sun"] .cl-results .rows .strong dd { color: #0A3F7A; text-shadow: none; }
+html[data-theme="sun"] .dd-big, html[data-theme="sun"] .dd-size, html[data-theme="sun"] .psy-cz { fill: #0A3F7A; }
+html[data-theme="sun"] .formula { color: #1A1508; }
+html[data-theme="sun"] .hero h1 .mint, html[data-theme="sun"] .hero-stats b { color: transparent; }
+/* /SUN-INK */
 </style>
 </head>
 <body>
@@ -2287,22 +2306,22 @@ html[data-theme="sun"] .nav-desktop a:hover, html[data-theme="sun"] .site-header
           <g class="bp-bldg">
             <rect x="24" y="330" width="432" height="26" fill="url(#pt-hatch)" opacity="0.6"/>
             <line x1="24" y1="330" x2="456" y2="330" stroke="var(--muted)" stroke-width="1.2"/>
-            <rect x="70" y="88" width="340" height="242" fill="var(--surface)" fill-opacity="0.75" stroke="var(--muted)" stroke-width="1.2"/>
+            <rect x="70" y="88" width="340" height="242" fill="var(--panel)" fill-opacity="0.75" stroke="var(--muted)" stroke-width="1.2"/>
             <rect x="66" y="84" width="348" height="6" fill="#433D2B"/>
             <rect x="70" y="168" width="340" height="4" fill="#433D2B"/><rect x="70" y="248" width="340" height="4" fill="#433D2B"/>
             <text x="60" y="134" text-anchor="end" class="bp-text bp-lvl">L3</text><text x="60" y="214" text-anchor="end" class="bp-text bp-lvl">L2</text><text x="60" y="294" text-anchor="end" class="bp-text bp-lvl">L1</text>
           </g>
           <g class="sys-g g-e">
-            <rect x="26" y="300" width="32" height="30" rx="2" fill="var(--surface)" stroke="var(--warning)" stroke-width="1.3"/>
+            <rect x="26" y="300" width="32" height="30" rx="2" fill="var(--panel)" stroke="var(--warning)" stroke-width="1.3"/>
             <text x="42" y="319" text-anchor="middle" class="bp-text bp-tag" fill="var(--warning)">TX</text>
-            <rect x="76" y="292" width="16" height="30" rx="1.5" fill="var(--surface)" stroke="var(--warning)" stroke-width="1.2"/>
+            <rect x="76" y="292" width="16" height="30" rx="1.5" fill="var(--panel)" stroke="var(--warning)" stroke-width="1.2"/>
             <path d="M80 300h8M80 306h8M80 312h8" stroke="var(--warning)" stroke-width="1"/>
             <path d="M42 330V342H84V122 M84 122H316 M84 202H316 M84 282H316" fill="none" stroke="var(--warning)" stroke-width="1" stroke-linejoin="round"/>
             <path class="fl fast" d="M42 330V342H84V122 M84 122H316 M84 202H316 M84 282H316" stroke="var(--warning)"/>
             <path class="cone" d="M142 124L130 166H170L158 124z" fill="var(--warning)"/><rect x="141" y="121" width="18" height="3.5" rx="1" fill="var(--warning)"/><path class="cone" d="M224 124L212 166H252L240 124z" fill="var(--warning)"/><rect x="223" y="121" width="18" height="3.5" rx="1" fill="var(--warning)"/><path class="cone" d="M300 124L288 166H328L316 124z" fill="var(--warning)"/><rect x="299" y="121" width="18" height="3.5" rx="1" fill="var(--warning)"/><path class="cone" d="M142 204L130 246H170L158 204z" fill="var(--warning)"/><rect x="141" y="201" width="18" height="3.5" rx="1" fill="var(--warning)"/><path class="cone" d="M224 204L212 246H252L240 204z" fill="var(--warning)"/><rect x="223" y="201" width="18" height="3.5" rx="1" fill="var(--warning)"/><path class="cone" d="M300 204L288 246H328L316 204z" fill="var(--warning)"/><rect x="299" y="201" width="18" height="3.5" rx="1" fill="var(--warning)"/><path class="cone" d="M142 284L130 326H170L158 284z" fill="var(--warning)"/><rect x="141" y="281" width="18" height="3.5" rx="1" fill="var(--warning)"/><path class="cone" d="M224 284L212 326H252L240 284z" fill="var(--warning)"/><rect x="223" y="281" width="18" height="3.5" rx="1" fill="var(--warning)"/><path class="cone" d="M300 284L288 326H328L316 284z" fill="var(--warning)"/><rect x="299" y="281" width="18" height="3.5" rx="1" fill="var(--warning)"/>
           </g>
           <g class="sys-g g-m">
-            <rect x="96" y="54" width="74" height="30" rx="3" fill="var(--surface)" stroke="var(--hvac)" stroke-width="1.3"/>
+            <rect x="96" y="54" width="74" height="30" rx="3" fill="var(--panel)" stroke="var(--hvac)" stroke-width="1.3"/>
             <text x="103" y="73" class="bp-text bp-tag" fill="var(--hvac)">AHU</text>
             <circle cx="152" cy="69" r="10" fill="none" stroke="var(--hvac)" stroke-width="1.1"/>
             <g class="bp-fan"><path d="M152 60v18M143 69h18M145.6 62.6l12.8 12.8M158.4 62.6l-12.8 12.8" fill="none" stroke="var(--hvac)" stroke-width="1" stroke-linejoin="round"/></g>
@@ -2314,19 +2333,19 @@ html[data-theme="sun"] .nav-desktop a:hover, html[data-theme="sun"] .site-header
             <path d="M329 168V175H382 M350 168V175 M329 248V255H382 M350 248V255 M329 328V335H382 M350 328V335 M382 72V342H422" fill="none" stroke="var(--sanitary)" stroke-width="1.4" stroke-linejoin="round"/>
             <path class="fl" d="M329 168V175H382 M350 168V175 M329 248V255H382 M350 248V255 M329 328V335H382 M350 328V335 M382 72V342H422" stroke="var(--sanitary)"/>
             <path d="M377 72h10" stroke="var(--sanitary)" stroke-width="1.4"/>
-            <rect x="422" y="334" width="34" height="20" rx="3" fill="var(--surface)" stroke="var(--sanitary)" stroke-width="1.3"/>
+            <rect x="422" y="334" width="34" height="20" rx="3" fill="var(--panel)" stroke="var(--sanitary)" stroke-width="1.3"/>
             <text x="439" y="348" text-anchor="middle" class="bp-text bp-tag" fill="var(--sanitary)">ST</text>
           </g>
           <g class="sys-g g-p">
-            <rect x="328" y="46" width="44" height="38" rx="4" fill="var(--surface)" stroke="var(--mechanical)" stroke-width="1.3"/>
+            <rect x="328" y="46" width="44" height="38" rx="4" fill="var(--panel)" stroke="var(--mechanical)" stroke-width="1.3"/>
             <path class="wave" d="M330 62q5-3 10 0t10 0t10 0t10 0V82H330z" fill="var(--mechanical)" fill-opacity="0.28"/>
             <text x="350" y="58" text-anchor="middle" class="bp-text bp-tag" fill="var(--mechanical)">WT</text>
             <path d="M352 84V306 M352 146H329V152 M349 146V154 M352 226H329V232 M349 226V234 M352 306H329V312 M349 306V314" fill="none" stroke="var(--mechanical)" stroke-width="1.2" stroke-linejoin="round"/>
             <path class="fl" d="M352 84V306 M352 146H329V152 M349 146V154 M352 226H329V232 M349 226V234 M352 306H329V312 M349 306V314" stroke="var(--mechanical)"/>
-            <path d="M322 152h14l-2 5h-10z M327 157v11" fill="var(--surface)" stroke="var(--mechanical)" stroke-width="1.1"/><path d="M342 168v-8h6v-6h4v6c4 0 6 3 6 8z" fill="var(--surface)" stroke="var(--mechanical)" stroke-width="1.1"/><path d="M322 232h14l-2 5h-10z M327 237v11" fill="var(--surface)" stroke="var(--mechanical)" stroke-width="1.1"/><path d="M342 248v-8h6v-6h4v6c4 0 6 3 6 8z" fill="var(--surface)" stroke="var(--mechanical)" stroke-width="1.1"/><path d="M322 312h14l-2 5h-10z M327 317v11" fill="var(--surface)" stroke="var(--mechanical)" stroke-width="1.1"/><path d="M342 328v-8h6v-6h4v6c4 0 6 3 6 8z" fill="var(--surface)" stroke="var(--mechanical)" stroke-width="1.1"/>
+            <path d="M322 152h14l-2 5h-10z M327 157v11" fill="var(--panel)" stroke="var(--mechanical)" stroke-width="1.1"/><path d="M342 168v-8h6v-6h4v6c4 0 6 3 6 8z" fill="var(--panel)" stroke="var(--mechanical)" stroke-width="1.1"/><path d="M322 232h14l-2 5h-10z M327 237v11" fill="var(--panel)" stroke="var(--mechanical)" stroke-width="1.1"/><path d="M342 248v-8h6v-6h4v6c4 0 6 3 6 8z" fill="var(--panel)" stroke="var(--mechanical)" stroke-width="1.1"/><path d="M322 312h14l-2 5h-10z M327 317v11" fill="var(--panel)" stroke="var(--mechanical)" stroke-width="1.1"/><path d="M342 328v-8h6v-6h4v6c4 0 6 3 6 8z" fill="var(--panel)" stroke="var(--mechanical)" stroke-width="1.1"/>
           </g>
           <g class="sys-g g-f">
-            <rect x="420" y="302" width="34" height="28" rx="3" fill="var(--surface)" stroke="var(--fire)" stroke-width="1.3"/>
+            <rect x="420" y="302" width="34" height="28" rx="3" fill="var(--panel)" stroke="var(--fire)" stroke-width="1.3"/>
             <circle cx="437" cy="316" r="8" fill="none" stroke="var(--fire)" stroke-width="1.1"/>
             <g class="bp-imp"><path d="M437 309v14M430 316h14" fill="none" stroke="var(--fire)" stroke-width="1" stroke-linejoin="round"/></g>
             <path d="M420 318H398V112 M398 112H128 M398 192H128 M398 272H128" fill="none" stroke="var(--fire)" stroke-width="1.4" stroke-linejoin="round"/>
@@ -11440,7 +11459,7 @@ html[data-theme="sun"] .nav-desktop a:hover, html[data-theme="sun"] .site-header
 
     // Fire-rated enclosure / insulation band, duct outline (double line), flow.
     if (fire) out += '<path d="' + dPath + '" fill="none" stroke="var(--fire)" stroke-opacity="0.55" stroke-width="' + f2(band + 12) + '" stroke-dasharray="4 4" stroke-linejoin="' + join + '"/>' +
-                     '<path d="' + dPath + '" fill="none" stroke="var(--surface)" stroke-width="' + f2(band + 9) + '" stroke-linejoin="' + join + '"/>';
+                     '<path d="' + dPath + '" fill="none" stroke="var(--panel)" stroke-width="' + f2(band + 9) + '" stroke-linejoin="' + join + '"/>';
     else if (r.tSel > 0) {
       var ip = Math.max(3, Math.min(9, r.tSel / 6));
       out += '<path d="' + dPath + '" fill="none" stroke="url(#dd-hatch)" stroke-width="' + f2(band + 2 * ip) + '" stroke-linejoin="' + join + '"/>';
